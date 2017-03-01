@@ -542,9 +542,7 @@
                 f(panel);
             }                
         });        
-        
     }
-    
     
     function makePanel(count, start, end, env, events) {
 	var buffer = $('#buffer');    
@@ -599,7 +597,6 @@
 	panel.append(divs);
 	return panel;
     }
-
 
     function makeTimeline(start, end) {
 	console.log('Making timeline for', start.format(), ' to ', end.format());
