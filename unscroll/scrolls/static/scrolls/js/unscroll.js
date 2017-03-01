@@ -395,6 +395,7 @@
 		$('<div></div>', {class:'head'})
 		    .html(columnData.text)
 		    .on('click', function(e) {
+                        console.log('clicked Column');
 			makeTimeline(columnData.start, columnData.end);
 		    })
 	    );
@@ -404,6 +405,7 @@
 	return $('<div></div>', {class:'period'})
 	    .html(text)
 	    .click(function(event) {
+                console.log('clicked Period');                
 		makeTimeline(start, end);
 	    });
     }
@@ -512,9 +514,39 @@
 	    offset:frame.getOffset(_dt)
 	};
     }
+
+    function makeUrl(env, panel_no) {
+        console.log(env.timeframe);
+        var url = api
+            + 'events/?start='
+            + env.frame.add(env.start, panel_no).format()
+            + '&before='
+            + env.frame.add(env.end, panel_no).format();
+        return url;
+    }
+    
+    function loadPanel(env, panel_no, f) {
+        var url = makeUrl(env, panel_no);
+        $.ajax({
+            url:url,
+            context:env,
+            failure:function(e) {
+                console.log('Failure: ' + e);
+            },
+            success:function(events) {
+                var panel = makePanel(panel_no,
+                                      this.frame.add(this.start, panel_no),
+                                      this.frame.add(this.end, panel_no),
+                                      this,
+                                      events);
+                f(panel);
+            }                
+        });        
+        
+    }
+    
     
     function makePanel(count, start, end, env, events) {
-       
 	var buffer = $('#buffer');    
 	var dur = end - start;
 	// Make a panel, 1 screen wide, that will contain a duration.
@@ -533,7 +565,8 @@
 	
 	// Add the time period
 	var period = frame.getPeriod(start);
-	divs.push(period)
+	divs.push(period);
+        
 	// Add the columns
 	var columnWidth = env.window.width/columns;
 	var el = $(env.timeline.children()[1]);
@@ -548,6 +581,7 @@
 	}
 	for (var i in eventMetas) {
 	    var e = eventMetas[i];
+            console.log(e);
 	    e.div.css({width:e.width * columnWidth});
 	    buffer.append(e.div);
 	    e.height = Math.ceil(e.div.height()/cellHeight);
@@ -565,51 +599,44 @@
 	panel.append(divs);
 	return panel;
     }
-    
+
+
     function makeTimeline(start, end) {
 	console.log('Making timeline for', start.format(), ' to ', end.format());
 	// Reboot the timeline
 	var timeline = $('#timeline');
-	timeline.fadeOut();
-	timeline.children().remove();
-	timeline.fadeIn();
 
+        //destroy environment
+        var env = {}
+
+        //remove children
+	timeline.children().remove();
+
+        //unregister handlers
+        timeline.off();
+        
 	//	window.history.pushState('', 'Unscroll', window.location+'/' + start + '&' + end);
 	
 	// A highly mutable array. This is where we are in the number
 	// line of time.
+
 	var panels = [-1, 0, 1];
-	var timeFrame = getTimeFrame(start, end);
-	var env =
-	    {
-		window: {
-		    width:$(window).width(),
-		    height:$(window).height()
-		},
-		timeline:timeline,
-		timeframe:getTimeFrame(start, end)
-	    };
+	env = {
+	    window: {
+		width:$(window).width(),
+		height:$(window).height()
+	    },
+            start:start,
+            end:end,
+	    timeline:timeline,
+	    timeframe:getTimeFrame(start, end)
+	};
 	
 	// Let's get this kicked off.
-	var frame = timeFrames[env.timeframe];
+	env['frame'] = timeFrames[env.timeframe];
 	var els = [];
 	for (var i in panels) {
-	    var panel_no = panels[i];            
-            var url = api + 'events/?start=1941-01-01T00:00:00Z&before=1941-02-01T00:00:00Z';
-            var that = this;
-            $.ajax({
-                async: true,
-                url:url,
-                success:function(events) {
-                    console.log(panel_no, this);
-                    
-                    timeline.append(makePanel(panel_no,
-                                              frame.add(start, panel_no),
-                                              frame.add(end, panel_no),
-                                              env,
-                                              events));
-                }                
-            });
+            loadPanel(env, panels[i], function(x) {$('#timeline').append(x)});
         }
 	
 	//Whatever
@@ -646,7 +673,7 @@
 	timeline.on('mousemove touchmove', function(e){
 	    pageX = e.pageX ? e.pageX : e.touches[0].pageX ;
 	    pageY = e.pageY ? e.pageY : e.touches[0].pageY ;
-	    
+
 	    if (touching)  {
 		// get percentage of drag
 		//		dragX = 100 * (pageX - lastDragX)/env.window.width;
@@ -678,10 +705,6 @@
 	    var tmpMantissa = mouseOffset % 1;
 	    var pointerMantissa = tmpMantissa < 0 ? 1 + tmpMantissa : tmpMantissa ;
 
-	    function columnAdder(no) {
-		return frame.columnAdd(start, no);
-	    }
-
 	    // time
 	    pos = {
 		x:pageX/env.window.width * 100,
@@ -690,7 +713,7 @@
 		timelineOffset:timelineOffset,
 		offset:offset
 	    };
-	    var gt = frame.getTarget(start, pointerInteger, pointerMantissa);
+	    var gt = env.frame.getTarget(start, pointerInteger, pointerMantissa);
 	    pos = $.extend({}, pos, gt);
 	    
 	    // reset the delta
@@ -699,42 +722,32 @@
 	    // update status bar 
 	    $('#mousepos').html(statusBar(pos));
 
-	    // Actually update the panels
-	    function adder(no) {
-		return frame.add(start, no);
-	    }
-	    
 	    // Are we heading left, into the past?
-	    
 	    if (panels[0] > pos.timelineOffset) {
 		timeline.children().last().remove();	    	    
 		panels.pop();
 		var prev = panels[0] - 1;
 		panels.unshift(prev);
-		var panel = makePanel(prev, adder(prev), adder(prev + 1), env, null);
-		timeline.prepend(panel);
+                loadPanel(env, prev, function(x) {$('#timeline').prepend(x);});
 	    }
 	    
 	    // Are we heading right, into the future?
-	    
 	    else if (panels[2] < pos.timelineOffset) {
 		timeline.children().first().remove();
 		panels.shift();
 		var next = panels[1] + 1;
 		panels.push(next);
-		var panel = makePanel(next, adder(next), adder(next + 1), env, null);
-		timeline.append(panel);
+                loadPanel(env, next, function(x) {$('#timeline').append(x);});
 	    }
 	});
     }
 
     $(document).ready(function() {
-
 	document.body.addEventListener('touchmove', function(event) {
 	    event.preventDefault();
 	}, false); 
 
-	var start = moment('1941-01-01T00:00:00Z');
+	var start = moment('1941-01-01T00:00:00');
 	var end = start.clone().add(1, 'month');
         makeTimeline(start, end);
     });
