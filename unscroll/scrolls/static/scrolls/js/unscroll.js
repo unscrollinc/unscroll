@@ -489,9 +489,7 @@
 	'text/html':function(event) {},	
 	
     }
-    function audio__mp3(event) {
-	
-    }
+
     function eventToMeta(event, frame, columns) {
         var _dt = moment(event.datetime);
 	var play = $('<a></a>', {class:'play'})
@@ -599,12 +597,12 @@
     }
 
     function makeTimeline(start, end) {
-	console.log('Making timeline for', start.format(), ' to ', end.format());
+	console.log('Making timeline for',
+		    start.format(),
+		    ' to ',
+		    end.format());
 	// Reboot the timeline
 	var timeline = $('#timeline');
-
-        //destroy environment
-        var env = {}
 
         //remove children
 	timeline.children().remove();
@@ -612,13 +610,14 @@
         //unregister handlers
         timeline.off();
         
-	//	window.history.pushState('', 'Unscroll', window.location+'/' + start + '&' + end);
-	
 	// A highly mutable array. This is where we are in the number
 	// line of time.
 
 	var panels = [-1, 0, 1];
-	env = {
+
+	var timeframe = getTimeFrame(start, end)
+	var frame = timeFrames[timeframe];	
+	var env = {
 	    window: {
 		width:$(window).width(),
 		height:$(window).height()
@@ -626,17 +625,29 @@
             start:start,
             end:end,
 	    timeline:timeline,
-	    timeframe:getTimeFrame(start, end)
+	    timeframe:timeframe,
+	    frame:frame
 	};
 	
 	// Let's get this kicked off.
-	env['frame'] = timeFrames[env.timeframe];
 	var els = [];
 	for (var i in panels) {
             loadPanel(env, panels[i], function(x) {$('#timeline').append(x)});
         }
 	
-	//Whatever
+	// Whatever
+
+	var testing = {
+	    pageX:0,
+	    pageY:0,
+	    dragX:0,
+	    lastDragX:0,
+	    dragDist:0,
+	    offset:0,
+	    lastOffset:0,
+	    mouseTime:0
+	}
+	
 	var pageX = 0;
 	var pageY = 0;
 	var dragX = 0;
@@ -647,7 +658,7 @@
 	var mouseTime = 0;
 	
 	var pos = {}
-
+	
 	$('#mousepos').html(statusBar(pos));
 	
 	// Watch the mouse and when the button is pressed move left to
