@@ -25,7 +25,7 @@ class UserViewSet(viewsets.ModelViewSet):
 class MediaTypeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = MediaType
-        fields = ('identifier', 'title')        
+        fields = ('name',)        
 
 class MediaTypeViewSet(viewsets.ModelViewSet):
     queryset = MediaType.objects.all()
@@ -35,7 +35,7 @@ class MediaTypeViewSet(viewsets.ModelViewSet):
 class ContentTypeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ContentType
-        fields = ('identifier', 'title')
+        fields = ('name',)
 
 class ContentTypeViewSet(viewsets.ModelViewSet):
     queryset = ContentType.objects.all()
@@ -63,15 +63,19 @@ class ScrollViewSet(viewsets.ModelViewSet):
 class EventFilter(django_filters.rest_framework.FilterSet):
     start = django_filters.IsoDateTimeFilter(name='datetime', lookup_expr='gte')
     before = django_filters.IsoDateTimeFilter(name='datetime', lookup_expr='lt')
+    
     class Meta:
         model = Event
         fields = ['start','before']
 
 
 class EventSerializer(serializers.HyperlinkedModelSerializer):
+    scroll_title = serializers.CharField(read_only=True, source="scroll.title")
+    scroll_id = serializers.IntegerField(read_only=True, source="scroll.id")
     class Meta:
         model = Event
-        fields = ('url','scroll', 'created', 'title',
+        fields = ('url','scroll','scroll_title','scroll_id',
+                  'created', 'title',
                   'text','mediatype', 'datetime',
                   'source_url','source_date',
                   'content_url')
@@ -79,7 +83,7 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
 class EventViewSet(viewsets.ModelViewSet):
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     filter_class = EventFilter
-    queryset = Event.objects.all()
+    queryset = Event.objects.select_related('scroll')
     serializer_class = EventSerializer
 
 
@@ -114,3 +118,5 @@ urlpatterns = [
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
     
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+urlpatterns += [url(r'^silk/', include('silk.urls', namespace='silk'))]

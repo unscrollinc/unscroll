@@ -122,7 +122,36 @@ div#notebook {
     background:white;
     margin-left:50%;
     position:fixed;
-    display:none;
+    display:block;
+}
+div#notebook-events {
+    width:50%;
+    background:yellow;
+    position:absolute;
+    height:100%;
+    overflow:auto;
+}
+div.notebook-event {
+    border:1px solid black;
+    font-size:80%;
+    padding:1em;
+    background:#eec;
+}
+div#notebook-text {
+    width:50%;
+    margin-left:50%;
+    background:pink;
+    position:absolute;
+    height:100%;
+    overflow:auto;
+}
+div.notebook-span, div.medium-editor-element {
+    display:inline;
+    border:1px solid red;
+}
+
+div.notebook-span p {
+    display:inline;
 }
 
 a.play {

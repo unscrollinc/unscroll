@@ -89,7 +89,7 @@ def search(search_term):
                     f.content_url = "{}{}/{}".format(DOWNLOAD_URL,
                                                      item.identifier,
                                                      urllib.parse.quote_plus(fdict['name']))
-                    f.mediatype = 'audio/mp3'
+                    f.mediatype = 'audio/mpeg'
                     f.source_date = item.metadata['date']
                     title = 'Untitled'
                     if 'title' in fdict:

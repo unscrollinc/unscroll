@@ -1,5 +1,5 @@
 "use strict";
-(function( $ ) {
+(function( $, MediumEditor) {
     const api = 'http://127.0.0.1:8000/api/0/';
     const gridHeight = 8;
     const activeHeight = 0.9;
@@ -12,7 +12,11 @@
     const year = day * 365;
     const decade = year * 10;
     const century = year * 100;
-    
+
+    function makeId() {
+        return Math.round(new Date().getTime() + (Math.random() * 1000000));
+    }
+
     var getTimeFrame = function(start, end) {
 	// Expects two instances of Moment, returns a "timeframe"
 	var span = end - start;
@@ -473,9 +477,9 @@
 
     // application, audio, example, image, message, model, multipart, text, video
     var players = {
-	'audio/mp3':function(event) {
+	'audio/mpeg':function(event) {
 	    var player = $('<audio></audio>',
-			   {src:event.url,
+			   {src:event.content_url,
 			    controls:'controls',
 			    preload:'none',
 			    autoplay:'autoplay',
@@ -487,22 +491,49 @@
 	'audio/soundcloud':function(event) {},
 	'text/wikipedia':function(event) {},		
 	'text/html':function(event) {},	
-	
+    }
+
+    players['audio/mp3'] = players['audio/mpeg'];
+
+    function eventToNotebook(event, frame) {
+        var text = $('<div></div>',
+                     {class:'notebook-span'}).html('regarding' + event.title);
+        $('#buffer').append(text);
+        var editor = new MediumEditor(text[0]);
+        console.log(editor);
+        return {'event':$('<div></div>', {class:'notebook-event'})
+                .html(event.title)
+                .on('click', function(e) {
+                }),
+                'text':text,
+                'editor':editor
+               };
     }
 
     function eventToMeta(event, frame, columns) {
         var _dt = moment(event.datetime);
-	var play = $('<a></a>', {class:'play'})
-	    .html('&#9654;')
-	    .on('click', function(e) {
-		players[event.mediatype](event);
-	    });
 	return {
 	    div: $('<div></div>', {class:'event noselect'}).append(
 		$('<div></div>', {class:'inner'}).append(
-		    play,
+                    
+                    $('<a></a>', {class:'play'})
+	                .html('&#9654;')
+	                .on('click', function(e) {
+		            players[event.mediatype](event);
+	                }),
+                    
+                    $('<span></span>', {class:'asnote'})
+                        .html('+').on('click', (function(e) {
+                            // $.ajax()
+                            var notebookEntry = eventToNotebook(event, frame);
+                            $('#notebook-events').prepend(notebookEntry.event);
+                            $('#notebook-text').prepend(notebookEntry.text);                         
+                            
+                        })),
+                    
 		    $('<span></span>', {class:'datetime'})
 			.html(_dt.format('D MMM, \'YY')),
+                    
 		    $('<span></span>', {class:'text'})
 			.html(event.title + ' ')))
 		.mousemove(function(event) {
@@ -514,7 +545,6 @@
     }
 
     function makeUrl(env, panel_no) {
-        console.log(env.timeframe);
         var url = api
             + 'events/?start='
             + env.frame.add(env.start, panel_no).format()
@@ -577,7 +607,6 @@
 	}
 	for (var i in eventMetas) {
 	    var e = eventMetas[i];
-            console.log(e);
 	    e.div.css({width:e.width * columnWidth});
 	    buffer.append(e.div);
 	    e.height = Math.ceil(e.div.height()/cellHeight);
@@ -760,4 +789,4 @@
         makeTimeline(start, end);
     });
     
-}(jQuery));
+}(jQuery, MediumEditor));
