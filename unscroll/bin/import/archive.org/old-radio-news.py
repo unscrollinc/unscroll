@@ -124,7 +124,9 @@ if __name__ == "__main__":
     #login
     client = Client()
     schema = client.get('http://127.0.0.1:8000/schema')
-    key = client.action(schema, ['rest-auth', 'login', 'create'], params={"username": "admin", "password": "password"})
+    key = client.action(schema, ['rest-auth', 'login', 'create'],
+                        params={"username": "admin",
+                                "password": "password"})
     #okay
     credentials = {'127.0.0.1': 'Token {}'.format(key['key'],)}
     transport = [transports.HTTPTransport(credentials=credentials)]
