@@ -1,8 +1,9 @@
-.DS_Store
-\#*
+*.log
 *\#
 *~
-db.sqlite3
+.DS_Store
+\#*
 __pycache__/
 data/
-*.log
+db.sqlite3
+node_modules/
