@@ -134,8 +134,11 @@ div#notebook-events {
 div.notebook-event {
     border:1px solid black;
     font-size:80%;
-    padding:1em;
-    background:#eec;
+    padding:0.25em;
+    background:#eef;
+}
+div.medium-editor-element {
+    border:1px solid black;
 }
 div#notebook-text {
     width:50%;
@@ -145,13 +148,10 @@ div#notebook-text {
     height:100%;
     overflow:auto;
 }
-div.notebook-span, div.medium-editor-element {
-    display:inline;
-    border:1px solid red;
-}
 
-div.notebook-span p {
-    display:inline;
+div.notebook-span {
+    padding:.5em;
+    background:white;
 }
 
 a.play {

@@ -497,12 +497,12 @@
 
     function eventToNotebook(event, frame) {
         var text = $('<div></div>',
-                     {class:'notebook-span'}).html('regarding' + event.title);
-        $('#buffer').append(text);
-        var editor = new MediumEditor(text[0]);
+                     {class:'notebook-span'}).html('Text');
+        var editor = new MediumEditor(text);
         console.log(editor);
         return {'event':$('<div></div>', {class:'notebook-event'})
                 .html(event.title)
+                .append(text, editor)
                 .on('click', function(e) {
                 }),
                 'text':text,
@@ -527,7 +527,7 @@
                             // $.ajax()
                             var notebookEntry = eventToNotebook(event, frame);
                             $('#notebook-events').prepend(notebookEntry.event);
-                            $('#notebook-text').prepend(notebookEntry.text);                         
+                            $('#notebook-text').prepend('[]');
                             
                         })),
                     

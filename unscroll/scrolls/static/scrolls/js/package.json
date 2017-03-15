@@ -1,5 +1,7 @@
 {
   "name": "unscroll",
   "version": "0.1.0",
-  "license": "none"
+  "devDependencies": {
+    "babel-cli": "^6.23.0"
+  }
 }
