@@ -1,26 +1,30 @@
 from django.db import models
 from django.contrib.auth.models import User
-#from django import requests
-import uuid
 
-# Create your models here.
 
 class MediaType(models.Model):
+    """"""
     name = models.CharField(max_length=128,
-                                  primary_key=True)
+                            primary_key=True)
 
     def __unicode__(self):
-        return '{}'.format(name,)
+        return '{}'.format(self.name,)
+
 
 class ContentType(models.Model):
+    """"""
     name = models.CharField(max_length=32,
-                                  primary_key=True)
+                            primary_key=True)
 
     def __unicode__(self):
-        return '{}'.format(name,)    
-    
+        return '{}'.format(self.name,)
+
+
 class Scroll(models.Model):
-    user = models.ForeignKey(User,null=True, related_name='scrolls')
+    """"""
+    user = models.ForeignKey(User,
+                             null=True,
+                             related_name='scrolls')
     publish_datetime = models.DateTimeField(null=True)
     public = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
@@ -29,9 +33,11 @@ class Scroll(models.Model):
     description = models.TextField(null=True)
 
     def __unicode__(self):
-        return '{}'.format(title,)
-    
+        return '{}'.format(self.title,)
+
+
 class Event(models.Model):
+    """"""
     scroll = models.ForeignKey(Scroll, related_name='events')
     created = models.DateTimeField(auto_now_add=True)
     mediatype = models.CharField(max_length=128,
@@ -45,10 +51,14 @@ class Event(models.Model):
     content_url = models.URLField(null=True)
 
     def __unicode__(self):
-        return '{}'.format(title,)
-    
+        return '{}'.format(self.title,)
+
+
 class Note(models.Model):
-    user = models.ForeignKey(User,null=True, related_name="notes")    
+    """"""
+    user = models.ForeignKey(User,
+                             null=True,
+                             related_name="notes")
     event = models.ForeignKey(Event, null=True, related_name="notes")
     order = models.FloatField(default=0)
     text = models.TextField(null=True)
@@ -57,11 +67,11 @@ class Note(models.Model):
     last_updated = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
-        return '{}'.format(text,)    
+        return '{}'.format(self.text,)
+
 
 class NoteMedia(models.Model):
+    """"""
     note = models.ForeignKey(Note, related_name="media")
-    media_type = models.ForeignKey(MediaType)    
+    media_type = models.ForeignKey(MediaType)
     media_file = models.FileField(upload_to=None)
-
-    

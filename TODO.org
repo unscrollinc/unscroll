@@ -1,0 +1,3 @@
+* TODO Make it possible to log in and log out
+* TODO Know who a person is
+* TODO TKTK
