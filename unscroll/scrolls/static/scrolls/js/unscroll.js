@@ -498,7 +498,10 @@
     function eventToNotebook(event, frame) {
         var text = $('<div></div>',
                      {class:'notebook-span'}).html('Text');
-        var editor = new MediumEditor(text);
+        var editor = new MediumEditor(text, {
+            disableReturn: true,
+            disableExtraSpaces: true
+        });
         console.log(editor);
         return {'event':$('<div></div>', {class:'notebook-event'})
                 .html(event.title)
@@ -782,11 +785,26 @@
     $(document).ready(function() {
 	document.body.addEventListener('touchmove', function(event) {
 	    event.preventDefault();
-	}, false); 
-
+	}, false);
+        var STATE = {
+            showNotebook:false,
+            userLoggedIn:false,
+        }
+        $('#notebook-toggle').on('click', function() {
+            console.log('clicked', STATE);
+            if (STATE['showNotebook']) {
+                $('#notebook').hide();
+            }
+            else {
+                $('#notebook').show();
+            }
+            STATE['showNotebook'] = !STATE['showNotebook'];
+        });        
+        
 	var start = moment('1941-01-01T00:00:00');
 	var end = start.clone().add(1, 'month');
         makeTimeline(start, end);
     });
+
     
 }(jQuery, MediumEditor));
