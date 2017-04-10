@@ -1,7 +1,7 @@
 "use strict";
 (function( $, MediumEditor) {
     const api = 'http://127.0.0.1:8000/api/0/';
-    const gridHeight = 8;
+    const gridHeight = 6;
     const activeHeight = 0.9;
     
     const minute = 60 * 1000;
@@ -17,6 +17,17 @@
         return Math.round(new Date().getTime() + (Math.random() * 1000000));
     }
 
+    var resolutions = {
+        'seconds':0,
+        'minutes':1,
+        'hours':2,
+        'days':3,
+        'months':4,
+        'years':5,
+        'decades':6,
+        'centuries':7
+    }
+    
     var getTimeFrame = function(start, end) {
 	// Expects two instances of Moment, returns a "timeframe"
 	var span = end - start;
@@ -68,11 +79,16 @@
 				  start.clone().startOf('month'),
 				  start.clone().endOf('month'));
 	    },
-	    getOffset: function(datetime) {
-		return datetime.hours() - 1;
+	    getOffset: function(datetime, resolution) {
+                if (resolution === 'days') {
+                    return Math.floor(24 * Math.random());
+                }
+		else {
+                    return datetime.hours() - 1;
+                }
 	    },
 	    getEventWidth: function(columns, len) {
-		return Math.floor(2 + Math.random() * columns/5);
+		return Math.floor(4 + Math.random() * columns/5);
 	    },
 	    getTarget: function(start, pointerInteger, pointerMantissa) {
 		var pointerFocus = start.clone().add(pointerInteger, 'months');
@@ -110,11 +126,11 @@
 				  start.clone().startOf('year'),
 				  start.clone().endOf('year'));
 	    },
-	    getOffset: function(datetime) {
+	    getOffset: function(datetime, resolution) {
 		return datetime.date() - 1;
 	    },
 	    getEventWidth: function(columns, len) {
-		return Math.floor(2 + Math.random() * columns/5);
+		return Math.floor(4);
 	    },
 	    getTarget: function(start, pointerInteger, pointerMantissa) {
 		var pointerFocus = start.clone().add(pointerInteger, 'months');
@@ -151,7 +167,7 @@
 				  moment((10 * Math.floor(year))+'-01-01'),
 				  moment((10 * Math.ceil(year))+'-01-01'));
 	    },
-	    getOffset: function(datetime) {
+	    getOffset: function(datetime, resolution) {
 		return datetime.month();
 	    },
 	    getEventWidth: function(width, len) {
@@ -188,7 +204,7 @@
 				  moment((100 * Math.floor(year))+'-01-01'),
 				  moment((100 * Math.ceil(year))+'-01-01'));
 	    },
-	    getOffset: function(datetime) {
+	    getOffset: function(datetime, resolution) {
 		return datetime.year() - 10 * Math.floor(datetime.year()/10);
 	    },
 	    getEventWidth: function(width, len) {
@@ -223,7 +239,7 @@
 				  moment((1000 * Math.floor(year))+'-01-01'),
 				  moment((1000 * Math.ceil(year))+'-01-01'));
 	    },
-	    getOffset: function(datetime) {
+	    getOffset: function(datetime, resolution) {
 		return datetime.year() - 100 * Math.floor(dt.year()/100);
 	    },
 	    getEventWidth: function(width, len) {
@@ -253,7 +269,7 @@
 				  moment((10 * Math.floor(year))+'-01-01'),
 				  moment((10 * Math.ceil(year))+'-01-01'));
 	    },
-	    getOffset: function(datetime) {
+	    getOffset: function(datetime, resolution) {
 		return datetime.month();
 	    },
 	    getEventWidth: function(width, len) {
@@ -290,7 +306,7 @@
 				  moment((100 * Math.floor(year))+'-01-01'),
 				  moment((100 * Math.ceil(year))+'-01-01'));
 	    },
-	    getOffset: function(datetime) {
+	    getOffset: function(datetime, resolution) {
 		return datetime.year() - 10 * Math.floor(datetime.year()/10);
 	    },
 	    getEventWidth: function(width, len) {
@@ -325,7 +341,7 @@
 				  moment((1000 * Math.floor(year))+'-01-01'),
 				  moment((1000 * Math.ceil(year))+'-01-01'));
 	    },
-	    getOffset: function(datetime) {
+	    getOffset: function(datetime, resolution) {
 		return datetime.year() - 100 * Math.floor(dt.year()/100);
 	    },
 	    getEventWidth: function(width, len) {
@@ -356,17 +372,6 @@
     }
     
     function cacheEvents(start, end) {
-/*	var filtered = events.filter(function(event) {
-	    var m = moment(event.datetime);
-	    return m >= start
-		&& m <= end;
-	});
-	var sorted = sortByKey(filtered, 'datetime');
-	var dated = sorted.map(function(e) {
-	    e.datetime=moment(e.datetime);
-	    return e;})
-	return dated;
-*/
     }
     
     function p(text) {
@@ -489,11 +494,11 @@
 	'video/youtube':function(event) {},
 	'video/vimeo':function(event) {},
 	'audio/soundcloud':function(event) {},
-	'text/wikipedia':function(event) {},		
-	'text/html':function(event) {},	
+	'text/wikipedia':function(event) {}
     }
 
     players['audio/mp3'] = players['audio/mpeg'];
+    players['text/html'] = players['text/html']
 
     function eventToNotebook(event, frame) {
         var text = $('<div></div>',
@@ -515,16 +520,24 @@
 
     function eventToMeta(event, frame, columns) {
         var _dt = moment(event.datetime);
+        
+        function getLink(event) {
+            if (players[event.mediatype]) {
+                return $('<a></a>', {class:'play'})
+	            .html('&#9654;')
+	            .on('click', function(e) {
+		        players[event.mediatype](event);
+	            });
+            }
+            else {
+                return $('<a></a>', {class:'link',
+                                    href:event.content_url}).html('LINK ');
+            }
+        }
 	return {
 	    div: $('<div></div>', {class:'event noselect'}).append(
 		$('<div></div>', {class:'inner'}).append(
-                    
-                    $('<a></a>', {class:'play'})
-	                .html('&#9654;')
-	                .on('click', function(e) {
-		            players[event.mediatype](event);
-	                }),
-                    
+                    getLink(event),
                     $('<span></span>', {class:'asnote'})
                         .html('+').on('click', (function(e) {
                             // $.ajax()
@@ -543,7 +556,7 @@
 		    // Don't move if over event (cut and paste, click, etc);
 		}),
 	    width:frame.getEventWidth(columns, event.title.length),
-	    offset:frame.getOffset(_dt)
+	    offset:frame.getOffset(_dt, event.resolution)
 	};
     }
 
@@ -615,14 +628,19 @@
 	    e.height = Math.ceil(e.div.height()/cellHeight);
 	    
 	    var reservation = makeReservation(grid,
-					      e.offset, 0,
-					      e.width, e.height);
+					      e.offset,
+                                              0,
+					      e.width,
+                                              e.height);
 	    if (reservation.success) {
 		panel.append(e.div.css({
 		    marginLeft:(reservation.x * cellWidth) + 'px',
 		    marginTop:(reservation.y * cellHeight) + 'px'
 		}));
 	    }
+            else {
+                console.log("reservation failed.");
+            }
 	}
 	panel.append(divs);
 	return panel;
@@ -801,7 +819,7 @@
             STATE['showNotebook'] = !STATE['showNotebook'];
         });        
         
-	var start = moment('1941-01-01T00:00:00');
+	var start = moment('1942-01-01T00:00:00');
 	var end = start.clone().add(1, 'month');
         makeTimeline(start, end);
     });

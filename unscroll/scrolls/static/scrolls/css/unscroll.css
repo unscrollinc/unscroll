@@ -1,7 +1,7 @@
 body {
     margin:0 0 0 0;
     padding:0;
-    font-family:Gentium Basic;
+    font-family:Roboto;
 }
 
 #timeline {
@@ -15,46 +15,120 @@ body {
     text-transform:uppercase;
     display:block;
     height:103%;
-    border-right:1px dotted #aaa;
+    border-right:1px solid #ddd;
     position:absolute;
     top:-5%;
     text-align:center;
     z-index:-1;
 }
+
 .column:hover {
 }
+
 .column .head {
-    font-weight:bold;
+    font-weight:normal;
+    color:red;
 }
+
 .column .head:hover {
     background:red;
     color:white;
     cursor:hand;
 }
+
 .period {
     width:10%;
     position:absolute;
-    background:black;
+    background:white;
     margin-left:45%;
+    font-size:20px;
     top:-10%;
-    color:white;
+    color:red;
     padding:.25em;
-}
-.period:hover {
-    background:red;
-    cursor:hand;
+    cursor:hand;    
 }
 
-#statusbar {
+.period:hover {
+    background:red;
+    color:white;
+    cursor:hand;
+}
+div#main-links {
+}
+div#statusbar {
     width:100%;
-    height:5%;
+    height:20px;
+    background:white;
+    padding:15px;
     position:fixed;
     border-bottom:1px solid black;
+    font-size:20px;
 }
 #mousepos {
     font-family:monospace;
 }
 
+#notebook-toggle, #list-toggle, #account-login, #account-create {
+    color:red;
+    cursor:hand;    
+}
+
+/* Form */
+form#search-form {
+    width:25%;
+    background:white;
+    height:20px;
+    display:block;
+    padding:0px;
+    top:15px;
+    position:absolute;
+    left:50%;
+    margin:0px;
+}
+
+#search-form input {
+    margin:0px;
+    padding:0px;
+    font-size:20px;
+    color:#888;
+    border:none;
+}
+
+input#search-input {
+    width:85%;
+    border-bottom:1px solid black;
+    padding-left:15px;
+}
+
+input#search-input:focus, input#search-input:hover {
+    outline:none;
+    color:black;
+}
+
+input#search-submit {
+    padding:0 10px 0 10px;
+    background:white;
+    color:red;
+    cursor:hand;        
+}
+
+input#search-submit:hover {
+}
+
+input#search-submit:focus {
+}
+
+/* Login */
+div#login {
+    width:25%;
+    top:15px;
+    border-left:1px solid black;
+    padding-left:15px;
+    position:absolute;
+    left:75%;    
+}
+
+/* Grid */
 .cell {
     position:absolute;
     border-right:1px solid #eee;
@@ -78,15 +152,16 @@ body {
 .event {
     position:absolute;
     text-align:left;
+    font-size:80%;
 }
 
 .event .inner {
     margin:0.25em;
     padding:0.5em;
     background:white;
-    border:1px solid black;
-    box-shadow:2px 2px 2px #888;
-    border-radius:.5em;
+    border:1px solid #ddd;
+/*    box-shadow:2px 2px 2px #888; 
+    border-radius:.5em; */
     overflow:hidden;
 }
 
@@ -95,7 +170,7 @@ body {
     display:inline-block;
     margin:0 1em 0 0;
     text-transform:uppercase;
-    color:red;
+    color:#888;
 }
 .noselect {
     -webkit-touch-callout: none; /* iOS Safari */
@@ -119,15 +194,16 @@ div#notebook {
     display:block;
 }
 
+/* Notebook */
 div#notebook {
     width:50%;
     height:90%;
     margin:10% 0 0 50%;
     border-left:1px solid black;
-    box-shadow:-4px 2px 6px #aaa;
+/*    box-shadow:-4px 2px 6px #aaa; */
     background:white;
     position:fixed;
-    display:block;
+    display:none;
 }
 div#notebook-menu {
     padding:0 0 0 2.5%;
@@ -140,7 +216,6 @@ div#notebook h2 {
 }
 div#notebook-events {
     width:50%;
-    background:yellow;
     position:absolute;
     height:100%;
     overflow:auto;
@@ -157,10 +232,10 @@ div.medium-editor-element {
 div#notebook-text {
     width:50%;
     margin-left:50%;
-    background:pink;
     position:absolute;
     height:100%;
     overflow:auto;
+    border-left:1px solid #aaa;
 }
 
 div.notebook-span {
@@ -169,14 +244,29 @@ div.notebook-span {
 }
 
 a.play {
-    color:#fcc;
+    color:red;
     cursor:hand;
     display:block;
     float:right;
     display:absolute;
     top:0px;
 }
-
+a.play:hover {
+    background:red;
+    color:white;
+}
+span.asnote {
+    color:red;
+    cursor:hand;
+    display:block;
+    float:right;
+    font-size:20px;
+    display:absolute;
+    color:red;
+}
+.text {
+    color:#444;
+}
 div#player {
     background:red;
     left:100%;
@@ -185,3 +275,4 @@ div#player {
     margin-right:0.5em;
     z-index:10000;
 }
+

@@ -10,38 +10,57 @@ from rest_framework.permissions import IsAdminUser
 from scrolls.models import Scroll, Event, Note, NoteMedia, MediaType, ContentType
 import urllib
 
-# User
+from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
+from rest_auth.registration.views import SocialLoginView
+
+from allauth.socialaccount.providers.twitter.views import TwitterOAuthAdapter
+from rest_auth.views import LoginView
+from rest_auth.social_serializers import TwitterLoginSerializer
+
+
+class FacebookLogin(SocialLoginView):
+    adapter_class = FacebookOAuth2Adapter
+
+
+class TwitterLogin(LoginView):
+    serializer_class = TwitterLoginSerializer
+    adapter_class = TwitterOAuthAdapter
+
+
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
-        fields = ('url', 'username','email', 'is_staff')
+        fields = ('url', 'username', 'email', 'is_staff')
+
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAdminUser]
 
-# MediaType
+
 class MediaTypeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = MediaType
-        fields = ('name',)        
+        fields = ('name',)
+
 
 class MediaTypeViewSet(viewsets.ModelViewSet):
     queryset = MediaType.objects.all()
     serializer_class = MediaTypeSerializer
 
-# ContentType
+
 class ContentTypeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ContentType
         fields = ('name',)
 
+
 class ContentTypeViewSet(viewsets.ModelViewSet):
     queryset = ContentType.objects.all()
     serializer_class = ContentTypeSerializer
 
-# Scroll
+
 class ScrollSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Scroll
@@ -54,31 +73,43 @@ class ScrollSerializer(serializers.HyperlinkedModelSerializer):
         s.save()
         return s
     
+
 class ScrollViewSet(viewsets.ModelViewSet):
     queryset = Scroll.objects.all()
     serializer_class = ScrollSerializer
 
-# Event
 
 class EventFilter(django_filters.rest_framework.FilterSet):
-    start = django_filters.IsoDateTimeFilter(name='datetime', lookup_expr='gte')
-    before = django_filters.IsoDateTimeFilter(name='datetime', lookup_expr='lt')
-    
+    start = django_filters.IsoDateTimeFilter(name='datetime',
+                                             lookup_expr='gte')
+    before = django_filters.IsoDateTimeFilter(name='datetime',
+                                              lookup_expr='lt')
+
     class Meta:
         model = Event
-        fields = ['start','before']
+        fields = ['start', 'before']
 
 
 class EventSerializer(serializers.HyperlinkedModelSerializer):
     scroll_title = serializers.CharField(read_only=True, source="scroll.title")
     scroll_id = serializers.IntegerField(read_only=True, source="scroll.id")
+    
     class Meta:
         model = Event
-        fields = ('url','scroll','scroll_title','scroll_id',
-                  'created', 'title',
-                  'text','mediatype', 'datetime',
-                  'source_url','source_date',
+        fields = ('url',
+                  'scroll',
+                  'scroll_title',
+                  'scroll_id',
+                  'created',
+                  'title',
+                  'text',
+                  'mediatype',
+                  'resolution',
+                  'datetime',
+                  'source_url',
+                  'source_date',
                   'content_url')
+
 
 class EventViewSet(viewsets.ModelViewSet):
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
@@ -91,12 +122,18 @@ class EventViewSet(viewsets.ModelViewSet):
 class NoteSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Note
-        fields = ('id', 'order', 'created', 'last_updated',
-                  'text', 'display_type', 'scroll')
+        fields = ('id',
+                  'order',
+                  'created',
+                  'last_updated',
+                  'text',
+                  'display_type')
+
 
 class NoteViewSet(viewsets.ModelViewSet):
     queryset = Note.objects.all()
     serializer_class = NoteSerializer
+
 
 # Routers provide a way of automatically determining the URL conf.
 router = routers.DefaultRouter()
@@ -115,8 +152,11 @@ urlpatterns = [
     url('^schema/$', schema_view),
     url(r'^api/0/', include(router.urls)),
     url(r'^rest-auth/', include('rest_auth.urls')),
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
-    
+    url(r'^api-auth/', include('rest_framework.urls',
+                               namespace='rest_framework')),
+    url(r'^rest-auth/registration/', include('rest_auth.registration.urls')),
+    url(r'^rest-auth/twitter/$', TwitterLogin.as_view(), name='twitter_login'),
+    url(r'^rest-auth/facebook/$', FacebookLogin.as_view(), name='fb_login'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 urlpatterns += [url(r'^silk/', include('silk.urls', namespace='silk'))]
