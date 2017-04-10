@@ -7,17 +7,17 @@ body {
 #timeline {
     width:300%;
     position:fixed;
-    margin:10% 0 0 -100%;
+    margin:125px 0 0 -100%;
     -webkit-overflow-scrolling: touch;
 }
 
 .column {
     text-transform:uppercase;
     display:block;
-    height:103%;
+    height:100%;
     border-right:1px solid #ddd;
     position:absolute;
-    top:-5%;
+    top:-25px;
     text-align:center;
     z-index:-1;
 }
@@ -39,13 +39,13 @@ body {
 .period {
     width:10%;
     position:absolute;
-    background:white;
     margin-left:45%;
     font-size:20px;
-    top:-10%;
+    top:-65px;
     color:red;
     padding:.25em;
-    cursor:hand;    
+    cursor:hand;
+    text-transform:lowercase;
 }
 
 .period:hover {
@@ -75,18 +75,19 @@ div#statusbar {
 
 /* Form */
 form#search-form {
-    width:25%;
+    width:33%;
     background:white;
     height:20px;
     display:block;
     padding:0px;
     top:15px;
     position:absolute;
-    left:50%;
+    left:35%;
     margin:0px;
 }
 
 #search-form input {
+    width:80%;
     margin:0px;
     padding:0px;
     font-size:20px;
@@ -95,7 +96,6 @@ form#search-form {
 }
 
 input#search-input {
-    width:85%;
     border-bottom:1px solid black;
     padding-left:15px;
 }
@@ -106,6 +106,7 @@ input#search-input:focus, input#search-input:hover {
 }
 
 input#search-submit {
+    display:none;
     padding:0 10px 0 10px;
     background:white;
     color:red;
@@ -172,6 +173,15 @@ div#login {
     text-transform:uppercase;
     color:#888;
 }
+
+.event .inner .scroll-title {
+    color:#444;
+    font-size:80%;
+    float:right;
+    font-weight:bold;
+    font-variant:Italic;
+}
+
 .noselect {
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Chrome/Safari/Opera */
@@ -185,10 +195,10 @@ div#login {
 
 div#notebook {
     width:50%;
-    height:90%;
-    margin:10% 0 0 50%;
+    height:100%;
+    top:0px;
+    margin:0 0 0 0;
     border-left:1px solid black;
-    box-shadow:-4px 2px 6px #aaa;
     background:white;
     position:fixed;
     display:block;

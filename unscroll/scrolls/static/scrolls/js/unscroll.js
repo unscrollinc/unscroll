@@ -2,7 +2,7 @@
 (function( $, MediumEditor) {
     const api = 'http://127.0.0.1:8000/api/0/';
     const gridHeight = 6;
-    const activeHeight = 0.9;
+    const activeHeight = 0.95;
     
     const minute = 60 * 1000;
     const hour = minute * 60;
@@ -509,7 +509,7 @@
         });
         console.log(editor);
         return {'event':$('<div></div>', {class:'notebook-event'})
-                .html(event.title)
+                .html('<a href="'+event.content_url+'">' + event.title + '</a>')
                 .append(text, editor)
                 .on('click', function(e) {
                 }),
@@ -551,7 +551,14 @@
 			.html(_dt.format('D MMM, \'YY')),
                     
 		    $('<span></span>', {class:'text'})
-			.html(event.title + ' ')))
+			.html(event.title + ' '),
+                
+		    $('<div></div>', {class:'scroll-title'})
+		        .html(event.scroll_title)
+                        .on('click', function(e) {
+                            console.log('Load just scroll, propagating search bar');
+                            $('#search-input').val('scroll:\"'+event.scroll_title+'"');
+                        })))
 		.mousemove(function(event) {
 		    // Don't move if over event (cut and paste, click, etc);
 		}),
