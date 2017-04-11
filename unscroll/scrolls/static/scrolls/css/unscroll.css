@@ -37,9 +37,9 @@ body {
 }
 
 .period {
-    width:10%;
+    width:25%;
     position:absolute;
-    margin-left:45%;
+    margin-left:37.5%;
     font-size:20px;
     top:-65px;
     color:red;
@@ -66,6 +66,10 @@ div#statusbar {
 }
 #mousepos {
     font-family:monospace;
+    font-size:18px;
+    background:black;
+    color:white;
+    width:100%;
 }
 
 #notebook-toggle, #list-toggle, #account-login, #account-create {
@@ -196,21 +200,8 @@ div#login {
 div#notebook {
     width:50%;
     height:100%;
-    top:0px;
-    margin:0 0 0 0;
+    margin:51px 0 0 50%;
     border-left:1px solid black;
-    background:white;
-    position:fixed;
-    display:block;
-}
-
-/* Notebook */
-div#notebook {
-    width:50%;
-    height:90%;
-    margin:10% 0 0 50%;
-    border-left:1px solid black;
-/*    box-shadow:-4px 2px 6px #aaa; */
     background:white;
     position:fixed;
     display:none;
@@ -221,9 +212,10 @@ div#notebook-menu {
 }
 div#notebook h2 {
     padding:0 0 0 2.5%;
-    color:#400;
-    font-size:15pt;
+    font-size:20px;
+    font-weight:normal;
 }
+
 div#notebook-events {
     width:50%;
     position:absolute;
