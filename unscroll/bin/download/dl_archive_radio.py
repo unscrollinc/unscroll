@@ -2,6 +2,7 @@ from internetarchive import search_items
 from internetarchive import get_item
 from datetime import datetime, timedelta
 from dateparser import parse
+import pprint
 import json
 import re
 import urllib
@@ -16,21 +17,23 @@ SEARCH = "collection:wwIIarchive-audio"
 
 # SOMETHING IS UP WHERE THIS PUTS DATES OF JUST YEARS AS JANUARY 3
 
+
 class Collection:
     id = None
     image_url = None
     source = None
     description = None
-    
-class File: 
+
+
+class File:
     collection = None
     datetime = None
     url = None
     title = None
-    datetime = None 
+    datetime = None
     mediatype = None
     sourceDate = None
-   
+
     def dicts(self):
         as_dict = self.__dict__
         as_dict['datetime'] = self.datetime.isoformat()
@@ -38,12 +41,10 @@ class File:
 
 
 def fixup_dates(title, datetime):
-
-    result = {'datetime':datetime, 'title':title}
-    
+    result = {'datetime': datetime, 'title': title}
     date_re = "\d{2,4}\W\d{1,2}(\W\d{1,2})?"
     date_matcher = re.compile(date_re)
-    date_matcher_post_space = re.compile(date_re + "\s*")    
+    date_matcher_post_space = re.compile(date_re + "\s*")
     m = re.match(date_matcher, title)
 
     if m is not None:
@@ -51,7 +52,7 @@ def fixup_dates(title, datetime):
         dparse = parse(d, settings={'PREFER_DAY_OF_MONTH': 'first'})
         if dparse is not None:
             dfixed = datetime.combine(dparse, datetime.min.time())
-            result['datetime']=dfixed
+            result['datetime'] = dfixed
             m = re.sub(date_matcher_post_space, '', title)
             if m is not None:
                 result['title']=m
@@ -109,7 +110,7 @@ def main(client, scroll_id):
         event['scroll'] = scroll_id
         print(event)
         try:
-            client2.action(schema, ['events', 'create'],
+            client2.action(schema, ['api', '0', 'events', 'create'],
                            params=event)
         except Exception as e:
             print(e)
@@ -118,8 +119,7 @@ def main(client, scroll_id):
 
 #   create(scroll, title, text, datetime, image, [mediatype], [source_url], [source_date], [content_url])
 #   print('var oldRadioNews =', json.dumps(d, sort_keys=True, indent=4), ";\n")
-    
-    
+
 if __name__ == "__main__":
     #login
     client = Client()
@@ -132,8 +132,9 @@ if __name__ == "__main__":
     transport = [transports.HTTPTransport(credentials=credentials)]
     client2 = Client(transports=transport)
     schema = client2.get('http://127.0.0.1:8000/schema')
-    new_scroll = client2.action(schema, ['scrolls', 'create'], params={"title": "WWII Radio News"})
+    new_scroll = client2.action(schema, ['api', '0', 'scrolls', 'create'],
+                                params={"title": "WWII Radio News"})
     scroll_d = dict(new_scroll)
-    scroll_url = "http://127.0.0.1:8000/scrolls/{}/".format(scroll_d['id'])
+    scroll_url = "http://127.0.0.1:8000/api/0/scrolls/{}/".format(scroll_d['id'])
     print(scroll_url)
     main(client2, scroll_url)

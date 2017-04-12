@@ -30,11 +30,11 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'silk',
     'rest_framework',
     'rest_framework.authtoken',
     'rest_auth',
-    'django.contrib.sites',    
     'allauth',
     'allauth.account',
     'rest_auth.registration',
@@ -42,12 +42,10 @@ INSTALLED_APPS = (
     'allauth.socialaccount.providers.facebook',
     'allauth.socialaccount.providers.twitter',
     'crispy_forms',
-
 )
 SITE_ID = 1
 REST_SESSION_LOGIN = True
 REST_FRAMEWORK = {
-
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 30,
@@ -59,6 +57,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication'
     ],
 }
+
 
 MIDDLEWARE_CLASSES = (
     'silk.middleware.SilkyMiddleware',
@@ -84,7 +83,8 @@ TEMPLATES = [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+                'django.contrib.messages.context_processors.messages', 
+                'django.template.context_processors.request',
             ],
         },
     },

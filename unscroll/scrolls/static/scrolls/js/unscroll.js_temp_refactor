@@ -208,7 +208,7 @@
 		return datetime.year() - 10 * Math.floor(datetime.year()/10);
 	    },
 	    getEventWidth: function(width, len) {
-		return Math.floor(Math.random() * width/10);
+		return 1;
 	    },	    	    
 	    getTarget: function(start, pointerInteger, pointerMantissa) {
 		var pointerFocus = start.clone().add(10 * pointerInteger, 'years');
@@ -575,43 +575,47 @@
             + env.frame.add(env.end, panel_no).format();
         return url;
     }
-    
-    function loadPanel(env, panel_no, f) {
-        var url = makeUrl(env, panel_no);
+
+    function loadEventsIntoPanel(env) {
         $.ajax({
-            url:url,
+            url:env.url,
             context:env,
             failure:function(e) {
                 console.log('Failure: ' + e);
             },
             success:function(events) {
-                var panel = makePanel(panel_no,
-                                      this.frame.add(this.start, panel_no),
-                                      this.frame.add(this.end, panel_no),
-                                      this,
-                                      events);
-                f(panel);
+                addEvents(env, events);
             }                
         });        
     }
-    
-    function makePanel(count, start, end, env, events) {
-	var buffer = $('#buffer');    
+
+    function initPanel(env, panel_no) {
+
+	var panel = $('<div></div>', {'id':panel_no,
+				      'class':'panel'})
+	    .css({marginLeft:p(100 * (panel_no + 1))});
+        
+        var count = panel_no;
+        var url = makeUrl(env, panel_no);
+        var start = env.frame.add(env.start, panel_no);
+        var end = env.frame.add(env.end, panel_no);
+
 	var dur = end - start;
 	// Make a panel, 1 screen wide, that will contain a duration.
-	var panel = $('<div></div>', {'id':count,
-				      'class':'panel'})
-	    .css({marginLeft:p(100 * (count + 1))});
+
+        console.log('XXXXXXXX',count);
+        
+
 
 	var divs = [];
 	var timeFrame = getTimeFrame(start, end);
-
 	var frame = timeFrames[timeFrame];
 	var columns = frame.getColumns(count, start, end);
 	var grid = makeGrid(columns);
 	var cellWidth = env.window.width/columns;
 	var cellHeight = env.window.height/gridHeight * activeHeight;
-	
+
+        
 	// Add the time period
 	var period = frame.getPeriod(start);
 	divs.push(period);
@@ -623,34 +627,55 @@
 	    var columnData = frame.columnStepper(i, start);
 	    divs.push(makeColumn(i, columnWidth, columnData));
 	}
+	panel.append(divs);
+        return $.extend(env, {url:url,
+                              count:count,
+                              start:start,
+                              end:end,
+                              dur:dur,
+                              grid:grid,
+                              timeFrame:timeFrame,
+                              frame:frame,
+                              columns:columns,
+                              cellWidth:cellWidth,
+                              cellHeight:cellHeight,
+                              period:period,
+                              columnWidth:columnWidth,
+                              panel:panel
+                             })
+
+    }
+    
+    function addEvents(env, events) {
+        console.log(env.panel, events);
+	var buffer = $('#buffer');    
 	// Add the events
 	var eventMetas = [];
 	for (var i in events.results) {
-	    eventMetas.push(eventToMeta(events.results[i], frame, columns));
+	    eventMetas.push(eventToMeta(events.results[i], env.frame, env.columns));
 	}
 	for (var i in eventMetas) {
 	    var e = eventMetas[i];
-	    e.div.css({width:e.width * columnWidth});
+	    e.div.css({width:e.width * env.columnWidth});
 	    buffer.append(e.div);
-	    e.height = Math.ceil(e.div.height()/cellHeight);
+	    e.height = Math.ceil(e.div.height()/env.cellHeight);
 	    
-	    var reservation = makeReservation(grid,
+	    var reservation = makeReservation(env.grid,
 					      e.offset,
                                               0,
 					      e.width,
                                               e.height);
 	    if (reservation.success) {
-		panel.append(e.div.css({
-		    marginLeft:(reservation.x * cellWidth) + 'px',
-		    marginTop:(reservation.y * cellHeight) + 'px'
+		env.panel.append(e.div.css({
+		    marginLeft:(reservation.x * env.cellWidth) + 'px',
+		    marginTop:(reservation.y * env.cellHeight) + 'px'
 		}));
 	    }
             else {
-                console.log("reservation failed.");
+//              console.log("reservation failed.");
             }
 	}
-	panel.append(divs);
-	return panel;
+        env.panel.css({border:'5px solid red'});
     }
 
     function makeTimeline(start, end) {
@@ -662,7 +687,7 @@
         $('#timeline').remove();
         $('body').append($('<div></div>', {id:'timeline'}));
 	var timeline = $('#timeline');
-                
+        
 	// A highly mutable array. This is where we are in the number
 	// line of time.
 
@@ -685,7 +710,9 @@
 	// Let's get this kicked off.
 	var els = [];
 	for (var i in panels) {
-            loadPanel(env, panels[i], function(x) {$('#timeline').append(x)});
+            var env_extended = initPanel(env, panels[i]);
+            $('#timeline').append(env_extended.panel);
+//            loadEventsIntoPanel(env_extended);
         }
 	
 	// Whatever
@@ -789,7 +816,8 @@
 		panels.pop();
 		var prev = panels[0] - 1;
 		panels.unshift(prev);
-                loadPanel(env, prev, function(x) {$('#timeline').prepend(x);});
+                var env_extended = initPanel(env, prev);
+                $('#timeline').append(env_extended.panel);
 	    }
 	    
 	    // Are we heading right, into the future?
@@ -798,7 +826,8 @@
 		panels.shift();
 		var next = panels[1] + 1;
 		panels.push(next);
-                loadPanel(env, next, function(x) {$('#timeline').append(x);});
+                var env_extended = initPanel(env, next);
+                $('#timeline').append(env_extended.panel);                
 	    }
 	});
     }
