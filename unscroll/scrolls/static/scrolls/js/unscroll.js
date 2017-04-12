@@ -659,14 +659,10 @@
 		    ' to ',
 		    end.format());
 	// Reboot the timeline
+        $('#timeline').remove();
+        $('body').append($('<div></div>', {id:'timeline'}));
 	var timeline = $('#timeline');
-
-        //remove children
-	timeline.children().remove();
-
-        //unregister handlers
-        timeline.off();
-        
+                
 	// A highly mutable array. This is where we are in the number
 	// line of time.
 
