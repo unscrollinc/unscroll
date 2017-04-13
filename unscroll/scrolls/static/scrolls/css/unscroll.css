@@ -70,6 +70,7 @@ div#statusbar {
     background:black;
     color:white;
     width:100%;
+    display:none;
 }
 
 #notebook-toggle, #list-toggle, #account-login, #account-create {
@@ -204,7 +205,8 @@ div#notebook {
     border-left:1px solid black;
     background:white;
     position:fixed;
-    display:none;
+    display:block;
+    z-index:100;
 }
 div#notebook-menu {
     padding:0 0 0 2.5%;
