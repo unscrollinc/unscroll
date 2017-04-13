@@ -103,6 +103,7 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
                   'created',
                   'title',
                   'text',
+                  'ranking',
                   'mediatype',
                   'resolution',
                   'datetime',

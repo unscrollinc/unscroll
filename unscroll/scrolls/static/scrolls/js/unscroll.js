@@ -535,7 +535,7 @@
             }
         }
 	return {
-	    div: $('<div></div>', {class:'event noselect'}).append(
+	    div: $('<div></div>', {class:'event'}).append(
 		$('<div></div>', {class:'inner'}).append(
                     getLink(event),
                     $('<span></span>', {class:'asnote'})
@@ -551,7 +551,7 @@
 			.html(_dt.format('D MMM, \'YY')),
                     
 		    $('<span></span>', {class:'text'})
-			.html(event.title + ' '),
+			.html(event.ranking + ' ' + event.title + ' '),
                 
 		    $('<div></div>', {class:'scroll-title'})
 		        .html(event.scroll_title)
@@ -585,18 +585,18 @@
                 console.log('Failure: ' + e);
             },
             success:function(events) {
-                var panel = makePanel(panel_no,
+                var panel_div = makePanel(panel_no,
                                       this.frame.add(this.start, panel_no),
                                       this.frame.add(this.end, panel_no),
                                       this,
                                       events);
-                f(panel);
+                f(panel_no, panel_div);
             }                
         });        
     }
     
     function makePanel(count, start, end, env, events) {
-	var buffer = $('#buffer');    
+	var buffer = $('#buffer');
 	var dur = end - start;
 	// Make a panel, 1 screen wide, that will contain a duration.
 	var panel = $('<div></div>', {'id':count,
@@ -608,7 +608,6 @@
 
 	var frame = timeFrames[timeFrame];
 	var columns = frame.getColumns(count, start, end);
-	var grid = makeGrid(columns);
 	var cellWidth = env.window.width/columns;
 	var cellHeight = env.window.height/gridHeight * activeHeight;
 	
@@ -628,6 +627,9 @@
 	for (var i in events.results) {
 	    eventMetas.push(eventToMeta(events.results[i], frame, columns));
 	}
+        
+        var grid = makeGrid(columns);
+
 	for (var i in eventMetas) {
 	    var e = eventMetas[i];
 	    e.div.css({width:e.width * columnWidth});
@@ -646,7 +648,7 @@
 		}));
 	    }
             else {
-                console.log("reservation failed.");
+                // console.log("reservation failed");
             }
 	}
 	panel.append(divs);
@@ -662,6 +664,10 @@
         $('#timeline').remove();
         $('body').append($('<div></div>', {id:'timeline'}));
 	var timeline = $('#timeline');
+        timeline.append(
+            $('<div></div>', {id:'-1'}),
+            $('<div></div>', {id:'0'}),
+            $('<div></div>', {id:'1'}));
                 
 	// A highly mutable array. This is where we are in the number
 	// line of time.
@@ -684,8 +690,14 @@
 	
 	// Let's get this kicked off.
 	var els = [];
-	for (var i in panels) {
-            loadPanel(env, panels[i], function(x) {$('#timeline').append(x)});
+        $('#timeline').append()
+	for (var i = 0; i<panels.length;i++) {
+            var pos = panels[i];
+            loadPanel(env, pos,
+                      function(panel_no, panel_div) {
+                          $('#'+panel_no).replaceWith(panel_div);
+                      }
+                     );
         }
 	
 	// Whatever
@@ -709,7 +721,7 @@
 	var offset = 0;
 	var lastOffset = 0;
 	var mouseTime = 0;
-	
+        var selectable = true;	
 	var pos = {}
 	
 	$('#mousepos').html(statusBar(pos));
@@ -720,24 +732,36 @@
 	var touching = false;
 	
 	timeline.on('mousedown touchstart', function(e) {
-	    touching = true;
+            if ($(e.target).prop("tagName") !== 'SPAN') {
+	        touching = true;
+                $('div').addClass('noselect');
+            }
 	});
-	
+
 	timeline.on('mouseup touchend', function(e) {
 	    touching = false;
+            $('div').removeClass('noselect');
 	});
+        
 	timeline.on('touchend', function(e) {
 	    lastDragX = null;
 	    lastOffset = offset;	    
 	    timeline.css({cursor:'initial'});
 	});
+        
 	timeline.on('mousemove touchmove', function(e){
-	    pageX = e.pageX ? e.pageX : e.touches[0].pageX ;
-	    pageY = e.pageY ? e.pageY : e.touches[0].pageY ;
-
+            if (e.touches !== undefined) {
+                console.log(e.touches);
+	        pageX = e.touches[0].pageX ;
+	        pageY = e.touches[0].pageY ;
+            }
+            else {
+	        pageX = e.pageX;
+	        pageY = e.pageY;
+            }
+            
 	    if (touching)  {
 		// get percentage of drag
-		//		dragX = 100 * (pageX - lastDragX)/env.window.width;
 		if (lastDragX!==null) {
 		    dragX = 100 * (pageX - lastDragX)/env.window.width;				    
 		}
@@ -785,20 +809,30 @@
 
 	    // Are we heading left, into the past?
 	    if (panels[0] > pos.timelineOffset) {
-		timeline.children().last().remove();	    	    
 		panels.pop();
 		var prev = panels[0] - 1;
 		panels.unshift(prev);
-                loadPanel(env, prev, function(x) {$('#timeline').prepend(x);});
-	    }
-	    
+                
+                timeline.children().last().remove()
+                timeline.prepend($('<div></div>', {id:prev}));
+
+                loadPanel(env, prev, function(panel_no, panel_div) {
+                    $('#'+panel_no).replaceWith(panel_div);
+                });
+            }
+	                  
 	    // Are we heading right, into the future?
 	    else if (panels[2] < pos.timelineOffset) {
-		timeline.children().first().remove();
 		panels.shift();
 		var next = panels[1] + 1;
 		panels.push(next);
-                loadPanel(env, next, function(x) {$('#timeline').append(x);});
+                
+                timeline.children().first().remove();                
+                timeline.append($('<div></div>', {id:next}));
+
+                loadPanel(env, next, function(panel_no, panel_div) {
+                    $('#'+panel_no).replaceWith(panel_div);                    
+                });
 	    }
 	});
     }

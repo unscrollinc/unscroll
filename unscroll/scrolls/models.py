@@ -50,7 +50,7 @@ class Event(models.Model):
     content_url = models.URLField(null=True)
 
     class Meta:
-        ordering = ['-ranking']
+        ordering = ['-ranking','datetime']
 
     def __unicode__(self):
         return '{}'.format(self.title,)
