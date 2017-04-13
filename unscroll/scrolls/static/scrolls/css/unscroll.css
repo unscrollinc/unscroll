@@ -27,11 +27,11 @@ body {
 
 .column .head {
     font-weight:normal;
-    color:red;
+    color:blue;
 }
 
 .column .head:hover {
-    background:red;
+    background:blue;
     color:white;
     cursor:hand;
 }
@@ -42,14 +42,14 @@ body {
     margin-left:37.5%;
     font-size:20px;
     top:-65px;
-    color:red;
+    color:blue;
     padding:.25em;
     cursor:hand;
     text-transform:lowercase;
 }
 
 .period:hover {
-    background:red;
+    background:blue;
     color:white;
     cursor:hand;
 }
@@ -74,7 +74,7 @@ div#statusbar {
 }
 
 #notebook-toggle, #list-toggle, #account-login, #account-create {
-    color:red;
+    color:blue;
     cursor:hand;    
 }
 
@@ -114,7 +114,7 @@ input#search-submit {
     display:none;
     padding:0 10px 0 10px;
     background:white;
-    color:red;
+    color:blue;
     cursor:hand;        
 }
 
@@ -248,7 +248,7 @@ div.notebook-span {
 }
 
 a.play {
-    color:red;
+    color:blue;
     cursor:hand;
     display:block;
     float:right;
@@ -256,23 +256,23 @@ a.play {
     top:0px;
 }
 a.play:hover {
-    background:red;
+    background:blue;
     color:white;
 }
 span.asnote {
-    color:red;
+    color:blue;
     cursor:hand;
     display:block;
     float:right;
     font-size:20px;
     display:absolute;
-    color:red;
+    color:blue;
 }
 .text {
     color:#444;
 }
 div#player {
-    background:red;
+    background:blue;
     left:100%;
     float:right;
     margin-top:20%;
