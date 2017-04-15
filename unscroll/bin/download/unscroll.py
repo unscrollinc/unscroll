@@ -22,7 +22,7 @@ class UnscrollClient():
     def login(self):
         _client = Client()
         schema = _client.get(self.schema_url)
-        key = _client.action(schema, ['auth', 'login', 'create'],
+        key = _client.action(schema, ['rest-auth', 'login', 'create'],
                              params={"username": self.username,
                                      "password": self.password})
         credentials = {self.site: 'Token {}'.format(key['key'],)}

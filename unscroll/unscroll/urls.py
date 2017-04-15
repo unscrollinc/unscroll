@@ -2,15 +2,15 @@ from django.conf.urls import url, include
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.conf.urls.static import static
-from rest_framework_swagger.views import get_swagger_view
+#from rest_framework_swagger.views import get_swagger_view
 import django_filters
 from rest_framework import generics, serializers, viewsets, routers, response
 from rest_framework.permissions import IsAdminUser
 from scrolls.models import Scroll, Event, Note, NoteMedia, MediaType, ContentType
 import urllib
-#from rest_framework.schemas import get_schema_view
+from rest_framework.schemas import get_schema_view
 
-schema_view = get_swagger_view(title='Unscroll API')
+
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -131,15 +131,18 @@ router.register(r'scrolls', ScrollViewSet)
 router.register(r'events', EventViewSet)
 router.register(r'notes', NoteViewSet)
 
-#schema_view = get_schema_view(title="Unscroll API")
+#schema_view = get_swagger_view(title='Unscroll API')
+schema_view = get_schema_view(title="Unscroll API")
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     url('^schema/$', schema_view),
     url(r'^', include(router.urls)),
-    url(r'^auth/', include('rest_auth.urls')),
-    url(r'^auth/registration/', include('rest_auth.registration.urls')),
+    url(r'^rest-auth/', include('rest_auth.urls')),
+    url(r'^api-auth/', include('rest_framework.urls',
+                               namespace='rest_framework')),
+    url(r'^rest-auth/registration/', include('rest_auth.registration.urls')),
     url(r'^accounts/', include('django.contrib.auth.urls')),
     url(r'^silk/', include('silk.urls', namespace='silk')),    
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) 
