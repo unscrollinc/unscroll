@@ -4,6 +4,38 @@ body {
     font-family:Roboto;
 }
 
+div#login-box {
+    z-index:100;
+    top:50px;
+    left:50%;
+    width:50%;
+    height:50%;
+    position:absolute;
+    padding:1em;
+    border:1px solid black;
+    background:white;
+    display:none;
+}
+div#login-box input {
+    display:block;
+    height:60px;
+    margin-bottom:20px;
+    padding:.25em;
+    border:1px solid black;
+    font-size:20px;
+}
+div#login-box input#login-submit {
+    border:none;
+    outline:none;
+    background:white;
+    color:blue;
+}
+
+div#login-box input#login-submit:hover {
+    background:blue;
+    color:white;
+}
+
 #timeline {
     width:300%;
     position:fixed;
@@ -225,16 +257,28 @@ div#notebook-events {
     overflow:auto;
 }
 div.notebook-event {
-    border:1px solid black;
-    font-size:70%;
-    padding:0.25em;
-    background:#eef;
+    background:white;
+    padding:0em;
+    color:white;
+}
+div.notebook-event-body {
+    color:black;
+    font-size:90%;
+    padding:0.5em;
+}
+
+a.notebook-title {
+    text-decoration:none;
 }
 div.medium-editor-element {
-    border:1px solid black;
+    border-top:1px dotted black;
+    border-bottom:1px solid black;
+    color:black;
+    outline:none;
 }
 div#notebook-text {
     width:50%;
+    font-size:75%;
     margin-left:50%;
     position:absolute;
     height:100%;
@@ -257,16 +301,16 @@ a.play {
 }
 a.play:hover {
     background:blue;
-    color:white;
 }
 span.asnote {
-    color:blue;
+    background:blue;
     cursor:hand;
     display:block;
+    width:1em;height:1em;
+    text-align:center;
     float:right;
     font-size:20px;
     display:absolute;
-    color:blue;
 }
 .text {
     color:#444;

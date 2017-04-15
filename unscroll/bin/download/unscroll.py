@@ -22,17 +22,20 @@ class UnscrollClient():
     def login(self):
         _client = Client()
         schema = _client.get(self.schema_url)
-        key = _client.action(schema, ['rest-auth', 'login', 'create'],
+        key = _client.action(schema, ['auth', 'login', 'create'],
                              params={"username": self.username,
                                      "password": self.password})
         credentials = {self.site: 'Token {}'.format(key['key'],)}
+        print(credentials)        
         transport = [transports.HTTPTransport(credentials=credentials)]
         self.client = Client(transports=transport)
         self.schema = self.client.get(self.schema_url)
+        
 
     def create_scroll(self, title):
+
         new_scroll = self.client.action(self.schema,
-                                        ['api', '0', 'scrolls', 'create'],
+                                        ['scrolls', 'create'],
                                         params={"title": title})
         scroll_d = dict(new_scroll)
         scroll_url = "{}/api/0/scrolls/{}/".format(self.site, scroll_d['id'])
@@ -40,8 +43,7 @@ class UnscrollClient():
 
     def create_event(self, scroll_url, event):
         event['scroll'] = scroll_url
-        done = self.client.action(self.schema, ['api', '0',
-                                                'events', 'create'],
+        done = self.client.action(self.schema, ['events', 'create'],
                                   params=event)
         return done
 

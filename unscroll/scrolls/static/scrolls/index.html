@@ -20,7 +20,11 @@
       <div id="1"></div>      
     </div>
     <div id="statusbar">
-      <span id="logo">unscroll</span> // <span id="notebook-toggle">notebook</span> // <span id="list-toggle">view</span>
+      <span id="logo">unscroll</span>
+      //
+      <span id="notebook-toggle">notebook</span>
+      //
+      <span id="list-toggle">view</span>
       <form id="search-form">
         <input id="search-input" name="search" value="search">
         <input id="search-submit" type="submit" value="go">
@@ -30,17 +34,32 @@
         <span id="account-create">create account</span>
       </div>
       <div id="mousepos"></div>
-      </div>
+    </div>
     <div id="notebook">
       <h2>Notebook title</h2>
-      <div id="notebook-menu">[insert] [save]</div>
+      <div id="notebook-menu">
+        <span id="notebook-insert">insert</span>
+        // <span id="notebook-save-status">save</span>
+      </div>
       <div id="notebook-events"></div>
       <div id="notebook-text"></div>      
     </div>    
 
     <div id="player"></div>
     <div id="buffer"></div>
-    
+    <div id="login-box">
+      <form>
+        <div>
+          <span class="ruby">your email or username</span>
+          <input id="login-handle" type="text" name="email" value="admin">
+        </div>
+        <div>
+          <span class="ruby">your password</span>
+          <input id="login-password" type="password" name="password" value="password">
+        </div>
+        <input id="login-submit" type="submit" value="Log in">
+      </form>
+    </div>
 </script>
 </body>
 </html>

@@ -2,7 +2,6 @@ from internetarchive import search_items
 from internetarchive import get_item
 from datetime import datetime, timedelta
 from dateparser import parse
-import pprint
 import json
 import re
 import urllib
@@ -72,15 +71,14 @@ def search(search_term):
             item_datetime = None
             if 'date' in item.metadata:
                 item_date = parse(item.metadata['date'])
-                item_datetime = datetime.combine(item_date,
-                                                 datetime.min.time())
+                item_datetime = datetime.combine(item_date, datetime.min.time())
             
                 c = Collection()
                 c.id = item.identifier
                 c.source = "{}{}".format(DETAILS_URL,
                                          item.identifier)
-                c.description = None
-
+                c.description = None # item.metadata['description']
+            
                 image_ref = [image for image in item.files if
                              (image["format"] == "GIF" or
                               image["format"] == "PNG")][0]
@@ -106,15 +104,14 @@ def search(search_term):
                         dictset.append(f.dicts())
     return dictset
 
-
 def main(client, scroll_id):
     d = search(SEARCH)
     for event in d:
         event['scroll'] = scroll_id
         print(event)
         try:
-            client.action(schema, ['api', '0', 'events', 'create'],
-                           params=event)
+            client.action(schema, ['events', 'create'],
+                          params=event)
         except Exception as e:
             print(e)
         finally:
@@ -124,18 +121,18 @@ def main(client, scroll_id):
 #   [source_url], [source_date], [content_url])
 #   print('var oldRadioNews =', json.dumps(d, sort_keys=True, indent=4), ";\n")
 
-
 if __name__ == "__main__":
-    auth = BasicAuthentication(username='admin',
-                               password='password')
+    auth = BasicAuthentication(
+        username='admin',
+        password='password'
+    )
     client = Client(auth=auth)
     print(client)
     schema = client.get('http://127.0.0.1:8000/schema')
-    print(schema)    
-    new_scroll = client.action(schema, ['scrolls', 'create'],
+    print(schema)
+    new_scroll = client.action(schema, ['api', '0', 'scrolls', 'create'],
                                params={"title": "WWII Radio News"})
     scroll_d = dict(new_scroll)
-    scroll_url = "http://127.0.0.1:8000/api/0/scrolls/{}/"\
-                 .format(scroll_d['id'])
+    scroll_url = "http://127.0.0.1:8000/scrolls/{}/".format(scroll_d['id'])
     print(scroll_url)
     main(client, scroll_url)

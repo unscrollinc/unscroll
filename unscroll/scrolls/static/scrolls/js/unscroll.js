@@ -1,6 +1,93 @@
 "use strict";
 (function( $, MediumEditor) {
-    const api = 'http://127.0.0.1:8000/api/0/';
+
+    function newUser() {
+        return {username:undefined,
+                email:undefined,
+                auth_token:undefined}
+    }
+    var USER = newUser();
+        
+    const API = 'http://127.0.0.1:8000';
+
+    var endpoints = {
+        'userLogin': function(data) {
+            $.post({
+                url:API + '/auth/login/',
+                data:data,
+                context:data,
+                failure:function(e) {
+                    console.log('Failure: ' + e);
+                },
+                success:function(o) {
+                    USER.auth_token = o.auth_token;
+                    USER.username = this.username;
+                    $('#account-login').text('you are ' + USER.username);
+                    $('#account-create')
+                        .text('logout')
+                        .on('click',
+                            function(e) {
+                                endpoints.userLogout();            
+                            });
+                    console.log(o, USER);
+                    $('#login-box').toggle();                    
+                    endpoints.userProfile();
+                }
+            });
+        },
+        'userLogout': function() {
+            $.post({
+                url:API + '/auth/logout/',
+                headers: {
+                    'Authorization': 'Token ' + USER.auth_token
+                },
+                failure:function(e) {
+                    console.log('Failure: ' + e);
+                },
+                success:function(e) {
+                    var USER = newUser();
+                    $('#account-login').text('login');
+                    $('#account-create').text('create account');
+                    console.log('Logged out user, user object is now', USER);
+
+                }
+            });
+        },
+        'userProfile':function () {
+            $.get({
+                url:API+'/auth/me/',
+                headers: {
+                    'Authorization': 'Token ' + USER.auth_token
+                },
+                failure:function(e) {
+                    console.log('Failure: ' + e);
+                },
+                success:function(o) {
+                    $.extend(USER, o);
+                    console.log(o, USER);
+                }
+            });
+        },
+        'noteCreate':function(data) {
+            $.post({
+                url:API + '//',
+                headers: {
+                    'Authorization': 'Token ' + USER.auth_token
+                },
+                failure:function(e) {
+                    console.log('Failure: ' + e);
+                },
+                success:function(o) {
+                }
+            });
+        },
+        'passwordReset':API + '/rest-auth/password/reset/',
+        'passwordResetConfirm':'/rest-auth/password/reset/confirm/',
+        'passwordChange':'/rest-auth/password/change/',
+        'userRegister':'/rest-auth/registration/',
+        'userRegisterVerify':'/rest-auth/registration/verify-email/'
+    };
+    
     const gridHeight = 6;
     const activeHeight = 0.95;
     
@@ -502,14 +589,14 @@
 
     function eventToNotebook(event, frame) {
         var text = $('<div></div>',
-                     {class:'notebook-span'}).html('Text');
+                     {class:'notebook-span'}).html('');
         var editor = new MediumEditor(text, {
-            disableReturn: true,
+            disableReturn: false,
             disableExtraSpaces: true
         });
         console.log(editor);
         return {'event':$('<div></div>', {class:'notebook-event'})
-                .html('<a href="'+event.content_url+'">' + event.title + '</a>')
+                .html('<div class="notebook-event-body"><div class="notebook-title"><a class="notebook-title" href="'+event.content_url+'">' + event.title + '</a></div><div class="notebook-text">'+event.text+'</div></div>')
                 .append(text, editor)
                 .on('click', function(e) {
                 }),
@@ -540,7 +627,6 @@
                     getLink(event),
                     $('<span></span>', {class:'asnote'})
                         .html('+').on('click', (function(e) {
-                            // $.ajax()
                             var notebookEntry = eventToNotebook(event, frame);
                             $('#notebook-events').prepend(notebookEntry.event);
                             $('#notebook-text').prepend('[]');
@@ -568,13 +654,14 @@
     }
 
     function makeUrl(env, panel_no) {
-        var url = api
-            + 'events/?start='
+        var url = API
+            + '/events/?start='
             + env.frame.add(env.start, panel_no).format()
             + '&before='
             + env.frame.add(env.end, panel_no).format();
         return url;
     }
+
     
     function loadPanel(env, panel_no, f) {
         var url = makeUrl(env, panel_no);
@@ -841,19 +928,18 @@
 	document.body.addEventListener('touchmove', function(event) {
 	    event.preventDefault();
 	}, false);
-        var STATE = {
-            showNotebook:false,
-            userLoggedIn:false,
-        }
+        
+        $('#account-login').on('click', function(){
+            $('#login-box').toggle();
+        });
+        $('#login-submit').on('click', function(e) {
+            e.preventDefault();
+            endpoints.userLogin({'username':$('#login-handle').val(),
+                                 'password':$('#login-password').val()});
+        });
+       
         $('#notebook-toggle').on('click', function() {
-            console.log('clicked', STATE);
-            if (STATE['showNotebook']) {
-                $('#notebook').hide();
-            }
-            else {
-                $('#notebook').show();
-            }
-            STATE['showNotebook'] = !STATE['showNotebook'];
+            $('#notebook').toggle();
         });        
         
 	var start = moment('1942-01-01T00:00:00');

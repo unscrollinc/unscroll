@@ -2,30 +2,15 @@ from django.conf.urls import url, include
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.conf.urls.static import static
-
+from rest_framework_swagger.views import get_swagger_view
 import django_filters
-from rest_framework.schemas import get_schema_view
 from rest_framework import generics, serializers, viewsets, routers, response
 from rest_framework.permissions import IsAdminUser
 from scrolls.models import Scroll, Event, Note, NoteMedia, MediaType, ContentType
 import urllib
+#from rest_framework.schemas import get_schema_view
 
-from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
-from rest_auth.registration.views import SocialLoginView
-
-from allauth.socialaccount.providers.twitter.views import TwitterOAuthAdapter
-from rest_auth.views import LoginView
-from rest_auth.social_serializers import TwitterLoginSerializer
-
-
-class FacebookLogin(SocialLoginView):
-    adapter_class = FacebookOAuth2Adapter
-
-
-class TwitterLogin(LoginView):
-    serializer_class = TwitterLoginSerializer
-    adapter_class = TwitterOAuthAdapter
-
+schema_view = get_swagger_view(title='Unscroll API')
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -34,9 +19,9 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAdminUser]
+    queryset = User.objects.all()
+#    permission_classes = [IsAdminUser]
 
 
 class MediaTypeSerializer(serializers.HyperlinkedModelSerializer):
@@ -123,7 +108,8 @@ class EventViewSet(viewsets.ModelViewSet):
 class NoteSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Note
-        fields = ('id',
+        fields = ('url',
+                  'event',
                   'order',
                   'created',
                   'last_updated',
@@ -145,19 +131,15 @@ router.register(r'scrolls', ScrollViewSet)
 router.register(r'events', EventViewSet)
 router.register(r'notes', NoteViewSet)
 
-schema_view = get_schema_view(title="Unscroll API")
+#schema_view = get_schema_view(title="Unscroll API")
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     url('^schema/$', schema_view),
-    url(r'^api/0/', include(router.urls)),
-    url(r'^rest-auth/', include('rest_auth.urls')),
-    url(r'^api-auth/', include('rest_framework.urls',
-                               namespace='rest_framework')),
-    url(r'^rest-auth/registration/', include('rest_auth.registration.urls')),
-    url(r'^rest-auth/twitter/$', TwitterLogin.as_view(), name='twitter_login'),
-    url(r'^rest-auth/facebook/$', FacebookLogin.as_view(), name='fb_login'),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-
-urlpatterns += [url(r'^silk/', include('silk.urls', namespace='silk'))]
+    url(r'^', include(router.urls)),
+    url(r'^auth/', include('rest_auth.urls')),
+    url(r'^auth/registration/', include('rest_auth.registration.urls')),
+    url(r'^accounts/', include('django.contrib.auth.urls')),
+    url(r'^silk/', include('silk.urls', namespace='silk')),    
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) 

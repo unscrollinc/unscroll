@@ -22,7 +22,9 @@ class ContentType(models.Model):
 
 
 class Scroll(models.Model):
-    user = models.ForeignKey(User, null=True, related_name='scrolls')
+    user = models.ForeignKey(User,
+                             null=True,
+                             related_name='scrolls')
     publish_datetime = models.DateTimeField(null=True)
     public = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
@@ -36,7 +38,8 @@ class Scroll(models.Model):
 
 class Event(models.Model):
     """"""
-    scroll = models.ForeignKey(Scroll, related_name='events')
+    scroll = models.ForeignKey(Scroll,
+                               related_name='events')
     created = models.DateTimeField(auto_now_add=True)
     mediatype = models.CharField(max_length=128,
                                  default="text/html")
@@ -50,7 +53,7 @@ class Event(models.Model):
     content_url = models.URLField(null=True)
 
     class Meta:
-        ordering = ['-ranking','datetime']
+        ordering = ['-ranking', 'datetime']
 
     def __unicode__(self):
         return '{}'.format(self.title,)
@@ -67,6 +70,9 @@ class Note(models.Model):
     display_type = models.ForeignKey(ContentType, null=True)
     created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-order', 'created']
 
     def __unicode__(self):
         return '{}'.format(self.text,)
