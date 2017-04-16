@@ -1,49 +1,45 @@
-from coreapi import transports, Document, Link, Client
+import json
+import requests
 
 
 class UnscrollClient():
-    site = None
-    schema_url = None
+    api = None
     username = None
     password = None
-    client = None
-    schema = None
+    authentication_header = None
 
     def __init__(self,
-                 site,
-                 schema_url,
+                 api,
                  username,
                  password):
-        self.site = site
-        self.schema_url = schema_url
+        self.api = api
         self.username = username
         self.password = password
 
     def login(self):
-        _client = Client()
-        schema = _client.get(self.schema_url)
-        key = _client.action(schema, ['rest-auth', 'login', 'create'],
-                             params={"username": self.username,
-                                     "password": self.password})
-        credentials = {self.site: 'Token {}'.format(key['key'],)}
-        print(credentials)        
-        transport = [transports.HTTPTransport(credentials=credentials)]
-        self.client = Client(transports=transport)
-        self.schema = self.client.get(self.schema_url)
-        
+        r = requests.post(self.api + '/rest-auth/login/',
+                          data={'username': self.username,
+                                'password': self.password})
+        login = r.json()
+        self.authentication_header = {'Authorization':
+                                      'Token {}'.format(login.get('key'),)}
+        return True
 
     def create_scroll(self, title):
-
-        new_scroll = self.client.action(self.schema,
-                                        ['scrolls', 'create'],
-                                        params={"title": title})
-        scroll_d = dict(new_scroll)
-        scroll_url = "{}/api/0/scrolls/{}/".format(self.site, scroll_d['id'])
+        r = requests.post(self.api + '/scrolls/',
+                          headers=self.authentication_header,
+                          data={'title': title})
+        scroll = r.json()
+        scroll_d = dict(scroll)
+        scroll_url = "{}/scrolls/{}/".format(self.api,
+                                             scroll_d['id'])
         return scroll_url
 
     def create_event(self, scroll_url, event):
         event['scroll'] = scroll_url
-        done = self.client.action(self.schema, ['events', 'create'],
-                                  params=event)
-        return done
+        print(event)
+        r = requests.post(self.api + '/events/',
+                          headers=self.authentication_header,
+                          data=event)
+        return r
 

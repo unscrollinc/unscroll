@@ -2,15 +2,17 @@ from django.conf.urls import url, include
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.conf.urls.static import static
-#from rest_framework_swagger.views import get_swagger_view
 import django_filters
 from rest_framework import generics, serializers, viewsets, routers, response
 from rest_framework.permissions import IsAdminUser
 from scrolls.models import Scroll, Event, Note, NoteMedia, MediaType, ContentType
-import urllib
-from rest_framework.schemas import get_schema_view
-
-
+from rest_framework_swagger.views import get_swagger_view
+#from rest_framework.schemas import get_schema_view
+from rest_framework_bulk import (
+    BulkListSerializer,
+    BulkSerializerMixin,
+    ListBulkCreateUpdateDestroyAPIView,
+)
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -74,8 +76,8 @@ class EventFilter(django_filters.rest_framework.FilterSet):
         model = Event
         fields = ['start', 'before']
 
-
-class EventSerializer(serializers.HyperlinkedModelSerializer):
+class EventSerializer(BulkSerializerMixin,
+                      serializers.HyperlinkedModelSerializer):
     scroll_title = serializers.CharField(read_only=True, source="scroll.title")
     scroll_id = serializers.IntegerField(read_only=True, source="scroll.id")
     
@@ -95,6 +97,7 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
                   'source_url',
                   'source_date',
                   'content_url')
+        list_serializer_class = BulkListSerializer
 
 
 class EventViewSet(viewsets.ModelViewSet):
@@ -122,6 +125,9 @@ class NoteViewSet(viewsets.ModelViewSet):
     serializer_class = NoteSerializer
 
 
+
+
+
 # Routers provide a way of automatically determining the URL conf.
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
@@ -131,8 +137,8 @@ router.register(r'scrolls', ScrollViewSet)
 router.register(r'events', EventViewSet)
 router.register(r'notes', NoteViewSet)
 
-#schema_view = get_swagger_view(title='Unscroll API')
-schema_view = get_schema_view(title="Unscroll API")
+schema_view = get_swagger_view(title='Unscroll API')
+#schema_view = get_schema_view(title="Unscroll API")
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

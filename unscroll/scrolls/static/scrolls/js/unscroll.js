@@ -4,24 +4,26 @@
     function newUser() {
         return {username:undefined,
                 email:undefined,
-                auth_token:undefined}
+                key:undefined}
     }
     var USER = newUser();
         
     const API = 'http://127.0.0.1:8000';
+    const AUTH = API + '/rest-auth';
 
-    var endpoints = {
+    const endpoints = {
         'userLogin': function(data) {
             $.post({
-                url:API + '/auth/login/',
+                url:AUTH + '/login/',
                 data:data,
                 context:data,
                 failure:function(e) {
                     console.log('Failure: ' + e);
                 },
                 success:function(o) {
-                    USER.auth_token = o.auth_token;
+                    USER.key = o.key;
                     USER.username = this.username;
+                    console.log('Logged in user: ' + USER.username + '.');
                     $('#account-login').text('you are ' + USER.username);
                     $('#account-create')
                         .text('logout')
@@ -29,17 +31,17 @@
                             function(e) {
                                 endpoints.userLogout();            
                             });
-                    console.log(o, USER);
                     $('#login-box').toggle();                    
                     endpoints.userProfile();
+                    endpoints.schema();                    
                 }
             });
         },
         'userLogout': function() {
             $.post({
-                url:API + '/auth/logout/',
+                url:AUTH + '/logout/',
                 headers: {
-                    'Authorization': 'Token ' + USER.auth_token
+                    'Authorization': 'Token ' + USER.key
                 },
                 failure:function(e) {
                     console.log('Failure: ' + e);
@@ -48,23 +50,36 @@
                     var USER = newUser();
                     $('#account-login').text('login');
                     $('#account-create').text('create account');
-                    console.log('Logged out user, user object is now', USER);
+                    console.log('Logged out.');
 
+                }
+            });
+        },
+        'schema': function() {
+            $.get({
+                url:API + '/schema/',
+                headers: {
+                    'Authorization': 'Token ' + USER.key
+                },
+                failure:function(e) {
+                    console.log('Failure: ' + e);
+                },
+                success:function(o) {
+                    console.log(o);
                 }
             });
         },
         'userProfile':function () {
             $.get({
-                url:API+'/auth/me/',
+                url:AUTH + '/user/',
                 headers: {
-                    'Authorization': 'Token ' + USER.auth_token
+                    'Authorization': 'Token ' + USER.key
                 },
                 failure:function(e) {
                     console.log('Failure: ' + e);
                 },
                 success:function(o) {
                     $.extend(USER, o);
-                    console.log(o, USER);
                 }
             });
         },
@@ -72,7 +87,7 @@
             $.post({
                 url:API + '//',
                 headers: {
-                    'Authorization': 'Token ' + USER.auth_token
+                    'Authorization': 'Token ' + USER.key
                 },
                 failure:function(e) {
                     console.log('Failure: ' + e);
@@ -491,7 +506,6 @@
 		$('<div></div>', {class:'head'})
 		    .html(columnData.text)
 		    .on('click', function(e) {
-                        console.log('clicked Column');
 			makeTimeline(columnData.start, columnData.end);
 		    })
 	    );
@@ -501,7 +515,6 @@
 	return $('<div></div>', {class:'period'})
 	    .html(text)
 	    .click(function(event) {
-                console.log('clicked Period');                
 		makeTimeline(start, end);
 	    });
     }
@@ -594,7 +607,6 @@
             disableReturn: false,
             disableExtraSpaces: true
         });
-        console.log(editor);
         return {'event':$('<div></div>', {class:'notebook-event'})
                 .html('<div class="notebook-event-body"><div class="notebook-title"><a class="notebook-title" href="'+event.content_url+'">' + event.title + '</a></div><div class="notebook-text">'+event.text+'</div></div>')
                 .append(text, editor)
@@ -642,7 +654,6 @@
 		    $('<div></div>', {class:'scroll-title'})
 		        .html(event.scroll_title)
                         .on('click', function(e) {
-                            console.log('Load just scroll, propagating search bar');
                             $('#search-input').val('scroll:\"'+event.scroll_title+'"');
                         })))
 		.mousemove(function(event) {
