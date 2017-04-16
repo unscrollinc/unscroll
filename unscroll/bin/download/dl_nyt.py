@@ -24,7 +24,7 @@ def fetch_month(date):
         return r.json()
 
 
-def doc_to_data(doc):
+def doc_to_data(doc, scroll_url):
     byline = ""
     _bl = doc.get('byline')
     if _bl is not None and len(_bl) > 0:
@@ -36,6 +36,7 @@ def doc_to_data(doc):
         text = "..."
     event = {
         'mediatype': "text/html",
+        'scroll': scroll_url,
         'resolution': 'days',
         'title': title,
         'ranking': random.random(),
@@ -55,11 +56,9 @@ def __main__():
     dt = datetime.date(1942, 1, 5)
     results = fetch_month(dt)
     docs = results['response']['docs']
-    parsed = [doc_to_data(x) for x in docs]
-    chunks = [parsed[x:x+100] for x in range(0, len(parsed), 100)]
-    for chunk in chunks:
-        for doc in chunk:
-            res = c.create_event(scroll_url, doc)
-            print(res)
+    parsed = [doc_to_data(x, scroll_url) for x in docs]
+    chunks = [parsed[x:x+1000] for x in range(0, len(parsed), 1000)]
+    for docs in chunks:
+        res = c.create_event_batch(docs)
 
 __main__()

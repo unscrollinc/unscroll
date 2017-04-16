@@ -4,8 +4,10 @@
 .DS_Store
 \#*
 .\#*
+*.pyc
 __pycache__/
 data/
 db.sqlite3
+db.sqlite3-journal
 node_modules/
 unscroll/bin/download/cache/

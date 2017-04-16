@@ -8,11 +8,16 @@ from rest_framework.permissions import IsAdminUser
 from scrolls.models import Scroll, Event, Note, NoteMedia, MediaType, ContentType
 from rest_framework_swagger.views import get_swagger_view
 #from rest_framework.schemas import get_schema_view
+
+#Bulk
+from rest_framework_bulk.routes import BulkRouter
 from rest_framework_bulk import (
     BulkListSerializer,
+    BulkModelViewSet,
     BulkSerializerMixin,
     ListBulkCreateUpdateDestroyAPIView,
 )
+
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -76,8 +81,7 @@ class EventFilter(django_filters.rest_framework.FilterSet):
         model = Event
         fields = ['start', 'before']
 
-class EventSerializer(BulkSerializerMixin,
-                      serializers.HyperlinkedModelSerializer):
+class EventSerializer(serializers.HyperlinkedModelSerializer):
     scroll_title = serializers.CharField(read_only=True, source="scroll.title")
     scroll_id = serializers.IntegerField(read_only=True, source="scroll.id")
     
@@ -97,7 +101,7 @@ class EventSerializer(BulkSerializerMixin,
                   'source_url',
                   'source_date',
                   'content_url')
-        list_serializer_class = BulkListSerializer
+
 
 
 class EventViewSet(viewsets.ModelViewSet):
@@ -105,6 +109,32 @@ class EventViewSet(viewsets.ModelViewSet):
     filter_class = EventFilter
     queryset = Event.objects.select_related('scroll')
     serializer_class = EventSerializer
+
+
+class BulkEventSerializer(BulkSerializerMixin,
+                          serializers.HyperlinkedModelSerializer):
+    class Meta(object):
+        model = Event
+        fields = ('url',
+                  'scroll',
+                  'created',
+                  'title',
+                  'text',
+                  'ranking',
+                  'mediatype',
+                  'resolution',
+                  'datetime',
+                  'source_url',
+                  'source_date',
+                  'content_url')
+        list_serializer_class = BulkListSerializer
+
+
+class BulkEventViewSet(BulkModelViewSet):
+    queryset = Event.objects.all()
+    serializer_class = BulkEventSerializer
+    
+
 
 
 # Note
@@ -129,13 +159,15 @@ class NoteViewSet(viewsets.ModelViewSet):
 
 
 # Routers provide a way of automatically determining the URL conf.
-router = routers.DefaultRouter()
+router = BulkRouter()
+#router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
 router.register(r'mediatypes', MediaTypeViewSet)
 router.register(r'contenttypes', ContentTypeViewSet)
 router.register(r'scrolls', ScrollViewSet)
 router.register(r'events', EventViewSet)
 router.register(r'notes', NoteViewSet)
+router.register(r'bulk-events', BulkEventViewSet)
 
 schema_view = get_swagger_view(title='Unscroll API')
 #schema_view = get_schema_view(title="Unscroll API")
