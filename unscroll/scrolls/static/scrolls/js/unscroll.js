@@ -11,7 +11,7 @@
     const API = 'http://127.0.0.1:8000';
     const AUTH = API + '/rest-auth';
 
-    const endpoints = {
+    const ENDPOINTS = {
         'userLogin': function(data) {
             $.post({
                 url:AUTH + '/login/',
@@ -29,11 +29,11 @@
                         .text('logout')
                         .on('click',
                             function(e) {
-                                endpoints.userLogout();            
+                                ENDPOINTS.userLogout();            
                             });
                     $('#login-box').toggle();                    
-                    endpoints.userProfile();
-                    endpoints.schema();                    
+                    ENDPOINTS.userProfile();
+                    ENDPOINTS.schema();                    
                 }
             });
         },
@@ -85,7 +85,8 @@
         },
         'noteCreate':function(data) {
             $.post({
-                url:API + '//',
+                url:API + '/notes/',
+		data:data,
                 headers: {
                     'Authorization': 'Token ' + USER.key
                 },
@@ -93,6 +94,7 @@
                     console.log('Failure: ' + e);
                 },
                 success:function(o) {
+		    console.log(o);
                 }
             });
         },
@@ -189,7 +191,7 @@
 				  start.clone().endOf('month'));
 	    },
 	    getOffset: function(datetime, resolution) {
-                if (resolution === 'days') {
+                if (resolutions[resolution] >= resolution['days']) {
                     return Math.floor(24 * Math.random());
                 }
 		else {
@@ -236,7 +238,12 @@
 				  start.clone().endOf('year'));
 	    },
 	    getOffset: function(datetime, resolution) {
-		return datetime.date() - 1;
+                if (resolutions[resolution] >= resolution['months']) {
+                    return Math.floor(28 * Math.random());
+                }
+		else {
+		    return datetime.date() - 1;
+		}
 	    },
 	    getEventWidth: function(columns, len) {
 		return Math.floor(4);
@@ -584,6 +591,10 @@
     players['text/html'] = players['text/html']
 
     function eventToNotebook(event, frame) {
+	var note = {event: event.url,
+		    order: 0,
+		    text: undefined}
+	ENDPOINTS.noteCreate(note)
         var text = $('<div></div>',
                      {class:'notebook-span'}).html('');
         var editor = new MediumEditor(text, {
@@ -594,6 +605,7 @@
                 .html('<div class="notebook-event-body"><div class="notebook-title"><a class="notebook-title" href="'+event.content_url+'">' + event.title + '</a></div><div class="notebook-text">'+event.text+'</div></div>')
                 .append(text, editor)
                 .on('click', function(e) {
+		    
                 }),
                 'text':text,
                 'editor':editor
@@ -632,7 +644,7 @@
 			.html(_dt.format('D MMM, \'YY')),
                     
 		    $('<span></span>', {class:'text'})
-			.html(event.ranking + ' ' + event.title + ' '),
+			.html(event.title),
                 
 		    $('<div></div>', {class:'scroll-title'})
 		        .html(event.scroll_title)
@@ -928,7 +940,7 @@
         });
         $('#login-submit').on('click', function(e) {
             e.preventDefault();
-            endpoints.userLogin({'username':$('#login-handle').val(),
+            ENDPOINTS.userLogin({'username':$('#login-handle').val(),
                                  'password':$('#login-password').val()});
         });
        

@@ -53,7 +53,7 @@ def __main__():
     c.login()
     scroll_url = c.create_scroll('New York Times')
     print(scroll_url)
-    dt = datetime.date(1942, 1, 5)
+    dt = datetime.date(2010, 1, 1)
     results = fetch_month(dt)
     docs = results['response']['docs']
     parsed = [doc_to_data(x, scroll_url) for x in docs]
