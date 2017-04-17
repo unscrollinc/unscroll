@@ -44,7 +44,6 @@ div#login-box input#login-submit:hover {
 }
 
 .column {
-    text-transform:uppercase;
     display:block;
     height:100%;
     border-right:1px solid #ddd;
@@ -68,16 +67,16 @@ div#login-box input#login-submit:hover {
     cursor:hand;
 }
 
-.period {
+a.period {
     width:25%;
     position:absolute;
     margin-left:37.5%;
     font-size:20px;
     top:-65px;
+    display:block;
     color:blue;
     padding:.25em;
     cursor:hand;
-    text-transform:lowercase;
 }
 
 .period:hover {
@@ -207,7 +206,6 @@ div#login {
     font-weight:bold;
     display:inline-block;
     margin:0 1em 0 0;
-    text-transform:uppercase;
     color:#888;
 }
 
@@ -237,7 +235,7 @@ div#notebook {
     border-left:1px solid black;
     background:white;
     position:fixed;
-    display:block;
+    display:none;
     z-index:100;
 }
 div#notebook-menu {

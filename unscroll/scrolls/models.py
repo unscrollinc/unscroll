@@ -43,14 +43,14 @@ class Event(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     mediatype = models.CharField(max_length=128,
                                  default="text/html")
-    title = models.CharField(max_length=128)
-    text = models.TextField(blank=True)
+    title = models.TextField(blank=False)
+    text = models.TextField(blank=True, null=True)
     ranking = models.FloatField(db_index=True, default=0)
     datetime = models.DateTimeField(db_index=True)
     resolution = models.CharField(max_length=32, default='days')
     source_url = models.URLField(null=True)
     source_date = models.CharField(max_length=128, null=True)
-    content_url = models.URLField(null=True)
+    content_url = models.URLField(max_length=512,null=True)
 
     class Meta:
         ordering = ['-ranking', 'datetime']

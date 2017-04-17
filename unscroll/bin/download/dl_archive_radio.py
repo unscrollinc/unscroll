@@ -2,14 +2,9 @@ from internetarchive import search_items
 from internetarchive import get_item
 from datetime import datetime, timedelta
 from dateparser import parse
-import pprint
-import json
-import re
+from unscroll import UnscrollClient
 import urllib
-#from requests.auth import HTTPBasicAuth
-
-from coreapi import transports, Document, Link, Client
-from coreapi.auth import BasicAuthentication
+import re
 
 DOWNLOAD_URL = 'https://archive.org/download/'
 DETAILS_URL = 'https://archive.org/details/'
@@ -88,7 +83,6 @@ def search(search_term):
 
                 for fdict in files:
                     f = File()
-#                    f.filename = None
                     f.content_url = "{}{}/{}".format(DOWNLOAD_URL,
                                                      item.identifier,
                                                      urllib.parse.quote_plus(fdict['name']))
@@ -107,35 +101,17 @@ def search(search_term):
     return dictset
 
 
-def main(client, scroll_id):
-    d = search(SEARCH)
-    for event in d:
-        event['scroll'] = scroll_id
-        print(event)
-        try:
-            client.action(schema, ['api', '0', 'events', 'create'],
-                           params=event)
-        except Exception as e:
-            print(e)
-        finally:
-            pass
-
-#   create(scroll, title, text, datetime, image, [mediatype],
-#   [source_url], [source_date], [content_url])
-#   print('var oldRadioNews =', json.dumps(d, sort_keys=True, indent=4), ";\n")
+def main():
+    print("fetching")
+    events = search(SEARCH)
+    print("saving")    
+    c = UnscrollClient(api='http://127.0.0.1:8000',
+                       username='admin',
+                       password='password',
+                       scroll_title='Archive.org WWII Radio',
+                       events=events)
 
 
 if __name__ == "__main__":
-    auth = BasicAuthentication(username='admin',
-                               password='password')
-    client = Client(auth=auth)
-    print(client)
-    schema = client.get('http://127.0.0.1:8000/schema')
-    print(schema)    
-    new_scroll = client.action(schema, ['scrolls', 'create'],
-                               params={"title": "WWII Radio News"})
-    scroll_d = dict(new_scroll)
-    scroll_url = "http://127.0.0.1:8000/api/0/scrolls/{}/"\
-                 .format(scroll_d['id'])
-    print(scroll_url)
-    main(client, scroll_url)
+    main()
+    

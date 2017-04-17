@@ -7,7 +7,7 @@
                 key:undefined}
     }
     var USER = newUser();
-        
+    
     const API = 'http://127.0.0.1:8000';
     const AUTH = API + '/rest-auth';
 
@@ -114,6 +114,7 @@
     const year = day * 365;
     const decade = year * 10;
     const century = year * 100;
+    const millennium = year * 1000;
 
     function makeId() {
         return Math.round(new Date().getTime() + (Math.random() * 1000000));
@@ -133,7 +134,13 @@
     var getTimeFrame = function(start, end) {
 	// Expects two instances of Moment, returns a "timeframe"
 	var span = end - start;
-	if (span >= decade * 0.75) {
+	if (span >= millennium * 0.75) {
+	    return 'millennia';
+	}		
+	else if (span >= century * 0.75) {
+	    return 'centuries';
+	}	
+	else if (span >= decade * 0.75) {
 	    return 'decades';
 	}
 	else if (span >= year * 0.75) {
@@ -167,7 +174,7 @@
 		return {
 		    start:spanStart,
 		    end:spanEnd,
-		    text:spanEnd.format('H')
+		    text:spanEnd.format('ha')
 		};
 	    },
 	    columnAdd: function(datetime, no) {
@@ -177,7 +184,7 @@
 		return 24;
 	    },
 	    getPeriod: function(start) {
-		return makePeriod(start.format('MMMM DD, YYYY'),
+		return makePeriod(start.format('MMMM D, YYYY'),
 				  start.clone().startOf('month'),
 				  start.clone().endOf('month'));
 	    },
@@ -202,7 +209,7 @@
 		    columns:columns,
 		    target:target
 		};
-	    }	   
+	    }
 	},
 	months: {
 	    add: function(datetime, no) {
@@ -265,9 +272,11 @@
 	    },
 	    getPeriod: function(start) {
 		var year = start.year()/10;
+		var from = moment((10 * Math.floor(year))+'-01-01');
+		var to = moment(from).add(10, 'years')
 		return makePeriod(start.year(),
-				  moment((10 * Math.floor(year))+'-01-01'),
-				  moment((10 * Math.ceil(year))+'-01-01'));
+				  from,
+				  to);
 	    },
 	    getOffset: function(datetime, resolution) {
 		return datetime.month();
@@ -293,16 +302,20 @@
 		return datetime.clone().add(no, 'years');		
 	    },	    	    	    
 	    columnStepper: function(i, start) {
-		return moment(start).add(i,'years').format('YYYY');
+		var spanStart = moment(start).startOf('year').add(i,'years');
+		var spanEnd = moment(spanStart).endOf('year');
+		return {
+		    start:spanStart,
+		    end:spanEnd,
+		    text:spanStart.format('Y')
+		};		
 	    },
 	    getColumns: function(count) {
 		return 10;
 	    },
 	    getPeriod: function(start) {
 		var year = start.year()/100;
-		var periodStart = moment((10 * Math.floor(start.year()/10))+'-01-01');
-		var periodEnd = moment(9 + (10 * Math.floor(start.year()/10))+'-01-01');
-		return makePeriod(periodStart.year() + '-' + periodEnd.year(),
+		return makePeriod(start.year() + '-' + moment(start).add(9,'years').year(),
 				  moment((100 * Math.floor(year))+'-01-01'),
 				  moment((100 * Math.ceil(year))+'-01-01'));
 	    },
@@ -328,128 +341,86 @@
 	    },
 	    columnAdd: function(datetime, no) {
 		return datetime.clone().add(no * 10, 'years');		
-	    },	    	    	    	    
+	    },
 	    columnStepper: function(i, start) {
-		return moment(start).add(i*10,'years').format('YYYY');
+		var spanStart = moment(start.startOf('year')).add(10 * i,'years');
+		var spanEnd = moment(spanStart).endOf('decade');
+		return {
+		    start:spanStart,
+		    end:spanEnd,
+		    text:spanEnd.format('Y') + '-' + spanEnd.add(9, 'years').format('Y')
+		};		
 	    },
 	    getColumns: function(count) {
 		return 10;
 	    },
 	    getPeriod: function(start) {
 		var year = start.year()/1000;
-		return makePeriod(start.year() + '-' + (start.year() + 100),
-				  moment((1000 * Math.floor(year))+'-01-01'),
-				  moment((1000 * Math.ceil(year))+'-01-01'));
+		var from = moment((1000 * Math.floor(year))+'-01-01');
+		var to = moment(from).add(1000, 'years');
+		return makePeriod(start.year() + '-' + (start.year() + 99),
+				  from,
+				  to);
 	    },
 	    getOffset: function(datetime, resolution) {
-		return datetime.year() - 100 * Math.floor(dt.year()/100);
+		return datetime.year() - 100 * Math.floor(datetime.year()/100);
 	    },
 	    getEventWidth: function(width, len) {
 		return Math.floor(Math.random() * width/10);
-	    }
-	},	
-	years: {
-	    add: function(datetime, no) {
-		return datetime.clone().add(no, 'years');		
 	    },
-	    columnAdd: function(datetime, no) {
-		return datetime.clone().add(no, 'months');		
-	    },	    	    
-	    columnStepper: function(i, start) {
-		var spanStart = moment(start.startOf('month')).add(i,'months');
-		var spanEnd = moment(spanStart).endOf('month');
-		return {start:spanStart,
-			end:spanEnd,
-			text:spanEnd.format('MMM')};
-	    },
-	    getColumns: function(count) {
-		return 12;
-	    },
-	    getPeriod: function(start) {
-		var year = start.year()/10;
-		return makePeriod(start.year(),
-				  moment((10 * Math.floor(year))+'-01-01'),
-				  moment((10 * Math.ceil(year))+'-01-01'));
-	    },
-	    getOffset: function(datetime, resolution) {
-		return datetime.month();
-	    },
-	    getEventWidth: function(width, len) {
-		return 1 + Math.floor(Math.random() * width/2);
-	    },	    
 	    getTarget: function(start, pointerInteger, pointerMantissa) {
-		var pointerFocus = start.clone().add(pointerInteger, 'years');
-		var columns = 12;
-		var target = pointerFocus.clone().add(Math.floor( pointerMantissa * columns ), 'months');
-		return {
-		    columns:columns,
-		    target:target
-		};
-	    }	   	    
-	},
-	decades: {
-	    add: function(datetime, no) {
-		return datetime.clone().add(no * 10, 'years');
-	    },
-	    columnAdd: function(datetime, no) {
-		return datetime.clone().add(no, 'years');		
-	    },	    	    	    
-	    columnStepper: function(i, start) {
-		return moment(start).add(i,'years').format('YYYY');
-	    },
-	    getColumns: function(count) {
-		return 10;
-	    },
-	    getPeriod: function(start) {
-		var year = start.year()/100;
-		var periodStart = moment((10 * Math.floor(start.year()/10))+'-01-01');
-		var periodEnd = moment(9 + (10 * Math.floor(start.year()/10))+'-01-01');
-		return makePeriod(periodStart.year() + '-' + periodEnd.year(),
-				  moment((100 * Math.floor(year))+'-01-01'),
-				  moment((100 * Math.ceil(year))+'-01-01'));
-	    },
-	    getOffset: function(datetime, resolution) {
-		return datetime.year() - 10 * Math.floor(datetime.year()/10);
-	    },
-	    getEventWidth: function(width, len) {
-		return Math.floor(Math.random() * width/10);
-	    },	    	    
-	    getTarget: function(start, pointerInteger, pointerMantissa) {
-		var pointerFocus = start.clone().add(10 * pointerInteger, 'years');
+		var pointerFocus = start.clone().add(100 * pointerInteger, 'years');
 		var columns = 10;
-		var target = pointerFocus.clone().add(10 * Math.floor( pointerMantissa * columns ), 'years');
+		var target = pointerFocus.clone().add(100 * Math.floor( pointerMantissa * columns ), 'years');
 		return {
 		    columns:columns,
 		    target:target
 		};
-	    }	   	    	    
+	    }	 	    	    	    
 	},
-	centuries: {
+	millennia: {
 	    add: function(datetime, no) {
-		return datetime.clone().add(no * 100, 'years');
+		return datetime.clone().add(no * 1000, 'years');
 	    },
 	    columnAdd: function(datetime, no) {
-		return datetime.clone().add(no * 10, 'years');		
-	    },	    	    	    	    
+		return datetime.clone().add(no * 100, 'years');		
+	    },
 	    columnStepper: function(i, start) {
-		return moment(start).add(i*10,'years').format('YYYY');
+		var spanStart = moment(start.startOf('year')).add(100 * i,'years');
+		var spanEnd = moment(spanStart).endOf('decade');
+		return {
+		    start:spanStart,
+		    end:spanEnd,
+		    text:spanEnd.format('Y') + '-' + spanEnd.add(99, 'years').format('Y')
+		};		
 	    },
 	    getColumns: function(count) {
 		return 10;
 	    },
 	    getPeriod: function(start) {
-		var year = start.year()/1000;
-		return makePeriod(start.year() + '-' + (start.year() + 100),
-				  moment((1000 * Math.floor(year))+'-01-01'),
-				  moment((1000 * Math.ceil(year))+'-01-01'));
+		var year = start.year()/10000;
+		var from = moment((10000 * Math.floor(year))+'-01-01');
+		var to = moment(from).add(10000, 'years');
+		return makePeriod(start.year() + '-' + (start.year() + 999),
+				  from,
+				  to);
 	    },
 	    getOffset: function(datetime, resolution) {
-		return datetime.year() - 100 * Math.floor(dt.year()/100);
+		return datetime.year() - 1000 * Math.floor(datetime.year()/1000);
 	    },
 	    getEventWidth: function(width, len) {
-		return Math.floor(Math.random() * width/10);
-	    }
-	}
+		return Math.floor(Math.random() * width/100);
+	    },
+	    getTarget: function(start, pointerInteger, pointerMantissa) {
+		var pointerFocus = start.clone().add(1000 * pointerInteger, 'years');
+		var columns = 100;
+		var target = pointerFocus.clone().add(1000 * Math.floor( pointerMantissa * columns ), 'years');
+		return {
+		    columns:columns,
+		    target:target
+		};
+	    }	 	    	    	    
+	}	
     }
 
     function sortByKey(array, key) {
@@ -503,18 +474,30 @@
 	    .css({width:columnWidth,
 		  left:columnWidth * i})
 	    .append(
-		$('<div></div>', {class:'head'})
+		$('<a></a>', {class:'head',
+			      href:'/?begin='
+			      + columnData.start.format()
+			      + '&end='
+			      + columnData.end.format()
+			     })
 		    .html(columnData.text)
 		    .on('click', function(e) {
+			e.preventDefault();
 			makeTimeline(columnData.start, columnData.end);
-		    })
-	    );
+		    }));
     }
+
     
     function makePeriod(text, start, end) {
-	return $('<div></div>', {class:'period'})
+	return $('<a></a>', {class:'period',
+			     href:'/?begin='
+			     + start.format()
+			     + '&end='
+			     + end.format()
+			    })
 	    .html(text)
-	    .click(function(event) {
+	    .click(function(e) {
+		e.preventDefault();		
 		makeTimeline(start, end);
 	    });
     }
@@ -703,12 +686,11 @@
 
 	var divs = [];
 	var timeFrame = getTimeFrame(start, end);
-
 	var frame = timeFrames[timeFrame];
+	
 	var columns = frame.getColumns(count, start, end);
 	var cellWidth = env.window.width/columns;
 	var cellHeight = env.window.height/gridHeight * activeHeight;
-	
 	// Add the time period
 	var period = frame.getPeriod(start);
 	divs.push(period);
@@ -773,6 +755,7 @@
 	var panels = [-1, 0, 1];
 
 	var timeframe = getTimeFrame(start, end)
+	console.log(timeframe);
 	var frame = timeFrames[timeframe];	
 	var env = {
 	    window: {
@@ -953,8 +936,8 @@
             $('#notebook').toggle();
         });        
         
-	var start = moment('1942-01-01T00:00:00');
-	var end = start.clone().add(1, 'month');
+	var start = moment('2010-01-01T00:00:00');
+	var end = start.clone().add(1, 'days');
         makeTimeline(start, end);
     });
 
