@@ -24,9 +24,9 @@
                     USER.key = o.key;
                     USER.username = this.username;
                     console.log('Logged in user: ' + USER.username + '.');
-                    $('#account-login').text('you are ' + USER.username);
+                    $('#account-login').text('You are: ' + USER.username);
                     $('#account-create')
-                        .text('logout')
+                        .text('Logout')
                         .on('click',
                             function(e) {
                                 ENDPOINTS.userLogout();            
@@ -84,19 +84,25 @@
             });
         },
         'noteCreate':function(data) {
-            $.post({
-                url:API + '/notes/',
-		data:data,
-                headers: {
-                    'Authorization': 'Token ' + USER.key
-                },
-                failure:function(e) {
-                    console.log('Failure: ' + e);
-                },
-                success:function(o) {
-		    console.log(o);
-                }
-            });
+	    if (USER.key) {
+		$.post({
+                    url:API + '/notes/',
+		    data:data,
+                    headers: {
+			'Authorization': 'Token ' + USER.key
+                    },
+                    failure:function(e) {
+			console.log('Failure: ' + e);
+                    },
+                    success:function(o) {
+			console.log(o);
+                    }
+		});
+	    }
+	    else {
+		console.log('You can only fav things if you\'re logged in.')
+
+	    }
         },
         'passwordReset':API + '/rest-auth/password/reset/',
         'passwordResetConfirm':'/rest-auth/password/reset/confirm/',

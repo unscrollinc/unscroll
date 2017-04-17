@@ -64,6 +64,7 @@ class Note(models.Model):
     user = models.ForeignKey(User,
                              null=True,
                              related_name="notes")
+#    scroll = models.ForeignKey(Scroll, null=False, related_name="notes")
     event = models.ForeignKey(Event, null=True, related_name="notes")
     order = models.FloatField(default=0)
     text = models.TextField(null=True)
