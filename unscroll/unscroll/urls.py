@@ -161,7 +161,6 @@ class NoteViewSet(viewsets.ModelViewSet):
 # Routers provide a way of automatically determining the URL conf.
 router = BulkRouter()
 #router = routers.DefaultRouter()
-router.register(r'users', UserViewSet)
 router.register(r'mediatypes', MediaTypeViewSet)
 router.register(r'contenttypes', ContentTypeViewSet)
 router.register(r'scrolls', ScrollViewSet)

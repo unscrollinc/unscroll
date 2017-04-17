@@ -164,7 +164,8 @@
 	    return 'days';
 	}
 	else if (span >= hour * 0.75) {
-	    return 'hours'; }
+	    return 'hours';
+	}
 	else if (span >= minute * 0.75) {
 	    return 'minutes';
 	}
@@ -172,6 +173,53 @@
     }
     
     var timeFrames = {
+	hours: {
+	    add: function(datetime, no) {
+		return datetime.clone().add(no, 'hours');
+	    },
+	    columnStepper: function(i, start) {
+		var spanStart = moment(start.startOf('hour')).add(4 * i,'minutes');
+		var spanEnd = moment(spanStart).add(15, 'minutes');
+		return {
+		    start:spanStart,
+		    end:spanEnd,
+		    text:spanEnd.format('h:m')
+		};
+	    },
+	    columnAdd: function(datetime, no) {
+		return datetime.clone().add(no, 'minutes');
+	    },	    
+	    getColumns: function(count, start, end) {
+		return 15;
+	    },
+	    getPeriod: function(start) {
+		return makePeriod(start.format('MMMM D, YYYY h:ma'),
+				  start.clone().startOf('day'),
+				  start.clone().endOf('day'));
+	    },
+	    getOffset: function(datetime, resolution) {
+                if (resolutions[resolution] >= resolution['hours']) {
+                    return Math.floor(15 * Math.random());
+                }
+		else {
+                    return datetime.minutes() - 15;
+                }
+	    },
+	    getEventWidth: function(columns, len) {
+		return Math.floor(2 + Math.random() * columns/5);
+	    },
+	    getTarget: function(start, pointerInteger, pointerMantissa) {
+		var pointerFocus = start.clone().add(pointerInteger, 'minutes');
+		var columns = 15;
+		var target = pointerFocus.clone().add(
+		    Math.floor( pointerMantissa * columns ),
+		    'hours');
+		return {
+		    columns:columns,
+		    target:target
+		};
+	    }
+	},	
 	days: {
 	    add: function(datetime, no) {
 		return datetime.clone().add(no, 'days');		
