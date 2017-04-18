@@ -43,7 +43,7 @@ def realday(year, tuple):
     return datetime.date(year, month, day)
     
 events = []
-year = 1990
+year = 1925
 r = requests.get('https://en.wikipedia.org/wiki/{}'.format(year))
 
 def to_event(date=None, event=None):
@@ -53,7 +53,7 @@ def to_event(date=None, event=None):
     contents = [str(x) for x in event.children]
     joined = "".join(contents)
     linked = re.sub(r'/wiki/', 'http://en.wikipedia.org/wiki/', joined)
-    trimmed = re.sub(r'^[^–]+–\s*', r'', linked)
+    trimmed = re.sub(r'^[^–]+[––]\s*', r'', linked)
     unlinked = re.sub(r'<[^>]+>','',trimmed)
     titles = [x['title'] for x in event.find_all('a') if x.has_attr('title')]
     filtered = [x for x in titles if not MONTH_REGEX.match(x)]
@@ -67,6 +67,8 @@ def to_event(date=None, event=None):
         
     e = {'datetime':date,
          'title':title,
+         'contenttype':'event/death',
+         'mediatype':'text/html',
          'text':trimmed,
          'source':'Wikipedia'}
     return e
@@ -94,7 +96,7 @@ def descend(year, ul):
     
     
 soup = BeautifulSoup(r.content, 'html.parser')
-events_h2 = soup.select('#Events')[0].parent
+events_h2 = soup.select('#Deaths')[0].parent
 for event in events_h2.next_siblings:
     if event.name == "h2":
         break
