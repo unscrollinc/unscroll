@@ -1,7 +1,19 @@
 body {
     margin:0 0 0 0;
     padding:0;
-    font-family:Roboto;
+}
+
+body, input {
+    font-family: 'Merriweather', serif;
+}
+a {
+    color:#2F9ECA;
+    text-decoration:none;
+}
+
+.nav {
+    font-family: 'Roboto', sans-serif;
+    color:#eee;
 }
 
 div#login-box {
@@ -28,7 +40,6 @@ div#login-box input#login-submit {
     border:none;
     outline:none;
     background:white;
-    color:blue;
 }
 
 div#login-box input#login-submit:hover {
@@ -43,10 +54,10 @@ div#login-box input#login-submit:hover {
     -webkit-overflow-scrolling: touch;
 }
 
-.column {
+div.column {
     display:block;
     height:100%;
-    border-right:1px solid #ddd;
+    border-right:1px solid lightblue;
     position:absolute;
     top:-25px;
     text-align:center;
@@ -58,7 +69,6 @@ div#login-box input#login-submit:hover {
 
 .column .head {
     font-weight:normal;
-    color:blue;
 }
 
 .column .head:hover {
@@ -74,13 +84,12 @@ a.period {
     font-size:20px;
     top:-65px;
     display:block;
-    color:blue;
     padding:.25em;
     cursor:hand;
 }
 
 .period:hover {
-    background:blue;
+    background:red;
     color:white;
     cursor:hand;
 }
@@ -105,7 +114,6 @@ div#statusbar {
 }
 
 #notebook-toggle, #list-toggle, #account-login, #account-create {
-    color:blue;
     cursor:hand;    
 }
 
@@ -145,7 +153,6 @@ input#search-submit {
     display:none;
     padding:0 10px 0 10px;
     background:white;
-    color:blue;
     cursor:hand;        
 }
 
@@ -290,7 +297,6 @@ div.notebook-span {
 }
 
 a.play {
-    color:blue;
     cursor:hand;
     display:block;
     float:right;

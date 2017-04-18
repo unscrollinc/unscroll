@@ -1,34 +1,44 @@
 "use strict";
 (function( $, MediumEditor) {
 
+    const API = 'http://127.0.0.1:8000';
+    const AUTH = API + '/rest-auth';
+
     function newUser() {
         return {username:undefined,
                 email:undefined,
                 key:undefined}
     }
     var USER = newUser();
-    
-    const API = 'http://127.0.0.1:8000';
-    const AUTH = API + '/rest-auth';
 
     const ENDPOINTS = {
         'userLogin': function(data) {
-            $.post({
+	    $.post({
                 url:AUTH + '/login/',
                 data:data,
                 context:data,
                 failure:function(e) {
-                    console.log('Failure: ' + e);
+		    console.log('Failure: ' + e);
                 },
+		error: function(e) {
+		    console.log(e);
+		    if (e.status === 400) {
+			console.log('[ERROR] ' + e.responseJSON.non_field_errors[0]);
+		    }
+		    else {
+			console.log('[ERROR] ' + 'Uncaught error condition.');
+		    }
+		},
                 success:function(o) {
-                    USER.key = o.key;
-                    USER.username = this.username;
-                    console.log('Logged in user: ' + USER.username + '.');
-                    $('#account-login').text('You are: ' + USER.username);
-                    $('#account-create')
+		    console.log(o);
+		    USER.key = o.key;
+		    USER.username = this.username;
+		    console.log('Logged in user: ' + USER.username + '.');
+		    $('#account-login').text('You are: ' + USER.username);
+		    $('#account-create')
                         .text('Logout')
                         .on('click',
-                            function(e) {
+			    function(e) {
                                 ENDPOINTS.userLogout();            
                             });
                     $('#login-box').toggle();                    
@@ -173,36 +183,40 @@
     }
     
     var timeFrames = {
-	hours: {
+	minutes: {
 	    add: function(datetime, no) {
-		return datetime.clone().add(no, 'hours');
+		return datetime.clone().add(no, 'minutes');
 	    },
 	    columnStepper: function(i, start) {
-		var spanStart = moment(start.startOf('hour')).add(4 * i,'minutes');
-		var spanEnd = moment(spanStart).add(15, 'minutes');
-		return {
+		var spanStart = moment(start).add(1 * i, 'minutes');
+		var spanEnd = moment(start).add(1 * i, 'minutes');
+		var _r = {
 		    start:spanStart,
 		    end:spanEnd,
-		    text:spanEnd.format('h:m')
+		    text:spanStart.format('h:mma')
 		};
+		console.log(i, _r);
+		return _r;
 	    },
 	    columnAdd: function(datetime, no) {
 		return datetime.clone().add(no, 'minutes');
 	    },	    
 	    getColumns: function(count, start, end) {
-		return 15;
+		return 10;
 	    },
 	    getPeriod: function(start) {
-		return makePeriod(start.format('MMMM D, YYYY h:ma'),
-				  start.clone().startOf('day'),
-				  start.clone().endOf('day'));
+		return makePeriod(start.format('MMM D, YYYY h:mm:ss')
+				  + ' - '
+				  + moment(start).add(9, 'minutes').add('59', 'seconds').format('h:mm:ssa'),
+				  start.clone().startOf('hour'),
+				  start.clone().endOf('hour'));
 	    },
 	    getOffset: function(datetime, resolution) {
-                if (resolutions[resolution] >= resolution['hours']) {
-                    return Math.floor(15 * Math.random());
+                if (resolutions[resolution] >= resolution['minutes']) {
+                    return Math.floor(10 * Math.random());
                 }
 		else {
-                    return datetime.minutes() - 15;
+                    return datetime.minutes() - 10;
                 }
 	    },
 	    getEventWidth: function(columns, len) {
@@ -210,7 +224,58 @@
 	    },
 	    getTarget: function(start, pointerInteger, pointerMantissa) {
 		var pointerFocus = start.clone().add(pointerInteger, 'minutes');
-		var columns = 15;
+		var columns = 10;
+		var target = pointerFocus.clone().add(
+		    Math.floor( pointerMantissa * columns ),
+		    'hours');
+		return {
+		    columns:columns,
+		    target:target
+		};
+	    }
+	},		
+	hours: {
+	    add: function(datetime, no) {
+		return datetime.clone().add(no, 'hours');
+	    },
+	    columnStepper: function(i, start) {
+		var spanStart = moment(start).startOf('hour').add(10 * i, 'minutes');
+		var spanEnd = moment(spanStart).add(10 * i, 'minutes');
+		var _r = {
+		    start:spanStart,
+		    end:spanEnd,
+		    text:spanStart.format('h:mma')
+		};
+		console.log(i, _r);
+		return _r;
+	    },
+	    columnAdd: function(datetime, no) {
+		return datetime.clone().add(no, 'minutes');
+	    },	    
+	    getColumns: function(count, start, end) {
+		return 6;
+	    },
+	    getPeriod: function(start) {
+		return makePeriod(start.format('MMMM D, YYYY h:mm')
+				  + ' - '
+				  + moment(start).add(59, 'minutes').format('h:mma'),
+				  start.clone().startOf('day'),
+				  start.clone().endOf('day'));
+	    },
+	    getOffset: function(datetime, resolution) {
+                if (resolutions[resolution] >= resolution['hours']) {
+                    return Math.floor(10 * Math.random());
+                }
+		else {
+                    return datetime.minutes() - 10;
+                }
+	    },
+	    getEventWidth: function(columns, len) {
+		return Math.floor(2 + Math.random() * columns/5);
+	    },
+	    getTarget: function(start, pointerInteger, pointerMantissa) {
+		var pointerFocus = start.clone().add(pointerInteger, 'minutes');
+		var columns = 6;
 		var target = pointerFocus.clone().add(
 		    Math.floor( pointerMantissa * columns ),
 		    'hours');
@@ -531,7 +596,7 @@
     }
     
     function makeColumn(i, columnWidth, columnData) {
-	return $('<div></div>', {class:'column'})
+	return $('<div></div>', {class:'column nav'})
 	    .css({width:columnWidth,
 		  left:columnWidth * i})
 	    .append(
@@ -550,7 +615,7 @@
 
     
     function makePeriod(text, start, end) {
-	return $('<a></a>', {class:'period',
+	return $('<a></a>', {class:'period nav',
 			     href:'/?begin='
 			     + start.format()
 			     + '&end='
@@ -682,6 +747,7 @@
                                     href:event.content_url}).html('LINK ');
             }
         }
+	
 	return {
 	    div: $('<div></div>', {class:'event'}).append(
 		$('<div></div>', {class:'inner'}).append(
