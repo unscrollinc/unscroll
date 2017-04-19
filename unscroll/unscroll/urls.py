@@ -70,6 +70,15 @@ class ScrollViewSet(viewsets.ModelViewSet):
     queryset = Scroll.objects.all()
     serializer_class = ScrollSerializer
 
+    def list(self, request):
+    user = self.context['request'].user
+        
+        def get_queryset(self):        
+        pass
+
+    
+
+    
 
 class EventFilter(django_filters.rest_framework.FilterSet):
     start = django_filters.IsoDateTimeFilter(name='datetime',
@@ -134,8 +143,6 @@ class BulkEventViewSet(BulkModelViewSet):
     queryset = Event.objects.all()
     serializer_class = BulkEventSerializer
     
-
-
 
 # Note
 class NoteSerializer(serializers.HyperlinkedModelSerializer):

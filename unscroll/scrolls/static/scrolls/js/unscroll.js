@@ -93,6 +93,20 @@
                 }
             });
         },
+        'userScrolls':function () {
+            $.get({
+                url:API + '/scrolls/',
+                headers: {
+                    'Authorization': 'Token ' + USER.key
+                },
+                failure:function(e) {
+                    console.log('Failure: ' + e);
+                },
+                success:function(o) {
+                    $.extend(USER, o);
+                }
+            });
+        },
         'noteCreate':function(data) {
 	    if (USER.key) {
 		$.post({
