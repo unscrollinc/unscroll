@@ -1,6 +1,6 @@
 import json
 from baseconv import base36
-from PIL import Image
+from PIL import Image, ImageOps
 from io import BytesIO
 import requests
 import hashlib
@@ -74,26 +74,37 @@ class UnscrollClient():
         img_hex = img_hash.hexdigest()
         img_int = int(img_hex, 16)
         img_36 = base36.encode(img_int)
-
-        # 36 ^ 6 gives us 2,176,782,336 possible dirs which is fine
-        # for this cache.
-        dirchars = list(img_36[0:6])
-        subimg_dir = '/'.join(dirchars)
-        img_dir = 'img/{}'.format(subimg_dir,)
+        img_dir = 'img/{}/{}'.format(img_36[0:2],img_36[2:4],)
         img_filename = "{}/{}.jpg".format(img_dir, img_36,)
         return (img_36, img_dir, img_filename,)
 
-    def cache_thumbnail(self, url):
-        (img_36, img_dir, img_filename) = self.rebase(url.encode('utf-8'))
+    def fetch_wiki_thumbnail(self, subject):
+        url = 'https://en.wikipedia.org/w/api.php?action=query&titles={}&prop=pageimages&format=json&pithumbsize={}'.format(subject, config.THUMBNAIL_SIZE[0])
+        r = requests.get(url)
+        j = r.json()
+        for k in j['query']['pages'].keys():
+            thumb = j['query']['pages'][k]['thumbnail']
+            return {'url':thumb['source'],
+                    'width':thumb['width'],
+                    'height':thumb['height']}
 
+    def cache_thumbnail(self, url):
         # if it's not cached then get it
-        if (not(exists(img_filename))):
-            r = requests.get(url)
-            img = Image.open(BytesIO(r.content))
-            img.thumbnail(config.THUMBNAIL_SIZE)
+        r = requests.get(url)
+        img = Image.open(BytesIO(r.content))
+
+        thumb = ImageOps.fit(img, config.THUMBNAIL_SIZE)
+        width, height = thumb.size
+        (img_36, img_dir, img_filename) = self.rebase(thumb.tobytes())
+        
+        try:
             makedirs(img_dir)
-            img.save(img_filename)
+            thumb.save(img_filename)
+        except FileExistsError as e:
+            pass
 
         return {'url': url,
+                'width':width,
+                'height':height,
                 'sha1id36': img_36,
                 'cache_thumbnail': img_filename}
