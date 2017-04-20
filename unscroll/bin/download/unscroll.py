@@ -78,7 +78,7 @@ class UnscrollClient():
         img_filename = "{}/{}.jpg".format(img_dir, img_36,)
         return (img_36, img_dir, img_filename,)
 
-    def fetch_wiki_thumbnail(self, subject):
+    def fetch_wiki_thumbnail_url(self, subject):
         url = 'https://en.wikipedia.org/w/api.php?action=query&titles={}&prop=pageimages&format=json&pithumbsize={}'.format(subject, config.THUMBNAIL_SIZE[0])
         r = requests.get(url)
         j = r.json()
