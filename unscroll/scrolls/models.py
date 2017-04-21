@@ -34,15 +34,29 @@ class Scroll(models.Model):
 
     def __unicode__(self):
         return '{}'.format(self.title,)
+    
+
+class Thumbnail(models.Model):
+    user = models.ForeignKey(User,
+                             null=True,
+                             related_name='thumbnails')
+    sha1 = models.CharField(max_length=64)
+    image_url = models.URLField(max_length=512, null=True)
+    source_url = models.URLField(max_length=512, null=True)
 
 
 class Event(models.Model):
     """"""
+    user = models.ForeignKey(User,
+                             null=True,
+                             related_name='events')
     scroll = models.ForeignKey(Scroll,
                                related_name='events')
     created = models.DateTimeField(auto_now_add=True)
     mediatype = models.CharField(max_length=128,
                                  default="text/html")
+    content_type = models.CharField(max_length=128,
+                                    default="event")
     title = models.TextField(blank=False)
     text = models.TextField(blank=True, null=True)
     ranking = models.FloatField(db_index=True, default=0)
@@ -50,7 +64,11 @@ class Event(models.Model):
     resolution = models.CharField(max_length=32, default='days')
     source_url = models.URLField(null=True)
     source_date = models.CharField(max_length=128, null=True)
-    content_url = models.URLField(max_length=512,null=True)
+    content_url = models.URLField(max_length=512, null=True)
+    thumbnail = models.ForeignKey(Thumbnail,
+                                  related_name='events',
+                                  null=True)
+
 
     class Meta:
         ordering = ['-ranking', 'datetime']

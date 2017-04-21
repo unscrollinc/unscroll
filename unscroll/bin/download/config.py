@@ -1,2 +1,3 @@
 THUMBNAIL_SIZE = 128, 128
+WIKIPEDIA_THUMBNAIL_SIZE=512
 IMAGE_DIR = '/Users/ford/dev/cache/unscroll/'

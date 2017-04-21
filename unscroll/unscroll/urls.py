@@ -5,7 +5,7 @@ from django.conf.urls.static import static
 import django_filters
 from rest_framework import generics, serializers, viewsets, routers, response
 from rest_framework.permissions import IsAdminUser
-from scrolls.models import Scroll, Event, Note, NoteMedia, MediaType, ContentType
+from scrolls.models import Scroll, Event, Note, NoteMedia, MediaType, ContentType, Thumbnail
 from rest_framework_swagger.views import get_swagger_view
 #from rest_framework.schemas import get_schema_view
 
@@ -41,6 +41,19 @@ class MediaTypeViewSet(viewsets.ModelViewSet):
     queryset = MediaType.objects.all()
     serializer_class = MediaTypeSerializer
 
+class ThumbnailSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Thumbnail
+        fields = ('user',
+                  'sha1',
+                  'image_url',
+                  'source_url')
+
+
+class ThumbnailViewSet(viewsets.ModelViewSet):
+    queryset = Thumbnail.objects.all()
+    serializer_class = ThumbnailSerializer    
+
 
 class ContentTypeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -70,15 +83,15 @@ class ScrollViewSet(viewsets.ModelViewSet):
     queryset = Scroll.objects.all()
     serializer_class = ScrollSerializer
 
-    def list(self, request):
-    user = self.context['request'].user
-        
-        def get_queryset(self):        
-        pass
+#    def list(self, request):
+#        user = self.context['request'].user
+#        
+#        def get_queryset(self):        
+#        pass
 
     
 
-    
+
 
 class EventFilter(django_filters.rest_framework.FilterSet):
     start = django_filters.IsoDateTimeFilter(name='datetime',

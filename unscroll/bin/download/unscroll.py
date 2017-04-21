@@ -74,19 +74,29 @@ class UnscrollClient():
         img_hex = img_hash.hexdigest()
         img_int = int(img_hex, 16)
         img_36 = base36.encode(img_int)
-        img_dir = 'img/{}/{}'.format(img_36[0:2],img_36[2:4],)
+        img_dir = 'img/{}/{}'.format(img_36[0:2], img_36[2:4],)
         img_filename = "{}/{}.jpg".format(img_dir, img_36,)
-        return (img_36, img_dir, img_filename,)
+        
+        return {'img_hash': img_36,
+                'img_dir': img_dir,
+                'img_filename': img_filename}
 
-    def fetch_wiki_thumbnail_url(self, subject):
-        url = 'https://en.wikipedia.org/w/api.php?action=query&titles={}&prop=pageimages&format=json&pithumbsize={}'.format(subject, config.THUMBNAIL_SIZE[0])
+    def fetch_wiki_thumbnail_data(self, title=None):
+        url = 'https://en.wikipedia.org/w/api.php?action=query'\
+                '&titles={}&prop=pageimages&format=json&pithumbsize={}'\
+                .format(title, config.WIKIPEDIA_THUMBNAIL_SIZE)
         r = requests.get(url)
+        print(url)
         j = r.json()
-        for k in j['query']['pages'].keys():
-            thumb = j['query']['pages'][k]['thumbnail']
-            return {'url':thumb['source'],
-                    'width':thumb['width'],
-                    'height':thumb['height']}
+        try:
+            for k in j['query']['pages'].keys():
+                thumb = j['query']['pages'][k]['thumbnail']
+                return {'url': thumb['source'],
+                        'title':title,
+                        'width': thumb['width'],
+                        'height': thumb['height']}
+        except KeyError:
+            return None
 
     def cache_thumbnail(self, url):
         # if it's not cached then get it
@@ -95,16 +105,17 @@ class UnscrollClient():
 
         thumb = ImageOps.fit(img, config.THUMBNAIL_SIZE)
         width, height = thumb.size
-        (img_36, img_dir, img_filename) = self.rebase(thumb.tobytes())
-        
+        rebased = self.rebase(thumb.tobytes())
+
         try:
-            makedirs(img_dir)
-            thumb.save(img_filename)
+            makedirs(rebased['img_dir'])
+            thumb.save(rebased['img_filename'])
         except FileExistsError as e:
+            print(e)
             pass
 
         return {'url': url,
-                'width':width,
-                'height':height,
-                'sha1id36': img_36,
-                'cache_thumbnail': img_filename}
+                'width': width,
+                'height': height,
+                'sha1id36': rebased['img_hash'],
+                'cache_thumbnail': rebased['img_filename']}
