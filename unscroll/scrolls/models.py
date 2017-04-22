@@ -40,8 +40,10 @@ class Thumbnail(models.Model):
     user = models.ForeignKey(User,
                              null=True,
                              related_name='thumbnails')
-    sha1 = models.CharField(max_length=64)
-    image_url = models.URLField(max_length=512, null=True)
+    sha1 = models.CharField(max_length=64, null=True)
+    width = models.IntegerField(null=True)
+    height = models.IntegerField(null=True)    
+    image_location = models.CharField(max_length=128, null=True)
     source_url = models.URLField(max_length=512, null=True)
 
 

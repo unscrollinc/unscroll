@@ -8,6 +8,13 @@ from rest_framework.permissions import IsAdminUser
 from scrolls.models import Scroll, Event, Note, NoteMedia, MediaType, ContentType, Thumbnail
 from rest_framework_swagger.views import get_swagger_view
 #from rest_framework.schemas import get_schema_view
+from PIL import Image, ImageOps
+from io import BytesIO
+import requests
+from unscroll.settings import THUMBNAIL_SIZE
+import hashlib
+from baseconv import base36
+from os import makedirs
 
 #Bulk
 from rest_framework_bulk.routes import BulkRouter
@@ -41,12 +48,15 @@ class MediaTypeViewSet(viewsets.ModelViewSet):
     queryset = MediaType.objects.all()
     serializer_class = MediaTypeSerializer
 
-class ThumbnailSerializer(serializers.HyperlinkedModelSerializer):
+class ThumbnailSerializer(serializers.HyperlinkedModelSerializer):    
     class Meta:
         model = Thumbnail
-        fields = ('user',
+        fields = ('url',
+                  'user',
                   'sha1',
-                  'image_url',
+                  'width',
+                  'height',
+                  'image_location',
                   'source_url')
 
 
@@ -54,7 +64,50 @@ class ThumbnailViewSet(viewsets.ModelViewSet):
     queryset = Thumbnail.objects.all()
     serializer_class = ThumbnailSerializer    
 
+    def rebase(self, o):
+        img_hash = hashlib.sha1(o)
+        img_hex = img_hash.hexdigest()
+        img_int = int(img_hex, 16)
+        img_36 = base36.encode(img_int)
+        img_dir = 'img/{}/{}'.format(img_36[0:2], img_36[2:4],)
+        img_filename = "{}/{}.jpg".format(img_dir, img_36,)
+        
+        return {'img_hash': img_36,
+                'img_dir': img_dir,
+                'img_filename': img_filename}
 
+    def perform_create(self, serializer):
+        url = serializer.initial_data['source_url']
+        # if it's not cached then get it
+        r = requests.get(serializer.initial_data['source_url'])
+        img = Image.open(BytesIO(r.content))
+        thumb = ImageOps.fit(img, settings.THUMBNAIL_SIZE)
+        width, height = thumb.size
+        rebased = self.rebase(thumb.tobytes())
+
+        try:
+            makedirs(rebased['img_dir'])
+            thumb.save(rebased['img_filename'])
+        except FileExistsError as e:
+            print(e)
+            pass
+
+        serializer.save(
+            source_url = url,
+            image_location = rebased['img_filename'],
+            width = width,
+            height = height,
+            sha1 = rebased['img_hash'])
+
+
+        # return {'url': url,
+        #         'width': width,
+        #         'height': height,
+        #         'sha1id36': rebased['img_hash'],
+        #         'cache_thumbnail': rebased['img_filename']}
+
+
+    
 class ContentTypeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ContentType
@@ -181,11 +234,13 @@ class NoteViewSet(viewsets.ModelViewSet):
 # Routers provide a way of automatically determining the URL conf.
 router = BulkRouter()
 #router = routers.DefaultRouter()
+router.register(r'users', UserViewSet)
 router.register(r'mediatypes', MediaTypeViewSet)
 router.register(r'contenttypes', ContentTypeViewSet)
 router.register(r'scrolls', ScrollViewSet)
 router.register(r'events', EventViewSet)
 router.register(r'notes', NoteViewSet)
+router.register(r'thumbnails', ThumbnailViewSet)
 router.register(r'bulk-events', BulkEventViewSet)
 
 schema_view = get_swagger_view(title='Unscroll API')
