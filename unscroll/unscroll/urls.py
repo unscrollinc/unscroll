@@ -11,12 +11,12 @@ from rest_framework_swagger.views import get_swagger_view
 from PIL import Image, ImageOps
 from io import BytesIO
 import requests
-from unscroll.settings import THUMBNAIL_SIZE
+from unscroll.settings import THUMBNAIL_SIZE, THUMBNAIL_DIR
 import hashlib
 from baseconv import base36
 from os import makedirs
 
-#Bulk
+#Bulkevent
 from rest_framework_bulk.routes import BulkRouter
 from rest_framework_bulk import (
     BulkListSerializer,
@@ -29,13 +29,16 @@ from rest_framework_bulk import (
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
-        fields = ('url', 'username', 'email', 'is_staff')
+        fields = ('url',
+                  'username',
+                  'email',
+                  'is_staff')
 
 
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     queryset = User.objects.all()
-#    permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminUser]
 
 
 class MediaTypeSerializer(serializers.HyperlinkedModelSerializer):
@@ -59,12 +62,20 @@ class ThumbnailSerializer(serializers.HyperlinkedModelSerializer):
                   'image_location',
                   'source_url')
 
+    def create(self, validated_data):
+        validated_data['user'] = self.context['request'].user
+        s = Thumbnail(**validated_data)
+        s.save()
+        return s
+        
 
 class ThumbnailViewSet(viewsets.ModelViewSet):
     queryset = Thumbnail.objects.all()
     serializer_class = ThumbnailSerializer    
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    filter_fields = ('source_url',)
 
-    def rebase(self, o):
+    def hash_image(self, o):
         img_hash = hashlib.sha1(o)
         img_hex = img_hash.hexdigest()
         img_int = int(img_hex, 16)
@@ -77,37 +88,35 @@ class ThumbnailViewSet(viewsets.ModelViewSet):
                 'img_filename': img_filename}
 
     def perform_create(self, serializer):
-        url = serializer.initial_data['source_url']
-        # if it's not cached then get it
-        r = requests.get(serializer.initial_data['source_url'])
+        source_url = serializer.initial_data['source_url']
+        r = requests.get(source_url)
         img = Image.open(BytesIO(r.content))
-        thumb = ImageOps.fit(img, settings.THUMBNAIL_SIZE)
-        width, height = thumb.size
-        rebased = self.rebase(thumb.tobytes())
-
+        img.convert("RGBA")
+        width, height = img.size
+        thumb = img
+        if width > THUMBNAIL_SIZE[0]:
+            thumb = ImageOps.fit(img, THUMBNAIL_SIZE)
+            width, height = thumb.size
+        hashed = self.hash_image(thumb.tobytes())
         try:
-            makedirs(rebased['img_dir'])
-            thumb.save(rebased['img_filename'])
+            makedirs('{}/{}'.format(THUMBNAIL_DIR, hashed['img_dir'],))
+            thumb.save('{}/{}'.format(THUMBNAIL_DIR, hashed['img_filename']),
+                       quality=50,
+                       optimize=True,
+                       progressive=True)
+
         except FileExistsError as e:
             print(e)
             pass
 
         serializer.save(
-            source_url = url,
-            image_location = rebased['img_filename'],
+            source_url = source_url,
+            user = self.request.user,
+            image_location = hashed['img_filename'],
             width = width,
             height = height,
-            sha1 = rebased['img_hash'])
-
-
-        # return {'url': url,
-        #         'width': width,
-        #         'height': height,
-        #         'sha1id36': rebased['img_hash'],
-        #         'cache_thumbnail': rebased['img_filename']}
-
-
-    
+            sha1 = hashed['img_hash'])
+        
 class ContentTypeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ContentType
@@ -122,8 +131,13 @@ class ContentTypeViewSet(viewsets.ModelViewSet):
 class ScrollSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Scroll
-        fields = ('id', 'user', 'created',
-                  'title', 'description',)
+        fields = ('url',
+                  'user',
+                  'created',
+                  'title',
+                  'subtitle',
+                  'description',
+                  'thumbnail',)
 
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user
@@ -158,31 +172,50 @@ class EventFilter(django_filters.rest_framework.FilterSet):
 
 class EventSerializer(serializers.HyperlinkedModelSerializer):
     scroll_title = serializers.CharField(read_only=True, source="scroll.title")
-    scroll_id = serializers.IntegerField(read_only=True, source="scroll.id")
-    
+    scroll_thumb_image = serializers.CharField(read_only=True, source="scroll.thumbnail.image_location")    
+    thumb_height = serializers.IntegerField(read_only=True, source="thumbnail.height")
+    thumb_width = serializers.IntegerField(read_only=True, source="thumbnail.width")
+    thumb_image = serializers.CharField(read_only=True, source="thumbnail.image_location")            
+
     class Meta:
         model = Event
         fields = ('url',
+                  'user',
                   'scroll',
                   'scroll_title',
-                  'scroll_id',
+                  'scroll_thumb_image',                  
+                  'thumbnail',
+                  'thumb_height',
+                  'thumb_width',
+                  'thumb_image',                  
                   'created',
                   'title',
                   'text',
                   'ranking',
-                  'mediatype',
+                  'media_type',
+                  'content_type',                  
                   'resolution',
                   'datetime',
                   'source_url',
                   'source_date',
                   'content_url')
 
+    def create(self, validated_data):
+        validated_data['user'] = self.context['request'].user
+        s = Event(**validated_data)
+        s.save()
+        return s
+        
+
 
 
 class EventViewSet(viewsets.ModelViewSet):
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     filter_class = EventFilter
-    queryset = Event.objects.select_related('scroll')
+    queryset = Event.objects.select_related('scroll',
+                                            'scroll__thumbnail',
+                                            'user',
+                                            'thumbnail')
     serializer_class = EventSerializer
 
 
@@ -228,9 +261,6 @@ class NoteViewSet(viewsets.ModelViewSet):
     serializer_class = NoteSerializer
 
 
-
-
-
 # Routers provide a way of automatically determining the URL conf.
 router = BulkRouter()
 #router = routers.DefaultRouter()
@@ -241,7 +271,7 @@ router.register(r'scrolls', ScrollViewSet)
 router.register(r'events', EventViewSet)
 router.register(r'notes', NoteViewSet)
 router.register(r'thumbnails', ThumbnailViewSet)
-router.register(r'bulk-events', BulkEventViewSet)
+#router.register(r'bulk-events', BulkEventViewSet)
 
 schema_view = get_swagger_view(title='Unscroll API')
 #schema_view = get_schema_view(title="Unscroll API")

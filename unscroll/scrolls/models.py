@@ -21,6 +21,26 @@ class ContentType(models.Model):
         return '{}'.format(self.name,)
 
 
+class Thumbnail(models.Model):
+    user = models.ForeignKey(User,
+                             null=True,
+                             related_name='thumbnails')
+    sha1 = models.CharField(max_length=64,
+                            unique=True,
+                            null=True)
+    width = models.IntegerField(null=True)
+    height = models.IntegerField(null=True)    
+    image_location = models.CharField(max_length=128,
+                                      unique=True,
+                                      null=True)
+    source_url = models.URLField(max_length=512,
+                                 unique=True,
+                                 null=False)
+
+    def __unicode__(self):
+        return '{}'.format(self.image_location,)
+
+
 class Scroll(models.Model):
     user = models.ForeignKey(User,
                              null=True,
@@ -29,23 +49,16 @@ class Scroll(models.Model):
     public = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
     title = models.TextField()
-    subtitle = models.TextField(blank=True)
+    subtitle = models.TextField(blank=True,null=True)
     description = models.TextField(null=True)
-
+    thumbnail = models.ForeignKey(Thumbnail,
+                                  related_name='scrolls',
+                                  null=True)
+    
     def __unicode__(self):
         return '{}'.format(self.title,)
+
     
-
-class Thumbnail(models.Model):
-    user = models.ForeignKey(User,
-                             null=True,
-                             related_name='thumbnails')
-    sha1 = models.CharField(max_length=64, null=True)
-    width = models.IntegerField(null=True)
-    height = models.IntegerField(null=True)    
-    image_location = models.CharField(max_length=128, null=True)
-    source_url = models.URLField(max_length=512, null=True)
-
 
 class Event(models.Model):
     """"""
@@ -55,7 +68,7 @@ class Event(models.Model):
     scroll = models.ForeignKey(Scroll,
                                related_name='events')
     created = models.DateTimeField(auto_now_add=True)
-    mediatype = models.CharField(max_length=128,
+    media_type = models.CharField(max_length=128,
                                  default="text/html")
     content_type = models.CharField(max_length=128,
                                     default="event")

@@ -121,5 +121,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-THUMBNAIL_SIZE = 128, 128
-IMAGE_DIR = '/Users/ford/dev/cache/unscroll/'
+THUMBNAIL_SIZE = 256, 256
+THUMBNAIL_DIR = '/Users/ford/dev/unscroll/unscroll/scrolls/static/scrolls'

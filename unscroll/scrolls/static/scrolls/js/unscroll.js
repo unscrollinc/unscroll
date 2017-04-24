@@ -422,7 +422,7 @@
 		return datetime.month();
 	    },
 	    getEventWidth: function(width, len) {
-		return 1 + Math.floor(Math.random() * width/2);
+		return 1 + Math.floor(Math.random() * 3);
 	    },	    
 	    getTarget: function(start, pointerInteger, pointerMantissa) {
 		var pointerFocus = start.clone().add(pointerInteger, 'years');
@@ -761,11 +761,39 @@
                                     href:event.content_url}).html('LINK ');
             }
         }
+
+	function getThumbnail(event) {
+	    if (event.thumbnail) {
+		return $('<div></div>', {'class':'thumb'})
+		    .append($('<img></img>',
+			      {'class':'thumb',
+			       'width':event.thumb_width,
+			       'height':event.thumb_height,
+			       'src':event.thumb_image,
+			       'title':'Thumbnail image'
+			 }));
+	    }
+	}
+
+	function getScrollThumbnail(event) {
+	    if (event.scroll_thumb_image) {
+		return $('<div></div>', {'class':'thumb'})
+		    .append($('<img></img>',
+			      {'class':'thumb',
+			       'src':event.scroll_thumb_image,
+			       'title':''
+			 }));
+	    }
+	}
 	
 	return {
 	    div: $('<div></div>', {class:'event'}).append(
 		$('<div></div>', {class:'inner'}).append(
-                    getLink(event),
+
+		    getLink(event),
+
+		    getThumbnail(event),
+		    
                     $('<span></span>', {class:'asnote'})
                         .html('+').on('click', (function(e) {
                             var notebookEntry = eventToNotebook(event, frame);
@@ -773,18 +801,23 @@
                             $('#notebook-text').prepend('[]');
                             
                         })),
-                    
+		    
 		    $('<span></span>', {class:'datetime'})
 			.html(_dt.format('D MMM, \'YY')),
                     
-		    $('<span></span>', {class:'text'})
+		    $('<div></div>', {class:'title'})
 			.html(event.title),
+		    
+		    $('<div></div>', {class:'text'})
+			.html(event.text),		    
                 
 		    $('<div></div>', {class:'scroll-title'})
-		        .html(event.scroll_title)
+	    		.html(event.scroll_title)
                         .on('click', function(e) {
                             $('#search-input').val('scroll:\"'+event.scroll_title+'"');
-                        })))
+                        })
+			.append(getScrollThumbnail(event))
+		))
 		.mousemove(function(event) {
 		    // Don't move if over event (cut and paste, click, etc);
 		}),
@@ -1082,8 +1115,8 @@
             $('#notebook').toggle();
         });        
         
-	var start = moment('2010-01-01T00:00:00');
-	var end = start.clone().add(1, 'days');
+	var start = moment('2001-04-01T00:00:00');
+	var end = start.clone().add(1, 'months');
         makeTimeline(start, end);
     });
 

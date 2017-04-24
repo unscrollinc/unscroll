@@ -2,8 +2,10 @@ from bs4 import BeautifulSoup
 import re
 import pprint
 import sys
-import datetime
+from datetime import date
+from datetime import datetime
 import requests
+import random
 from unscroll import UnscrollClient
 
 MONTH_NAMES = 'January|February|March|April|May|June|July|'\
@@ -40,7 +42,11 @@ class WikipediaText():
         self.year = year
         r = requests.get('https://en.wikipedia.org/wiki/{}'.format(year))
         self.parsed = BeautifulSoup(r.content, 'html.parser')
-        self.unscroll_client = UnscrollClient()
+        self.unscroll_client = UnscrollClient(api='http://127.0.0.1:8000',
+                                              username='admin',
+                                              password='password')
+        self.unscroll_client.login()
+        self.unscroll_client.create_scroll('Wikipedia Year Pages')
 
     def tidy(self, txt=None):
         return re.sub('\[edit\]\s*', '', txt)
@@ -48,7 +54,7 @@ class WikipediaText():
     def realday(self, monthname=None, day=None):
         month = MONTHS_HASH[monthname]
         day = int(day)
-        return datetime.date(self.year, month, day)
+        return date(self.year, month, day)
 
     def wikihtml_to_event(self, date=None, wikihtml=None, kind=None):
         sup = wikihtml.find('sup')
@@ -76,23 +82,38 @@ class WikipediaText():
             title = filtered[0]
             subject = title
 
-        image = None
+        thumbnail = None
         
         if subject is not None:
-            image = self.unscroll_client.fetch_wiki_thumbnail_data(title=subject)
-            cached = self.unscroll_client(
+            image_d  = self.unscroll_client.fetch_wiki_thumbnail_data(title=subject)
+            image_url = image_d.get('url') if image_d is not None else None
+            if image_url is not None:
+                thumbnail_d = self.unscroll_client.cache_thumbnail(image_url)
+                if thumbnail_d is not None:
+                    thumbnail = thumbnail_d['url']
 
+        if kind == 'world/birth':
+            title = 'Born: {}'.format(title)
+        elif kind == 'world/death':
+            title = 'Died: {}'.format(title)            
+
+        ranking = 1 - random.random()/3
+        if kind == 'world/event':
+            ranking = 1 - random.random()/10
+            
         event = {
             'title': title,
-            'subject': subject,
-            'text': "".join(contents),
+            'text': trimmed,
             'resolution': 'days',
-            'datetime': date,
-            'image':image,
-            'contenttype': kind
-        }
+            'ranking':ranking,
+            'datetime': datetime.combine(date, datetime.min.time()).isoformat(' '),
+            'thumbnail':thumbnail,
+            'content_type': kind }
+        
+        e = self.unscroll_client.create_event(event)
         pprint.pprint(event)
-        return event
+        pprint.pprint(e.json())
+        return e
 
     def descend(self, ul=None, kind=None):
         last_date = None
@@ -119,9 +140,9 @@ class WikipediaText():
             return events
 
     def get_events(self):
-        event_types = {'#Events': 'event/event',
-                       '#Births': 'event/birth',
-                       '#Deaths': 'event/death'}
+        event_types = {'#Events': 'world/event',
+                       '#Births': 'world/birth',
+                       '#Deaths': 'world/death'}
         events = []
         for keytype in event_types:
             events_h2 = self.parsed.select(keytype)[0].parent
@@ -142,6 +163,18 @@ class WikipediaText():
 def __main__(year=None):
     wt = WikipediaText(year)
     events = wt.get_events()
+    print(len(events))
+    return True
+#    c = UnscrollClient(api='http://127.0.0.1',
+#                       username='admin',
+#                       password='password')
+#    c.login()
+#    s = c.create_scroll('Wikipedia')
+#    for e in events:
+#        if e['image'] is not None:
+#            c.cache_thumbnail(e['image']['url'])
+
+                
 
 
-__main__(1990)
+__main__(1974)

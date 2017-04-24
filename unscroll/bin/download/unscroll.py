@@ -7,15 +7,25 @@ import hashlib
 from os import makedirs
 from os.path import exists
 import config
-
+import favicon
+from urllib.parse import quote_plus
 
 class UnscrollClient():
     api = None
     username = None
     password = None
     authentication_header = None
+    scroll_url = None
 
     def __init__(self,
+                 api=None,
+                 username=None,
+                 password=None):
+        self.api = api
+        self.username = username
+        self.password = password                 
+                 
+    def __batch__(self,
                  api=None,
                  username=None,
                  password=None,
@@ -45,15 +55,23 @@ class UnscrollClient():
                                       'Token {}'.format(login.get('key'),)}
         return True
 
-    def create_scroll(self, title):
+    def create_scroll(self, title,
+                      public=False,
+                      subtitle=None,
+                      description=None,
+                      thumbnail=None):
         r = requests.post(self.api + '/scrolls/',
                           headers=self.authentication_header,
-                          json={'title': title})
+                          json={'title': title,
+                                'public':public,
+                                'subtitle':subtitle,
+                                'description':description,
+                                'thumbnail':thumbnail})
         scroll = r.json()
         scroll_d = dict(scroll)
-        scroll_url = "{}/scrolls/{}/".format(self.api,
-                                             scroll_d['id'])
-        return scroll_url
+        self.scroll_url = scroll_d['url']
+        return self.scroll_url
+
 
     def create_event_batch(self, events):
         print("Batching {} events.".format(len(events)))
@@ -62,14 +80,14 @@ class UnscrollClient():
                           json=events)
         return r.json()
 
-    def create_event(self, scroll_url, event):
-        event['scroll'] = scroll_url
+    def create_event(self, event):
+        event['scroll'] = self.scroll_url
         r = requests.post(self.api + '/events/',
                           headers=self.authentication_header,
                           data=event)
         return r
 
-    def rebase(self, o):
+    def enhash(self, o):
         img_hash = hashlib.sha1(o)
         img_hex = img_hash.hexdigest()
         img_int = int(img_hex, 16)
@@ -81,12 +99,16 @@ class UnscrollClient():
                 'img_dir': img_dir,
                 'img_filename': img_filename}
 
+    def fetch_favicon_url(self, url):
+        favicon_url = favicon.get_favicon_url(url)
+        return {'url': favicon_url,
+                'title':url}
+    
     def fetch_wiki_thumbnail_data(self, title=None):
         url = 'https://en.wikipedia.org/w/api.php?action=query'\
                 '&titles={}&prop=pageimages&format=json&pithumbsize={}'\
                 .format(title, config.WIKIPEDIA_THUMBNAIL_SIZE)
         r = requests.get(url)
-        print(url)
         j = r.json()
         try:
             for k in j['query']['pages'].keys():
@@ -99,23 +121,25 @@ class UnscrollClient():
             return None
 
     def cache_thumbnail(self, url):
-        # if it's not cached then get it
-        r = requests.get(url)
-        img = Image.open(BytesIO(r.content))
+        print(self.api + '/thumbnails/')
+        r = requests.post(self.api + '/thumbnails/',
+                          headers=self.authentication_header,
+                          data={'source_url':url})
+        print(r.status_code, r)
+        
+        if r.status_code == 500:
+            return None
+        
+        if r.status_code == 400:
+            j = r.json()
+            if 'source_url' in j:
+                if j['source_url'][0] == 'thumbnail with this source url already exists.':
+                    r2 = requests.get(self.api + '/thumbnails?source_url=' + quote_plus(url))
+                    d = r2.json()
+                    if (len(d['results']) > 0):
+                        return d['results'][0]
+            return None
+        
+        return r.json()                                
 
-        thumb = ImageOps.fit(img, config.THUMBNAIL_SIZE)
-        width, height = thumb.size
-        rebased = self.rebase(thumb.tobytes())
 
-        try:
-            makedirs(rebased['img_dir'])
-            thumb.save(rebased['img_filename'])
-        except FileExistsError as e:
-            print(e)
-            pass
-
-        return {'url': url,
-                'width': width,
-                'height': height,
-                'sha1id36': rebased['img_hash'],
-                'cache_thumbnail': rebased['img_filename']}
