@@ -1,0 +1,15 @@
+div.nb-item {
+    padding:1em;
+    border-top:1px solid black;
+    text-align:center;
+}
+div.mover {
+      font-size:200%;
+      background:#ffc;
+      cursor:move;
+}
+div.prepend {
+    min-height:100px;
+    background:gray;
+    border:5px dotted blue;
+}
