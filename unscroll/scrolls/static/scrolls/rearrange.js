@@ -62,15 +62,15 @@ $(document).ready(function() {
 	if (text===undefined) {
 	    text = '<p><b>' + count + '</b></p>';
 	}
-	console.log(cssClass);
 	var item = $('<div></div>',
 		     {'class':cssClass})
 	    .html(text);
 	item.data('order', max);
 	if (cssClass!=='nb-final') {
 	    item.append(moveMaker(item));
-	    addClicker(item);
 	}
+	addClicker(item);
+	
 	item.hover(
 	    function(e){
 		if(moving) {
