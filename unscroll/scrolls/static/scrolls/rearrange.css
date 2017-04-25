@@ -15,9 +15,13 @@ div.nb-item, div.nb-final {
     
 }
 div.mover {
-    font-size:200%;
-    background:#ffc;
-    cursor:move;
+    font-size:100%;
+    background:black;
+    color:white;
+    font-family:sans-serif;
+    width:1em;
+    height:1em;
+    border:1px solid black;
 }
 div.ranger {
     border:1px solid black;
