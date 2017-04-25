@@ -1,15 +1,34 @@
-div.nb-item {
-    padding:1em;
-    border-top:1px solid black;
+body {width:50%;
+      margin:auto;}
+
+div#insert {
     text-align:center;
+    font-size:200%;
+    padding:1em;
+    
+}
+div.nb-item, div.nb-final {
+    padding:0;
+    margin:0 0 0.5em 0;
+    border:1px solid #ccc;
+    text-align:center;
+    
 }
 div.mover {
-      font-size:200%;
-      background:#ffc;
-      cursor:move;
+    font-size:200%;
+    background:#ffc;
+    cursor:move;
+}
+div.ranger {
+    border:1px solid black;
+    cursor:hand;    
+    width:50%;
+    margin-left:25%;
 }
 div.prepend {
-    min-height:100px;
-    background:gray;
-    border:5px dotted blue;
+    opacity:0.6;
+    position:absolute;
+    width:100%;
+    height:100%;
+    cursor:hand;
 }
