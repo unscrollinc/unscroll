@@ -36,3 +36,7 @@ div.prepend {
     height:100%;
     cursor:hand;
 }
+
+div.selected {
+    opacity:0.1;
+}
