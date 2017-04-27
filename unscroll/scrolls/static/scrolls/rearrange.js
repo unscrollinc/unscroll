@@ -41,23 +41,23 @@ $(document).ready(function() {
 				.add(p)
 				.addBack()
 				.addClass('selected');
-			    elsToMove.push.apply(elsToMove, els);
+			    elsToMove= $.merge(elsToMove, els);
 			}
 			if (p.isBefore(elToMove)) {
-			    elsToMove = [$(elToMove)];			    
-			    $(p)
+			    elsToMove = [$(elToMove)];
+			    els = $(p)
 				.nextUntil(elToMove)
 				.add(p)
 				.addBack()			    
 				.addClass('selected');
-			    elsToMove.push.apply(els, elsToMove);
-			    addUnselect(elsToMove);			    
+			    elsToMove= $.merge(els, elsToMove);                            
 			}
 			console.log('Clicked on range. from:',
 				    elToMove.data('order'),
 				    'to: ',
 				    p.data('order'),				    
-				    'eltomove'
+				    'eltomove',
+                                    elsToMove.length
 				   );
 
 			    // .andSelf().add(p);
@@ -106,7 +106,7 @@ $(document).ready(function() {
 			elsToMove = [];
 		    }
 		    else {
-			if (elToMove !== item) {
+			if (elToMove && elToMove !== item) {
 			    var old_id = elToMove.data('order');
 			    var rightBefore = item.prev().data('order');
 			    var rightAfter = item.data('order');
@@ -137,7 +137,53 @@ $(document).ready(function() {
     function insertFinal() {
 	insertItem('nb-final', max, '&mdash;END&mdash;');
     }
-    
+
+    var NOTEBOOK_STATE = {
+        now_moving:false,
+        selectedItems:[]
+    };
+
+    function NOTEBOOK_STATE(change) {
+        return state;
+    }
+
+    function makeNotebookItem() {
+        var item = { order:undefined,
+                     event:undefined,
+                     text:undefined,
+                     notebook:undefined,
+                     view:undefined,
+                     changed:false,
+                     lastSave:undefined
+                   };
+
+        var eventHTML = $('<div></div>');
+        var editor = undefined;
+        var notebookView = $('<div></div>', {class:'nb-item'})
+            .append(eventHTML)
+            .append(editor);
+        var textView = $('<div></div>', {'class':'view-item'});
+        var moveButton = $('<div></div>', {'class':'move-button'}).html('M');        
+
+        editor.on('change', function(ev) {
+            item.changed:true,
+            textView.append(editor.html());
+        });
+        
+        move.on('click', function(ev) {
+            NOTEBOOK.moving = true;
+        });
+        
+        notebook.on('click', function(ev) {
+            view.css({background:'red'});
+            if (moving) {
+                
+            }
+        });
+
+    }
+
+
     function insertItem(cssClass, count, text) {
 	if (count===undefined) {
 	    count = max;
@@ -148,12 +194,10 @@ $(document).ready(function() {
 	if (text===undefined) {
 	    text = '<p class="no"><b>' + count + '</b></p>';
 	}
-	console.log("#"+((1<<24)* Math.random()|0));
 	var item = $('<div></div>',
 		     {'class':cssClass})
 		     .html(text)
-	    .css({'background':"#"+((1<<24) * Math.random()|0)
-		  .toString(16)});
+	    .css({'background':"#fff"});
 	item.data('order', max);
 	if (cssClass!=='nb-final') {
 	    item.append(moveMaker(item));
@@ -174,7 +218,7 @@ $(document).ready(function() {
     }
     $('#insert').on('click', function(e) {insertItem();});
     insertFinal();
-    for (var i = 0; i<20; i++) {
+    for (var i = 0; i<2000; i++) {
 	insertItem();
     }
 
