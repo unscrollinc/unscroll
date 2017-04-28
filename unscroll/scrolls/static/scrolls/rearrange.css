@@ -40,3 +40,15 @@ div.prepend {
 div.selected {
     opacity:0.1;
 }
+
+div#notebook {
+    width:50%;
+    min-height:100px;
+    border:1px solid black;
+}
+span#essay {
+    min-height:100px;    
+    width:50%;
+    margin-left:50%;
+    border:1px solid red;    
+}
