@@ -9,217 +9,94 @@
 })(jQuery);
 
 $(document).ready(function() {
-    var max = 100.0;
-    const SUBTRACT = -1;
-    var moving = false;
-    var elToMove = undefined;
-    var elsToMove = [];
-    var dropHere = $('<div></div>',
-		     {class:'prepend'})
-	.html('Drop Here');
-    
-    function moveMaker(el) {
-	var mover = $('<div></div>',
-		      {'class': 'mover',
-		       'title':'Rearrange notes'})
-	    .html('M');
-	
-	
-	mover.on('click', function(ev) {
-	    if(!moving) {
-		ev.stopPropagation();
-		el.addClass('selected');
-		$('.mover')
-		    .html('R')
-		    .on('click', function(ev) {
-			ev.stopPropagation();
-			var p = $(this).parent();
-			if (elToMove.isBefore(p)) {
-			    elsToMove = [$(elToMove)];
-			    var els = $(elToMove)
-				.nextUntil(p)
-				.add(p)
-				.addBack()
-				.addClass('selected');
-			    elsToMove= $.merge(elsToMove, els);
-			}
-			if (p.isBefore(elToMove)) {
-			    elsToMove = [$(elToMove)];
-			    els = $(p)
-				.nextUntil(elToMove)
-				.add(p)
-				.addBack()			    
-				.addClass('selected');
-			    elsToMove= $.merge(els, elsToMove);                            
-			}
-			console.log('Clicked on range. from:',
-				    elToMove.data('order'),
-				    'to: ',
-				    p.data('order'),				    
-				    'eltomove',
-                                    elsToMove.length
-				   );
 
-			    // .andSelf().add(p);
-			    //
-		    });
-		elToMove = el;
-		moving = true;
-	    }
-	});
-	return mover;
-    }
-    
-    function addClicker(item) {
-	item.on('click', function(e){
-	    if (moving) {
-		if (item.hasClass('selected')) {
-		    $('.selected').removeClass('selected');
-		    console.log('all good, all done');
-		    elsToMove = [];
-		    elToMove = undefined;
-		}
-		else {
-		    var ct = elsToMove.length;
-		    if (ct > 0) {
-			var rightBefore = item.prev().data('order');
-			var rightAfter = item.data('order');
-			console.log('count is', ct);
-			for (var i = 0; i<ct; i++) {
-			    var el = $(elsToMove[i]);
-			    var between = rightBefore + ((i + 1) * ((rightAfter - rightBefore)/(1 + ct)));
-			    old_order = el.data('order');
-			    el.data('order', between);
-			    el.children('p.no').remove();
-			    el.prepend('<p class="no"><b>X' + between + '</b></p>');
-			    el.insertBefore(item);
-			    el.removeClass('selected');
-			    
-			    console.log('EACH: PATCH this note with ID X with an update that the order',
-					old_order, 'is now', between);
-			    
-			}
-			
-			$('.mover').html('M');			
-			moving = false;		
-			elToMove = undefined;
-			elsToMove = [];
-		    }
-		    else {
-			if (elToMove && elToMove !== item) {
-			    var old_id = elToMove.data('order');
-			    var rightBefore = item.prev().data('order');
-			    var rightAfter = item.data('order');
-			    var between = rightBefore + (rightAfter - rightBefore)/2;			    
-			    if (rightBefore===undefined) {
-				between = rightAfter - 1;
-			    }
-			    elToMove.data('order', between);
-			    elToMove.children('p.no').remove();
-			    elToMove.prepend('<p class="no"><b>' + between + '</b></p>');
-			    elToMove.insertBefore(item);
-			}
-			elToMove.removeClass('selected');
-			$('.mover').html('M');
-			$('.mover').html('M');			
-			moving = false;		
-			elToMove = undefined;
-			elsToMove = [];			
-			
-			console.log('PATCH this note with ID X with an update that the order', old_id, 'is now', between);
-		    }
-		}
-
-	    }
-	});
+    const max = 200;
+    const dec = 10;
+    var ctr = max;
+    const timeBeforePatch = 10000; // milliseconds
+    const timeBeforeRefresh = 5000; // milliseconds
+    function decmax() {
+        ctr = ctr - dec;
+        return ctr;
     }
 
-    function insertFinal() {
-	insertItem('nb-final', max, '&mdash;END&mdash;');
-    }
-
-    var NOTEBOOK_STATE = {
-        now_moving:false,
+    var NOTEBOOK = {
+        moving:false,
         selectedItems:[]
     };
 
-    function NOTEBOOK_STATE(change) {
-        return state;
+    function timeSince(lastPatch, lastRefresh) {
+        var d = new Date().getTime();
+        var deltaRefresh = d - lastRefresh;
+        var deltaPatch = d - lastPatch;    
+        var shouldRefresh = deltaRefresh > timeBeforeRefresh;
+        var shouldPatch = deltaPatch > timeBeforePatch;
+        return {now:d,
+                shouldRefresh:shouldRefresh,
+                shouldPatch:shouldPatch};
     }
+    
+    function makeNotebookItem(event, convertFunction, note) {
+        var lastPatch = new Date().getTime();
+        var lastRefresh = new Date().getTime();
+        
+        var eventHTML = convertFunction(event);
 
-    function makeNotebookItem() {
-        var item = { order:undefined,
-                     event:undefined,
-                     text:undefined,
-                     notebook:undefined,
-                     view:undefined,
-                     changed:false,
-                     lastSave:undefined
-                   };
+        var editor = $('<textarea></textarea>');
 
-        var eventHTML = $('<div></div>');
-        var editor = undefined;
+        var moveButton = $('<div></div>', {'class':'move-button'}).html('M');
+        
         var notebookView = $('<div></div>', {class:'nb-item'})
             .append(eventHTML)
+            .append(moveButton)
             .append(editor);
-        var textView = $('<div></div>', {'class':'view-item'});
-        var moveButton = $('<div></div>', {'class':'move-button'}).html('M');        
 
-        editor.on('change', function(ev) {
-            item.changed:true,
-            textView.append(editor.html());
+        var textView = $('<div></div>', {'class':'view-item'})
+            .append(editor.val());
+
+        editor.on('input', function(ev) {
+            var td = timeSince(lastPatch, lastRefresh);
+            console.log('timeDelta', td);
+            lastChanged = td.now;
+            if (td.shouldRefresh) {
+                lastRefresh = new Date().getTime();
+                textView.text(editor.val()).fadeIn();
+            }
+            if (td.shouldPatch) {
+            }            
+
         });
+
         
-        move.on('click', function(ev) {
+        moveButton.on('click', function(ev) {
+            if (NOTEBOOK.moving) {
+            }
             NOTEBOOK.moving = true;
         });
+
+        return { order:decmax(),
+                 event:undefined,
+                 text:event.text,
+                 notebookView:notebookView,
+                 textView:textView,
+                 lastSave:undefined
+               };
+    }
+
+
+    function makeEvent(event) {
+        return $('<div></div>').html(event.title);
         
-        notebook.on('click', function(ev) {
-            view.css({background:'red'});
-            if (moving) {
-                
-            }
-        });
-
     }
 
-
-    function insertItem(cssClass, count, text) {
-	if (count===undefined) {
-	    count = max;
-	}
-	if (cssClass===undefined) {
-	    cssClass = 'nb-item';
-	}
-	if (text===undefined) {
-	    text = '<p class="no"><b>' + count + '</b></p>';
-	}
-	var item = $('<div></div>',
-		     {'class':cssClass})
-		     .html(text)
-	    .css({'background':"#fff"});
-	item.data('order', max);
-	if (cssClass!=='nb-final') {
-	    item.append(moveMaker(item));
-	}
-	addClicker(item);
-	item.hover(
-	    function(e){
-		if (moving) {
-		    item.css({cursor:'hand'});
-		}
-	    },
-	    function(e){
-		item.css({cursor:'pointer'});
-	    }
-	);
-        $('#notebook').prepend(item);
-        max += SUBTRACT;
-    }
-    $('#insert').on('click', function(e) {insertItem();});
-    insertFinal();
-    for (var i = 0; i<2000; i++) {
-	insertItem();
+    function addNote(event) {
+        // UPON AJAX SUCCESS
+      
+        var item = makeNotebookItem({title:'The title of the event'}, makeEvent, {});
+        $('#notebook').append(item.notebookView);
+        $('#essay').append(item.textView);            
+        console.log('TODO: SAVE NEW ITEM TO SERVER');
     }
 
+    addNote();
 });
