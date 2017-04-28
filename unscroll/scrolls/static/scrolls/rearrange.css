@@ -1,19 +1,18 @@
 body {width:50%;
+      font:sans-serif;
       margin:auto;}
 
 div#insert {
-    text-align:center;
     font-size:200%;
     padding:1em;
-    
 }
+
 div.nb-item, div.nb-final {
     padding:0;
     margin:0 0 0.5em 0;
     border:1px solid #ccc;
-    text-align:center;
-    
 }
+
 div.mover {
     font-size:100%;
     background:black;
@@ -23,12 +22,14 @@ div.mover {
     height:1em;
     border:1px solid black;
 }
+
 div.ranger {
     border:1px solid black;
     cursor:hand;    
     width:50%;
     margin-left:25%;
 }
+
 div.prepend {
     opacity:0.6;
     position:absolute;
@@ -42,13 +43,23 @@ div.selected {
 }
 
 div#notebook {
-    width:50%;
+    position:absolute;    
+    top:100px;
+    width:25%;
     min-height:100px;
     border:1px solid black;
 }
-span#essay {
+
+div#essay {
+    position:absolute;
+    top:100px;    
     min-height:100px;    
-    width:50%;
-    margin-left:50%;
+    width:25%;
+    margin-left:25%;
     border:1px solid red;    
 }
+
+
+div.save-state {float:left;width:1em;color:white;}
+div.save-state.false {background-color:red;}
+div.save-state.true {background-color:green;}
