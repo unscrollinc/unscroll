@@ -14,7 +14,7 @@ $(document).ready(function() {
     const dec = 10;
     var ctr = max;
     const timeBeforePatch = 10000; // milliseconds
-    const timeBeforeRefresh = 5000; // milliseconds
+    const timeBeforeRefresh = 1500; // milliseconds
     function decmax() {
         ctr = ctr - dec;
         return ctr;
@@ -57,17 +57,15 @@ $(document).ready(function() {
         editor.on('input', function(ev) {
             var td = timeSince(lastPatch, lastRefresh);
             console.log('timeDelta', td);
-            lastChanged = td.now;
             if (td.shouldRefresh) {
-                lastRefresh = new Date().getTime();
+                lastRefresh = td.now;
                 textView.text(editor.val()).fadeIn();
             }
             if (td.shouldPatch) {
+                lastPatch = td.now;
             }            
-
         });
 
-        
         moveButton.on('click', function(ev) {
             if (NOTEBOOK.moving) {
             }
@@ -90,12 +88,13 @@ $(document).ready(function() {
     }
 
     function addNote(event) {
+        // Post a new note and get ID, etc. Then make it from the event.
         // UPON AJAX SUCCESS
-      
+        console.log('TODO: SAVE NEW ITEM TO SERVER');      
         var item = makeNotebookItem({title:'The title of the event'}, makeEvent, {});
         $('#notebook').append(item.notebookView);
         $('#essay').append(item.textView);            
-        console.log('TODO: SAVE NEW ITEM TO SERVER');
+
     }
 
     addNote();
