@@ -1,10 +1,11 @@
-body {width:50%;
+body {
       font:sans-serif;
       margin:auto;}
 
-div#insert {
-    font-size:200%;
-    padding:1em;
+div.button {
+    color:red;
+    cursor:hand;
+    text-transform:uppercase;
 }
 
 div.nb-item, div.nb-final {
@@ -13,7 +14,7 @@ div.nb-item, div.nb-final {
     border:1px solid #ccc;
 }
 
-div.mover {
+div.move-button {
     font-size:100%;
     background:black;
     color:white;
@@ -32,7 +33,6 @@ div.ranger {
 
 div.prepend {
     opacity:0.6;
-    position:absolute;
     width:100%;
     height:100%;
     cursor:hand;
@@ -43,23 +43,28 @@ div.selected {
 }
 
 div#notebook {
-    position:absolute;    
-    top:100px;
-    width:25%;
-    min-height:100px;
+    width:50%;
+}
+
+head {
+    border:5px solid green;
+}
+
+div#notebook-items {
+    overflow:auto;
+    width:49%;
     border:1px solid black;
+    float:left;    
 }
 
-div#essay {
-    position:absolute;
-    top:100px;    
-    min-height:100px;    
-    width:25%;
-    margin-left:25%;
-    border:1px solid red;    
+div#notebook-essay {
+    overflow:auto;
+    width:50%;
+    left:50%;
+    border:1px solid red;
 }
 
-
+div.editable {padding:0.5em;background:lightblue;font-family:sans-serif;}
 div.save-state {float:left;width:1em;color:white;}
 div.save-state.false {background-color:red;}
 div.save-state.true {background-color:green;}

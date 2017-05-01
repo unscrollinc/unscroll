@@ -4,13 +4,13 @@
     <meta name="viewport" content="width=device-width, user-scalable=no">
     <script src="js/ext/jquery-3.1.1.js"></script>
     <script src="js/ext/moment.js"></script>
-<!--
+
     <script src="https://cdn.jsdelivr.net/medium-editor/latest/js/medium-editor.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/medium-editor/latest/css/medium-editor.min.css" type="text/css" media="screen" charset="utf-8">
--->
 
- <link href="https://cdn.quilljs.com/1.2.4/quill.snow.css" rel="stylesheet">
-<script src="https://cdn.quilljs.com/1.2.4/quill.min.js" type="text/javascript"></script>
+<!-- <link href="https://cdn.quilljs.com/1.2.4/quill.snow.css" rel="stylesheet">
+     <script src="https://cdn.quilljs.com/1.2.4/quill.min.js" type="text/javascript"></script>
+-->
 
     
     <style type="text/css">
@@ -20,10 +20,19 @@
   </head>
   
   <body>
-    <div id="insert">Insert</div>
     <div id="notebook">
+      <div id="notebook-head">
+        <div id="insert-button" class="button">+ Note</div>
+        <div id="insert-image" class="button">+ Image</div>
+        <div id="insert-space" class="button">+ Space</div>
+        <div id="notebook-list-button" class="button">Notebook list</div>
+      </div>
+      <div id="notebook-body">
+        <div id="notebook-listing"></div>
+        <div id="notebook-title"></div>
+        <div id="notebook-items"></div>
+        <div id="notebook-essay"></div>
+      </div>
     </div>
-    <div id="essay">
-    </div>    
   </body>
 </html>
