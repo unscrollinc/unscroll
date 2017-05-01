@@ -2,7 +2,7 @@ body {
       font:sans-serif;
       margin:auto;}
 
-div.button {
+.button {
     color:red;
     cursor:hand;
     text-transform:uppercase;
@@ -63,7 +63,7 @@ div#notebook-essay {
     left:50%;
     border:1px solid red;
 }
-
+div.nb-item.spacer div.editable {display:block;}
 div.editable {padding:0.5em;background:lightblue;font-family:sans-serif;}
 div.save-state {float:left;width:1em;color:white;}
 div.save-state.false {background-color:red;}

@@ -132,7 +132,7 @@
             var creationTime = new Date().getTime();
             var nbitem = this;
             this.event = event;
-            this.kind = kind;
+            this.kind = kind ? kind : 'default';
             this.note = note;
             this.id = undefined;
             if (this.note) {
@@ -151,7 +151,13 @@
                     return $('<div></div>').html(event.title);
                 }
                 else if (this.kind=='spacer') {
-                    return $('<div></div>').html('SPACER');                    
+                    return $('<div></div>').append(
+                        $('<span></span>', {class:'button'}).html('[2]')
+                            .on('click', function() { nbitem.medium.setContent('<br/><br/>');}),
+                        '|',
+                        $('<span></span>', {class:'button'}).html('&mdash;')
+                            .on('click', function() { nbitem.medium.setContent('<hr></hr>');})                        
+                    );                    
                 }
                 else {
                     return $('<div></div>').html('No event');                
@@ -159,12 +165,17 @@
             }
             this.eventHTML = this.render();
             this.editor = $('<div></div>', {class:'editable'});
+            if (this.kind === 'spacer') {
+                this.editor.html($('<br/><br/>'));
+            }            
             this.medium = new MediumEditor(this.editor, {
                 disableReturn: true,
                 disableDoubleReturn: false,
                 disableExtraSpaces: true,
                 targetBlank: true                
             });
+
+            
             this.textView = $('<span></span>',
                               {'class':'view-item'})
                 .on('click', function() {});
@@ -184,7 +195,7 @@
             this.makeNotebookView = function() {
                 var nbv = undefined;
                 return $('<div></div>',
-			 {class:'nb-item'})
+			 {class:'nb-item ' + kind})
                     .append(this.eventHTML)
                     .append(this.editor)
                     .append(this.moveButton);
@@ -192,9 +203,8 @@
             }
             
             this.notebookView = this.makeNotebookView();
-            
-
-            
+            this.textView.html(this.medium.getContent());
+           
 	    this.medium.subscribe('editableInput', function (event, editor) {
                 nbitem.changed();              
                 nbitem.textView.html(nbitem.medium.getContent());
