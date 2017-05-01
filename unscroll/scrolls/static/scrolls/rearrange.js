@@ -7,7 +7,7 @@
     };
 
     $(document).ready(function() {
-        const REFRESH_INTERVAL = 10000; // milliseconds
+        const REFRESH_INTERVAL = 2000; // milliseconds
         const timeBeforeRefresh = 10; // milliseconds
         
         function timeSince(STATUS) {
@@ -23,11 +23,13 @@
                     shouldPatch:shouldPatch};
         }
 
+	/* ############################## */
         var NotebookListItem = function() {
             this.load = function() {};
             this.render = function() {};
         }
-        
+
+        /* ############################## */
         var NotebookList = function() {
             this.dom_nblist = $('#notebook-list');
             this.notebooks = new Array();
@@ -35,7 +37,8 @@
             this.load = function() {};
             this.render = function() {};
         };
-        
+
+        /* ############################## */	
         var Notebook = function(id) {
 
             const max = 200;
@@ -51,11 +54,11 @@
 
             this.id = id;
 
+	    /* Get our DOM objects */
             this.dom_title = $('#notebook-title')
             this.dom_nb = $('#notebook-items');
             this.dom_nb_listing = $('#notebook-listing');            
             this.dom_essay = $('#notebook-essay');
-            
             this.dom_insert = $('#insert-button')
                 .on('click', function(ev) {
                     nb.makeItem();
@@ -63,21 +66,21 @@
             
             this.dom_spacer = $('#insert-space')
                 .on('click', function(ev) {
-                    nb.makeItem(undefined, undefined, 'spacer');
+                    nb.makeItem('spacer');
                 });
+	    
+            this.dom_spacer = $('#insert-image')
+                .on('click', function(ev) {
+                    nb.makeItem('image');
+                });	    
             
             this.dom_nb_list = $('#notebook-list-button');            
 
             this.needsCreated = this.id ? false : true;
             this.needsUpdated = false;
             this.needsDeleted = false;
-            
             this.title = undefined;
-
             this.items = new Array();
-
-
-            
             this.titleEditor = $('<div></div>', {class:'editable'});
             this.medium = new MediumEditor(this.titleEditor, {
                 disableReturn: true,
@@ -95,8 +98,8 @@
                     html:item.medium.getContent()};
             }
 
-            this.makeItem = function(event, note, kind) {
-                var item = new NotebookItem(event, note, kind);
+            this.makeItem = function(kind, event, note) {
+                var item = new NotebookItem(kind, event, note);
                 this.dom_nb.prepend(item.notebookView);
                 this.dom_essay.prepend(item.textView);
                 this.items.push(item);
@@ -105,30 +108,41 @@
             // every X seconds look through this.items for items that have changed
             this.scanner = function () {
                 var changed = new Array();
+                var deleted = new Array();
                 for (var i=0; i<nb.items.length; i++) {
                     if (nb.items[i].needsUpdated) {
                         changed.push(nb.items[i]);
                     }
+		    if (nb.items[i].needsDeleted) {
+                        deleted.push(nb.items[i]);			
+		    }
                 }
-                var success = true;
-                if (success) {
-                    if (changed.length > 0) {
-                        var patch = $.map(changed, nb.makePatch);
-                        console.log(JSON.stringify(patch));
-                        for (var i=0; i<changed.length; i++) {
-                            nb.items[i].needsUpdated = false;
-                        }
-                    }
-                    else {
-                        console.log('Nothing needs to be saved.');
-                    }
-                }
-            }
-            
+		if (changed.length > 0) {
+                    var patch = $.map(changed, nb.makePatch);
+                    console.log(JSON.stringify(patch));
+                    for (var i=0; i<nb.items.length; i++) {
+                        nb.items[i].needsUpdated = false;
+                    }		    
+		}
+		if (deleted.length > 0) {
+		    console.log('gonna delete', deleted);
+		    var success=true;
+		    var newItems = new Array();
+		    if (success) {
+			for (var i=0; i<nb.items.length; i++) {			
+			    if (!nb.items[i].needsDeleted) {
+				newItems.push(nb.items[i]);
+			    }			
+			}
+			nb.items = newItems;
+			console.log(nb.items);
+		    }
+		}
+	    }
             setInterval(this.scanner, REFRESH_INTERVAL);
         };
         
-        var NotebookItem = function(event, note, kind) {
+        var NotebookItem = function(kind, event, note) {
             var creationTime = new Date().getTime();
             var nbitem = this;
             this.event = event;
@@ -152,22 +166,37 @@
                 }
                 else if (this.kind=='spacer') {
                     return $('<div></div>').append(
-                        $('<span></span>', {class:'button'}).html('[2]')
-                            .on('click', function() { nbitem.medium.setContent('<br/><br/>');}),
-                        '|',
+                        $('<span></span>', {class:'button'}).html('Space &times; 2')
+			    .addClass('active')
+                            .on('click', function() {
+				nbitem.eventHTML.children('span.button').removeClass('active');
+				$(this).addClass('active');
+				nbitem.medium.setContent('<br/><br/>');}),
                         $('<span></span>', {class:'button'}).html('&mdash;')
-                            .on('click', function() { nbitem.medium.setContent('<hr></hr>');})                        
+                            .on('click', function() {
+				nbitem.eventHTML.children('span.button').removeClass('active');
+				$(this).addClass('active');				
+				nbitem.medium.setContent('<hr></hr>');
+			    })                        
                     );                    
                 }
+                else if (this.kind=='image') {
+                    return $('<div></div>').html('IMAGE');
+                }		
                 else {
                     return $('<div></div>').html('No event');                
                 }
             }
             this.eventHTML = this.render();
+
             this.editor = $('<div></div>', {class:'editable'});
             if (this.kind === 'spacer') {
                 this.editor.html($('<br/><br/>'));
-            }            
+            }
+	    else if (event && event.html) {
+		this.editor.html(event.html)
+	    }
+	    
             this.medium = new MediumEditor(this.editor, {
                 disableReturn: true,
                 disableDoubleReturn: false,
@@ -175,7 +204,6 @@
                 targetBlank: true                
             });
 
-            
             this.textView = $('<span></span>',
                               {'class':'view-item'})
                 .on('click', function() {});
@@ -184,27 +212,46 @@
                 this.needsUpdated = true;
             };
             
-            this.moveButton = $('<div></div>',
-                                {'class':'move-button'})
-                .html('M')
+            this.moveButton = $('<span></span>',
+                                {'class':'button'})
+                .html('Move')
                 .on('click', function(ev) {
                     console.log(ev, nbitem);
                 });
 
+            this.deleteButton = $('<span></span>',
+                                  {'class':'button'})
+                .html('X')
+                .on('click', function(ev) {
+                    nbitem.needsDeleted = true;
+		    nbitem.notebookView.remove();
+		    nbitem.textView.remove();		    
+                });	    
 
             this.makeNotebookView = function() {
                 var nbv = undefined;
                 return $('<div></div>',
 			 {class:'nb-item ' + kind})
+                    .append(this.moveButton)
+                    .append(this.deleteButton)				
                     .append(this.eventHTML)
-                    .append(this.editor)
-                    .append(this.moveButton);
-                
+                    .append(this.editor);
             }
             
             this.notebookView = this.makeNotebookView();
             this.textView.html(this.medium.getContent());
            
+	    this.medium.subscribe('focus', function (event, editor) {
+		$('span.view-item').removeClass('focused');
+		nbitem.textView.addClass('focused');
+		var scrollTop = $('#notebook-essay').scrollTop()
+		    + $(nbitem.textView).position().top - 100;
+		
+		$('#notebook-essay').animate({
+		    scrollTop: scrollTop
+		});
+
+	    });
 	    this.medium.subscribe('editableInput', function (event, editor) {
                 nbitem.changed();              
                 nbitem.textView.html(nbitem.medium.getContent());
@@ -213,7 +260,15 @@
         }
 
         var notebook = new Notebook('a');
-        var item = notebook.makeItem(event);
+
+	var lorem = 'Contrary to popular belief. ';
+
+
+	for (var i = 0; i<10; i++) {
+            var item = notebook.makeItem('default', {title:'event title', html:lorem}, {title:"PANTS"});
+	}
+	
+
     });
     
 })(jQuery, MediumEditor);
