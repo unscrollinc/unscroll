@@ -81,6 +81,7 @@
             this.needsDeleted = false;
             this.title = undefined;
             this.items = new Array();
+            this.savingItems = new Array();	    
             this.titleEditor = $('<div></div>', {class:'editable'});
             this.medium = new MediumEditor(this.titleEditor, {
                 disableReturn: true,
@@ -107,8 +108,13 @@
             
             // every X seconds look through this.items for items that have changed
             this.scanner = function () {
+
+		// THIS NEEDS LOVE AND SHOULDN'T BE AN ARRAY; SHOULD
+		// BE HASH BY MD5 MAYBE
+		
                 var changed = new Array();
                 var deleted = new Array();
+                var created = new Array();		
                 for (var i=0; i<nb.items.length; i++) {
                     if (nb.items[i].needsUpdated) {
                         changed.push(nb.items[i]);
@@ -116,7 +122,18 @@
 		    if (nb.items[i].needsDeleted) {
                         deleted.push(nb.items[i]);			
 		    }
+		    if (nb.items[i].needsCreated) {
+                        created.push(nb.items[i]);
+		    }		    
                 }
+
+		if (changed.length > 0) {
+                    var patch = $.map(created, nb.makePatch);
+                    console.log(JSON.stringify(patch));
+                    for (var i=0; i<nb.items.length; i++) {
+                        nb.items[i].needsCreated = false;
+                    }		    
+		}		
 		if (changed.length > 0) {
                     var patch = $.map(changed, nb.makePatch);
                     console.log(JSON.stringify(patch));
@@ -156,39 +173,47 @@
             this.lastRefresh = creationTime;
             this.data = {};
 
-            this.needsCreated = note ? true : false;
-            this.needsUpdated = note ? false : true;
+            this.needsCreated = note ? false : true;
+            this.needsUpdated = false;
             this.needsDeleted = false;
 
+	    this.buttons = $('<div></div>', {class:'buttons'});
+		    
             this.render = function() {
+		var d = $('<div></div>', {class:'top'});
+		
                 if (this.event) {
-                    return $('<div></div>').html(event.title);
+                    return d.html(event.title);
                 }
                 else if (this.kind=='spacer') {
-                    return $('<div></div>').append(
-                        $('<span></span>', {class:'button'}).html('Space &times; 2')
+		    this.buttons.append(
+			$('<span></span>', {class:'button'}).html('Space &times; 2')
 			    .addClass('active')
-                            .on('click', function() {
-				nbitem.eventHTML.children('span.button').removeClass('active');
+			    .on('click', function() {
+				nbitem.buttons.children('span.button').removeClass('active');
 				$(this).addClass('active');
 				nbitem.medium.setContent('<br/><br/>');}),
-                        $('<span></span>', {class:'button'}).html('&mdash;')
-                            .on('click', function() {
-				nbitem.eventHTML.children('span.button').removeClass('active');
+			$('<span></span>', {class:'button'}).html('&mdash;')
+			    .on('click', function() {
+				nbitem.buttons.children('span.button').removeClass('active');
 				$(this).addClass('active');				
 				nbitem.medium.setContent('<hr></hr>');
-			    })                        
-                    );                    
+			    }));
+		    return d;
                 }
                 else if (this.kind=='image') {
-                    return $('<div></div>').html('IMAGE');
+                    return d.html('image');
                 }		
                 else {
-                    return $('<div></div>').html('No event');                
+                    return d.html('note');
                 }
             }
             this.eventHTML = this.render();
 
+	    if (this.kind == 'spacer') {
+
+            }
+	    
             this.editor = $('<div></div>', {class:'editable'});
             if (this.kind === 'spacer') {
                 this.editor.html($('<br/><br/>'));
@@ -206,15 +231,17 @@
 
             this.textView = $('<span></span>',
                               {'class':'view-item'})
-                .on('click', function() {});
+                .on('click', function() {
+		});
 
             this.changed = function() {
                 this.needsUpdated = true;
             };
-            
+
+	    
             this.moveButton = $('<span></span>',
                                 {'class':'button'})
-                .html('Move')
+                .html('MV')
                 .on('click', function(ev) {
                     console.log(ev, nbitem);
                 });
@@ -232,14 +259,15 @@
                 var nbv = undefined;
                 return $('<div></div>',
 			 {class:'nb-item ' + kind})
-                    .append(this.moveButton)
-                    .append(this.deleteButton)				
+		    .append(this.buttons
+			    .append(this.moveButton)
+			    .append(this.deleteButton))
                     .append(this.eventHTML)
                     .append(this.editor);
             }
             
             this.notebookView = this.makeNotebookView();
-            this.textView.html(this.medium.getContent());
+            this.textView.html(this.medium.getContent() + ' ');
            
 	    this.medium.subscribe('focus', function (event, editor) {
 		$('span.view-item').removeClass('focused');
@@ -260,15 +288,13 @@
         }
 
         var notebook = new Notebook('a');
-
-	var lorem = 'Contrary to popular belief. ';
-
-
-	for (var i = 0; i<10; i++) {
-            var item = notebook.makeItem('default', {title:'event title', html:lorem}, {title:"PANTS"});
-	}
 	
+	var lorem = 'Contrary to popular belief.';
 
+	
+	for (var i = 0; i<10; i++) {
+            var item = notebook.makeItem('default', {title:'Brisket hell ipsum dolor est', html:lorem}, {title:"PANTS"});
+	}
     });
     
 })(jQuery, MediumEditor);

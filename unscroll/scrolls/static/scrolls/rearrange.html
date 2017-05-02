@@ -7,12 +7,6 @@
 
     <script src="https://cdn.jsdelivr.net/medium-editor/latest/js/medium-editor.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/medium-editor/latest/css/medium-editor.min.css" type="text/css" media="screen" charset="utf-8">
-
-<!-- <link href="https://cdn.quilljs.com/1.2.4/quill.snow.css" rel="stylesheet">
-     <script src="https://cdn.quilljs.com/1.2.4/quill.min.js" type="text/javascript"></script>
--->
-
-    
     <style type="text/css">
       @import url('rearrange.css');
     </style>
@@ -22,10 +16,12 @@
   <body>
     <div id="notebook">
       <div id="notebook-head">
-        <span id="insert-button" class="button">Note</span>
-        <span id="insert-image" class="button">Image</span>
-        <span id="insert-space" class="button">Space</span>
-        <span id="notebook-list-button" class="button">Notebook list</span>
+	<div id="notebook-controls">
+          <span id="insert-button" class="button">&plus;note</span>
+          <span id="insert-space" class="button">&plus;space</span>
+          <span id="insert-image" class="button">&plus;image</span>
+          <span id="notebook-list-button" class="button">Notebook list</span>
+	</div>
       </div>
       <div id="notebook-body">
         <div id="notebook-listing"></div>
