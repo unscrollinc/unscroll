@@ -190,12 +190,14 @@
 			$('<span></span>', {class:'button'}).html('Space &times; 2')
 			    .addClass('active')
 			    .on('click', function() {
-				nbitem.buttons.children('span.button').removeClass('active');
+				nbitem.buttons.children('span.button')
+                                    .removeClass('active');
 				$(this).addClass('active');
 				nbitem.medium.setContent('<br/><br/>');}),
 			$('<span></span>', {class:'button'}).html('&mdash;')
 			    .on('click', function() {
-				nbitem.buttons.children('span.button').removeClass('active');
+				nbitem.buttons.children('span.button')
+                                    .removeClass('active');
 				$(this).addClass('active');				
 				nbitem.medium.setContent('<hr></hr>');
 			    }));
