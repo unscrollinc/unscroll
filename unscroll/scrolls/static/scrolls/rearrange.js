@@ -41,6 +41,7 @@
         /* ############################## */	
         var Notebook = function(id) {
 
+	    
             const max = 200;
             const dec = 10;
             var ctr = max;
@@ -49,6 +50,29 @@
                 ctr = ctr - dec;
                 return ctr;
             }
+	    
+	    // http://stackoverflow.com/questions/2798893/ordered-hash-in-javascript
+	    this.makeOrderedHash = function() {
+		var keys = [];
+		var vals = {};
+		return {
+		    push: function(k,v) {
+			if (!vals[k]) keys.push(k);
+			vals[k] = v;
+		    },
+		    insert: function(pos,k,v) {
+			if (!vals[k]) {
+			    keys.splice(pos,0,k);
+			    vals[k] = v;
+			}
+		    },
+		    val: function(k) {return vals[k]},
+		    length: function() {return keys.length},
+		    keys: function() {return keys},
+		    values: function() {return vals}
+		};
+	    };
+
             
             var nb = this;
 
@@ -79,8 +103,13 @@
             this.needsCreated = this.id ? false : true;
             this.needsUpdated = false;
             this.needsDeleted = false;
+
+
+	    this.moving = false;
+	    
             this.title = undefined;
             this.items = new Array();
+	    this.itemsHash = this.makeOrderedHash();
             this.savingItems = new Array();	    
             this.titleEditor = $('<div></div>', {class:'editable'});
             this.medium = new MediumEditor(this.titleEditor, {
@@ -104,11 +133,13 @@
                 this.dom_nb.prepend(item.notebookView);
                 this.dom_essay.prepend(item.textView);
                 this.items.push(item);
+		var order = this.decmax();
+		this.itemsHash.push(order, item);
             }
-            
+	    
             // every X seconds look through this.items for items that have changed
             this.scanner = function () {
-
+		console.log(nb.itemsHash.keys());
 		// THIS NEEDS LOVE AND SHOULDN'T BE AN ARRAY; SHOULD
 		// BE HASH BY MD5 MAYBE
 		
@@ -160,6 +191,9 @@
         };
         
         var NotebookItem = function(kind, event, note) {
+
+
+	    
             var creationTime = new Date().getTime();
             var nbitem = this;
             this.event = event;
