@@ -1,17 +1,18 @@
 body {
-      font:sans-serif;
-      margin:auto;
+    font:12pt Roboto;
+    margin:auto;
 }
 
 .button {
-    color:white;
-    background:#3388cc;
+    color:#444;
+    background:#d9eaf3;
+    font-weight:bold;
     cursor:hand;
     text-transform:uppercase;
     font-family:sans-serif;
     font-size:8pt;
     padding:0.25em 0.5em 0.25em 0.5em;
-    box-shadow: 2px 2px 0px 0px rgba(0,0,0,0.4);
+    box-shadow: 1px 1px 2px 0px rgba(0,0,0,0.4);
 }
 
 .button.active {
@@ -55,6 +56,7 @@ div#notebook {
     height:100%;
     margin-left:auto;
     border-left:1px solid black;
+    background:white;
 }
 
 div#notebook-head {
@@ -72,22 +74,25 @@ div#notebook-body {
     width:100%;
     margin-left:auto;
     overflow:hidden;
+    background:#d9eaf3;
 }
 div#notebook-items {
     height:95%;    
     overflow:auto;
     width:49%;
-    float:left;    
+    float:left;
 }
+
 div#notebook-essay {
     background:white;
     height:100%;
+    font-family:Merriweather;
     overflow:auto;
     width:45%;
     float:left;
     padding:2.5%;
     line-height:149%;
-    font-size:14pt;
+    font-size:12pt;
     padding-bottom:250px;
 }
 div.buttons span.button {
@@ -100,32 +105,42 @@ div#notebook-essay h3 {
     font-style:italic;
     font-weight:normal;
     line-height:139%;
-    font-family:'Hoefler Text', Georgia;
     color:#884444;
 }
 
 span.focused {
     background:#eeeeff;
 }
+
 div.nb-item {
     background:white;
+    border:1px solid #88f;
+    border-radius:0.25em;
+    padding:.25em;
+    margin:1.5em 0.5em 0 0.5em;
 }
+
+
 div.nb-item .top {
-    border-bottom:1px dotted #ccc;
-    border-top:1px solid #ccc;
     padding:1em 0.25em 1em 0.25em;
 }
 div.nb-item, div.nb-final {
-    background:white;
 }
 
 div.nb-item.spacer {
     width:100%;
     height:25px;
+    background:#ccc;
 }
 
 div.nb-item.spacer div.editable {
     display:none;    
+}
+
+div.nb-item.closer {
+    text-align:center;
+    font-style:Italic;
+    margin-bottom:150px;
 }
 div.buttons {
     padding-top:2px;
@@ -136,11 +151,11 @@ div.buttons {
 div.buttons span.button {
     margin-left:2px;
 }
+
 div.editable {
-    font-size:11pt;
     background:white;
     padding:1em 0.25em 1em 0.25em;
-    font-family:sans-serif;
+    border:1px solid #d9eaf3;
 }
 
 div.save-state {
@@ -156,3 +171,4 @@ div.save-state.false {
 div.save-state.true {
     background-color:green;
 }
+
