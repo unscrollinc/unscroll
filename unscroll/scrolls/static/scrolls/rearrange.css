@@ -30,16 +30,6 @@ body {
 }
 
 
-div.move-button {
-    font-size:100%;
-    background:black;
-    color:white;
-    font-family:sans-serif;
-    width:1em;
-    height:1em;
-    border:1px solid black;
-}
-
 div.ranger {
     border:1px solid black;
     cursor:hand;    
@@ -59,11 +49,12 @@ div.selected {
 }
 
 div#notebook {
+    left:50%;
     width:50%;
     position:fixed;
     height:100%;
     margin-left:auto;
-    border-right:1px solid black;
+    border-left:1px solid black;
 }
 
 div#notebook-head {
