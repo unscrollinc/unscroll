@@ -1,6 +1,7 @@
 body {
     margin:0 0 0 0;
     padding:0;
+    font:12pt Roboto;
 }
 
 body, input {
@@ -247,92 +248,6 @@ div.title {
     user-select: none; /* Non-prefixed version, currently not supported by any browser */
 }     
 
-/* Notebook */
-
-div#notebook {
-    width:50%;
-    height:100%;
-    margin:51px 0 0 50%;
-    border-left:1px solid black;
-    background:white;
-    position:fixed;
-    display:none;
-    z-index:100;
-}
-div#notebook-menu {
-    padding:0 0 0 2.5%;
-    color:#888;
-}
-div#notebook h2 {
-    padding:0 0 0 2.5%;
-    font-size:20px;
-    font-weight:normal;
-}
-
-div#notebook-events {
-    width:50%;
-    position:absolute;
-    height:100%;
-    overflow:auto;
-}
-div.notebook-event {
-    background:white;
-    padding:0em;
-    color:white;
-}
-div.notebook-event-body {
-    color:black;
-    font-size:90%;
-    padding:0.5em;
-}
-
-a.notebook-title {
-    text-decoration:none;
-}
-div.medium-editor-element {
-    border-top:1px dotted black;
-    border-bottom:1px solid black;
-    color:black;
-    outline:none;
-}
-div#notebook-text {
-    width:50%;
-    font-size:75%;
-    margin-left:50%;
-    position:absolute;
-    height:100%;
-    overflow:auto;
-    border-left:1px solid #aaa;
-}
-
-div.notebook-span {
-    padding:.5em;
-    background:white;
-}
-
-a.play {
-    cursor:hand;
-    display:block;
-    float:right;
-    display:absolute;
-    top:0px;
-}
-a.play:hover {
-    background:blue;
-}
-span.asnote {
-    background:blue;
-    cursor:hand;
-    display:block;
-    width:1em;height:1em;
-    text-align:center;
-    float:right;
-    font-size:20px;
-    display:absolute;
-}
-.text {
-    color:#444;
-}
 div#player {
     background:blue;
     left:100%;
@@ -340,5 +255,177 @@ div#player {
     margin-top:20%;
     margin-right:0.5em;
     z-index:10000;
+}
+
+
+/* Notebook */
+
+.button {
+    font-weight:bold;
+    border-bottom:2px solid blue;
+    cursor:hand;
+    text-transform:uppercase;
+    font-family:sans-serif;
+    font-size:8pt;
+    padding:0.25em 0.5em 0.25em 0.5em;
+//    box-shadow: 1px 1px 2px 0px rgba(0,0,0,0.4);
+}
+
+.button.active {
+    color:white;
+    background:red;
+    cursor:hand;
+    text-transform:uppercase;
+    box-shadow:none;
+}
+
+.button:hover {
+    color:white;
+    background:red;
+    cursor:hand;
+    text-transform:uppercase;
+}
+
+
+div.ranger {
+    border:1px solid black;
+    cursor:hand;    
+    width:50%;
+    margin-left:25%;
+}
+
+div.prepend {
+    opacity:0.6;
+    width:100%;
+    height:100%;
+    cursor:hand;
+}
+
+div.selected {
+    opacity:0.1;
+}
+
+div#notebook {
+    z-index:100;
+    left:50%;
+    width:50%;
+    position:fixed;
+    height:100%;
+    margin-left:auto;
+    border-left:1px solid black;
+    background:white;
+}
+
+div#notebook-head {
+    height:5%;
+    padding-left:0.25em;
+    position:relative;
+}
+
+div#notebook-controls {
+    position:absolute;
+    bottom:12.5%;
+}
+
+div#notebook-body {
+    width:100%;
+    margin-left:auto;
+    overflow:hidden;
+    background:#d9eaf3;
+}
+div#notebook-items {
+    height:95%;    
+    overflow:auto;
+    width:49%;
+    float:left;
+}
+
+div#notebook-essay {
+    background:white;
+    height:100%;
+    font-family:Merriweather;
+    overflow:auto;
+    width:45%;
+    float:left;
+    padding:2.5%;
+    line-height:149%;
+    font-size:12pt;
+    padding-bottom:250px;
+}
+div.buttons span.button {
+    font-size:75%;
+}
+div#notebook-essay h2 {
+    line-height:139%;
+}
+div#notebook-essay h3 {
+    font-style:italic;
+    font-weight:normal;
+    line-height:139%;
+    color:#884444;
+}
+
+span.focused {
+    background:#eeeeff;
+}
+
+div.nb-item {
+    background:white;
+    border:1px solid #88f;
+    border-radius:0.25em;
+    padding:.25em;
+    margin:1.5em 0.5em 0 0.5em;
+}
+
+
+div.nb-item .top {
+    padding:1em 0.25em 1em 0.25em;
+}
+div.nb-item, div.nb-final {
+}
+
+div.nb-item.spacer {
+    width:100%;
+    height:25px;
+    background:#ccc;
+}
+
+div.nb-item.spacer div.editable {
+    display:none;    
+}
+
+div.nb-item.closer {
+    text-align:center;
+    font-style:Italic;
+    margin-bottom:150px;
+}
+div.buttons {
+    padding-top:2px;
+    padding-right:-2px;
+    float:right;
+    font-size:75%;
+}
+div.buttons span.button {
+    margin-left:2px;
+}
+
+div.editable {
+    background:white;
+    padding:1em 0.25em 1em 0.25em;
+    border:1px solid #d9eaf3;
+}
+
+div.save-state {
+    float:left;
+    width:1em;
+    color:white;
+}
+
+div.save-state.false {
+    background-color:red;
+}
+
+div.save-state.true {
+    background-color:green;
 }
 

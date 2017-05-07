@@ -35,15 +35,23 @@
       </div>
       <div id="mousepos"></div>
     </div>
-    <div id="notebook">
-      <h2>Notebook title</h2>
-      <div id="notebook-menu">
-        <span id="notebook-insert">insert</span>
-        // <span id="notebook-save-status">save</span>
+<div id="notebook">
+      <div id="notebook-head">
+	<div id="notebook-controls">
+          <span id="insert-button" class="button">&plus;note</span>
+          <span id="insert-space" class="button">&plus;[  ]</span>
+          <span id="insert-image" class="button">&plus;img</span>
+          <span id="notebook-list-button" class="button">List</span>
+          <span id="notebook-list-button" class="button">+ Notebook</span>	  
+	</div>
       </div>
-      <div id="notebook-events"></div>
-      <div id="notebook-text"></div>      
-    </div>    
+      <div id="notebook-body">
+        <div id="notebook-listing"></div>
+        <div id="notebook-title"></div>
+        <div id="notebook-items"></div>
+        <div id="notebook-essay"></div>
+      </div>
+</div>
 
     <div id="player"></div>
     <div id="buffer"></div>
