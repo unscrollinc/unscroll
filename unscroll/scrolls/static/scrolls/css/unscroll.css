@@ -310,9 +310,11 @@ div#notebook {
     left:50%;
     width:50%;
     position:fixed;
-    height:100%;
+    height:95%;
+    top:50px;
     margin-left:auto;
     border-left:1px solid black;
+    border-top:1px solid black;
     background:white;
 }
 
@@ -413,6 +415,7 @@ div.editable {
     background:white;
     padding:1em 0.25em 1em 0.25em;
     border:1px solid #d9eaf3;
+    font:10pt Roboto;
 }
 
 div.save-state {
@@ -428,4 +431,3 @@ div.save-state.false {
 div.save-state.true {
     background-color:green;
 }
-

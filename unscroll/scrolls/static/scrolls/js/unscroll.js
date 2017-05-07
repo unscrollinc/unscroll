@@ -1,5 +1,44 @@
 "use strict";
-(function( $, MediumEditor) {
+(function($, MediumEditor) {
+    var GLOBAL = {
+        timeline:undefined,
+        notebook:undefined
+    };
+    
+    $(document).ready(function() {
+
+
+	var start = moment('2001-04-01T00:00:00');
+	var end = start.clone().add(1, 'months');        
+        
+        GLOBAL.timeline = new Timeline(start, end);
+        GLOBAL.notebook = new Notebook('a');
+	GLOBAL.notebook.makeItem('closer');
+        
+	document.body.addEventListener('touchmove', function(event) {
+	    event.preventDefault();
+	}, false);
+        
+        $('#account-login').on('click', function(){
+            $('#login-box').toggle();
+        });
+        
+        $('#login-submit').on('click', function(e) {
+            e.preventDefault();
+            ENDPOINTS.userLogin({'username':$('#login-handle').val(),
+                                 'password':$('#login-password').val()});
+        });
+        
+        $('#notebook-toggle').on('click', function() {
+            $('#notebook').toggle();
+        });
+
+        $(document).keyup(function(e) {
+            if (e.keyCode === 27) $('#notebook').toggle();
+        });        
+
+
+    });
 
     const API = 'http://127.0.0.1:8000';
     const AUTH = API + '/rest-auth';
@@ -209,7 +248,6 @@
 		    end:spanEnd,
 		    text:spanStart.format('h:mma')
 		};
-		console.log(i, _r);
 		return _r;
 	    },
 	    columnAdd: function(datetime, no) {
@@ -260,7 +298,6 @@
 		    end:spanEnd,
 		    text:spanStart.format('h:mma')
 		};
-		console.log(i, _r);
 		return _r;
 	    },
 	    columnAdd: function(datetime, no) {
@@ -623,7 +660,7 @@
 		    .html(columnData.text)
 		    .on('click', function(e) {
 			e.preventDefault();
-			makeTimeline(columnData.start, columnData.end);
+			GLOBAL.timeline = new Timeline(columnData.start, columnData.end);
 		    }));
     }
 
@@ -638,7 +675,7 @@
 	    .html(text)
 	    .click(function(e) {
 		e.preventDefault();		
-		makeTimeline(start, end);
+                GLOBAL.timeline = new Timeline(start, end);
 	    });
     }
     
@@ -703,130 +740,112 @@
 	       };
     }
 
-    // application, audio, example, image, message, model, multipart, text, video
-    var players = {
-	'audio/mpeg':function(event) {
-	    var player = $('<audio></audio>',
-			   {src:event.content_url,
-			    controls:'controls',
-			    preload:'none',
-			    autoplay:'autoplay',
-			    class:'audioplayer'});
-	    $('div#player').empty().append(player);
-	},
-	'video/youtube':function(event) {},
-	'video/vimeo':function(event) {},
-	'audio/soundcloud':function(event) {},
-	'text/wikipedia':function(event) {}
-    }
-
-    players['audio/mp3'] = players['audio/mpeg'];
-    players['text/html'] = players['text/html']
-
-    function eventToNotebook(event, frame) {
-	var note = {event: event.url,
-		    order: 0,
-		    text: undefined}
-	ENDPOINTS.noteCreate(note)
-        var text = $('<div></div>',
-                     {class:'notebook-span'}).html('');
-        var editor = new MediumEditor(text, {
-            disableReturn: false,
-            disableExtraSpaces: true
-        });
-        return {'event':$('<div></div>', {class:'notebook-event'})
-                .html('<div class="notebook-event-body"><div class="notebook-title"><a class="notebook-title" href="'+event.content_url+'">' + event.title + '</a></div><div class="notebook-text">'+event.text+'</div></div>')
-                .append(text, editor)
-                .on('click', function(e) {
-		    
-                }),
-                'text':text,
-                'editor':editor
-               };
-    }
-
-    function eventToMeta(event, frame, columns) {
-        var _dt = moment(event.datetime);
-        
-        function getLink(event) {
-            if (players[event.mediatype]) {
-                return $('<a></a>', {class:'play'})
-	            .html('&#9654;')
-	            .on('click', function(e) {
-		        players[event.mediatype](event);
-	            });
-            }
-            else {
-                return $('<a></a>', {class:'link',
-                                    href:event.content_url}).html('LINK ');
-            }
+    var Event = function() {
+        var my = this;
+        // application, audio, example, image, message, model, multipart, text, video
+        var players = {
+	    'audio/mpeg':function(event) {
+	        var player = $('<audio></audio>',
+			       {src:event.content_url,
+			        controls:'controls',
+			        preload:'none',
+			        autoplay:'autoplay',
+			        class:'audioplayer'});
+	        $('div#player').empty().append(player);
+	    },
+	    'video/youtube':function(event) {},
+	    'video/vimeo':function(event) {},
+	    'audio/soundcloud':function(event) {},
+	    'text/wikipedia':function(event) {}
         }
-
-	function getThumbnail(event) {
-	    if (event.thumbnail) {
-		return $('<div></div>', {'class':'thumb'})
-		    .append($('<img></img>',
-			      {'class':'thumb',
-			       'width':event.thumb_width,
-			       'height':event.thumb_height,
-			       'src':event.thumb_image,
-			       'title':'Thumbnail image'
-			 }));
+        
+        players['audio/mp3'] = players['audio/mpeg'];
+        players['text/html'] = players['text/html']
+        
+        this.eventToNotebook = function(event, frame) {
+            GLOBAL.notebook.makeItem('default', event);
+        }
+        
+        this.eventToMeta = function(event, frame, columns) {
+            var _dt = moment(event.datetime);
+            
+            function getLink(event) {
+                if (players[event.mediatype]) {
+                    return $('<a></a>', {class:'play'})
+	                .html('&#9654;')
+	                .on('click', function(e) {
+		            players[event.mediatype](event);
+	                });
+                }
+                else {
+                    return $('<a></a>', {class:'link',
+                                         href:event.content_url}).html('LINK ');
+                }
+            }
+            
+	    function getThumbnail(event) {
+	        if (event.thumbnail) {
+		    return $('<div></div>', {'class':'thumb'})
+		        .append($('<img></img>',
+			          {'class':'thumb',
+			           'width':event.thumb_width,
+			           'height':event.thumb_height,
+			           'src':event.thumb_image,
+			           'title':'Thumbnail image'
+			          }));
+	        }
 	    }
-	}
-
-	function getScrollThumbnail(event) {
-	    if (event.scroll_thumb_image) {
-		return $('<div></div>', {'class':'thumb'})
-		    .append($('<img></img>',
-			      {'class':'thumb',
-			       'src':event.scroll_thumb_image,
-			       'title':''
-			 }));
+            
+	    function getScrollThumbnail(event) {
+	        if (event.scroll_thumb_image) {
+		    return $('<div></div>', {'class':'thumb'})
+		        .append($('<img></img>',
+			          {'class':'thumb',
+			           'src':event.scroll_thumb_image,
+			           'title':''
+			          }));
+	        }
 	    }
-	}
-	
-	return {
-	    div: $('<div></div>', {class:'event'}).append(
-		$('<div></div>', {class:'inner'}).append(
-
-		    getLink(event),
-
-		    getThumbnail(event),
-		    
-                    $('<span></span>', {class:'asnote'})
-                        .html('+').on('click', (function(e) {
-                            var notebookEntry = eventToNotebook(event, frame);
-                            $('#notebook-events').prepend(notebookEntry.event);
-                            $('#notebook-text').prepend('[]');
-                            
-                        })),
-		    
-		    $('<span></span>', {class:'datetime'})
-			.html(_dt.format('D MMM, \'YY')),
-                    
-		    $('<div></div>', {class:'title'})
-			.html(event.title),
-		    
-		    $('<div></div>', {class:'text'})
-			.html(event.text),		    
-                
-		    $('<div></div>', {class:'scroll-title'})
-	    		.html(event.scroll_title)
-                        .on('click', function(e) {
-                            $('#search-input').val('scroll:\"'+event.scroll_title+'"');
-                        })
-			.append(getScrollThumbnail(event))
-		))
-		.mousemove(function(event) {
-		    // Don't move if over event (cut and paste, click, etc);
-		}),
-	    width:frame.getEventWidth(columns, event.title.length),
-	    offset:frame.getOffset(_dt, event.resolution)
-	};
+	    
+	    return {
+	        div: $('<div></div>', {class:'event'}).append(
+		    $('<div></div>', {class:'inner'}).append(
+                        
+		        getLink(event),
+                        
+		        getThumbnail(event),
+		        
+                        $('<span></span>', {class:'asnote button'})
+                            .html('[+Note]').on('click', (function(e) {
+                                my.eventToNotebook(event, frame);
+                            })),
+		        
+		        $('<span></span>', {class:'datetime'})
+			    .html(_dt.format('D MMM, \'YY')),
+                        
+		        $('<div></div>', {class:'title'})
+			    .html(event.title),
+		        
+		        $('<div></div>', {class:'text'})
+			    .html(event.text),		    
+                        
+		        $('<div></div>', {class:'scroll-title'})
+	    		    .html(event.scroll_title)
+                            .on('click', function(e) {
+                                $('#search-input').val('scroll:\"'+event.scroll_title+'"');
+                            })
+			    .append(getScrollThumbnail(event))
+		    ))
+		    .mousemove(function(event) {
+		        // Don't move if over event (cut and paste, click, etc);
+		    }),
+	        width:frame.getEventWidth(columns, event.title.length),
+	        offset:frame.getOffset(_dt, event.resolution)
+	    };
+        }
     }
 
-    function makeUrl(env, panel_no) {
+    var makeUrl = function(env, panel_no) {
         var url = API
             + '/events/?start='
             + env.frame.add(env.start, panel_no).format()
@@ -834,9 +853,8 @@
             + env.frame.add(env.end, panel_no).format();
         return url;
     }
-
     
-    function loadPanel(env, panel_no, f) {
+    var loadPanel = function(env, panel_no, f) {
         var url = makeUrl(env, panel_no);
         $.ajax({
             url:url,
@@ -855,7 +873,7 @@
         });        
     }
     
-    function makePanel(count, start, end, env, events) {
+    var makePanel = function(count, start, end, env, events) {
 	var buffer = $('#buffer');
 	var dur = end - start;
 	// Make a panel, 1 screen wide, that will contain a duration.
@@ -884,7 +902,8 @@
 	// Add the events
 	var eventMetas = [];
 	for (var i in events.results) {
-	    eventMetas.push(eventToMeta(events.results[i], frame, columns));
+            var e = new Event();
+	    eventMetas.push(e.eventToMeta(events.results[i], frame, columns));
 	}
         
         var grid = makeGrid(columns);
@@ -914,7 +933,7 @@
 	return panel;
     }
 
-    function makeTimeline(start, end) {
+    var Timeline = function(start, end) {
 	console.log('Making timeline for',
 		    start.format(),
 		    ' to ',
@@ -1097,33 +1116,6 @@
 	});
     }
 
-    $(document).ready(function() {
-	document.body.addEventListener('touchmove', function(event) {
-	    event.preventDefault();
-	}, false);
-        
-        $('#account-login').on('click', function(){
-            $('#login-box').toggle();
-        });
-        $('#login-submit').on('click', function(e) {
-            e.preventDefault();
-            ENDPOINTS.userLogin({'username':$('#login-handle').val(),
-                                 'password':$('#login-password').val()});
-        });
-       
-        $('#notebook-toggle').on('click', function() {
-            $('#notebook').toggle();
-        });        
-        
-	var start = moment('2001-04-01T00:00:00');
-	var end = start.clone().add(1, 'months');
-        makeTimeline(start, end);
-
-
-
-	
-
-
         const REFRESH_INTERVAL = 2000; // milliseconds
         const timeBeforeRefresh = 10; // milliseconds
         
@@ -1243,25 +1235,20 @@
 		if (!ordered.to) {
 		    to_loc = from_loc;
 		}
-		
-		console.log('LOCS: ', from_loc, to_loc, target_loc);
+
 		for (var i = 0; i<this.items.length; i++) {
 		    if (i == target_loc) {
 			// Paste them in here
 			if (i==0) {
 			    for (var j = to_loc; j>=from_loc; j--) {
-				console.log('XXX',j);
 				this.items[j].order = this.decmin();
 			    }
 			}
 			else {
 			    var oneback = this.items[i-1];
 			    for (var j = from_loc; j<=to_loc; j++) {
-				console.log('YYY',j);
 				var between = this.items[i].order - oneback.order;
 				var div = to_loc - from_loc + 2;
-				var eq = this.items[i].order + ' + ' + between + '/' + div;
-				console.log(eq);
 				this.items[j].order = oneback.order + between/div;
 				
 			    }
@@ -1272,8 +1259,6 @@
 			    $(target.notebookView).before(this.items[j].notebookView);
 			    $(target.textView).before(this.items[j].textView);
 			    replace.push(this.items[j]);
-			    console.log('JJJJJJJJ',$(target.notebookView),this.items[j].notebookView);
-			    
 			}
 			replace.push(this.items[i]);
 		    }
@@ -1284,10 +1269,6 @@
 			replace.push(this.items[i]);
 		    }
 		    
-		}
-		console.log(this.insertion);
-		for (i in replace) {
-		    console.log(replace[i].order, replace[i].note);
 		}
 		this.insertion = makeInsertionTemplate();
 		this.items = replace;
@@ -1326,7 +1307,6 @@
 
 	    // You can move a range of notes at once.
 	    this.getRange = function(insertion) {
-		console.log(insertion);
 		var span = new Array();
 		var ordered = this.fixOrder(insertion);
 		var _from = ordered.from;
@@ -1356,11 +1336,28 @@
             this.makePatch = function(item) {
                 return {
                     needsUpdated:item.needsUpdated,
+                    needsCreated:item.needsCreated,
 		    order:item.order,
 		    text:item.text,
 		    title:item.title,
-                    id:Math.random(),
+                    id:note.id,
                     html:item.medium.getContent()};
+            }
+
+            this.makePost = function(item) {
+                var event = undefined;
+                
+                if (item.event && item.event.url) {
+                    event = item.event.url;
+                }
+
+                return {
+		    order:item.order,
+		    text:item.text,
+		    title:item.title,
+                    event:event,
+                    html:item.medium.getContent()
+                };
             }
 
             this.makeItem = function(kind, event, note) {
@@ -1395,7 +1392,6 @@
 			}
 		    },
 		    function(ev) {
-			console.log(nb.moving);
 			if (!nb.moving) {
 			    var el = $(item.notebookView)			
 			    el.children().css({cursor:'default'});
@@ -1412,9 +1408,8 @@
 			    nb.insertion.to = item;
 			    var range = nb.getRange(nb.insertion);
 			    for (i in range) {
-				console.log(range[i].buttons.children('.mover').addClass('active'));
+				range[i].buttons.children('.mover').addClass('active');
 			    }
-			    console.log(range);
 			}
 		    }
 		    else {
@@ -1451,6 +1446,14 @@
 		    }		    
                 }
 
+		if (created.length > 0) {
+                    var post = $.map(created, nb.makePost);
+                    console.log(JSON.stringify(post));
+                    for (var i=0; i<nb.items.length; i++) {
+                        nb.items[i].needsCreated = false;
+                    }		    
+		}
+
 		if (updated.length > 0) {
                     var patch = $.map(updated, nb.makePatch);
                     console.log(JSON.stringify(patch));
@@ -1459,13 +1462,6 @@
                     }		    
 		}
 		
-		if (created.length > 0) {
-                    var patch = $.map(created, nb.makePatch);
-                    console.log(JSON.stringify(patch));
-                    for (var i=0; i<nb.items.length; i++) {
-                        nb.items[i].needsCreated = false;
-                    }		    
-		}
 		
 		if (deleted.length > 0) {
 		    console.log('gonna delete', deleted);
@@ -1489,6 +1485,9 @@
             var creationTime = new Date().getTime();
             var nbitem = this;
             this.event = event;
+            
+            console.log(kind, this.event, this.note);
+            
             this.kind = kind ? kind : 'default';
             this.note = note;
             this.id = undefined;
@@ -1509,7 +1508,7 @@
 	    
             this.render = function() {
 		var d = $('<div></div>', {class:'top'});
-                if (this.event) {
+                if (this.kind == 'default' && this.event) {
                     return d.html(event.title);
                 }
                 else if (this.kind=='closer') {
@@ -1537,7 +1536,7 @@
                     return d.html('image');
                 }		
                 else {
-                    return d.html('note');
+                    return d.html('Notecard');
                 }
             }
 	    
@@ -1616,17 +1615,7 @@
                 nbitem.textView.append(' ');
 	    });
         }
-
-        var notebook = new Notebook('a');
-	
-	var lorem = 'Contrary to popular belief.';
-	notebook.makeItem('closer');
-	for (var i = 0; i<10; i++) {
-            var item = notebook.makeItem('default',
-					 {title:i + '. Brisket hell ipsum dolor est', html:i + '. ' + lorem}, {title:i + "PANTS"});
-	}
-
-    });
+    
 
     
 }(jQuery, MediumEditor));
