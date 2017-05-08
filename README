@@ -6,24 +6,40 @@
 https://unscroll.com
 A writing tool for people who need to get it right.
 
-- Zoom in and out of time.
-- Show prioritization of time.
-- Manage an account.
--  Log in to the site.
--  Log out.
-- Listen to something.
+* For June 10, 2017 demo
+- Account 
+  + [ ] Register
+  + [ ] Confirm
+  + [X] Log in to the site
+  + [X] Log out
 
-- TODO Search through time.
--  TODO Register.
--  TODO Confirm.
-- TODO Make a connection.
-- TODO Make a notebook.
-- TODO Publish a notebook.
-- TODO Start adding things.
-- TODO Make a blog post.
-- TODO Publish a blog post.
-- TODO Add an event.
-- TODO Import events.
+- API
+  - [ ] Endpoints for notebook
+  - [ ] Search endpoint and database modification
+  - [ ] Search only a scroll
+  - [ ] List scrolls owned by person
+  - [ ] List scrolls by search title
+  - [ ] List scrolls by mediatype
+  - [ ] List scroplls by contenttype
+
+- Timeline
+  - [X] Zoom in and out of time
+  - [X] Show prioritization of time
+  - [X] Listen to something
+  - [ ] Switch to "list view"
+  - [ ] Add an event
+    - [ ] Pop up event input
+  - [ ] Edit an event
+
+- Notebook 
+  - [ ] Make a new notebook.
+  - [ ] Title notebook
+  - [X] Add event to notebook
+  - [X] Show notebook as "essay"
+  - [X] Add to notebook
+  - [ ] Publish a notebook
+
+
 
 - contentytpes
 world/transpired

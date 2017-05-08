@@ -1,7 +1,6 @@
 from bs4 import BeautifulSoup
 import re
 import pprint
-import sys
 from datetime import date
 from datetime import datetime
 import requests
@@ -37,7 +36,7 @@ class WikipediaText():
     events = []
     parsed = None
     unscroll_client = None
-    
+
     def __init__(self, year=None):
         self.year = year
         r = requests.get('https://en.wikipedia.org/wiki/{}'.format(year))
@@ -105,11 +104,14 @@ class WikipediaText():
             'title': title,
             'text': trimmed,
             'resolution': 'days',
-            'ranking':ranking,
-            'datetime': datetime.combine(date, datetime.min.time()).isoformat(' '),
-            'thumbnail':thumbnail,
-            'content_type': kind }
-        
+            'ranking': ranking,
+            'datetime': datetime.combine(
+                date,
+                datetime.min.time()
+            ).isoformat(' '),
+            'thumbnail': thumbnail,
+            'content_type': kind
+        }
         e = self.unscroll_client.create_event(event)
         pprint.pprint(event)
         pprint.pprint(e.json())
@@ -165,16 +167,6 @@ def __main__(year=None):
     events = wt.get_events()
     print(len(events))
     return True
-#    c = UnscrollClient(api='http://127.0.0.1',
-#                       username='admin',
-#                       password='password')
-#    c.login()
-#    s = c.create_scroll('Wikipedia')
-#    for e in events:
-#        if e['image'] is not None:
-#            c.cache_thumbnail(e['image']['url'])
-
-                
 
 
-__main__(1974)
+__main__(2001)

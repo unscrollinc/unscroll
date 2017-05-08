@@ -144,6 +144,7 @@ class NoteMedia(models.Model):
         Note,
         related_name="media")
     media_type = models.CharField(
+        max_length=128,
         blank=True)
     media_file = models.FileField(
         upload_to=None)
