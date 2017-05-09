@@ -6,8 +6,6 @@
     };
     
     $(document).ready(function() {
-
-
 	var start = moment('2001-04-01T00:00:00');
 	var end = start.clone().add(1, 'months');        
         
@@ -25,16 +23,21 @@
         
         $('#login-submit').on('click', function(e) {
             e.preventDefault();
-            ENDPOINTS.userLogin({'username':$('#login-handle').val(),
-                                 'password':$('#login-password').val()});
+            ENDPOINTS.userLogin(
+                {'username':$('#login-handle').val(),
+                 'password':$('#login-password').val()});
         });
         
         $('#notebook-toggle').on('click', function() {
-            $('#notebook').toggle();
+            if (USER.username) {
+                $('#notebook').toggle();
+            }
         });
 
         $(document).keyup(function(e) {
-            if (e.keyCode === 27) $('#notebook').toggle();
+            if (USER.username) {            
+                if (e.keyCode === 27) $('#notebook').toggle();
+            }
         });        
 
 
@@ -80,7 +83,8 @@
 			    function(e) {
                                 ENDPOINTS.userLogout();            
                             });
-                    $('#login-box').toggle();                    
+                    $('#login-box').toggle();
+                    $('#notebook').toggle();
                     ENDPOINTS.userProfile();
                     ENDPOINTS.schema();                    
                 }
@@ -146,11 +150,16 @@
                 }
             });
         },
-        'noteCreate':function(data) {
+        'notePost':function(data, items) {
+            console.log(data, items);
 	    if (USER.key) {
-		$.post({
+		$.ajax({
                     url:API + '/notes/',
-		    data:data,
+                    type: 'POST',
+                    contentType: 'application/json',
+                    dataType: 'json',
+		    data:JSON.stringify(data),
+                    context:items,
                     headers: {
 			'Authorization': 'Token ' + USER.key
                     },
@@ -158,15 +167,48 @@
 			console.log('Failure: ' + e);
                     },
                     success:function(o) {
-			console.log(o);
+                        console.log('Success: ', o, this);
+                        for (var i=0;i<o.length; i++) {
+                            this[i].url = o[i].url;
+                            this[i].id = o[i].id;                            
+                            this[i].needsCreated = false;
+                            console.log(this[i]);
+                        }
                     }
 		});
 	    }
 	    else {
 		console.log('You can only fav things if you\'re logged in.')
-
 	    }
         },
+        'notePut':function(data, items) {
+	    if (USER.key) {
+		$.ajax({
+                    url:API + '/notes/',
+                    type: 'PATCH',
+                    contentType: 'application/json',
+                    dataType: 'json',
+		    data:JSON.stringify(data),
+                    context:items,
+                    headers: {
+			'Authorization': 'Token ' + USER.key
+                    },
+                    failure:function(e) {
+			console.log('Failure: ' + e);
+                    },
+                    success:function(o) {
+                        console.log('Success: ', o, this);
+                        for (var i=0;i<o.length; i++) {
+                            this[i].needsUpdated = false;                            
+                            console.log(this[i]);
+                        }
+                    }
+		});
+	    }
+	    else {
+		console.log('You can only fav things if you\'re logged in.')
+	    }
+        },        
         'passwordReset':API + '/rest-auth/password/reset/',
         'passwordResetConfirm':'/rest-auth/password/reset/confirm/',
         'passwordChange':'/rest-auth/password/change/',
@@ -1116,7 +1158,7 @@
 	});
     }
 
-        const REFRESH_INTERVAL = 2000; // milliseconds
+        const REFRESH_INTERVAL = 5000; // milliseconds
         const timeBeforeRefresh = 10; // milliseconds
         
         function timeSince(STATUS) {
@@ -1148,9 +1190,7 @@
         };
 
         /* ############################## */	
-        var Notebook = function(id) {
-
-	    
+        var Notebook = function(url) {
             const max = 200;
             const dec = 10;
             var ctr = max;
@@ -1165,9 +1205,8 @@
             }
 
             var nb = this;
-
-            this.id = id;
-
+            this.url = url;
+            
 	    /* Get our DOM objects */
             this.dom_title = $('#notebook-title')
             this.dom_nb = $('#notebook-items');
@@ -1190,10 +1229,9 @@
             
             this.dom_nb_list = $('#notebook-list-button');            
 
-            this.needsCreated = this.id ? false : true;
+            this.needsCreated = this.url ? false : true;
             this.needsUpdated = false;
             this.needsDeleted = false;
-
 
 	    this.insertion = makeInsertionTemplate();
 	    
@@ -1333,31 +1371,23 @@
 		    
             this.ajaxPackage = {};
 
-            this.makePatch = function(item) {
-                return {
-                    needsUpdated:item.needsUpdated,
-                    needsCreated:item.needsCreated,
-		    order:item.order,
-		    text:item.text,
-		    title:item.title,
-                    id:note.id,
-                    html:item.medium.getContent()};
-            }
-
             this.makePost = function(item) {
                 var event = undefined;
-                
-                if (item.event && item.event.url) {
-                    event = item.event.url;
-                }
-
-                return {
+                var data = {
 		    order:item.order,
-		    text:item.text,
-		    title:item.title,
-                    event:event,
-                    html:item.medium.getContent()
+		    text:item.medium.getContent()
                 };
+                if (item.event && item.event.url) {
+                    data['event'] = item.event.url;
+                }
+                if (item.url) {
+                    data['url'] = item.url;
+                }
+                if (item.id) {
+                    data['id'] = item.id;
+                }                
+                
+                return data;
             }
 
             this.makeItem = function(kind, event, note) {
@@ -1448,12 +1478,15 @@
 
 		if (created.length > 0) {
                     var post = $.map(created, nb.makePost);
-                    console.log(JSON.stringify(post));
-                    for (var i=0; i<nb.items.length; i++) {
-                        nb.items[i].needsCreated = false;
-                    }		    
+                    ENDPOINTS.notePost(post, created);
 		}
 
+		if (updated.length > 0) {
+                    var put = $.map(updated, nb.makePost);
+                    ENDPOINTS.notePut(put, updated);
+		}
+
+                /*
 		if (updated.length > 0) {
                     var patch = $.map(updated, nb.makePatch);
                     console.log(JSON.stringify(patch));
@@ -1461,7 +1494,7 @@
                         nb.items[i].needsUpdated = false;
                     }		    
 		}
-		
+*/		
 		
 		if (deleted.length > 0) {
 		    console.log('gonna delete', deleted);
@@ -1490,10 +1523,14 @@
             
             this.kind = kind ? kind : 'default';
             this.note = note;
+            this.url = undefined;
+            if (this.note) {
+                this.url = this.note.url;
+            }
             this.id = undefined;
             if (this.note) {
                 this.id = this.note.id;
-            }
+            }            
 	    this.lastPatch = creationTime;
             this.lastRefresh = creationTime;
             this.data = {};

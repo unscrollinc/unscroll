@@ -123,8 +123,9 @@ class Note(models.Model):
         null=True,
         related_name="notes")
     order = models.FloatField(
-        default=100000.0)
+        blank=False)
     text = models.TextField(
+        blank=True,
         null=True)
     created = models.DateTimeField(
         auto_now_add=True)

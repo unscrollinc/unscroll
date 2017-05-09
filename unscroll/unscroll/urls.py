@@ -125,7 +125,6 @@ class ScrollSerializer(serializers.HyperlinkedModelSerializer):
         s = Scroll(**validated_data)
         s.save()
         return s
-    
 
 class ScrollViewSet(viewsets.ModelViewSet):
     queryset = Scroll.objects.all()
@@ -219,7 +218,7 @@ class BulkEventSerializer(BulkSerializerMixin,
             'title',
             'text',
             'ranking',
-            'mediatype',
+            'media_type',
             'resolution',
             'datetime',
             'source_url',
@@ -239,17 +238,45 @@ class NoteSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             'url',
             'scroll',
+            'user',
             'event',
             'order',
             'created',
             'last_updated',
-            'text',
-            'display_type')
+            'text',)
+
+    def create(self, validated_data):
+        validated_data['user'] = self.context['request'].user
+        s = Note(**validated_data)
+        s.save()
+        return s
 
 
 class NoteViewSet(viewsets.ModelViewSet):
     queryset = Note.objects.all()
     serializer_class = NoteSerializer
+
+
+class BulkNoteSerializer(BulkSerializerMixin,
+                          serializers.HyperlinkedModelSerializer):
+    class Meta(object):
+        model = Note
+        fields = (
+            'id',
+            'url',
+            'scroll',
+            'user',
+            'event',
+            'order',
+            'created',
+            'last_updated',
+            'text')
+        list_serializer_class = BulkListSerializer
+
+        
+class BulkNoteViewSet(BulkModelViewSet):
+    queryset = Note.objects.all()
+    serializer_class = BulkNoteSerializer
 
 
 # Routers provide a way of automatically determining the URL conf.
@@ -258,9 +285,10 @@ router = BulkRouter()
 router.register(r'users', UserViewSet)
 router.register(r'scrolls', ScrollViewSet)
 router.register(r'events', EventViewSet)
-router.register(r'notes', NoteViewSet)
+# router.register(r'notes', NoteViewSet)
 router.register(r'thumbnails', ThumbnailViewSet)
-# router.register(r'bulk-events', BulkEventViewSet)
+router.register(r'bulk-events', BulkEventViewSet)
+router.register(r'notes', BulkNoteViewSet)
 
 schema_view = get_swagger_view(title='Unscroll API')
 # schema_view = get_schema_view(title="Unscroll API")

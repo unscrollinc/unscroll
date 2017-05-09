@@ -114,7 +114,7 @@ div#statusbar {
 }
 
 #notebook-toggle, #list-toggle, #account-login, #account-create {
-    cursor:hand;    
+    cursor:hand;
 }
 
 /* Form */
@@ -316,6 +316,7 @@ div#notebook {
     border-left:1px solid black;
     border-top:1px solid black;
     background:white;
+    display:none;
 }
 
 div#notebook-head {
