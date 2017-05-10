@@ -432,3 +432,22 @@ div.save-state.false {
 div.save-state.true {
     background-color:green;
 }
+
+table {
+    border-collapse:collapse;
+}
+tr.scroll-listing {
+    background:white;
+    border-bottom:1px solid #888;
+    cursor:hand;
+}
+tr.scroll-listing:hover {
+    background:#d9eaf3;
+}
+
+td {
+    font-family:Roboto;
+    text-align:middle;
+    font-size:80%;
+    padding:1em;
+}

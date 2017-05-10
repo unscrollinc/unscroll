@@ -119,17 +119,23 @@ class ThumbnailViewSet(viewsets.ModelViewSet):
 
 
 class ScrollSerializer(serializers.HyperlinkedModelSerializer):
+    user_username = serializers.CharField(
+        read_only=True,
+        source="user.username")
+
     class Meta:
         model = Scroll
         fields = (
             'url',
             'user',
+            'user_username',            
             'created',
             'title',
             'public',
             'subtitle',
             'description',
             'thumbnail',)
+        depth = 0
 
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user
@@ -140,7 +146,8 @@ class ScrollSerializer(serializers.HyperlinkedModelSerializer):
 
 class ScrollViewSet(viewsets.ModelViewSet):
     serializer_class = ScrollSerializer
-    queryset = Scroll.objects.filter(public=True)
+    queryset = Scroll.objects.select_related('user').filter(public=True)
+
 
 class EventFilter(django_filters.rest_framework.FilterSet):
     start = django_filters.IsoDateTimeFilter(
@@ -149,67 +156,11 @@ class EventFilter(django_filters.rest_framework.FilterSet):
     before = django_filters.IsoDateTimeFilter(
         name='datetime',
         lookup_expr='lt')
+    scroll = django_filters.CharFilter(name="scroll__id")
 
     class Meta:
         model = Event
-        fields = ['start', 'before']
-
-
-class EventSerializer(serializers.HyperlinkedModelSerializer):
-    scroll_title = serializers.CharField(read_only=True, source="scroll.title")
-    scroll_thumb_image = serializers.CharField(
-        read_only=True,
-        source="scroll.thumbnail.image_location")
-    thumb_height = serializers.IntegerField(
-        read_only=True,
-        source="thumbnail.height")
-    thumb_width = serializers.IntegerField(
-        read_only=True,
-        source="thumbnail.width")
-    thumb_image = serializers.CharField(
-        read_only=True,
-        source="thumbnail.image_location")
-
-    class Meta:
-        model = Event
-        fields = (
-            'url',
-            'user',
-            'scroll',
-            'scroll_title',
-            'scroll_thumb_image',
-            'thumbnail',
-            'thumb_height',
-            'thumb_width',
-            'thumb_image',
-            'created',
-            'title',
-            'text',
-            'ranking',
-            'media_type',
-            'content_type',
-            'resolution',
-            'datetime',
-            'source_url',
-            'source_date',
-            'content_url')
-
-    def create(self, validated_data):
-        validated_data['user'] = self.context['request'].user
-        s = Event(**validated_data)
-        s.save()
-        return s
-
-
-class EventViewSet(viewsets.ModelViewSet):
-    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
-    filter_class = EventFilter
-    queryset = Event.objects.select_related(
-        'scroll',
-        'scroll__thumbnail',
-        'user',
-        'thumbnail').filter(scroll__public=True)
-    serializer_class = EventSerializer
+        fields = ['start', 'before', 'scroll', ]
 
 
 class BulkEventSerializer(BulkSerializerMixin,
@@ -260,10 +211,20 @@ class BulkEventSerializer(BulkSerializerMixin,
         
         list_serializer_class = BulkListSerializer
 
+    def create(self, validated_data):
+        validated_data['user'] = self.context['request'].user
+        s = Event(**validated_data)
+        s.save()
+        return s
+
 
 class BulkEventViewSet(BulkModelViewSet):
-    queryset = Event.objects.select_related('scroll','user').filter(scroll__public=True)
+    queryset = Event.objects.select_related('scroll', 'user')\
+                            .filter(scroll__public=True)
     serializer_class = BulkEventSerializer
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    filter_class = EventFilter
+
 
 # ##############################
 # NOTES
@@ -324,11 +285,12 @@ class BulkNoteSerializer(BulkSerializerMixin,
         s.save()
         return s
 
+
 class BulkNoteViewSet(BulkModelViewSet):
     queryset = Note.objects.select_related(
         'scroll',
         'event',
-        'user')    
+        'user')
     serializer_class = BulkNoteSerializer
 
 
@@ -337,11 +299,11 @@ router = BulkRouter()
 # router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
 router.register(r'scrolls', ScrollViewSet)
-#router.register(r'events', EventViewSet)
-router.register(r'notes', NoteViewSet)
+# router.register(r'events', EventViewSet)
+# router.register(r'notes', NoteViewSet)
 router.register(r'thumbnails', ThumbnailViewSet)
 router.register(r'events', BulkEventViewSet)
-router.register(r'bulk-notes', BulkNoteViewSet)
+router.register(r'notes', BulkNoteViewSet)
 
 schema_view = get_swagger_view(title='Unscroll API')
 # schema_view = get_schema_view(title="Unscroll API")

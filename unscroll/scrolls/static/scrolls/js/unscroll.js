@@ -5,13 +5,14 @@
         return {username:undefined,
                 email:undefined,
                 key:undefined
-               };
+	       };
     }
 
     var GLOBAL = {
+        user:newUser(),
         timeline:undefined,
         notebook:undefined,
-        user:newUser()
+	scroll:undefined
     };
 
     $(document).ready(function() {
@@ -21,9 +22,7 @@
         GLOBAL.timeline = new Timeline(start, end);
         GLOBAL.notebook = new Notebook('a');
 	GLOBAL.notebook.makeItem('closer');
-
-
-        var setUserNameAndLogin = function() {
+        GLOBAL.setUserNameAndLogin = function() {
 	    $('#account-login').text('You are: ' + GLOBAL.user.username);
 	    $('#account-create')
                 .text('Logout')
@@ -32,9 +31,12 @@
         }
         
         var session = Cookies.getJSON('session');
+	
         if (session) {
             GLOBAL.user = session;
-            setUserNameAndLogin();
+            GLOBAL.setUserNameAndLogin();
+	    ENDPOINTS.getUserProfile();
+	    $('#notebook').toggle();
         }
         
 	document.body.addEventListener('touchmove', function(event) {
@@ -65,11 +67,42 @@
         });        
         });
 
+    GLOBAL.updateUserScrolls = function() {
+	var makeScrollListing = function(scroll) {
+	    return $('<tr></tr>',
+		     {class:'scroll-listing'})
+		.on('click', function (ev) {
+		    GLOBAL.scroll = scroll;
+		    console.log(GLOBAL.scroll);
+		})
+		.append(
+		    $('<td></td>').html(scroll.title),
+		    $('<td></td>').html(scroll.public ? 'Public' : 'Private'),
+		    $('<td></td>').html(moment(scroll.created).format('M/D/YYYY h:mma')));
+	}
+	$('#notebook-listing')
+	    .css({})
+	    .append(
+		$('<table></table>', {class:'scroll-listing'})
+		    .append($.map(GLOBAL.user.scrolls, makeScrollListing)));	
+    }
     const API = 'http://127.0.0.1:8000';
     const AUTH = API + '/rest-auth';
 
     const ENDPOINTS = {
+
         'userLogin': function(data) {
+
+
+	    Cookies.set('session', GLOBAL.user);
+	    
+	    /* These show up when we browse the browseable API, and they
+	       get us in trouble. For now, we blow them away and just go
+	       with a single session auth token. */
+//	    Cookies.remove('sessionid');
+//	    Cookies.remove('csrftoken');
+
+	    
 	    $.post({
                 url:AUTH + '/login/',
                 data:data,
@@ -82,7 +115,7 @@
 			console.log('[ERROR] ' + e.responseJSON.non_field_errors[0]);
 		    }
 		    else {
-			console.log('[ERROR] ' + 'Uncaught error condition.');
+			console.log('[ERROR] ' + 'Uncaught error condition: ', e);
 		    }
 		},
                 success:function(o) {
@@ -90,14 +123,9 @@
 		    GLOBAL.user.username = this.username;
                     Cookies.set('session', GLOBAL.user);
 		    console.log('Logged in user: ' + GLOBAL.user.username + '.');
-
-                    $('#login-box').toggle();
                     $('#notebook').toggle();
-                    setUserNameAndLogin();                    
-                    ENDPOINTS.userProfile();
-                    
-                    
-//                    ENDPOINTS.schema();                    
+                    GLOBAL.setUserNameAndLogin();                    
+                    ENDPOINTS.getUserProfile();
                 }
             });
         },
@@ -112,6 +140,9 @@
                 },
                 success:function(e) {
                     GLOBAL.user = newUser();
+		    Cookies.remove('sessionid');
+		    Cookies.set('session');
+		    Cookies.set('csrftoken');
                     $('#account-login').text('login');
                     $('#account-create').text('create account');
                     console.log('Logged out.');
@@ -133,9 +164,9 @@
                 }
             });
         },
-        'userProfile':function () {
+        'getUserProfile':function () {
             $.get({
-                url:AUTH + '/user/',
+                url:API + '/users/',
                 headers: {
                     'Authorization': 'Token ' + GLOBAL.user.key
                 },
@@ -143,7 +174,10 @@
                     console.log('Failure: ' + e);
                 },
                 success:function(o) {
-                    $.extend(GLOBAL.user, o);
+                    $.extend(GLOBAL.user, o.results[0]);
+		    console.log('The user is', GLOBAL.user);
+		    GLOBAL.updateUserScrolls();
+
                 }
             });
         },
@@ -164,7 +198,7 @@
         'notePost':function(data, items) {
 	    if (GLOBAL.user.key) {
 		$.ajax({
-                    url:API + '/bulk-notes/',
+                    url:API + '/notes/',
                     type: 'POST',
                     contentType: 'application/json',
                     dataType: 'json',
@@ -192,7 +226,7 @@
         'notePut':function(data, items) {
 	    if (GLOBAL.user.key) {
 		$.ajax({
-                    url:API + '/bulk-notes/',
+                    url:API + '/notes/',
                     type: 'PATCH',
                     contentType: 'application/json',
                     dataType: 'json',

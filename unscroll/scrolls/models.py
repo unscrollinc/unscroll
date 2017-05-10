@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from random import random
+import uuid
 
 
 class Thumbnail(models.Model):
@@ -35,6 +36,10 @@ class Scroll(models.Model):
         User,
         null=True,
         related_name='scrolls')
+    uuid = models.UUIDField(
+        default=uuid.uuid4(),
+        editable=False,
+        unique=True)
     publish_datetime = models.DateTimeField(
         null=True)
     public = models.BooleanField(
@@ -68,6 +73,10 @@ class Event(models.Model):
         User,
         null=True,
         related_name='events')
+    uuid = models.UUIDField(
+        default=uuid.uuid4(),
+        editable=False,
+        unique=True)    
     scroll = models.ForeignKey(
         Scroll,
         related_name='events')
@@ -120,6 +129,10 @@ class Note(models.Model):
         User,
         null=True,
         related_name="notes")
+    uuid = models.UUIDField(
+        default=uuid.uuid4(),
+        editable=False,
+        unique=True)    
     scroll = models.ForeignKey(
         Scroll,
         null=True,
