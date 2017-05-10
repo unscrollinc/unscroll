@@ -50,6 +50,8 @@ class Scroll(models.Model):
         Thumbnail,
         related_name='scrolls',
         null=True)
+    deleted = models.BooleanField(
+        default=False)
 
     class Meta:
         ordering = ['-created']
@@ -100,6 +102,8 @@ class Event(models.Model):
         Thumbnail,
         related_name='events',
         null=True)
+    deleted = models.BooleanField(
+        default=False)    
 
     class Meta:
         ordering = ['-ranking', 'datetime']
@@ -129,6 +133,8 @@ class Note(models.Model):
         null=True)
     created = models.DateTimeField(
         auto_now_add=True)
+    deleted = models.BooleanField(
+        default=False)
     last_updated = models.DateTimeField(
         auto_now_add=True)
 

@@ -1,10 +1,19 @@
 "use strict";
-(function($, MediumEditor) {
+(function($, Cookies, MediumEditor) {
+
+    var newUser = function() {
+        return {username:undefined,
+                email:undefined,
+                key:undefined
+               };
+    }
+
     var GLOBAL = {
         timeline:undefined,
-        notebook:undefined
+        notebook:undefined,
+        user:newUser()
     };
-    
+
     $(document).ready(function() {
 	var start = moment('2001-04-01T00:00:00');
 	var end = start.clone().add(1, 'months');        
@@ -12,6 +21,21 @@
         GLOBAL.timeline = new Timeline(start, end);
         GLOBAL.notebook = new Notebook('a');
 	GLOBAL.notebook.makeItem('closer');
+
+
+        var setUserNameAndLogin = function() {
+	    $('#account-login').text('You are: ' + GLOBAL.user.username);
+	    $('#account-create')
+                .text('Logout')
+                .on('click',
+		    function(e) {ENDPOINTS.userLogout();});
+        }
+        
+        var session = Cookies.getJSON('session');
+        if (session) {
+            GLOBAL.user = session;
+            setUserNameAndLogin();
+        }
         
 	document.body.addEventListener('touchmove', function(event) {
 	    event.preventDefault();
@@ -29,29 +53,20 @@
         });
         
         $('#notebook-toggle').on('click', function() {
-            if (USER.username) {
+            if (GLOBAL.user.username) {
                 $('#notebook').toggle();
             }
         });
 
         $(document).keyup(function(e) {
-            if (USER.username) {            
+            if (GLOBAL.user.username) {            
                 if (e.keyCode === 27) $('#notebook').toggle();
             }
         });        
-
-
-    });
+        });
 
     const API = 'http://127.0.0.1:8000';
     const AUTH = API + '/rest-auth';
-
-    function newUser() {
-        return {username:undefined,
-                email:undefined,
-                key:undefined}
-    }
-    var USER = newUser();
 
     const ENDPOINTS = {
         'userLogin': function(data) {
@@ -63,7 +78,6 @@
 		    console.log('Failure: ' + e);
                 },
 		error: function(e) {
-		    console.log(e);
 		    if (e.status === 400) {
 			console.log('[ERROR] ' + e.responseJSON.non_field_errors[0]);
 		    }
@@ -72,21 +86,18 @@
 		    }
 		},
                 success:function(o) {
-		    console.log(o);
-		    USER.key = o.key;
-		    USER.username = this.username;
-		    console.log('Logged in user: ' + USER.username + '.');
-		    $('#account-login').text('You are: ' + USER.username);
-		    $('#account-create')
-                        .text('Logout')
-                        .on('click',
-			    function(e) {
-                                ENDPOINTS.userLogout();            
-                            });
+		    GLOBAL.user.key = o.key;
+		    GLOBAL.user.username = this.username;
+                    Cookies.set('session', GLOBAL.user);
+		    console.log('Logged in user: ' + GLOBAL.user.username + '.');
+
                     $('#login-box').toggle();
                     $('#notebook').toggle();
+                    setUserNameAndLogin();                    
                     ENDPOINTS.userProfile();
-                    ENDPOINTS.schema();                    
+                    
+                    
+//                    ENDPOINTS.schema();                    
                 }
             });
         },
@@ -94,13 +105,13 @@
             $.post({
                 url:AUTH + '/logout/',
                 headers: {
-                    'Authorization': 'Token ' + USER.key
+                    'Authorization': 'Token ' + GLOBAL.user.key
                 },
                 failure:function(e) {
                     console.log('Failure: ' + e);
                 },
                 success:function(e) {
-                    var USER = newUser();
+                    GLOBAL.user = newUser();
                     $('#account-login').text('login');
                     $('#account-create').text('create account');
                     console.log('Logged out.');
@@ -112,7 +123,7 @@
             $.get({
                 url:API + '/schema/',
                 headers: {
-                    'Authorization': 'Token ' + USER.key
+                    'Authorization': 'Token ' + GLOBAL.user.key
                 },
                 failure:function(e) {
                     console.log('Failure: ' + e);
@@ -126,78 +137,74 @@
             $.get({
                 url:AUTH + '/user/',
                 headers: {
-                    'Authorization': 'Token ' + USER.key
+                    'Authorization': 'Token ' + GLOBAL.user.key
                 },
                 failure:function(e) {
                     console.log('Failure: ' + e);
                 },
                 success:function(o) {
-                    $.extend(USER, o);
+                    $.extend(GLOBAL.user, o);
                 }
             });
         },
-        'userScrolls':function () {
+        'userScrollsGet':function () {
             $.get({
                 url:API + '/scrolls/',
                 headers: {
-                    'Authorization': 'Token ' + USER.key
+                    'Authorization': 'Token ' + GLOBAL.user.key
                 },
                 failure:function(e) {
                     console.log('Failure: ' + e);
                 },
                 success:function(o) {
-                    $.extend(USER, o);
+                    $.extend(GLOBAL.user, o);
                 }
             });
         },
         'notePost':function(data, items) {
-            console.log(data, items);
-	    if (USER.key) {
+	    if (GLOBAL.user.key) {
 		$.ajax({
-                    url:API + '/notes/',
+                    url:API + '/bulk-notes/',
                     type: 'POST',
                     contentType: 'application/json',
                     dataType: 'json',
 		    data:JSON.stringify(data),
                     context:items,
                     headers: {
-			'Authorization': 'Token ' + USER.key
+			'Authorization': 'Token ' + GLOBAL.user.key
                     },
                     failure:function(e) {
 			console.log('Failure: ' + e);
                     },
                     success:function(o) {
-                        console.log('Success: ', o, this);
                         for (var i=0;i<o.length; i++) {
                             this[i].url = o[i].url;
                             this[i].id = o[i].id;                            
                             this[i].needsCreated = false;
-                            console.log(this[i]);
                         }
                     }
 		});
 	    }
 	    else {
-		console.log('You can only fav things if you\'re logged in.')
+		console.log('You can only make notes if you\'re logged in.')
 	    }
         },
         'notePut':function(data, items) {
-	    if (USER.key) {
+	    if (GLOBAL.user.key) {
 		$.ajax({
-                    url:API + '/notes/',
+                    url:API + '/bulk-notes/',
                     type: 'PATCH',
                     contentType: 'application/json',
                     dataType: 'json',
 		    data:JSON.stringify(data),
                     context:items,
                     headers: {
-			'Authorization': 'Token ' + USER.key
+			'Authorization': 'Token ' + GLOBAL.user.key
                     },
                     failure:function(e) {
 			console.log('Failure: ' + e);
                     },
                     success:function(o) {
-                        console.log('Success: ', o, this);
                         for (var i=0;i<o.length; i++) {
                             this[i].needsUpdated = false;                            
                             console.log(this[i]);
@@ -208,7 +215,31 @@
 	    else {
 		console.log('You can only fav things if you\'re logged in.')
 	    }
-        },        
+        },
+        'noteDelete':function(data, items) {
+	    if (GLOBAL.user.key) {
+                for (var i = 0; i<items.length; i++) {
+		    $.ajax({
+                        url:API + '/notes/' + items[i].id,
+                        type: 'DELETE',
+                        context:items[i],
+                        headers: {
+			    'Authorization': 'Token ' + GLOBAL.user.key
+                        },
+                        failure:function(e) {
+			    console.log('Failure: ' + e);
+                        },
+                        success:function(o) {
+                            this.needsDeleted = false;                            
+                        }
+                    });
+		}
+	    }
+	    else {
+		console.log('You can only make notes if you\'re logged in.')
+	    }
+
+        },
         'passwordReset':API + '/rest-auth/password/reset/',
         'passwordResetConfirm':'/rest-auth/password/reset/confirm/',
         'passwordChange':'/rest-auth/password/change/',
@@ -995,7 +1026,6 @@
 	var panels = [-1, 0, 1];
 
 	var timeframe = getTimeFrame(start, end)
-	console.log(timeframe);
 	var frame = timeFrames[timeframe];	
 	var env = {
 	    window: {
@@ -1371,24 +1401,6 @@
 		    
             this.ajaxPackage = {};
 
-            this.makePost = function(item) {
-                var event = undefined;
-                var data = {
-		    order:item.order,
-		    text:item.medium.getContent()
-                };
-                if (item.event && item.event.url) {
-                    data['event'] = item.event.url;
-                }
-                if (item.url) {
-                    data['url'] = item.url;
-                }
-                if (item.id) {
-                    data['id'] = item.id;
-                }                
-                
-                return data;
-            }
 
             this.makeItem = function(kind, event, note) {
                 var item = new NotebookItem(kind, event, note);
@@ -1460,55 +1472,72 @@
             this.scanner = function () {
 		// THIS NEEDS LOVE AND SHOULDN'T BE AN ARRAY; SHOULD
 		// BE HASH BY MD5 MAYBE
+
+                var makePost = function(item) {
+                    var event = undefined;
+                    var data = {
+		        order:item.order,
+		        text:item.medium.getContent()
+                    };
+                    if (item.event && item.event.url) {
+                        data['event'] = item.event.url;
+                    }
+                    if (item.url) {
+                        data['url'] = item.url;
+                    }
+                    if (item.id) {
+                        data['id'] = item.id;
+                    }                
+                    return data;
+                }
+
+                var makeDelete = function(item) {
+                    var data = {};
+                    console.log(item);
+                    if (item.id) {
+                        data['id'] = item.id;
+                    }
+                    if (item.url) {
+                        data['url'] = item.url;
+                    }
+                    console.log('DATA IS', data);
+                    return data;
+                }
 		
                 var updated = new Array();
                 var deleted = new Array();
                 var created = new Array();		
                 for (var i=0; i<nb.items.length; i++) {
-                    if (nb.items[i].needsUpdated) {
-                        updated.push(nb.items[i]);
-                    }
-		    if (nb.items[i].needsDeleted) {
-                        deleted.push(nb.items[i]);			
-		    }
 		    if (nb.items[i].needsCreated) {
                         created.push(nb.items[i]);
-		    }		    
+		    }
+                    else {
+                        // Avoid update or delete before create---if
+                        // it needs created then let that happen first
+                        // on a subsequent pass.
+                        
+		        if (nb.items[i].needsUpdated) {
+                            updated.push(nb.items[i]);
+		        }
+		        if (nb.items[i].needsDeleted) {
+                            deleted.push(nb.items[i]);
+		        }
+		    }
                 }
 
 		if (created.length > 0) {
-                    var post = $.map(created, nb.makePost);
-                    ENDPOINTS.notePost(post, created);
+                    ENDPOINTS.notePost($.map(created, makePost),
+                                       created);
 		}
 
 		if (updated.length > 0) {
-                    var put = $.map(updated, nb.makePost);
-                    ENDPOINTS.notePut(put, updated);
+                    ENDPOINTS.notePut($.map(updated, makePost),
+                                      updated);
 		}
 
-                /*
-		if (updated.length > 0) {
-                    var patch = $.map(updated, nb.makePatch);
-                    console.log(JSON.stringify(patch));
-                    for (var i=0; i<nb.items.length; i++) {
-                        nb.items[i].needsUpdated = false;
-                    }		    
-		}
-*/		
-		
 		if (deleted.length > 0) {
-		    console.log('gonna delete', deleted);
-		    var success=true;
-		    var newItems = new Array();
-		    if (success) {
-			for (var i=0; i<nb.items.length; i++) {			
-			    if (!nb.items[i].needsDeleted) {
-				newItems.push(nb.items[i]);
-			    }			
-			}
-			nb.items = newItems;
-			console.log(nb.items);
-		    }
+                    ENDPOINTS.noteDelete($.map(deleted, makeDelete),
+                                      deleted);
 		}
 	    }
             setInterval(this.scanner, REFRESH_INTERVAL);
@@ -1518,8 +1547,6 @@
             var creationTime = new Date().getTime();
             var nbitem = this;
             this.event = event;
-            
-            console.log(kind, this.event, this.note);
             
             this.kind = kind ? kind : 'default';
             this.note = note;
@@ -1655,4 +1682,4 @@
     
 
     
-}(jQuery, MediumEditor));
+}(jQuery, Cookies, MediumEditor));
