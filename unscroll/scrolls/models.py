@@ -37,7 +37,7 @@ class Scroll(models.Model):
         null=True,
         related_name='scrolls')
     uuid = models.UUIDField(
-        default=uuid.uuid4(),
+        default=uuid.uuid4,
         editable=False,
         unique=True)
     publish_datetime = models.DateTimeField(
@@ -74,7 +74,7 @@ class Event(models.Model):
         null=True,
         related_name='events')
     uuid = models.UUIDField(
-        default=uuid.uuid4(),
+        default=uuid.uuid4,
         editable=False,
         unique=True)    
     scroll = models.ForeignKey(
@@ -130,7 +130,7 @@ class Note(models.Model):
         null=True,
         related_name="notes")
     uuid = models.UUIDField(
-        default=uuid.uuid4(),
+        default=uuid.uuid4,
         editable=False,
         unique=True)    
     scroll = models.ForeignKey(
