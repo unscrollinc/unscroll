@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.conf.urls.static import static
 import django_filters
+from django.db.models import Max, Min, Count
 from rest_framework import generics, serializers, viewsets, routers, response
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
@@ -122,6 +123,9 @@ class ScrollSerializer(serializers.HyperlinkedModelSerializer):
     user_username = serializers.CharField(
         read_only=True,
         source="user.username")
+    start = serializers.DateTimeField()
+    before = serializers.DateTimeField()
+    event_count = serializers.IntegerField()    
 
     class Meta:
         model = Scroll
@@ -129,7 +133,10 @@ class ScrollSerializer(serializers.HyperlinkedModelSerializer):
             'url',
             'user',
             'uuid',
-            'user_username',            
+            'user_username',
+            'event_count',
+            'start',
+            'before',
             'created',
             'title',
             'public',
@@ -147,7 +154,12 @@ class ScrollSerializer(serializers.HyperlinkedModelSerializer):
 
 class ScrollViewSet(viewsets.ModelViewSet):
     serializer_class = ScrollSerializer
-    queryset = Scroll.objects.select_related('user').filter(public=True)
+    queryset = Scroll.objects.select_related('user')\
+                             .filter(public=True)\
+                             .annotate(
+                                 event_count=Count('events'),
+                                 start=Min('events__datetime'),
+                                 before=Max('events__datetime'))
 
 
 class EventFilter(django_filters.rest_framework.FilterSet):
