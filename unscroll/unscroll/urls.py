@@ -156,7 +156,8 @@ class EventFilter(django_filters.rest_framework.FilterSet):
     before = django_filters.IsoDateTimeFilter(
         name='datetime',
         lookup_expr='lt')
-    scroll = django_filters.CharFilter(name="scroll__id")
+    scroll = django_filters.CharFilter(
+        name="scroll__id")
 
     class Meta:
         model = Event

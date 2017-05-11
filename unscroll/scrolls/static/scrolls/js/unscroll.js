@@ -12,7 +12,8 @@
         user:newUser(),
         timeline:undefined,
         notebook:undefined,
-	scroll:undefined
+	scroll:undefined,
+        pos:undefined
     };
 
     $(document).ready(function() {
@@ -371,7 +372,7 @@
 				  start.clone().endOf('hour'));
 	    },
 	    getOffset: function(datetime, resolution) {
-                if (resolutions[resolution] >= resolution['minutes']) {
+                if (resolutions[resolution] >= resolutions['minutes']) {
                     return Math.floor(10 * Math.random());
                 }
 		else {
@@ -421,7 +422,7 @@
 				  start.clone().endOf('day'));
 	    },
 	    getOffset: function(datetime, resolution) {
-                if (resolutions[resolution] >= resolution['hours']) {
+                if (resolutions[resolution] >= resolutions['hours']) {
                     return Math.floor(10 * Math.random());
                 }
 		else {
@@ -468,7 +469,7 @@
 				  start.clone().endOf('month'));
 	    },
 	    getOffset: function(datetime, resolution) {
-                if (resolutions[resolution] >= resolution['days']) {
+                if (resolutions[resolution] >= resolutions['days']) {
                     return Math.floor(24 * Math.random());
                 }
 		else {
@@ -515,7 +516,7 @@
 				  start.clone().endOf('year'));
 	    },
 	    getOffset: function(datetime, resolution) {
-                if (resolutions[resolution] >= resolution['months']) {
+                if (resolutions[resolution] >= resolutions['months']) {
                     return Math.floor(28 * Math.random());
                 }
 		else {
@@ -934,7 +935,7 @@
 			    .html(event.title),
 		        
 		        $('<div></div>', {class:'text'})
-			    .html(event.text),		    
+			    .html(),		    
                         
 		        $('<div></div>', {class:'scroll-title'})
 	    		    .html(event.scroll_title)
@@ -1020,7 +1021,7 @@
 	    e.div.css({width:e.width * columnWidth});
 	    buffer.append(e.div);
 	    e.height = Math.ceil(e.div.height()/cellHeight);
-	    
+
 	    var reservation = makeReservation(grid,
 					      e.offset,
                                               0,
@@ -1033,7 +1034,7 @@
 		}));
 	    }
             else {
-                // console.log("reservation failed");
+                console.log("reservation failed");
             }
 	}
 	panel.append(divs);
@@ -1115,7 +1116,22 @@
 	// right.
 
 	var touching = false;
-	
+
+        timeline.on('dblclick', function() {
+            var newEvent = $('<div></div>',
+                             {id:'new-event'})
+                .append(
+                    $('<input></input>',
+                      {name:'datetime',
+                       value:GLOBAL.pos.target.format()}),
+                    $('<input></input>',
+                      {name:'text',
+                       value:'XXXXXXX'})
+                );
+            console.log('DOUBLE CLICKED', GLOBAL.pos.target.format());
+            $('body').append(newEvent);
+        })
+        
 	timeline.on('mousedown touchstart', function(e) {
             if ($(e.target).prop("tagName") !== 'SPAN') {
 	        touching = true;
@@ -1185,12 +1201,14 @@
 	    };
 	    var gt = env.frame.getTarget(start, pointerInteger, pointerMantissa);
 	    pos = $.extend({}, pos, gt);
+
+            GLOBAL.pos = pos;
 	    
 	    // reset the delta
 	    // dragX = 0;	
 	    
 	    // update status bar 
-	    $('#mousepos').html(statusBar(pos));
+//	    $('#mousepos').html(statusBar(pos));
 
 	    // Are we heading left, into the past?
 	    if (panels[0] > pos.timelineOffset) {
@@ -1221,9 +1239,9 @@
 	    }
 	});
     }
-
-        const REFRESH_INTERVAL = 5000; // milliseconds
-        const timeBeforeRefresh = 10; // milliseconds
+    
+    const REFRESH_INTERVAL = 5000; // milliseconds
+    const timeBeforeRefresh = 10; // milliseconds
         
         function timeSince(STATUS) {
 	    var lastPatch = STATUS.lastPatch;

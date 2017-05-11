@@ -451,3 +451,13 @@ td {
     font-size:80%;
     padding:1em;
 }
+
+div#new-event {
+    width:25%;
+    height:25%;
+    border:1px solid black;
+    top:25%;
+    left:25%;
+    background:white;
+    position:absolute;
+}

@@ -20,6 +20,7 @@ print(favthumb)
 c.create_scroll('Apple Public Relations 2000-',
                 thumbnail=favthumb['url'])
 
+
 for i in range(2000,2018):
     pr_url = '{}/{}'.format(APPLE_PR_URL, i,)
     print(pr_url)

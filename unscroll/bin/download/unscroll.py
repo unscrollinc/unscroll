@@ -10,6 +10,7 @@ import config
 import favicon
 from urllib.parse import quote_plus
 
+
 class UnscrollClient():
     api = None
     username = None
@@ -23,14 +24,14 @@ class UnscrollClient():
                  password=None):
         self.api = api
         self.username = username
-        self.password = password                 
-                 
+        self.password = password
+
     def __batch__(self,
-                 api=None,
-                 username=None,
-                 password=None,
-                 scroll_title=None,
-                 events=None):
+                  api=None,
+                  username=None,
+                  password=None,
+                  scroll_title=None,
+                  events=None):
         self.api = api
         self.username = username
         self.password = password
@@ -44,7 +45,7 @@ class UnscrollClient():
             chunks = [events[x:x+500] for x in range(0, len(events), 500)]
             for docs in chunks:
                 res = self.create_event_batch(docs)
-                print(res)
+                print("Logged {}".format(res))
 
     def login(self):
         r = requests.post(self.api + '/rest-auth/login/',
@@ -56,26 +57,25 @@ class UnscrollClient():
         return True
 
     def create_scroll(self, title,
-                      public=False,
+                      public=True,
                       subtitle=None,
                       description=None,
                       thumbnail=None):
         r = requests.post(self.api + '/scrolls/',
                           headers=self.authentication_header,
                           json={'title': title,
-                                'public':public,
-                                'subtitle':subtitle,
-                                'description':description,
-                                'thumbnail':thumbnail})
+                                'public': public,
+                                'subtitle': subtitle,
+                                'description': description,
+                                'thumbnail': thumbnail})
         scroll = r.json()
         scroll_d = dict(scroll)
         self.scroll_url = scroll_d['url']
         return self.scroll_url
 
-
     def create_event_batch(self, events):
         print("Batching {} events.".format(len(events)))
-        r = requests.post(self.api + '/bulk-events/',
+        r = requests.post(self.api + '/events/',
                           headers=self.authentication_header,
                           json=events)
         return r.json()
