@@ -107,7 +107,7 @@ class Event(models.Model):
         max_length=128,
         null=True)
     content_url = models.URLField(
-        max_length=512,git
+        max_length=512,
         null=True)
     thumbnail = models.ForeignKey(
         Thumbnail,
