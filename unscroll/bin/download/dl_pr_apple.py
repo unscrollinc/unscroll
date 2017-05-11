@@ -38,8 +38,10 @@ for i in range(2000,2018):
             r2 = requests.get(href)
             parsed2 = BeautifulSoup(r2.content, 'html.parser')
             content = parsed2.find(id='content')
-            rough = content.find_all('p')
-            text = " ".join([str(x) for x in rough[0:1]])
+            text = ''
+            if content is not None:
+                rough = content.find_all('p')
+                text = " ".join([str(x) for x in rough[0:1]])
     
             title = "".join([x for x in link.stripped_strings])
             event = {

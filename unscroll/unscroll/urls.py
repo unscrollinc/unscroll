@@ -169,6 +169,9 @@ class BulkEventSerializer(BulkSerializerMixin,
     scroll_title = serializers.CharField(
         read_only=True,
         source="scroll.title")
+    scroll_id = serializers.IntegerField(
+        read_only=True,
+        source="scroll.id")
     public = serializers.BooleanField(
         read_only=True,
         source="scroll.public")
@@ -191,6 +194,7 @@ class BulkEventSerializer(BulkSerializerMixin,
             'url',
             'user',
             'scroll',
+            'scroll_id',            
             'scroll_title',
             'public',
             'scroll_thumb_image',

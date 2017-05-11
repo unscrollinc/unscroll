@@ -13,7 +13,11 @@
         timeline:undefined,
         notebook:undefined,
 	scroll:undefined,
-        pos:undefined
+        scroll_id:undefined,
+        pos:undefined,
+        start:undefined,
+        end:undefined
+        
     };
 
     $(document).ready(function() {
@@ -21,6 +25,8 @@
 	var end = start.clone().add(1, 'months');        
         
         GLOBAL.timeline = new Timeline(start, end);
+        GLOBAL.start = start;
+        GLOBAL.end = end;
         GLOBAL.notebook = new Notebook('a');
 	GLOBAL.notebook.makeItem('closer');
         GLOBAL.setUserNameAndLogin = function() {
@@ -73,8 +79,8 @@
 	    return $('<tr></tr>',
 		     {class:'scroll-listing'})
 		.on('click', function (ev) {
-		    GLOBAL.scroll = scroll;
-		    console.log(GLOBAL.scroll);
+		    GLOBAL.scroll_id = scroll;
+		    console.log(GLOBAL.scroll_id);
 		})
 		.append(
 		    $('<td></td>').html(scroll.title),
@@ -940,7 +946,9 @@
 		        $('<div></div>', {class:'scroll-title'})
 	    		    .html(event.scroll_title)
                             .on('click', function(e) {
-                                $('#search-input').val('scroll:\"'+event.scroll_title+'"');
+                                $('#search-input').val('scroll:\"'+event.scroll+'"');
+                                GLOBAL.scroll_id = event.scroll_id;
+                                new Timeline(GLOBAL.start, GLOBAL.end);
                             })
 			    .append(getScrollThumbnail(event))
 		    ))
@@ -953,12 +961,15 @@
         }
     }
 
-    var makeUrl = function(env, panel_no) {
+    var makeUrl = function(env, panel_no, scroll) {
         var url = API
             + '/events/?start='
             + env.frame.add(env.start, panel_no).format()
             + '&before='
             + env.frame.add(env.end, panel_no).format();
+        if (GLOBAL.scroll_id) {
+            url = url + '&scroll=' + GLOBAL.scroll_id;
+        }
         return url;
     }
     
