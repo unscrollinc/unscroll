@@ -1,10 +1,13 @@
 "use strict";
 (function($, Cookies, MediumEditor) {
 
+    
     var newUser = function() {
         return {username:undefined,
                 email:undefined,
-                key:undefined
+                key:undefined,
+		id:undefined,
+		url:undefined
 	       };
     }
 
@@ -13,14 +16,77 @@
         timeline:undefined,
         notebook:undefined,
 	scroll:undefined,
-        scroll_id:undefined,
+        scroll_uuid:undefined,
         pos:undefined,
         start:undefined,
         end:undefined
-        
     };
+    GLOBAL.logout = function() {
+	GLOBAL.user = newUser();
+	Cookies.remove('sessionid');
+	Cookies.remove('session');
+	Cookies.remove('csrftoken');
+        $('#account-login').text('login');
+        $('#account-create').text('create account');
+        console.log('Logged out.');
+    }
+
+    GLOBAL.editEvent = function(event) {
+	console.log(event);
+	
+	var getInput = function(name, title, is_rich) {
+	    var vals = {class:'event-input',
+			name:name,
+			value:event[name]};
+	    var editor =  $('<input></input>', vals);
+	    var medium = undefined;
+	    if (is_rich) {
+		editor = $('<div></div>', vals).append(event[name]);
+		medium = new MediumEditor(editor, {
+		    disableDoubleReturn: false,
+		    targetBlank: true                
+		});
+	    }
+            return $('<p>')
+		.append(
+		    $('<div></div>', {class:'description'})
+			.append(title),
+		    $('<div></div>', {class:'input'})
+			.append(editor));
+	}
+
+	console.log(GLOBAL.pos);
+	var newEvent = $('<div></div>',
+			 {id:'new-event'})
+	    .css({top:GLOBAL.pos.y + '%',
+		  left:GLOBAL.pos.x + '%',
+		  width:'25%'}) 
+	    .append(
+		$('<div></div>').append(
+		    $('<div></div>', {class:'scroll-title'}).html('Scroll: ' + event.scroll_title),
+		    getInput('datetime', 'Date/time'),
+		    getInput('title', 'Event title'),
+		    getInput('content_url', 'Link'),
+		    getInput('text', 'Event description', true),
+		    getInput('source_date', 'Source (optional)'),
+		    getInput('source_url', 'Source Link (optional)')));
+	console.log(newEvent);
+	$('body').append(newEvent);
+    }
 
     $(document).ready(function() {
+
+	$('#notebook-create-button')
+	    .on('click', function(ev) {
+		var data = {
+		    title:'untitled',
+		    user:GLOBAL.user.url
+		};
+		console.log(data, GLOBAL.user);
+		ENDPOINTS.scrollPost(data);
+		
+		
+	    })
 	var start = moment('2001-04-01T00:00:00');
 	var end = start.clone().add(1, 'months');        
         
@@ -79,8 +145,9 @@
 	    return $('<tr></tr>',
 		     {class:'scroll-listing'})
 		.on('click', function (ev) {
-		    GLOBAL.scroll_id = scroll;
-		    console.log(GLOBAL.scroll_id);
+		    console.log(scroll);
+		    GLOBAL.scroll_uuid = scroll.uuid;
+                    new Timeline(GLOBAL.start, GLOBAL.end);		    
 		})
 		.append(
 		    $('<td></td>').html(scroll.title),
@@ -146,16 +213,9 @@
                     console.log('Failure: ' + e);
                 },
                 success:function(e) {
-                    GLOBAL.user = newUser();
-		    Cookies.remove('sessionid');
-		    Cookies.set('session');
-		    Cookies.set('csrftoken');
-                    $('#account-login').text('login');
-                    $('#account-create').text('create account');
-                    console.log('Logged out.');
-
                 }
             });
+            GLOBAL.logout();
         },
         'schema': function() {
             $.get({
@@ -201,6 +261,57 @@
                     $.extend(GLOBAL.user, o);
                 }
             });
+        },
+	'scrollPost':function(data) {
+	    if (GLOBAL.user.key) {
+		$.ajax({
+                    url:API + '/scrolls/',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    dataType: 'json',
+		    data:JSON.stringify(data),
+                    headers: {
+			'Authorization': 'Token ' + GLOBAL.user.key
+                    },
+                    failure:function(e) {
+			console.log('Failure: ' + e);
+                    },
+                    success:function(o) {
+			GLOBAL.scroll = o;
+			console.log('MADE SCROLL: ', o);
+                    }
+		});
+	    }
+	    else {
+		console.log('You can only make notes if you\'re logged in.')
+	    }
+        },
+        'scrollPut':function(scroll) {
+	    if (GLOBAL.user.key) {
+		$.ajax({
+                    url:API + '/scrolls/',
+                    type: 'PATCH',
+                    contentType: 'application/json',
+                    dataType: 'json',
+		    data:JSON.stringify(data),
+                    context:items,
+                    headers: {
+			'Authorization': 'Token ' + GLOBAL.user.key
+                    },
+                    failure:function(e) {
+			console.log('Failure: ' + e);
+                    },
+                    success:function(o) {
+                        for (var i=0;i<o.length; i++) {
+                            this[i].needsUpdated = false;                            
+                            console.log(this[i]);
+                        }
+                    }
+		});
+	    }
+	    else {
+		console.log('You can only fav things if you\'re logged in.')
+	    }
         },
         'notePost':function(data, items) {
 	    if (GLOBAL.user.key) {
@@ -920,20 +1031,27 @@
 			          }));
 	        }
 	    }
-	    
+	    function getEditLink(event) {
+		if (event.user == GLOBAL.user.url) {
+		    return $('<span></span>', {class:'asnote button'})
+			.html('[+Edit]').on('click', (function(e) {
+			    GLOBAL.editEvent(event);
+			}));
+		}
+	    }
 	    return {
 	        div: $('<div></div>', {class:'event'}).append(
 		    $('<div></div>', {class:'inner'}).append(
-                        
 		        getLink(event),
-                        
+			getEditLink(event),
 		        getThumbnail(event),
-		        
                         $('<span></span>', {class:'asnote button'})
                             .html('[+Note]').on('click', (function(e) {
                                 my.eventToNotebook(event, frame);
                             })),
+
 		        
+			
 		        $('<span></span>', {class:'datetime'})
 			    .html(_dt.format('D MMM, \'YY')),
                         
@@ -947,7 +1065,7 @@
 	    		    .html(event.scroll_title)
                             .on('click', function(e) {
                                 $('#search-input').val('scroll:\"'+event.scroll+'"');
-                                GLOBAL.scroll_id = event.scroll_id;
+                                GLOBAL.scroll_uuid = event.scroll_uuid;
                                 new Timeline(GLOBAL.start, GLOBAL.end);
                             })
 			    .append(getScrollThumbnail(event))
@@ -967,8 +1085,8 @@
             + env.frame.add(env.start, panel_no).format()
             + '&before='
             + env.frame.add(env.end, panel_no).format();
-        if (GLOBAL.scroll_id) {
-            url = url + '&scroll=' + GLOBAL.scroll_id;
+        if (GLOBAL.scroll_uuid) {
+            url = url + '&scroll=' + GLOBAL.scroll_uuid;
         }
         return url;
     }
@@ -1129,18 +1247,7 @@
 	var touching = false;
 
         timeline.on('dblclick', function() {
-            var newEvent = $('<div></div>',
-                             {id:'new-event'})
-                .append(
-                    $('<input></input>',
-                      {name:'datetime',
-                       value:GLOBAL.pos.target.format()}),
-                    $('<input></input>',
-                      {name:'text',
-                       value:'XXXXXXX'})
-                );
             console.log('DOUBLE CLICKED', GLOBAL.pos.target.format());
-            $('body').append(newEvent);
         })
         
 	timeline.on('mousedown touchstart', function(e) {

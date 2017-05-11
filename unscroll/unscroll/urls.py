@@ -128,6 +128,7 @@ class ScrollSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             'url',
             'user',
+            'uuid',
             'user_username',            
             'created',
             'title',
@@ -156,8 +157,8 @@ class EventFilter(django_filters.rest_framework.FilterSet):
     before = django_filters.IsoDateTimeFilter(
         name='datetime',
         lookup_expr='lt')
-    scroll = django_filters.CharFilter(
-        name="scroll__id")
+    scroll = django_filters.UUIDFilter(
+        name="scroll__uuid")
 
     class Meta:
         model = Event
@@ -169,9 +170,10 @@ class BulkEventSerializer(BulkSerializerMixin,
     scroll_title = serializers.CharField(
         read_only=True,
         source="scroll.title")
-    scroll_id = serializers.IntegerField(
+    scroll_uuid = serializers.UUIDField(
+        format='hex',
         read_only=True,
-        source="scroll.id")
+        source="scroll.uuid")
     public = serializers.BooleanField(
         read_only=True,
         source="scroll.public")
@@ -194,7 +196,7 @@ class BulkEventSerializer(BulkSerializerMixin,
             'url',
             'user',
             'scroll',
-            'scroll_id',            
+            'scroll_uuid',
             'scroll_title',
             'public',
             'scroll_thumb_image',

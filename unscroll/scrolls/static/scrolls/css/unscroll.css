@@ -451,13 +451,33 @@ td {
     font-size:80%;
     padding:1em;
 }
+td.description {
+    font-family:Roboto;
+    text-align:right;
+    padding:0.5em 0 0.5em 0;
+    vertical-align:top;
+}
 
 div#new-event {
-    width:25%;
-    height:25%;
+    padding:1em;
+    background:#eee;
     border:1px solid black;
-    top:25%;
-    left:25%;
     background:white;
     position:absolute;
+    font-family:Roboto;
+    
+}
+
+div#new-event input {
+    font-size:10pt;
+    width:100%;
+    font-family:Roboto;
+    padding:0.25em 0 0.25em 0;
+}
+
+div#new-event .event-input {
+    font-size:10pt;
+    width:100%;
+    font-family:Roboto;
+    padding:0.25em 0 0.25em 0;    
 }
