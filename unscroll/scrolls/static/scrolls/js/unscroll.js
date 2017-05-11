@@ -1,7 +1,5 @@
 "use strict";
 (function($, Cookies, MediumEditor) {
-
-    
     var newUser = function() {
         return {username:undefined,
                 email:undefined,
