@@ -47,8 +47,12 @@ class UserViewSet(viewsets.ModelViewSet):
     def scrolls(self, request):
         user = self.request.user
         scrolls = Scroll.objects.filter(user__id=user.id)
-        serializer = ScrollSerializer(scrolls, context={'request': request}, many=True)
+        serializer = ScrollSerializer(
+            scrolls,
+            context={'request': request},
+            many=True)
         return Response(serializer.data)
+
 
 class ThumbnailSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -119,24 +123,30 @@ class ThumbnailViewSet(viewsets.ModelViewSet):
             sha1=hashed['img_hash'])
 
 
+class ScrollFilter(django_filters.rest_framework.FilterSet):
+    class Meta:
+        model = Scroll
+        fields = ['uuid', ]
+
+
 class ScrollSerializer(serializers.HyperlinkedModelSerializer):
     user_username = serializers.CharField(
         read_only=True,
         source="user.username")
-    start = serializers.DateTimeField()
-    before = serializers.DateTimeField()
-    event_count = serializers.IntegerField()    
+    first_event = serializers.DateTimeField()
+    last_event = serializers.DateTimeField()
+    event_count = serializers.IntegerField()
 
     class Meta:
         model = Scroll
         fields = (
+            'uuid',
             'url',
             'user',
-            'uuid',
             'user_username',
             'event_count',
-            'start',
-            'before',
+            'first_event',
+            'last_event',
             'created',
             'title',
             'public',
@@ -158,8 +168,9 @@ class ScrollViewSet(viewsets.ModelViewSet):
                              .filter(public=True)\
                              .annotate(
                                  event_count=Count('events'),
-                                 start=Min('events__datetime'),
-                                 before=Max('events__datetime'))
+                                 first_event=Min('events__datetime'),
+                                 last_event=Max('events__datetime'))
+    filter_class = ScrollFilter
 
 
 class EventFilter(django_filters.rest_framework.FilterSet):
@@ -183,7 +194,6 @@ class BulkEventSerializer(BulkSerializerMixin,
         read_only=True,
         source="scroll.title")
     scroll_uuid = serializers.UUIDField(
-        format='hex',
         read_only=True,
         source="scroll.uuid")
     public = serializers.BooleanField(

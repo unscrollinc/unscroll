@@ -8,7 +8,7 @@
 		url:undefined
 	       };
     }
-
+    
     var GLOBAL = {
         user:newUser(),
         timeline:undefined,
@@ -20,15 +20,19 @@
         end:undefined
     };
     GLOBAL.logout = function() {
+	
 	GLOBAL.user = newUser();
+	
 	Cookies.remove('sessionid');
 	Cookies.remove('session');
 	Cookies.remove('csrftoken');
+	
         $('#account-login').text('login');
         $('#account-create').text('create account');
+	
         console.log('Logged out.');
     }
-
+    
     GLOBAL.editEvent = function(event) {
 	console.log(event);
 	
@@ -52,7 +56,7 @@
 		    $('<div></div>', {class:'input'})
 			.append(editor));
 	}
-
+	
 	console.log(GLOBAL.pos);
 	var newEvent = $('<div></div>',
 			 {id:'new-event'})
@@ -71,9 +75,8 @@
 	console.log(newEvent);
 	$('body').append(newEvent);
     }
-
+    
     $(document).ready(function() {
-
 	$('#notebook-create-button')
 	    .on('click', function(ev) {
 		var data = {
@@ -82,17 +85,19 @@
 		};
 		console.log(data, GLOBAL.user);
 		ENDPOINTS.scrollPost(data);
-		
-		
-	    })
+	    });
+	
+	$('#notebook-list-button').on('click', function(ev) {
+	    $('#notebook-listing').toggle();
+	});
+	
 	var start = moment('2001-04-01T00:00:00');
 	var end = start.clone().add(1, 'months');        
         
         GLOBAL.timeline = new Timeline(start, end);
         GLOBAL.start = start;
         GLOBAL.end = end;
-        GLOBAL.notebook = new Notebook('a');
-	GLOBAL.notebook.makeItem('closer');
+	
         GLOBAL.setUserNameAndLogin = function() {
 	    $('#account-login').text('You are: ' + GLOBAL.user.username);
 	    $('#account-create')
@@ -130,14 +135,14 @@
                 $('#notebook').toggle();
             }
         });
-
+	
         $(document).keyup(function(e) {
             if (GLOBAL.user.username) {            
                 if (e.keyCode === 27) $('#notebook').toggle();
             }
         });        
-        });
-
+    });
+    
     GLOBAL.updateUserScrolls = function() {
 	var makeScrollListing = function(scroll) {
 	    return $('<tr></tr>',
@@ -145,7 +150,10 @@
 		.on('click', function (ev) {
 		    console.log(scroll);
 		    GLOBAL.scroll_uuid = scroll.uuid;
-                    new Timeline(GLOBAL.start, GLOBAL.end);		    
+		    GLOBAL.notebook = new Notebook(scroll.uuid);
+		    GLOBAL.notebook.load();
+                    new Timeline(GLOBAL.start, GLOBAL.end);
+		    
 		})
 		.append(
 		    $('<td></td>').html(scroll.title),
@@ -160,20 +168,20 @@
     }
     const API = 'http://127.0.0.1:8000';
     const AUTH = API + '/rest-auth';
-
+    
     const ENDPOINTS = {
-
+	
         'userLogin': function(data) {
-
-
+	    
+	    
 	    Cookies.set('session', GLOBAL.user);
 	    
 	    /* These show up when we browse the browseable API, and they
 	       get us in trouble. For now, we blow them away and just go
 	       with a single session auth token. */
-//	    Cookies.remove('sessionid');
-//	    Cookies.remove('csrftoken');
-
+	    //	    Cookies.remove('sessionid');
+	    //	    Cookies.remove('csrftoken');
+	    
 	    
 	    $.post({
                 url:AUTH + '/login/',
@@ -242,7 +250,7 @@
                     $.extend(GLOBAL.user, o.results[0]);
 		    console.log('The user is', GLOBAL.user);
 		    GLOBAL.updateUserScrolls();
-
+		    
                 }
             });
         },
@@ -260,6 +268,31 @@
                 }
             });
         },
+	'scrollGet':function(uuid, notenook) {
+	    if (GLOBAL.user.key) {
+		$.ajax({
+                    url:API + '/scrolls/?uuid=' + uuid,
+                    type: 'GET',
+                    contentType: 'application/json',
+                    dataType: 'json',
+		    context:notebook,
+                    headers: {
+			'Authorization': 'Token ' + GLOBAL.user.key
+                    },
+                    failure:function(e) {
+			console.log('Failure: ' + e);
+                    },
+                    success:function(o) {
+			GLOBAL.scroll = o.results[0];
+			GLOBAL.notebook.scroll = o.results[0];
+			GLOBAL.notebook.render();
+                    }
+		});
+	    }
+	    else {
+		console.log('You can only make notes if you\'re logged in.')
+	    }
+        },	
 	'scrollPost':function(data) {
 	    if (GLOBAL.user.key) {
 		$.ajax({
@@ -388,7 +421,7 @@
 	    else {
 		console.log('You can only make notes if you\'re logged in.')
 	    }
-
+	    
         },
         'passwordReset':API + '/rest-auth/password/reset/',
         'passwordResetConfirm':'/rest-auth/password/reset/confirm/',
@@ -409,11 +442,11 @@
     const decade = year * 10;
     const century = year * 100;
     const millennium = year * 1000;
-
+    
     function makeId() {
         return Math.round(new Date().getTime() + (Math.random() * 1000000));
     }
-
+    
     var resolutions = {
         'seconds':0,
         'minutes':1,
@@ -822,7 +855,7 @@
 	    }	 	    	    	    
 	}	
     }
-
+    
     function sortByKey(array, key) {
 	// From http://stackoverflow.com/questions/8837454/sort-array-of-objects-by-single-key-with-date-value	
 	return array.sort(function(a, b) {
@@ -886,7 +919,7 @@
 			GLOBAL.timeline = new Timeline(columnData.start, columnData.end);
 		    }));
     }
-
+    
     
     function makePeriod(text, start, end) {
 	return $('<a></a>', {class:'period nav',
@@ -962,7 +995,7 @@
 		h:h
 	       };
     }
-
+    
     var Event = function() {
         var my = this;
         // application, audio, example, image, message, model, multipart, text, video
@@ -1047,7 +1080,7 @@
                             .html('[+Note]').on('click', (function(e) {
                                 my.eventToNotebook(event, frame);
                             })),
-
+			
 		        
 			
 		        $('<span></span>', {class:'datetime'})
@@ -1076,7 +1109,7 @@
 	    };
         }
     }
-
+    
     var makeUrl = function(env, panel_no, scroll) {
         var url = API
             + '/events/?start='
@@ -1099,10 +1132,10 @@
             },
             success:function(events) {
                 var panel_div = makePanel(panel_no,
-                                      this.frame.add(this.start, panel_no),
-                                      this.frame.add(this.end, panel_no),
-                                      this,
-                                      events);
+					  this.frame.add(this.start, panel_no),
+					  this.frame.add(this.end, panel_no),
+					  this,
+					  events);
                 f(panel_no, panel_div);
             }                
         });        
@@ -1115,7 +1148,7 @@
 	var panel = $('<div></div>', {'id':count,
 				      'class':'panel'})
 	    .css({marginLeft:p(100 * (count + 1))});
-
+	
 	var divs = [];
 	var timeFrame = getTimeFrame(start, end);
 	var frame = timeFrames[timeFrame];
@@ -1142,13 +1175,13 @@
 	}
         
         var grid = makeGrid(columns);
-
+	
 	for (var i in eventMetas) {
 	    var e = eventMetas[i];
 	    e.div.css({width:e.width * columnWidth});
 	    buffer.append(e.div);
 	    e.height = Math.ceil(e.div.height()/cellHeight);
-
+	    
 	    var reservation = makeReservation(grid,
 					      e.offset,
                                               0,
@@ -1167,7 +1200,7 @@
 	panel.append(divs);
 	return panel;
     }
-
+    
     var Timeline = function(start, end) {
 	console.log('Making timeline for',
 		    start.format(),
@@ -1181,12 +1214,12 @@
             $('<div></div>', {id:'-1'}),
             $('<div></div>', {id:'0'}),
             $('<div></div>', {id:'1'}));
-                
+        
 	// A highly mutable array. This is where we are in the number
 	// line of time.
-
+	
 	var panels = [-1, 0, 1];
-
+	
 	var timeframe = getTimeFrame(start, end)
 	var frame = timeFrames[timeframe];	
 	var env = {
@@ -1214,7 +1247,7 @@
         }
 	
 	// Whatever
-
+	
 	var testing = {
 	    pageX:0,
 	    pageY:0,
@@ -1237,13 +1270,13 @@
         var selectable = true;	
 	var pos = {}
 	
-	$('#mousepos').html(statusBar(pos));
+	//	$('#mousepos').html(statusBar(pos));
 	
 	// Watch the mouse and when the button is pressed move left to
 	// right.
-
+	
 	var touching = false;
-
+	
         timeline.on('dblclick', function() {
             console.log('DOUBLE CLICKED', GLOBAL.pos.target.format());
         })
@@ -1254,7 +1287,7 @@
                 $('div').addClass('noselect');
             }
 	});
-
+	
 	timeline.on('mouseup touchend', function(e) {
 	    touching = false;
             $('div').removeClass('noselect');
@@ -1285,7 +1318,7 @@
 		else {
 		    dragX = 0;
 		}
-
+		
 		offset = lastOffset + dragX;
 		timeline
 		    .css({marginLeft:p(offset - 100),
@@ -1301,12 +1334,12 @@
 	    }
 	    
 	    var timelineOffset = (0 - offset)/100;
-
+	    
 	    var mouseOffset = timelineOffset + pageX/env.window.width;
 	    var pointerInteger = Math.floor(mouseOffset);
 	    var tmpMantissa = mouseOffset % 1;
 	    var pointerMantissa = tmpMantissa < 0 ? 1 + tmpMantissa : tmpMantissa ;
-
+	    
 	    // time
 	    pos = {
 		x:pageX/env.window.width * 100,
@@ -1317,15 +1350,15 @@
 	    };
 	    var gt = env.frame.getTarget(start, pointerInteger, pointerMantissa);
 	    pos = $.extend({}, pos, gt);
-
+	    
             GLOBAL.pos = pos;
 	    
 	    // reset the delta
 	    // dragX = 0;	
 	    
 	    // update status bar 
-//	    $('#mousepos').html(statusBar(pos));
-
+	    //	    $('#mousepos').html(statusBar(pos));
+	    
 	    // Are we heading left, into the past?
 	    if (panels[0] > pos.timelineOffset) {
 		panels.pop();
@@ -1334,12 +1367,12 @@
                 
                 timeline.children().last().remove()
                 timeline.prepend($('<div></div>', {id:prev}));
-
+		
                 loadPanel(env, prev, function(panel_no, panel_div) {
                     $('#'+panel_no).replaceWith(panel_div);
                 });
             }
-	                  
+	    
 	    // Are we heading right, into the future?
 	    else if (panels[2] < pos.timelineOffset) {
 		panels.shift();
@@ -1348,7 +1381,7 @@
                 
                 timeline.children().first().remove();                
                 timeline.append($('<div></div>', {id:next}));
-
+		
                 loadPanel(env, next, function(panel_no, panel_div) {
                     $('#'+panel_no).replaceWith(panel_div);                    
                 });
@@ -1358,496 +1391,529 @@
     
     const REFRESH_INTERVAL = 5000; // milliseconds
     const timeBeforeRefresh = 10; // milliseconds
-        
-        function timeSince(STATUS) {
-	    var lastPatch = STATUS.lastPatch;
-	    var lastRefresh = STATUS.lastRefresh;
-            var d = new Date().getTime();
-            var deltaRefresh = d - lastRefresh;
-            var deltaPatch = d - lastPatch;    
-            var shouldRefresh = deltaRefresh > timeBeforeRefresh;
-            var shouldPatch = deltaPatch > timeBeforePatch;
-            return {now:d,
-                    shouldRefresh:shouldRefresh,
-                    shouldPatch:shouldPatch};
-        }
-
-	/* ############################## */
-        var NotebookListItem = function() {
-            this.load = function() {};
-            this.render = function() {};
-        }
-
-        /* ############################## */
-        var NotebookList = function() {
-            this.dom_nblist = $('#notebook-list');
-            this.notebooks = new Array();
-
-            this.load = function() {};
-            this.render = function() {};
-        };
-
-        /* ############################## */	
-        var Notebook = function(url) {
-            const max = 200;
-            const dec = 10;
-            var ctr = max;
-
-	    function makeInsertionTemplate() {
-		return {moving:false, from:undefined, to:undefined};
+    
+    function timeSince(STATUS) {
+	var lastPatch = STATUS.lastPatch;
+	var lastRefresh = STATUS.lastRefresh;
+        var d = new Date().getTime();
+        var deltaRefresh = d - lastRefresh;
+        var deltaPatch = d - lastPatch;    
+        var shouldRefresh = deltaRefresh > timeBeforeRefresh;
+        var shouldPatch = deltaPatch > timeBeforePatch;
+        return {now:d,
+                shouldRefresh:shouldRefresh,
+                shouldPatch:shouldPatch};
+    }
+    
+    /* ############################## */
+    var NotebookListItem = function() {
+        this.load = function() {};
+        this.render = function() {};
+    }
+    
+    /* ############################## */
+    var NotebookList = function() {
+        this.dom_nblist = $('#notebook-list');
+        this.notebooks = new Array();
+	
+        this.load = function() {};
+        this.render = function() {};
+    };
+    
+    /* 
+       ########################################
+       Notebook
+       ######################################## 
+    */
+    var Notebook = function(uuid) {
+        const max = 200;
+        const dec = 10;
+        var ctr = max;
+	
+	this.uuid = uuid;
+	
+	function makeInsertionTemplate() {
+	    return {moving:false, from:undefined, to:undefined};
+	}
+	
+	this.scroll = undefined;
+	
+        this.load = function() {
+	    if (this.uuid) {
+		ENDPOINTS.scrollGet(this.uuid, this);
 	    }
-            
-            this.decmin = function() {
-                ctr = ctr - dec;
-                return ctr;
-            }
-
-            var nb = this;
-            this.url = url;
-            
-	    /* Get our DOM objects */
-            this.dom_title = $('#notebook-title')
-            this.dom_nb = $('#notebook-items');
-            this.dom_nb_listing = $('#notebook-listing');            
-            this.dom_essay = $('#notebook-essay');
-            this.dom_insert = $('#insert-button')
-                .on('click', function(ev) {
-                    nb.makeItem();
-                });
-            
-            this.dom_spacer = $('#insert-space')
-                .on('click', function(ev) {
-                    nb.makeItem('spacer');
-                });
+	    else {
+		console.log('[Error] No uuid is defined');
+	    }
+	}
+	this.render = function() {
+	    $('#notebook-listing').hide();
+	    console.log('SCROLLLLL', this.scroll)
+	    var title = 'Untitled Scroll';
+	    if (this.scroll.title) {
+		title = this.scroll.title;
+	    }
+	    var editor = $('<div></div>', {class:'notebook-title-editor'})
+		.html(title);
+	    var medium = new MediumEditor(editor, {
+		disableReturn: true,
+		targetBlank: true
+	    });
 	    
-            this.dom_spacer = $('#insert-image')
-                .on('click', function(ev) {
-                    nb.makeItem('image');
-                });	    
-            
-            this.dom_nb_list = $('#notebook-list-button');            
-
-            this.needsCreated = this.url ? false : true;
-            this.needsUpdated = false;
-            this.needsDeleted = false;
-
-	    this.insertion = makeInsertionTemplate();
+	    $('#notebook-title')
+		.append(editor);
 	    
-            this.title = undefined;
-            this.items = new Array();
-            this.savingItems = new Array();	    
-            this.titleEditor = $('<div></div>', {class:'editable'});
-            this.medium = new MediumEditor(this.titleEditor, {
-                disableReturn: true,
-                disableDoubleReturn: false,
-                disableExtraSpaces: true,
-                targetBlank: true                
+	    console.log(this);
+	    console.log(this.scroll);
+	}
+	
+        this.decmin = function() {
+            ctr = ctr - dec;
+            return ctr;
+        }
+	
+        var nb = this;
+        
+	/* Get our DOM objects */
+        this.dom_title = $('#notebook-title')
+        this.dom_nb = $('#notebook-items');
+        this.dom_nb_listing = $('#notebook-listing');            
+        this.dom_essay = $('#notebook-essay');
+        this.dom_insert = $('#insert-button')
+            .on('click', function(ev) {
+                nb.makeItem();
             });
-
-	    // This is where we reorder items.
-	    this.reorderItems = function(target) {
-		var replace = new Array();
-		
-		var ordered = this.fixOrder(this.insertion);
-		
-		console.log(ordered);
-
-		var to_loc = undefined;
-		var from_loc = undefined;		
-		var target_loc = undefined;
-		
-		for (var i = 0; i<this.items.length; i++) {
-		    if (this.items[i] == ordered.from) {
-			from_loc = i;
-		    }
-		    if (this.items[i] == ordered.to) {
-			to_loc = i;
-		    }
-		    if (this.items[i] == target) {
-			target_loc = i;
-		    }		    		    
+        
+        this.dom_spacer = $('#insert-space')
+            .on('click', function(ev) {
+                nb.makeItem('spacer');
+            });
+	
+        this.dom_spacer = $('#insert-image')
+            .on('click', function(ev) {
+                nb.makeItem('image');
+            });	    
+        
+        this.dom_nb_list = $('#notebook-list-button');            
+	
+        this.needsCreated = this.uuid ? false : true;
+        this.needsUpdated = false;
+        this.needsDeleted = false;
+	
+	this.insertion = makeInsertionTemplate();
+	
+        this.title = undefined;
+        this.items = new Array();
+	
+	// This is where we reorder items.
+	this.reorderItems = function(target) {
+	    var replace = new Array();
+	    
+	    var ordered = this.fixOrder(this.insertion);
+	    
+	    console.log(ordered);
+	    
+	    var to_loc = undefined;
+	    var from_loc = undefined;		
+	    var target_loc = undefined;
+	    
+	    for (var i = 0; i<this.items.length; i++) {
+		if (this.items[i] == ordered.from) {
+		    from_loc = i;
 		}
-		// If to is undefined we have a range of one
-		if (!ordered.to) {
-		    to_loc = from_loc;
+		if (this.items[i] == ordered.to) {
+		    to_loc = i;
 		}
-
-		for (var i = 0; i<this.items.length; i++) {
-		    if (i == target_loc) {
-			// Paste them in here
-			if (i==0) {
-			    for (var j = to_loc; j>=from_loc; j--) {
-				this.items[j].order = this.decmin();
-			    }
+		if (this.items[i] == target) {
+		    target_loc = i;
+		}		    		    
+	    }
+	    // If to is undefined we have a range of one
+	    if (!ordered.to) {
+		to_loc = from_loc;
+	    }
+	    
+	    for (var i = 0; i<this.items.length; i++) {
+		if (i == target_loc) {
+		    // Paste them in here
+		    if (i==0) {
+			for (var j = to_loc; j>=from_loc; j--) {
+			    this.items[j].order = this.decmin();
 			}
-			else {
-			    var oneback = this.items[i-1];
-			    for (var j = from_loc; j<=to_loc; j++) {
-				var between = this.items[i].order - oneback.order;
-				var div = to_loc - from_loc + 2;
-				this.items[j].order = oneback.order + between/div;
-				
-			    }
-			}
-			
-			for (var j=from_loc; j<=to_loc; j++) {
-			    this.items[j].needsUpdated = true;
-			    $(target.notebookView).before(this.items[j].notebookView);
-			    $(target.textView).before(this.items[j].textView);
-			    replace.push(this.items[j]);
-			}
-			replace.push(this.items[i]);
-		    }
-		    else if (i >= from_loc && i <= to_loc) {
-			// nothing
 		    }
 		    else {
-			replace.push(this.items[i]);
+			var oneback = this.items[i-1];
+			for (var j = from_loc; j<=to_loc; j++) {
+			    var between = this.items[i].order - oneback.order;
+			    var div = to_loc - from_loc + 2;
+			    this.items[j].order = oneback.order + between/div;
+			    
+			}
 		    }
 		    
-		}
-		this.insertion = makeInsertionTemplate();
-		this.items = replace;
-	    }
-
-	    this.getNext = function(item) {
-		for (var i = 0; i<this.items.length; i++) {
-		    if (this.items[i] == item) {
-			return this.items[i+1];
+		    for (var j=from_loc; j<=to_loc; j++) {
+			this.items[j].needsUpdated = true;
+			$(target.notebookView).before(this.items[j].notebookView);
+			$(target.textView).before(this.items[j].textView);
+			replace.push(this.items[j]);
 		    }
+		    replace.push(this.items[i]);
+		}
+		else if (i >= from_loc && i <= to_loc) {
+		    // nothing
+		}
+		else {
+		    replace.push(this.items[i]);
+		}
+		
+	    }
+	    this.insertion = makeInsertionTemplate();
+	    this.items = replace;
+	}
+	
+	this.getNext = function(item) {
+	    for (var i = 0; i<this.items.length; i++) {
+		if (this.items[i] == item) {
+		    return this.items[i+1];
 		}
 	    }
-	    this.getPrev = function(item) {
-		for (var i = 0; i<this.items.length; i++) {
-		    if (this.items[i] == item) {
-			return this.items[i-1];
-		    }
+	}
+	this.getPrev = function(item) {
+	    for (var i = 0; i<this.items.length; i++) {
+		if (this.items[i] == item) {
+		    return this.items[i-1];
+		}
+	    }
+	}
+	
+	// You can select a range bottom up. If that happens
+	// switch "from" and "to".
+	this.fixOrder = function(insertion) {
+	    var _from = insertion.from;
+	    var _to = insertion.to;
+	    
+	    if (_to) {
+		if (_from.order > _to.order) {
+		    _from = _to;
+		    _to = _from;
 		}
 	    }
 	    
-	    // You can select a range bottom up. If that happens
-	    // switch "from" and "to".
-	    this.fixOrder = function(insertion) {
-		var _from = insertion.from;
-		var _to = insertion.to;
-
-		if (_to) {
-		    if (_from.order > _to.order) {
-			_from = _to;
-			_to = _from;
+	    return {from:_from, to:_to}
+	}
+	
+	// You can move a range of notes at once.
+	this.getRange = function(insertion) {
+	    var span = new Array();
+	    var ordered = this.fixOrder(insertion);
+	    var _from = ordered.from;
+	    var _to = ordered.to;
+	    var started = false;
+	    var finished = false;
+	    for (var i = 0; i<this.items.length; i++) {
+		if (!finished) {
+		    if (this.items[i] == _from) {
+			span.push(this.items[i]);
+			started = true;
+		    }
+		    else if (this.items[i] == _to) {
+			span.push(this.items[i]);
+			finished = true;
+		    }
+		    else if (started) {
+			span.push(this.items[i]);			    
 		    }
 		}
-		
-		return {from:_from, to:_to}
 	    }
-
-	    // You can move a range of notes at once.
-	    this.getRange = function(insertion) {
-		var span = new Array();
-		var ordered = this.fixOrder(insertion);
-		var _from = ordered.from;
-		var _to = ordered.to;
-		var started = false;
-		var finished = false;
-		for (var i = 0; i<this.items.length; i++) {
-		    if (!finished) {
-			if (this.items[i] == _from) {
-			    span.push(this.items[i]);
-			    started = true;
-			}
-			else if (this.items[i] == _to) {
-			    span.push(this.items[i]);
-			    finished = true;
-			}
-			else if (started) {
-			    span.push(this.items[i]);			    
-			}
-		    }
-		}
-		return span;
-	    }
+	    return span;
+	}
+	
+        this.ajaxPackage = {};
+	
+	
+        this.makeItem = function(kind, event, note) {
+            var item = new NotebookItem(kind, event, note);
+            this.dom_nb.prepend(item.notebookView);
+            this.dom_essay.prepend(item.textView);
+	    item.order = this.decmin();
+	    
+	    item.mover = $('<span></span>',
+			   {class:'button mover'})
+		.html('MV');
+	    
+	    item.notebookView.children('.top, .editable').on('click', function(ev){
+		if (nb.insertion.moving) {
+		    ev.stopImmediatePropagation();
+		    ev.preventDefault();
 		    
-            this.ajaxPackage = {};
-
-
-            this.makeItem = function(kind, event, note) {
-                var item = new NotebookItem(kind, event, note);
-                this.dom_nb.prepend(item.notebookView);
-                this.dom_essay.prepend(item.textView);
-		item.order = this.decmin();
-		
-		item.mover = $('<span></span>',
-			       {class:'button mover'})
-		    .html('MV');
-
-		item.notebookView.children('.top, .editable').on('click', function(ev){
-		    if (nb.insertion.moving) {
-			ev.stopImmediatePropagation();
-			ev.preventDefault();
-			
-			nb.insertion.from.buttons.children('.mover').removeClass('active');
-			
-			nb.reorderItems(item);
-			$('.mover').html('MV');
+		    nb.insertion.from.buttons.children('.mover').removeClass('active');
+		    
+		    nb.reorderItems(item);
+		    $('.mover').html('MV');
+		}
+	    });
+	    
+	    item.notebookView.hover(
+		function(ev) {
+		    if (nb.insertion.moving == true
+			&& item != nb.insertion.from) {
+			var el = $(item.notebookView);
+			el.children()
+			    .css({cursor:'hand'});
+		    }
+		},
+		function(ev) {
+		    if (!nb.moving) {
+			var el = $(item.notebookView)			
+			el.children().css({cursor:'default'});
 		    }
 		});
-		
-		item.notebookView.hover(
-		    function(ev) {
-			if (nb.insertion.moving == true
-			    && item != nb.insertion.from) {
-			    var el = $(item.notebookView);
-			    el.children()
-				.css({cursor:'hand'});
-			}
-		    },
-		    function(ev) {
-			if (!nb.moving) {
-			    var el = $(item.notebookView)			
-			    el.children().css({cursor:'default'});
-			}
-		    });
-		
-		item.mover.on('click', function(ev) {
-		    if (nb.insertion.moving) {
-			if (item == nb.insertion.from) {
-			    item.mover.removeClass('active');
-			    nb.insertion = makeInsertionTemplate();
-			}
-			else {
-			    nb.insertion.to = item;
-			    var range = nb.getRange(nb.insertion);
-			    for (i in range) {
-				range[i].buttons.children('.mover').addClass('active');
-			    }
-			}
+	    
+	    item.mover.on('click', function(ev) {
+		if (nb.insertion.moving) {
+		    if (item == nb.insertion.from) {
+			item.mover.removeClass('active');
+			nb.insertion = makeInsertionTemplate();
 		    }
 		    else {
-			nb.insertion.moving = true;
-			item.mover.addClass('active');
-			$('.mover').not('.active').each(function(pos, el) {
-			    $(el).html('SET RANGE');
-			});
-			nb.insertion.from = item;
+			nb.insertion.to = item;
+			var range = nb.getRange(nb.insertion);
+			for (i in range) {
+			    range[i].buttons.children('.mover').addClass('active');
+			}
 		    }
-		})
-
-		item.buttons.prepend(item.mover);
-		this.items.unshift(item);
-            }
+		}
+		else {
+		    nb.insertion.moving = true;
+		    item.mover.addClass('active');
+		    $('.mover').not('.active').each(function(pos, el) {
+			$(el).html('SET RANGE');
+		    });
+		    nb.insertion.from = item;
+		}
+	    })
 	    
-            // every X seconds look through this.items for items that have changed
-            this.scanner = function () {
-		// THIS NEEDS LOVE AND SHOULDN'T BE AN ARRAY; SHOULD
-		// BE HASH BY MD5 MAYBE
-
-                var makePost = function(item) {
+	    item.buttons.prepend(item.mover);
+	    this.items.unshift(item);
+        }
+	
+        // every X seconds look through this.items for items that have changed
+        this.scanner = function () {
+	    // If we don't have a scroll URL then we can't make a REST query.
+	    if (!nb.scroll.url) {
+		console.log('[Error] No scroll URL, can\'t save anything', nb);
+	    }
+	    else {
+		var makePost = function(item) {
                     var event = undefined;
                     var data = {
-		        order:item.order,
-		        text:item.medium.getContent()
+			order:item.order,
+			scroll:this.scroll.url,
+			text:item.medium.getContent()
                     };
                     if (item.event && item.event.url) {
-                        data['event'] = item.event.url;
+			data['event'] = item.event.url;
                     }
                     if (item.url) {
-                        data['url'] = item.url;
+			data['url'] = item.url;
                     }
                     if (item.id) {
-                        data['id'] = item.id;
-                    }                
+			data['id'] = item.id;
+                    }
+                    if (item.uuid) {
+			data['uuid'] = item.uuid;
+                    }
                     return data;
-                }
-
-                var makeDelete = function(item) {
+		}
+		
+		var makeDelete = function(item) {
                     var data = {};
                     console.log(item);
                     if (item.id) {
-                        data['id'] = item.id;
+			data['id'] = item.id;
                     }
                     if (item.url) {
-                        data['url'] = item.url;
+			data['url'] = item.url;
                     }
-                    console.log('DATA IS', data);
                     return data;
-                }
+		}
 		
-                var updated = new Array();
-                var deleted = new Array();
-                var created = new Array();		
-                for (var i=0; i<nb.items.length; i++) {
+		var updated = new Array();
+		var deleted = new Array();
+		var created = new Array();
+		
+		for (var i=0; i<nb.items.length; i++) {
 		    if (nb.items[i].needsCreated) {
-                        created.push(nb.items[i]);
+			created.push(nb.items[i]);
 		    }
                     else {
-                        // Avoid update or delete before create---if
-                        // it needs created then let that happen first
-                        // on a subsequent pass.
-                        
-		        if (nb.items[i].needsUpdated) {
+			// Avoid update or delete before create---if
+			// it needs created then let that happen first
+			// on a subsequent pass.
+			
+			if (nb.items[i].needsUpdated) {
                             updated.push(nb.items[i]);
-		        }
-		        if (nb.items[i].needsDeleted) {
+			}
+			if (nb.items[i].needsDeleted) {
                             deleted.push(nb.items[i]);
-		        }
+			}
 		    }
-                }
-
+		}
+		
 		if (created.length > 0) {
                     ENDPOINTS.notePost($.map(created, makePost),
                                        created);
 		}
-
+		
 		if (updated.length > 0) {
                     ENDPOINTS.notePut($.map(updated, makePost),
                                       updated);
 		}
-
+		
 		if (deleted.length > 0) {
                     ENDPOINTS.noteDelete($.map(deleted, makeDelete),
-                                      deleted);
+					 deleted);
 		}
 	    }
-            setInterval(this.scanner, REFRESH_INTERVAL);
-        };
+	}
+        setInterval(this.scanner, REFRESH_INTERVAL);
+	    
+    };
+    
+    var NotebookItem = function(kind, event, note) {
+        var creationTime = new Date().getTime();
+        var nbitem = this;
+        this.event = event;
         
-        var NotebookItem = function(kind, event, note) {
-            var creationTime = new Date().getTime();
-            var nbitem = this;
-            this.event = event;
-            
-            this.kind = kind ? kind : 'default';
-            this.note = note;
-            this.url = undefined;
-            if (this.note) {
-                this.url = this.note.url;
-            }
-            this.id = undefined;
-            if (this.note) {
-                this.id = this.note.id;
-            }            
-	    this.lastPatch = creationTime;
-            this.lastRefresh = creationTime;
-            this.data = {};
-	    this.order = undefined;
-	    
-            this.needsCreated = note ? false : true;
-            this.needsUpdated = false;
-            this.needsDeleted = false;
-	    
-	    this.buttons = $('<div></div>', {class:'buttons'});
-	    this.mover = undefined;
-	    
-            this.render = function() {
-		var d = $('<div></div>', {class:'top'});
-                if (this.kind == 'default' && this.event) {
-                    return d.html(event.title);
-                }
-                else if (this.kind=='closer') {
-		    return d.html('&mdash; FIN &mdash;')
-                }
-		else if (this.kind=='spacer') {
-		    this.buttons.append(
-			$('<span></span>', {class:'button'}).html('Space &times; 2')
-			    .addClass('active')
-			    .on('click', function() {
-				nbitem.buttons.children('span.button')
-                                    .removeClass('active');
-				$(this).addClass('active');
-				nbitem.medium.setContent('<br/><br/>');}),
-			$('<span></span>', {class:'button'}).html('&mdash;')
-			    .on('click', function() {
-				nbitem.buttons.children('span.button')
-                                    .removeClass('active');
-				$(this).addClass('active');				
-				nbitem.medium.setContent('<hr></hr>');
-			    }));
-		    return d;
-                }
-                else if (this.kind=='image') {
-                    return d.html('image');
-                }		
-                else {
-                    return d.html('Notecard');
-                }
-            }
-	    
-            this.eventHTML = this.render();
-	    
-	    if (this.kind == 'spacer') {
-
-            }
-	    
-            this.editor = $('<div></div>', {class:'editable'});
-            if (this.kind == 'spacer') {
-                this.editor.html($('<br/><br/>'));
-            }
-	    else if (event && event.html) {
-		this.editor.html(event.html)
-	    }
-	    
-            this.medium = new MediumEditor(this.editor, {
-                disableReturn: true,
-                disableDoubleReturn: false,
-                disableExtraSpaces: true,
-                targetBlank: true                
-            });
-
-            this.textView = $('<span></span>',
-                              {'class':'view-item'})
-                .on('click', function() {
-		});
-
-            this.changed = function() {
-                this.needsUpdated = true;
-            };
-
-            this.deleteButton = $('<span></span>',
-                                  {'class':'button'})
-                .html('X')
-                .on('click', function(ev) {
-                    nbitem.needsDeleted = true;
-		    nbitem.notebookView.remove();
-		    nbitem.textView.remove();		    
-                });	    
-	    
-            this.makeNotebookView = function() {
-		if (this.kind != 'closer') {
-                    return $('<div></div>',
-			     {class:'nb-item ' + kind})
-			.append(this.buttons
-				.append(this.deleteButton))
-			.append(this.eventHTML)
-			.append(this.editor);
-		}
-		else {
-                    return $('<div></div>',
-			     {class:'nb-item ' + kind})
-			.append(this.eventHTML);
-		}
-            }
-            
-            this.notebookView = this.makeNotebookView();
-            this.textView.html(this.medium.getContent() + ' ');
-           
-	    this.medium.subscribe('focus', function (event, editor) {
-		$('span.view-item').removeClass('focused');
-		nbitem.textView.addClass('focused');
-		var scrollTop = $('#notebook-essay').scrollTop()
-		    + $(nbitem.textView).position().top - 100;
-		
-		$('#notebook-essay').animate({
-		    scrollTop: scrollTop
-		});
-
-	    });
-	    this.medium.subscribe('editableInput', function (event, editor) {
-                nbitem.changed();              
-                nbitem.textView.html(nbitem.medium.getContent());
-                nbitem.textView.append(' ');
-	    });
+        this.kind = kind ? kind : 'default';
+        this.note = note;
+        this.uuid = undefined;
+        if (this.note) {
+            this.uuid = this.note.url;
         }
-    
-
-    
+        this.id = undefined;
+        if (this.note) {
+            this.id = this.note.id;
+        }            
+	this.lastPatch = creationTime;
+        this.lastRefresh = creationTime;
+        this.data = {};
+	this.order = undefined;
+	
+        this.needsCreated = note ? false : true;
+        this.needsUpdated = false;
+        this.needsDeleted = false;
+	
+	this.buttons = $('<div></div>', {class:'buttons'});
+	this.mover = undefined;
+	
+        this.render = function() {
+	    var d = $('<div></div>', {class:'top'});
+            if (this.kind == 'default' && this.event) {
+                return d.html(event.title);
+            }
+            else if (this.kind=='closer') {
+		return d.html('&mdash; FIN &mdash;')
+            }
+	    else if (this.kind=='spacer') {
+		this.buttons.append(
+		    $('<span></span>', {class:'button'}).html('Space &times; 2')
+			.addClass('active')
+			.on('click', function() {
+			    nbitem.buttons.children('span.button')
+                                .removeClass('active');
+			    $(this).addClass('active');
+			    nbitem.medium.setContent('<br/><br/>');}),
+		    $('<span></span>', {class:'button'}).html('&mdash;')
+			.on('click', function() {
+			    nbitem.buttons.children('span.button')
+                                .removeClass('active');
+			    $(this).addClass('active');				
+			    nbitem.medium.setContent('<hr></hr>');
+			}));
+		return d;
+            }
+            else if (this.kind=='image') {
+                return d.html('image');
+            }		
+            else {
+                return d.html('Notecard');
+            }
+        }
+	
+        this.eventHTML = this.render();
+	
+	if (this.kind == 'spacer') {
+	    
+        }
+	
+        this.editor = $('<div></div>', {class:'editable'});
+        if (this.kind == 'spacer') {
+            this.editor.html($('<br/><br/>'));
+        }
+	else if (event && event.html) {
+	    this.editor.html(event.html)
+	}
+	
+        this.medium = new MediumEditor(this.editor, {
+            disableReturn: true,
+            disableDoubleReturn: false,
+            disableExtraSpaces: true,
+            targetBlank: true                
+        });
+	
+        this.textView = $('<span></span>',
+                          {'class':'view-item'})
+            .on('click', function() {
+	    });
+	
+        this.changed = function() {
+            this.needsUpdated = true;
+        };
+	
+        this.deleteButton = $('<span></span>',
+                              {'class':'button'})
+            .html('X')
+            .on('click', function(ev) {
+                nbitem.needsDeleted = true;
+		nbitem.notebookView.remove();
+		nbitem.textView.remove();		    
+            });	    
+	
+        this.makeNotebookView = function() {
+	    if (this.kind != 'closer') {
+                return $('<div></div>',
+			 {class:'nb-item ' + kind})
+		    .append(this.buttons
+			    .append(this.deleteButton))
+		    .append(this.eventHTML)
+		    .append(this.editor);
+	    }
+	    else {
+                return $('<div></div>',
+			 {class:'nb-item ' + kind})
+		    .append(this.eventHTML);
+	    }
+        }
+        
+        this.notebookView = this.makeNotebookView();
+        this.textView.html(this.medium.getContent() + ' ');
+        
+	this.medium.subscribe('focus', function (event, editor) {
+	    $('span.view-item').removeClass('focused');
+	    nbitem.textView.addClass('focused');
+	    var scrollTop = $('#notebook-essay').scrollTop()
+		+ $(nbitem.textView).position().top - 100;
+	    
+	    $('#notebook-essay').animate({
+		scrollTop: scrollTop
+	    });
+	    
+	});
+	this.medium.subscribe('editableInput', function (event, editor) {
+            nbitem.changed();              
+            nbitem.textView.html(nbitem.medium.getContent());
+            nbitem.textView.append(' ');
+	});
+    }
 }(jQuery, Cookies, MediumEditor));

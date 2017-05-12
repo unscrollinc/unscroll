@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='event',
             name='ranking',
-            field=models.FloatField(db_index=True, default=0.14407016638430536),
+            field=models.FloatField(db_index=True, default=0),
         ),
         migrations.AlterField(
             model_name='event',

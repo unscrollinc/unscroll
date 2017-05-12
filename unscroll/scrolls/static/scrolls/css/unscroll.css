@@ -122,11 +122,9 @@ form#search-form {
     width:33%;
     background:white;
     height:20px;
-    display:block;
-    padding:0px;
+    display:inline;
     top:15px;
     position:absolute;
-    left:35%;
     margin:0px;
 }
 
