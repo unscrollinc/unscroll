@@ -67,6 +67,19 @@ class Scroll(models.Model):
         return '{}'.format(self.title,)
 
 
+class EventQueryset(models.QuerySet):
+    def full_text_search(self, text):
+        return self.extra(
+            select={
+                'rank':
+                "ts_rank_cd(to_tsvector('english', scrolls_event.title || ' ' || scrolls_event.text), plainto_tsquery(%s), 32)"},
+            select_params=(text,),
+            where=("to_tsvector('english', scrolls_event.title || ' ' || scrolls_event.text) @@ plainto_tsquery(%s)",),
+            params=(text,),
+            order_by=('-rank',)
+        )
+
+    
 class Event(models.Model):
     """"""
     user = models.ForeignKey(
@@ -114,7 +127,9 @@ class Event(models.Model):
         related_name='events',
         null=True)
     deleted = models.BooleanField(
-        default=False)    
+        default=False)
+    
+    objects = EventQueryset.as_manager()
 
     class Meta:
         ordering = ['-ranking', 'datetime']

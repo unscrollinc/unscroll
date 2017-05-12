@@ -183,6 +183,11 @@ class EventFilter(django_filters.rest_framework.FilterSet):
     scroll = django_filters.UUIDFilter(
         name="scroll__uuid")
 
+    q = django_filters.CharFilter(method='filter_by_q', distinct=True)
+
+    def filter_by_q(self, queryset, what_is_this_value, value):
+        return queryset.full_text_search(value)
+
     class Meta:
         model = Event
         fields = ['start', 'before', 'scroll', ]
@@ -237,7 +242,7 @@ class BulkEventSerializer(BulkSerializerMixin,
             'source_url',
             'source_date',
             'content_url')
-        
+
         list_serializer_class = BulkListSerializer
 
     def create(self, validated_data):
@@ -253,6 +258,7 @@ class BulkEventViewSet(BulkModelViewSet):
     serializer_class = BulkEventSerializer
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     filter_class = EventFilter
+
 
 
 # ##############################
