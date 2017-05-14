@@ -292,6 +292,8 @@ class NoteSerializer(serializers.HyperlinkedModelSerializer):
 class NoteViewSet(viewsets.ModelViewSet):
     queryset = Note.objects.all()
     serializer_class = NoteSerializer
+    ordering_fields = ('order',)
+    ordering = ('order',)
 
 
 class BulkNoteSerializer(BulkSerializerMixin,
