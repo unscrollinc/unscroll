@@ -34,8 +34,6 @@
     }
     
     GLOBAL.editEvent = function(event) {
-	console.log(event);
-	
 	var getInput = function(name, title, is_rich) {
 	    var vals = {class:'event-input',
 			name:name,
@@ -57,7 +55,6 @@
 			.append(editor));
 	}
 	
-	console.log(GLOBAL.pos);
 	var newEvent = $('<div></div>',
 			 {id:'new-event'})
 	    .css({top:GLOBAL.pos.y + '%',
@@ -72,7 +69,6 @@
 		    getInput('text', 'Event description', true),
 		    getInput('source_date', 'Source (optional)'),
 		    getInput('source_url', 'Source Link (optional)')));
-	console.log(newEvent);
 	$('body').append(newEvent);
     }
     
@@ -83,7 +79,6 @@
 		    title:'untitled',
 		    user:GLOBAL.user.url
 		};
-		console.log(data, GLOBAL.user);
 		ENDPOINTS.scrollPost(data);
 	    });
 	
@@ -148,7 +143,6 @@
 	    return $('<tr></tr>',
 		     {class:'scroll-listing'})
 		.on('click', function (ev) {
-		    console.log(scroll);
 		    GLOBAL.scroll_uuid = scroll.uuid;
 		    GLOBAL.notebook = new Notebook(scroll.uuid);
 		    GLOBAL.notebook.load();
@@ -248,7 +242,6 @@
                 },
                 success:function(o) {
                     $.extend(GLOBAL.user, o.results[0]);
-		    console.log('The user is', GLOBAL.user);
 		    GLOBAL.updateUserScrolls();
 		    
                 }
@@ -309,7 +302,6 @@
                     },
                     success:function(o) {
 			GLOBAL.scroll = o;
-			console.log('MADE SCROLL: ', o);
                     }
 		});
 	    }
@@ -317,15 +309,15 @@
 		console.log('You can only make notes if you\'re logged in.')
 	    }
         },
-        'scrollPut':function(scroll) {
+        'scrollPatch':function(url, data, notebook) {
 	    if (GLOBAL.user.key) {
 		$.ajax({
-                    url:API + '/scrolls/',
+                    url:url,
                     type: 'PATCH',
                     contentType: 'application/json',
                     dataType: 'json',
 		    data:JSON.stringify(data),
-                    context:items,
+                    context:notebook,
                     headers: {
 			'Authorization': 'Token ' + GLOBAL.user.key
                     },
@@ -333,10 +325,7 @@
 			console.log('Failure: ' + e);
                     },
                     success:function(o) {
-                        for (var i=0;i<o.length; i++) {
-                            this[i].needsUpdated = false;                            
-                            console.log(this[i]);
-                        }
+                        this.needsUpdated = false;
                     }
 		});
 	    }
@@ -344,6 +333,33 @@
 		console.log('You can only fav things if you\'re logged in.')
 	    }
         },
+        'notesGet':function(scroll_uuid, notebook) {
+	    if (GLOBAL.user.key) {
+		$.ajax({
+                    url:API + '/notes/?scroll=' + scroll_uuid,
+                    type: 'GET',
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    context:notebook,
+                    headers: {
+			'Authorization': 'Token ' + GLOBAL.user.key
+                    },
+                    failure:function(e) {
+			console.log('Failure: ' + e);
+                    },
+                    success:function(o) {
+                        for (var i=0;i<o.results.length; i++)
+                        {
+                            var nbItem = o.results[i];
+                            var nbi = this.makeItem(nbItem.kind, nbItem.event_full, nbItem);
+                        }
+                    }
+		});
+	    }
+	    else {
+		console.log('You can only make notes if you\'re logged in.')
+	    }
+        },        
         'notePost':function(data, items) {
 	    if (GLOBAL.user.key) {
 		$.ajax({
@@ -390,8 +406,7 @@
                     success:function(o) {
                         for (var i=0;i<o.length; i++) {
                             this[i].needsUpdated = false;                            
-                            console.log(this[i]);
-                        }
+}
                     }
 		});
 	    }
@@ -1426,29 +1441,62 @@
        ######################################## 
     */
     var Notebook = function(uuid) {
-        const max = 200;
-        const dec = 10;
+        /* 
+           A Scroll is a bag of events and notes.
+
+           A Notebook is a note-centric view of a scroll.
+
+           Notes have an arbitrary order. Rather than try to keep them
+           all in sequence we just use floats and when a note needs a
+           new number, we look at the note above and the note below,
+           divide, and that's the number of the note.
+
+           We start at two billion and count down in intervals of 100.
+
+           This is all pretty speculative and will take some fixing.
+
+           This is a tiny function that counts down. 
+         */
+        const max = 2000000000;
+        const dec = 100;
         var ctr = max;
-	
-	this.uuid = uuid;
-	
+        this.decmin = function() {
+            ctr = ctr - dec;
+            return ctr;
+        }
+        
 	function makeInsertionTemplate() {
-	    return {moving:false, from:undefined, to:undefined};
+	    return {
+                moving:false,
+                  from:undefined,
+                to:undefined
+            };
 	}
-	
+
+        var nb = this;
+
+        this.uuid = uuid;
 	this.scroll = undefined;
+        
+        this.needsCreated = this.uuid ? false : true;
+        this.needsUpdated = false;
+        this.needsDeleted = false;
 	
         this.load = function() {
 	    if (this.uuid) {
 		ENDPOINTS.scrollGet(this.uuid, this);
+                ENDPOINTS.notesGet(this.uuid, nb);
 	    }
 	    else {
 		console.log('[Error] No uuid is defined');
 	    }
 	}
+        
 	this.render = function() {
 	    $('#notebook-listing').hide();
-	    console.log('SCROLLLLL', this.scroll)
+            $('#notebook-title').empty();
+            $('#notebook-items').empty();
+            $('#notebook-essay').empty();
 	    var title = 'Untitled Scroll';
 	    if (this.scroll.title) {
 		title = this.scroll.title;
@@ -1459,20 +1507,27 @@
 		disableReturn: true,
 		targetBlank: true
 	    });
-	    
+
 	    $('#notebook-title')
 		.append(editor);
-	    
-	    console.log(this);
-	    console.log(this.scroll);
+            
+            medium.subscribe('editableInput', function (event, editor) {
+                nb.needsUpdated = true;
+                nb.title = medium.getContent();
+	    });
+            
 	}
-	
-        this.decmin = function() {
-            ctr = ctr - dec;
-            return ctr;
+        this.scanner = function() {
+            if (nb.needsUpdated) {
+                var payload = {
+                    title:nb.title
+                };
+                console.log('Will save: ', payload);
+                ENDPOINTS.scrollPatch(nb.scroll.url, payload, nb);
+            }
+
         }
-	
-        var nb = this;
+        setInterval(this.scanner, REFRESH_INTERVAL);	
         
 	/* Get our DOM objects */
         this.dom_title = $('#notebook-title')
@@ -1496,10 +1551,6 @@
         
         this.dom_nb_list = $('#notebook-list-button');            
 	
-        this.needsCreated = this.uuid ? false : true;
-        this.needsUpdated = false;
-        this.needsDeleted = false;
-	
 	this.insertion = makeInsertionTemplate();
 	
         this.title = undefined;
@@ -1510,8 +1561,6 @@
 	    var replace = new Array();
 	    
 	    var ordered = this.fixOrder(this.insertion);
-	    
-	    console.log(ordered);
 	    
 	    var to_loc = undefined;
 	    var from_loc = undefined;		
@@ -1696,44 +1745,45 @@
 	    item.buttons.prepend(item.mover);
 	    this.items.unshift(item);
         }
-	
-        // every X seconds look through this.items for items that have changed
+
+
         this.scanner = function () {
 	    // If we don't have a scroll URL then we can't make a REST query.
-	    if (!nb.scroll.url) {
+	    if (!nb.scroll) {
 		console.log('[Error] No scroll URL, can\'t save anything', nb);
 	    }
 	    else {
-		var makePost = function(item) {
+		var makePost = function(nbItem) {
                     var event = undefined;
+                    
                     var data = {
-			order:item.order,
-			scroll:this.scroll.url,
-			text:item.medium.getContent()
+			order:nbItem.order,
+                        kind:nbItem.kind,
+			scroll:nb.scroll.url,
+			text:nbItem.medium.getContent()
                     };
-                    if (item.event && item.event.url) {
-			data['event'] = item.event.url;
+                    if (nbItem.event && nbItem.event.url) {
+			data['event'] = nbItem.event.url;
                     }
-                    if (item.url) {
-			data['url'] = item.url;
+                    if (nbItem.url) {
+			data['url'] = nbItem.url;
                     }
-                    if (item.id) {
-			data['id'] = item.id;
+                    if (nbItem.id) {
+			data['id'] = nbItem.id;
                     }
-                    if (item.uuid) {
-			data['uuid'] = item.uuid;
+                    if (nbItem.uuid) {
+			data['uuid'] = nbItem.uuid;
                     }
                     return data;
 		}
 		
-		var makeDelete = function(item) {
+		var makeDelete = function(nbItem) {
                     var data = {};
-                    console.log(item);
-                    if (item.id) {
-			data['id'] = item.id;
+                    if (nbItem.id) {
+			data['id'] = nbItem.id;
                     }
-                    if (item.url) {
-			data['url'] = item.url;
+                    if (nbItem.url) {
+			data['url'] = nbItem.url;
                     }
                     return data;
 		}
@@ -1795,8 +1845,7 @@
         if (this.note) {
             this.id = this.note.id;
         }            
-	this.lastPatch = creationTime;
-        this.lastRefresh = creationTime;
+
         this.data = {};
 	this.order = undefined;
 	
@@ -1837,7 +1886,7 @@
                 return d.html('image');
             }		
             else {
-                return d.html('Notecard');
+                return d.html('Card');
             }
         }
 	
@@ -1851,8 +1900,8 @@
         if (this.kind == 'spacer') {
             this.editor.html($('<br/><br/>'));
         }
-	else if (event && event.html) {
-	    this.editor.html(event.html)
+	else if (note && note.text) {
+	    this.editor.html(note.text);
 	}
 	
         this.medium = new MediumEditor(this.editor, {

@@ -69,6 +69,7 @@ def __main__():
     docs = parsed['rfc-index']['rfc-entry']
     events = [rfc_to_event(x) for x in docs]
     c = UnscrollClient()
+    print(c)
     c.__batch__(
         api='http://127.0.0.1:8000',
         username='admin',

@@ -133,9 +133,12 @@ class ScrollSerializer(serializers.HyperlinkedModelSerializer):
     user_username = serializers.CharField(
         read_only=True,
         source="user.username")
-    first_event = serializers.DateTimeField()
-    last_event = serializers.DateTimeField()
-    event_count = serializers.IntegerField()
+    first_event = serializers.DateTimeField(
+        read_only=True)
+    last_event = serializers.DateTimeField(
+        read_only=True)
+    event_count = serializers.IntegerField(
+        read_only=True)
 
     class Meta:
         model = Scroll
@@ -239,8 +242,6 @@ class BulkEventSerializer(BulkSerializerMixin,
             'content_type',
             'resolution',
             'datetime',
-            'source_url',
-            'source_date',
             'content_url')
 
         list_serializer_class = BulkListSerializer
@@ -272,6 +273,7 @@ class NoteSerializer(serializers.HyperlinkedModelSerializer):
         model = Note
         fields = (
             'url',
+            'uuid',
             'scroll',
             'user',
             'event',
@@ -295,19 +297,30 @@ class NoteViewSet(viewsets.ModelViewSet):
 class BulkNoteSerializer(BulkSerializerMixin,
                          serializers.HyperlinkedModelSerializer):
 
+    event_full = BulkEventSerializer(
+        source='event',
+        many=False,
+        read_only=True)
+
     public = serializers.BooleanField(
         read_only=True,
         source="scroll.public")
-    
+
+    scroll_uuid = serializers.UUIDField(
+        read_only=True,
+        source="scroll.uuid")
+
     class Meta(object):
         model = Note
         fields = (
             'id',
             'url',
             'scroll',
+            'scroll_uuid',
             'public',
             'user',
             'event',
+            'event_full',            
             'order',
             'created',
             'last_updated',
@@ -321,14 +334,26 @@ class BulkNoteSerializer(BulkSerializerMixin,
         return s
 
 
+class NoteFilter(django_filters.rest_framework.FilterSet):
+    scroll = django_filters.UUIDFilter(
+        name="scroll__uuid")
+    
+    class Meta:
+        model = Note
+        fields = ['scroll', ]
+
+
 class BulkNoteViewSet(BulkModelViewSet):
     queryset = Note.objects.select_related(
         'scroll',
         'event',
         'user')
     serializer_class = BulkNoteSerializer
+    filter_class = NoteFilter
 
 
+
+        
 # Routers provide a way of automatically determining the URL conf.
 router = BulkRouter()
 # router = routers.DefaultRouter()

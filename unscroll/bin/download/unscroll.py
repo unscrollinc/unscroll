@@ -61,6 +61,7 @@ class UnscrollClient():
                       subtitle=None,
                       description=None,
                       thumbnail=None):
+
         r = requests.post(self.api + '/scrolls/',
                           headers=self.authentication_header,
                           json={'title': title,
@@ -70,6 +71,8 @@ class UnscrollClient():
                                 'thumbnail': thumbnail})
         scroll = r.json()
         scroll_d = dict(scroll)
+        print(scroll)
+        print(scroll_d)
         self.scroll_url = scroll_d['url']
         return self.scroll_url
 
@@ -114,7 +117,7 @@ class UnscrollClient():
             for k in j['query']['pages'].keys():
                 thumb = j['query']['pages'][k]['thumbnail']
                 return {'url': thumb['source'],
-                        'title':title,
+                        'title': title,
                         'width': thumb['width'],
                         'height': thumb['height']}
         except KeyError:

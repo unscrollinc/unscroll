@@ -260,7 +260,7 @@ div#player {
 
 .button {
     font-weight:bold;
-    border-bottom:2px solid blue;
+    border-bottom:2px solid #d9eaf3;    
     cursor:hand;
     text-transform:uppercase;
     font-family:sans-serif;
@@ -332,7 +332,6 @@ div#notebook-body {
     width:100%;
     margin-left:auto;
     overflow:hidden;
-    background:#d9eaf3;
 }
 div#notebook-items {
     height:95%;    
@@ -372,10 +371,11 @@ span.focused {
 
 div.nb-item {
     background:white;
-    border:1px solid #88f;
-    border-radius:0.25em;
     padding:.25em;
     margin:1.5em 0.5em 0 0.5em;
+    border-top:1px dotted #d9eaf3;
+    font:10pt Roboto;
+    color:#333;
 }
 
 
@@ -478,4 +478,13 @@ div#new-event .event-input {
     width:100%;
     font-family:Roboto;
     padding:0.25em 0 0.25em 0;    
+}
+
+div.notebook-title-editor {
+    font-size:20px;
+    background:white;
+    border-top:1px solid black;
+    border-bottom:1px dotted black;
+    padding:0.5em;
+
 }
