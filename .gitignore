@@ -5,6 +5,7 @@
 \#*
 .\#*
 *.pyc
+logfile
 __pycache__/
 data/
 db.sqlite3
