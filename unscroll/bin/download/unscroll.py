@@ -38,7 +38,8 @@ class UnscrollClient():
 
         if (scroll_title is not None and events is not None):
             self.login()
-            scroll_url = self.create_scroll(scroll_title)
+            scroll_url = self.create_or_retrieve_scroll(scroll_title)
+            
             print(scroll_url)
             for event in events:
                 event['scroll'] = scroll_url
@@ -57,11 +58,11 @@ class UnscrollClient():
                                       'Token {}'.format(login.get('key'),)}
         return True
 
-    def create_scroll(self, title,
-                      public=True,
-                      subtitle=None,
-                      description=None,
-                      thumbnail=None):
+    def create_or_retrieve_scroll(self, title,
+                                  public=True,
+                                  subtitle=None,
+                                  description=None,
+                                  thumbnail=None):
 
         r = requests.post(self.api + '/scrolls/',
                           headers=self.authentication_header,
@@ -70,12 +71,19 @@ class UnscrollClient():
                                 'subtitle': subtitle,
                                 'description': description,
                                 'thumbnail': thumbnail})
-        scroll = r.json()
-        scroll_d = dict(scroll)
-        print(scroll)
-        print(scroll_d)
-        self.scroll_url = scroll_d['url']
-        return self.scroll_url
+
+        if r.status_code == 200:
+            scroll_d = dict(r.json())
+            self.scroll_url = scroll_d['url']
+            return self.scroll_url
+        else:
+            r = requests.get(self.api + '/scrolls/?title=' + quote_plus(title),
+                             headers=self.authentication_header,)
+            results = r.json()['results']
+            if (len(results) > 0):
+                scroll_d = dict(results[0])
+                self.scroll_url = scroll_d['url']
+                return self.scroll_url
 
     def create_event_batch(self, events):
         print("Batching {} events.".format(len(events)))

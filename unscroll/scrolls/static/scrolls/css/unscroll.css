@@ -457,28 +457,19 @@ td.description {
 }
 
 div#new-event {
-    padding:1em;
-    background:#eee;
-    border:1px solid black;
-    background:white;
+    font-family:Roboto;
+}
+
+#notebook-event {
     position:absolute;
-    font-family:Roboto;
-    
+    top:0;
+    width:100%;
+    height:50%;
+    background:white;
+    padding:1em;
+    border:1px dotted black;
 }
 
-div#new-event input {
-    font-size:10pt;
-    width:100%;
-    font-family:Roboto;
-    padding:0.25em 0 0.25em 0;
-}
-
-div#new-event .event-input {
-    font-size:10pt;
-    width:100%;
-    font-family:Roboto;
-    padding:0.25em 0 0.25em 0;    
-}
 
 div.notebook-title-editor {
     font-size:20px;

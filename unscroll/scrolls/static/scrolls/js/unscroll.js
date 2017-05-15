@@ -57,8 +57,7 @@
 		    $('<div></div>', {class:'input'})
 			.append(editor));
 	}
-	var newEvent = $('<div></div>',
-			 {id:'new-event'})
+	var newEvent = $('<div></div>', {class:'editable-event'})
 	    .css({top:GLOBAL.pos.y + '%',
 		  left:GLOBAL.pos.x + '%',
 		  width:'25%'}) 
@@ -71,7 +70,9 @@
 		    getInput('text', 'Event description', true),
 		    getInput('source_date', 'Source (optional)'),
 		    getInput('source_url', 'Source Link (optional)')));
-	$('body').append(newEvent);
+	$('#notebook').show();
+	$('#notebook-event').show();
+	$('#notebook-event').append(newEvent);
     }
 
     const ENDPOINTS = {

@@ -6,7 +6,7 @@ import django_filters
 from django.db.models import Max, Min, Count
 from rest_framework import generics, serializers, viewsets, routers, response
 from rest_framework.decorators import detail_route, list_route
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from scrolls.models import Scroll, Event, Note, NoteMedia, Thumbnail
 from rest_framework_swagger.views import get_swagger_view
@@ -126,7 +126,7 @@ class ThumbnailViewSet(viewsets.ModelViewSet):
 class ScrollFilter(django_filters.rest_framework.FilterSet):
     class Meta:
         model = Scroll
-        fields = ['uuid', ]
+        fields = ['uuid', 'title']
 
 
 class ScrollSerializer(serializers.HyperlinkedModelSerializer):
@@ -227,7 +227,7 @@ class BulkEventSerializer(BulkSerializerMixin,
         model = Event
         fields = (
             'url',
-            'uuid',            
+            'uuid',
             'user',
             'scroll',
             'scroll_uuid',
@@ -246,7 +246,9 @@ class BulkEventSerializer(BulkSerializerMixin,
             'content_type',
             'resolution',
             'datetime',
-            'content_url')
+            'content_url',
+            'source_name',
+            'source_url')
         read_only_fields = ('uuid', 'user',)
         list_serializer_class = BulkListSerializer
 
@@ -260,9 +262,9 @@ class BulkEventSerializer(BulkSerializerMixin,
 class BulkEventViewSet(BulkModelViewSet):
     queryset = Event.objects.select_related('scroll', 'user')\
                             .filter(scroll__public=True)
-    serializer_class = BulkEventSerializer
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     filter_class = EventFilter
+    serializer_class = BulkEventSerializer
 
 
 
@@ -351,13 +353,15 @@ class NoteFilter(django_filters.rest_framework.FilterSet):
 
 
 class BulkNoteViewSet(BulkModelViewSet):
+    permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Note.objects.select_related(
         'scroll',
         'event',
         'user')
     serializer_class = BulkNoteSerializer
     filter_class = NoteFilter
-
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    filter_class = NoteFilter
 
 
         
@@ -378,7 +382,7 @@ schema_view = get_swagger_view(title='Unscroll API')
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
-    url('^schema/$', schema_view),
+#    url('^schema/$', schema_view),
     url(r'^', include(router.urls)),
     url(r'^rest-auth/', include('rest_auth.urls')),
     url(r'^api-auth/', include('rest_framework.urls',

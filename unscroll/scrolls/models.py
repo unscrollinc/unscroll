@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from random import random
 import uuid
 
 
@@ -47,7 +46,7 @@ class Scroll(models.Model):
     created = models.DateTimeField(
         auto_now_add=True)
     last_modified = models.DateTimeField(
-        auto_now=True)    
+        auto_now=True)
     title = models.TextField()
     subtitle = models.TextField(
         blank=True, null=True)
@@ -118,6 +117,13 @@ class Event(models.Model):
     content_url = models.URLField(
         max_length=512,
         null=True)
+    source_name = models.CharField(
+        max_length=512,
+        blank=True,
+        null=True)
+    source_url = models.URLField(
+        max_length=512,
+        null=True)    
     thumbnail = models.ForeignKey(
         Thumbnail,
         related_name='events',
@@ -128,7 +134,7 @@ class Event(models.Model):
     objects = EventQueryset.as_manager()
 
     class Meta:
-        unique_together = (("user", "title", "text"),)
+#        unique_together = (("user", "title", "text"),)
         ordering = ['-ranking', 'datetime']
 
     def __unicode__(self):
