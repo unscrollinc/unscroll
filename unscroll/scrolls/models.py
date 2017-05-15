@@ -61,6 +61,7 @@ class Scroll(models.Model):
         default=False)
 
     class Meta:
+        unique_together = (("title", "user"),)
         ordering = ['-created']
 
     def __unicode__(self):
@@ -79,7 +80,7 @@ class EventQueryset(models.QuerySet):
             order_by=('-rank',)
         )
 
-    
+
 class Event(models.Model):
     """"""
     user = models.ForeignKey(
@@ -127,6 +128,7 @@ class Event(models.Model):
     objects = EventQueryset.as_manager()
 
     class Meta:
+        unique_together = (("user", "title", "text"),)
         ordering = ['-ranking', 'datetime']
 
     def __unicode__(self):
@@ -153,6 +155,9 @@ class Note(models.Model):
         related_name="notes")
     order = models.FloatField(
         blank=False)
+    point = models.TextField(
+        blank=True,
+        null=True)
     text = models.TextField(
         blank=True,
         null=True)

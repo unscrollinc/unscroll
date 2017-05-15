@@ -157,6 +157,9 @@ class ScrollSerializer(serializers.HyperlinkedModelSerializer):
             'description',
             'thumbnail',)
         depth = 0
+        read_only_fields = ('uuid', 'user', 'user_username',
+                            'event_count', 'first_event', 'last_event',)
+        
 
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user
@@ -224,6 +227,7 @@ class BulkEventSerializer(BulkSerializerMixin,
         model = Event
         fields = (
             'url',
+            'uuid',            
             'user',
             'scroll',
             'scroll_uuid',
@@ -243,7 +247,7 @@ class BulkEventSerializer(BulkSerializerMixin,
             'resolution',
             'datetime',
             'content_url')
-
+        read_only_fields = ('uuid', 'user',)
         list_serializer_class = BulkListSerializer
 
     def create(self, validated_data):
@@ -322,7 +326,8 @@ class BulkNoteSerializer(BulkSerializerMixin,
             'public',
             'user',
             'event',
-            'event_full',            
+            'event_full',
+            'point',
             'order',
             'created',
             'last_updated',

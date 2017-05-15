@@ -82,6 +82,7 @@ def search(search_term):
                 c.image_url = None
 
                 for fdict in files:
+                    print(fdict)
                     f = File()
                     f.content_url = "{}{}/{}".format(DOWNLOAD_URL,
                                                      item.identifier,
@@ -95,7 +96,7 @@ def search(search_term):
                     f.datetime = r['datetime']
                     f.text = "..."
                     f.title = item.metadata['title'] + '/' +  r['title']
-                    
+
                     if f.datetime is not None:
                         dictset.append(f.dicts())
     return dictset
@@ -104,12 +105,14 @@ def search(search_term):
 def main():
     print("fetching")
     events = search(SEARCH)
-    print("saving")    
-    c = UnscrollClient(api='http://127.0.0.1:8000',
-                       username='admin',
-                       password='password',
-                       scroll_title='Archive.org WWII Radio',
-                       events=events)
+    print("saving")
+#    print(events)
+#    c = UnscrollClient()
+#    c.__batch__(api='http://127.0.0.1:8000',
+#                username='admin',
+#                password='password',
+#                scroll_title='Archive.org WWII Radio',
+#                events=events)
 
 
 if __name__ == "__main__":

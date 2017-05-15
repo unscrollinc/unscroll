@@ -11,3 +11,38 @@ ERROR:  column "scrolss_event" does not exist at character 32
 STATEMENT:  delete from scrolls_note where scrolss_event is null;
 ERROR:  column "scrolls_event" does not exist at character 32
 STATEMENT:  delete from scrolls_note where scrolls_event is null;
+ERROR:  could not create unique index "scrolls_scroll_title_user_id_4fecb21a_uniq"
+DETAIL:  Key (title, user_id)=(IETF RFCs, 1) is duplicated.
+STATEMENT:  ALTER TABLE "scrolls_scroll" ADD CONSTRAINT "scrolls_scroll_title_user_id_4fecb21a_uniq" UNIQUE ("title", "user_id")
+FATAL:  database "ford" does not exist
+ERROR:  relation "scroll" does not exist at character 13
+STATEMENT:  delete from scroll where id is not null;
+ERROR:  update or delete on table "scrolls_scroll" violates foreign key constraint "scrolls_event_scroll_id_1359fd8c_fk_scrolls_scroll_id" on table "scrolls_event"
+DETAIL:  Key (id)=(2) is still referenced from table "scrolls_event".
+STATEMENT:  delete from scrolls_scroll where id is not null;
+ERROR:  duplicate key value violates unique constraint "scrolls_scroll_title_user_id_4fecb21a_uniq"
+DETAIL:  Key (title, user_id)=(WWII Radio, 1) already exists.
+STATEMENT:  INSERT INTO "scrolls_scroll" ("user_id", "uuid", "publish_datetime", "public", "created", "last_modified", "title", "subtitle", "description", "thumbnail_id", "deleted") VALUES (1, '67e37073-721c-4315-8230-5e00a3fd4483'::uuid, NULL, true, '2017-05-15T01:45:03.546944+00:00'::timestamptz, '2017-05-15T01:45:03.546975+00:00'::timestamptz, 'WWII Radio', 'From Archive.org', NULL, NULL, false) RETURNING "scrolls_scroll"."id"
+FATAL:  database "unscroll.py" does not exist
+FATAL:  database "ford" does not exist
+ERROR:  time zone displacement out of range: "1945-08-14T19:15:00-19:30" at character 433
+STATEMENT:  INSERT INTO "scrolls_event" ("user_id", "uuid", "scroll_id", "created", "media_type", "content_type", "title", "text", "ranking", "datetime", "resolution", "content_url", "thumbnail_id", "deleted") VALUES (1, '2d7a5bd0-c41c-4829-9b71-4d1d8002d637'::uuid, 13, '2017-05-15T01:57:21.931025+00:00'::timestamptz, 'audio/mpeg', 'radio broadcast', '/1945-08-14-1915-1930-MBS-Japanese-Surrender.mp3', '1945 Radio News', 0.9781580551950307, '1945-08-14T19:15:00-19:30'::timestamptz, 'days', 'https://archive.org/download/1945RadioNews/1945-08-14-1915-1930-MBS-Japanese-Surrender.mp3', NULL, false) RETURNING "scrolls_event"."id"
+ERROR:  update or delete on table "scrolls_scroll" violates foreign key constraint "scrolls_event_scroll_id_1359fd8c_fk_scrolls_scroll_id" on table "scrolls_event"
+DETAIL:  Key (id)=(13) is still referenced from table "scrolls_event".
+STATEMENT:  delete from scrolls_scroll where id is not null;
+ERROR:  duplicate key value violates unique constraint "scrolls_scroll_title_user_id_4fecb21a_uniq"
+DETAIL:  Key (title, user_id)=(WWII Radio, 1) already exists.
+STATEMENT:  INSERT INTO "scrolls_scroll" ("user_id", "uuid", "publish_datetime", "public", "created", "last_modified", "title", "subtitle", "description", "thumbnail_id", "deleted") VALUES (1, '2802a65f-cedf-46eb-9544-c223fac0e9bf'::uuid, NULL, true, '2017-05-15T01:58:09.212202+00:00'::timestamptz, '2017-05-15T01:58:09.212233+00:00'::timestamptz, 'WWII Radio', 'From Archive.org', NULL, NULL, false) RETURNING "scrolls_scroll"."id"
+ERROR:  time zone displacement out of range: "1945-08-14T19:15:00-19:30" at character 433
+STATEMENT:  INSERT INTO "scrolls_event" ("user_id", "uuid", "scroll_id", "created", "media_type", "content_type", "title", "text", "ranking", "datetime", "resolution", "content_url", "thumbnail_id", "deleted") VALUES (1, 'c4a411ab-b1a3-403d-b5ed-ab27a6a3d4af'::uuid, 15, '2017-05-15T02:01:41.222988+00:00'::timestamptz, 'audio/mpeg', 'radio broadcast', '/1945-08-14-1915-1930-MBS-Japanese-Surrender.mp3', '1945 Radio News', 0.6164561955336606, '1945-08-14T19:15:00-19:30'::timestamptz, 'days', 'https://archive.org/download/1945RadioNews/1945-08-14-1915-1930-MBS-Japanese-Surrender.mp3', NULL, false) RETURNING "scrolls_event"."id"
+ERROR:  time zone displacement out of range: "1945-08-14T19:45:00-20:00" at character 433
+STATEMENT:  INSERT INTO "scrolls_event" ("user_id", "uuid", "scroll_id", "created", "media_type", "content_type", "title", "text", "ranking", "datetime", "resolution", "content_url", "thumbnail_id", "deleted") VALUES (1, 'db6b30d8-c0c5-4ccb-9d8e-971f2597f4d9'::uuid, 15, '2017-05-15T02:01:41.419930+00:00'::timestamptz, 'audio/mpeg', 'radio broadcast', '/1945-08-14-1945-2000-ABC-Japanese-Surrender.mp3', '1945 Radio News', 0.5454172421139076, '1945-08-14T19:45:00-20:00'::timestamptz, 'days', 'https://archive.org/download/1945RadioNews/1945-08-14-1945-2000-ABC-Japanese-Surrender.mp3', NULL, false) RETURNING "scrolls_event"."id"
+ERROR:  update or delete on table "scrolls_scroll" violates foreign key constraint "scrolls_event_scroll_id_1359fd8c_fk_scrolls_scroll_id" on table "scrolls_event"
+DETAIL:  Key (id)=(15) is still referenced from table "scrolls_event".
+STATEMENT:  delete from scrolls_scroll where id is not null;
+ERROR:  update or delete on table "scrolls_scroll" violates foreign key constraint "scrolls_event_scroll_id_1359fd8c_fk_scrolls_scroll_id" on table "scrolls_event"
+DETAIL:  Key (id)=(16) is still referenced from table "scrolls_event".
+STATEMENT:  delete from scrolls_scroll where id is not null;
+ERROR:  duplicate key value violates unique constraint "scrolls_event_user_id_title_text_c8a5fd50_uniq"
+DETAIL:  Key (user_id, title, text)=(1, 1944-11-09 BBC Winston Churchill The Fruits Of 1944, 1944 Radio News) already exists.
+STATEMENT:  INSERT INTO "scrolls_event" ("user_id", "uuid", "scroll_id", "created", "media_type", "content_type", "title", "text", "ranking", "datetime", "resolution", "content_url", "thumbnail_id", "deleted") VALUES (1, '5df54a40-cdd8-4833-b7a5-480a198df27d'::uuid, 17, '2017-05-15T02:09:02.807983+00:00'::timestamptz, 'audio/mpeg', 'radio broadcast', '1944-11-09 BBC Winston Churchill The Fruits Of 1944', '1944 Radio News', 0.25407915355577904, '1944-11-09T00:00:00+00:00'::timestamptz, 'days', 'https://archive.org/download/1944RadioNews/1944-11-09-BBC-Winston-Churchill---The-Fruits-Of-1945.mp3', NULL, false) RETURNING "scrolls_event"."id"

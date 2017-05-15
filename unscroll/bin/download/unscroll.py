@@ -10,13 +10,13 @@ import config
 import favicon
 from urllib.parse import quote_plus
 
-
 class UnscrollClient():
     api = None
     username = None
     password = None
     authentication_header = None
     scroll_url = None
+    user_url = None
 
     def __init__(self,
                  api=None,
@@ -52,6 +52,7 @@ class UnscrollClient():
                           json={'username': self.username,
                                 'password': self.password})
         login = r.json()
+        print(login)
         self.authentication_header = {'Authorization':
                                       'Token {}'.format(login.get('key'),)}
         return True
@@ -78,9 +79,13 @@ class UnscrollClient():
 
     def create_event_batch(self, events):
         print("Batching {} events.".format(len(events)))
+        revents = []
+        for event in events:
+            event['scroll'] = self.scroll_url
+            revents.append(event)
         r = requests.post(self.api + '/events/',
                           headers=self.authentication_header,
-                          json=events)
+                          json=revents)
         return r.json()
 
     def create_event(self, event):
@@ -144,5 +149,4 @@ class UnscrollClient():
             return None
         
         return r.json()                                
-
 

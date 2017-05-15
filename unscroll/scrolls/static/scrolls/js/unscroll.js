@@ -1,5 +1,10 @@
 "use strict";
 (function($, Cookies, MediumEditor) {
+
+    const API = 'http://127.0.0.1:8000';
+    const AUTH = API + '/rest-auth';
+
+   
     var newUser = function() {
         return {username:undefined,
                 email:undefined,
@@ -19,17 +24,15 @@
         start:undefined,
         end:undefined
     };
+
+    
     GLOBAL.logout = function() {
-	
 	GLOBAL.user = newUser();
-	
 	Cookies.remove('sessionid');
 	Cookies.remove('session');
 	Cookies.remove('csrftoken');
-	
         $('#account-login').text('login');
         $('#account-create').text('create account');
-	
         console.log('Logged out.');
     }
     
@@ -54,7 +57,6 @@
 		    $('<div></div>', {class:'input'})
 			.append(editor));
 	}
-	
 	var newEvent = $('<div></div>',
 			 {id:'new-event'})
 	    .css({top:GLOBAL.pos.y + '%',
@@ -71,6 +73,289 @@
 		    getInput('source_url', 'Source Link (optional)')));
 	$('body').append(newEvent);
     }
+
+    const ENDPOINTS = {
+    'userLogin': function(data) {
+	
+	
+	Cookies.set('session', GLOBAL.user);
+	
+	/* These show up when we browse the browseable API, and they
+	   get us in trouble. For now, we blow them away and just go
+	   with a single session auth token. */
+	//	    Cookies.remove('sessionid');
+	//	    Cookies.remove('csrftoken');
+	
+	
+	$.post({
+            url:AUTH + '/login/',
+            data:data,
+            context:data,
+            failure:function(e) {
+		console.log('Failure: ' + e);
+            },
+	    error: function(e) {
+		if (e.status === 400) {
+		    console.log('[ERROR] ' + e.responseJSON.non_field_errors[0]);
+		}
+		else {
+		    console.log('[ERROR] ' + 'Uncaught error condition: ', e);
+		}
+	    },
+            success:function(o) {
+		GLOBAL.user.key = o.key;
+		GLOBAL.user.username = this.username;
+                Cookies.set('session', GLOBAL.user);
+		console.log('Logged in user: ' + GLOBAL.user.username + '.');
+                $('#notebook').toggle();
+                GLOBAL.setUserNameAndLogin();                    
+                ENDPOINTS.getUserProfile();
+            }
+        });
+    },
+    'userLogout': function() {
+        $.post({
+            url:AUTH + '/logout/',
+            headers: {
+                'Authorization': 'Token ' + GLOBAL.user.key
+            },
+            failure:function(e) {
+                console.log('Failure: ' + e);
+            },
+            success:function(e) {
+            }
+        });
+        GLOBAL.logout();
+    },
+    'schema': function() {
+        $.get({
+            url:API + '/schema/',
+            headers: {
+                'Authorization': 'Token ' + GLOBAL.user.key
+            },
+            failure:function(e) {
+                console.log('Failure: ' + e);
+            },
+            success:function(o) {
+                console.log(o);
+            }
+        });
+    },
+    'getUserProfile':function () {
+        $.get({
+            url:API + '/users/',
+            headers: {
+                'Authorization': 'Token ' + GLOBAL.user.key
+            },
+            failure:function(e) {
+                console.log('Failure: ' + e);
+            },
+            success:function(o) {
+                $.extend(GLOBAL.user, o.results[0]);
+		GLOBAL.updateUserScrolls();
+		
+            }
+        });
+    },
+    'userScrollsGet':function () {
+        $.get({
+            url:API + '/scrolls/',
+            headers: {
+                'Authorization': 'Token ' + GLOBAL.user.key
+            },
+            failure:function(e) {
+                console.log('Failure: ' + e);
+            },
+            success:function(o) {
+                $.extend(GLOBAL.user, o);
+            }
+        });
+    },
+    'scrollGet':function(uuid, notenook) {
+	if (GLOBAL.user.key) {
+	    $.ajax({
+                url:API + '/scrolls/?uuid=' + uuid,
+                type: 'GET',
+                contentType: 'application/json',
+                dataType: 'json',
+		context:notebook,
+                headers: {
+		    'Authorization': 'Token ' + GLOBAL.user.key
+                },
+                failure:function(e) {
+		    console.log('Failure: ' + e);
+                },
+                success:function(o) {
+		    GLOBAL.scroll = o.results[0];
+		    GLOBAL.notebook.scroll = o.results[0];
+		    GLOBAL.notebook.render();
+                }
+	    });
+	}
+	else {
+	    console.log('You can only make notes if you\'re logged in.')
+	}
+    },	
+    'scrollPost':function(data) {
+	if (GLOBAL.user.key) {
+	    $.ajax({
+                url:API + '/scrolls/',
+                type: 'POST',
+                contentType: 'application/json',
+                dataType: 'json',
+		data:JSON.stringify(data),
+                headers: {
+		    'Authorization': 'Token ' + GLOBAL.user.key
+                },
+                failure:function(e) {
+		    console.log('Failure: ' + e);
+                },
+                success:function(o) {
+		    GLOBAL.scroll = o;
+                }
+	    });
+	}
+	else {
+	    console.log('You can only make notes if you\'re logged in.')
+	}
+    },
+    'scrollPatch':function(url, data, notebook) {
+	if (GLOBAL.user.key) {
+	    $.ajax({
+                url:url,
+                type: 'PATCH',
+                contentType: 'application/json',
+                dataType: 'json',
+		data:JSON.stringify(data),
+                context:notebook,
+                headers: {
+		    'Authorization': 'Token ' + GLOBAL.user.key
+                },
+                failure:function(e) {
+		    console.log('Failure: ' + e);
+                },
+                success:function(o) {
+                    this.needsUpdated = false;
+                }
+	    });
+	}
+	else {
+	    console.log('You can only fav things if you\'re logged in.')
+	}
+    },
+    'notesGet':function(scroll_uuid, notebook) {
+	if (GLOBAL.user.key) {
+	    $.ajax({
+                url:API + '/notes/?scroll=' + scroll_uuid,
+                type: 'GET',
+                contentType: 'application/json',
+                dataType: 'json',
+                context:notebook,
+                headers: {
+		    'Authorization': 'Token ' + GLOBAL.user.key
+                },
+                failure:function(e) {
+		    console.log('Failure: ' + e);
+                },
+                success:function(o) {
+                    for (var i=0;i<o.results.length; i++)
+                    {
+                        var nbItem = o.results[i];
+                        var nbi = this.makeItem(nbItem.kind, nbItem.event_full, nbItem);
+                    }
+                }
+	    });
+	}
+	else {
+	    console.log('You can only make notes if you\'re logged in.')
+	}
+    },        
+    'notePost':function(data, items) {
+	if (GLOBAL.user.key) {
+	    $.ajax({
+                url:API + '/notes/',
+                type: 'POST',
+                contentType: 'application/json',
+                dataType: 'json',
+		data:JSON.stringify(data),
+                context:items,
+                headers: {
+		    'Authorization': 'Token ' + GLOBAL.user.key
+                },
+                failure:function(e) {
+		    console.log('Failure: ' + e);
+                },
+                success:function(o) {
+                    for (var i=0;i<o.length; i++) {
+                        this[i].url = o[i].url;
+                        this[i].id = o[i].id;                            
+                        this[i].needsCreated = false;
+                    }
+                }
+	    });
+	}
+	else {
+	    console.log('You can only make notes if you\'re logged in.')
+	}
+    },
+    'notePut':function(data, items) {
+	if (GLOBAL.user.key) {
+	    $.ajax({
+                url:API + '/notes/',
+                type: 'PATCH',
+                contentType: 'application/json',
+                dataType: 'json',
+		data:JSON.stringify(data),
+                context:items,
+                headers: {
+		    'Authorization': 'Token ' + GLOBAL.user.key
+                },
+                failure:function(e) {
+		    console.log('Failure: ' + e);
+                },
+                success:function(o) {
+                    for (var i=0;i<o.length; i++) {
+                        this[i].needsUpdated = false;                            
+                    }
+                }
+	    });
+	}
+	else {
+	    console.log('You can only fav things if you\'re logged in.')
+	}
+    },
+    'noteDelete':function(data, items) {
+	if (GLOBAL.user.key) {
+            for (var i = 0; i<items.length; i++) {
+		$.ajax({
+                    url:API + '/notes/' + items[i].id,
+                    type: 'DELETE',
+                    context:items[i],
+                    headers: {
+			'Authorization': 'Token ' + GLOBAL.user.key
+                    },
+                    failure:function(e) {
+			console.log('Failure: ' + e);
+                    },
+                    success:function(o) {
+                        this.needsDeleted = false;                            
+                    }
+                });
+	    }
+	}
+	else {
+	    console.log('You can only make notes if you\'re logged in.')
+	}
+	
+    },
+    'passwordReset':API + '/rest-auth/password/reset/',
+    'passwordResetConfirm':'/rest-auth/password/reset/confirm/',
+    'passwordChange':'/rest-auth/password/change/',
+    'userRegister':'/rest-auth/registration/',
+    'userRegisterVerify':'/rest-auth/registration/verify-email/'
+};
+
+    
     
     $(document).ready(function() {
 	$('#notebook-create-button')
@@ -160,291 +445,7 @@
 		$('<table></table>', {class:'scroll-listing'})
 		    .append($.map(GLOBAL.user.scrolls, makeScrollListing)));	
     }
-    const API = 'http://127.0.0.1:8000';
-    const AUTH = API + '/rest-auth';
-    
-    const ENDPOINTS = {
-	
-        'userLogin': function(data) {
-	    
-	    
-	    Cookies.set('session', GLOBAL.user);
-	    
-	    /* These show up when we browse the browseable API, and they
-	       get us in trouble. For now, we blow them away and just go
-	       with a single session auth token. */
-	    //	    Cookies.remove('sessionid');
-	    //	    Cookies.remove('csrftoken');
-	    
-	    
-	    $.post({
-                url:AUTH + '/login/',
-                data:data,
-                context:data,
-                failure:function(e) {
-		    console.log('Failure: ' + e);
-                },
-		error: function(e) {
-		    if (e.status === 400) {
-			console.log('[ERROR] ' + e.responseJSON.non_field_errors[0]);
-		    }
-		    else {
-			console.log('[ERROR] ' + 'Uncaught error condition: ', e);
-		    }
-		},
-                success:function(o) {
-		    GLOBAL.user.key = o.key;
-		    GLOBAL.user.username = this.username;
-                    Cookies.set('session', GLOBAL.user);
-		    console.log('Logged in user: ' + GLOBAL.user.username + '.');
-                    $('#notebook').toggle();
-                    GLOBAL.setUserNameAndLogin();                    
-                    ENDPOINTS.getUserProfile();
-                }
-            });
-        },
-        'userLogout': function() {
-            $.post({
-                url:AUTH + '/logout/',
-                headers: {
-                    'Authorization': 'Token ' + GLOBAL.user.key
-                },
-                failure:function(e) {
-                    console.log('Failure: ' + e);
-                },
-                success:function(e) {
-                }
-            });
-            GLOBAL.logout();
-        },
-        'schema': function() {
-            $.get({
-                url:API + '/schema/',
-                headers: {
-                    'Authorization': 'Token ' + GLOBAL.user.key
-                },
-                failure:function(e) {
-                    console.log('Failure: ' + e);
-                },
-                success:function(o) {
-                    console.log(o);
-                }
-            });
-        },
-        'getUserProfile':function () {
-            $.get({
-                url:API + '/users/',
-                headers: {
-                    'Authorization': 'Token ' + GLOBAL.user.key
-                },
-                failure:function(e) {
-                    console.log('Failure: ' + e);
-                },
-                success:function(o) {
-                    $.extend(GLOBAL.user, o.results[0]);
-		    GLOBAL.updateUserScrolls();
-		    
-                }
-            });
-        },
-        'userScrollsGet':function () {
-            $.get({
-                url:API + '/scrolls/',
-                headers: {
-                    'Authorization': 'Token ' + GLOBAL.user.key
-                },
-                failure:function(e) {
-                    console.log('Failure: ' + e);
-                },
-                success:function(o) {
-                    $.extend(GLOBAL.user, o);
-                }
-            });
-        },
-	'scrollGet':function(uuid, notenook) {
-	    if (GLOBAL.user.key) {
-		$.ajax({
-                    url:API + '/scrolls/?uuid=' + uuid,
-                    type: 'GET',
-                    contentType: 'application/json',
-                    dataType: 'json',
-		    context:notebook,
-                    headers: {
-			'Authorization': 'Token ' + GLOBAL.user.key
-                    },
-                    failure:function(e) {
-			console.log('Failure: ' + e);
-                    },
-                    success:function(o) {
-			GLOBAL.scroll = o.results[0];
-			GLOBAL.notebook.scroll = o.results[0];
-			GLOBAL.notebook.render();
-                    }
-		});
-	    }
-	    else {
-		console.log('You can only make notes if you\'re logged in.')
-	    }
-        },	
-	'scrollPost':function(data) {
-	    if (GLOBAL.user.key) {
-		$.ajax({
-                    url:API + '/scrolls/',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    dataType: 'json',
-		    data:JSON.stringify(data),
-                    headers: {
-			'Authorization': 'Token ' + GLOBAL.user.key
-                    },
-                    failure:function(e) {
-			console.log('Failure: ' + e);
-                    },
-                    success:function(o) {
-			GLOBAL.scroll = o;
-                    }
-		});
-	    }
-	    else {
-		console.log('You can only make notes if you\'re logged in.')
-	    }
-        },
-        'scrollPatch':function(url, data, notebook) {
-	    if (GLOBAL.user.key) {
-		$.ajax({
-                    url:url,
-                    type: 'PATCH',
-                    contentType: 'application/json',
-                    dataType: 'json',
-		    data:JSON.stringify(data),
-                    context:notebook,
-                    headers: {
-			'Authorization': 'Token ' + GLOBAL.user.key
-                    },
-                    failure:function(e) {
-			console.log('Failure: ' + e);
-                    },
-                    success:function(o) {
-                        this.needsUpdated = false;
-                    }
-		});
-	    }
-	    else {
-		console.log('You can only fav things if you\'re logged in.')
-	    }
-        },
-        'notesGet':function(scroll_uuid, notebook) {
-	    if (GLOBAL.user.key) {
-		$.ajax({
-                    url:API + '/notes/?scroll=' + scroll_uuid,
-                    type: 'GET',
-                    contentType: 'application/json',
-                    dataType: 'json',
-                    context:notebook,
-                    headers: {
-			'Authorization': 'Token ' + GLOBAL.user.key
-                    },
-                    failure:function(e) {
-			console.log('Failure: ' + e);
-                    },
-                    success:function(o) {
-                        for (var i=0;i<o.results.length; i++)
-                        {
-                            var nbItem = o.results[i];
-                            var nbi = this.makeItem(nbItem.kind, nbItem.event_full, nbItem);
-                        }
-                    }
-		});
-	    }
-	    else {
-		console.log('You can only make notes if you\'re logged in.')
-	    }
-        },        
-        'notePost':function(data, items) {
-	    if (GLOBAL.user.key) {
-		$.ajax({
-                    url:API + '/notes/',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    dataType: 'json',
-		    data:JSON.stringify(data),
-                    context:items,
-                    headers: {
-			'Authorization': 'Token ' + GLOBAL.user.key
-                    },
-                    failure:function(e) {
-			console.log('Failure: ' + e);
-                    },
-                    success:function(o) {
-                        for (var i=0;i<o.length; i++) {
-                            this[i].url = o[i].url;
-                            this[i].id = o[i].id;                            
-                            this[i].needsCreated = false;
-                        }
-                    }
-		});
-	    }
-	    else {
-		console.log('You can only make notes if you\'re logged in.')
-	    }
-        },
-        'notePut':function(data, items) {
-	    if (GLOBAL.user.key) {
-		$.ajax({
-                    url:API + '/notes/',
-                    type: 'PATCH',
-                    contentType: 'application/json',
-                    dataType: 'json',
-		    data:JSON.stringify(data),
-                    context:items,
-                    headers: {
-			'Authorization': 'Token ' + GLOBAL.user.key
-                    },
-                    failure:function(e) {
-			console.log('Failure: ' + e);
-                    },
-                    success:function(o) {
-                        for (var i=0;i<o.length; i++) {
-                            this[i].needsUpdated = false;                            
-}
-                    }
-		});
-	    }
-	    else {
-		console.log('You can only fav things if you\'re logged in.')
-	    }
-        },
-        'noteDelete':function(data, items) {
-	    if (GLOBAL.user.key) {
-                for (var i = 0; i<items.length; i++) {
-		    $.ajax({
-                        url:API + '/notes/' + items[i].id,
-                        type: 'DELETE',
-                        context:items[i],
-                        headers: {
-			    'Authorization': 'Token ' + GLOBAL.user.key
-                        },
-                        failure:function(e) {
-			    console.log('Failure: ' + e);
-                        },
-                        success:function(o) {
-                            this.needsDeleted = false;                            
-                        }
-                    });
-		}
-	    }
-	    else {
-		console.log('You can only make notes if you\'re logged in.')
-	    }
-	    
-        },
-        'passwordReset':API + '/rest-auth/password/reset/',
-        'passwordResetConfirm':'/rest-auth/password/reset/confirm/',
-        'passwordChange':'/rest-auth/password/change/',
-        'userRegister':'/rest-auth/registration/',
-        'userRegisterVerify':'/rest-auth/registration/verify-email/'
-    };
-    
+
     const gridHeight = 6;
     const activeHeight = 0.95;
     
@@ -457,12 +458,8 @@
     const decade = year * 10;
     const century = year * 100;
     const millennium = year * 1000;
-    
-    function makeId() {
-        return Math.round(new Date().getTime() + (Math.random() * 1000000));
-    }
-    
-    var resolutions = {
+
+    const resolutions = {
         'seconds':0,
         'minutes':1,
         'hours':2,
@@ -472,8 +469,8 @@
         'decades':6,
         'centuries':7
     }
-    
-    var getTimeFrame = function(start, end) {
+
+    const getTimeFrame = function(start, end) {
 	// Expects two instances of Moment, returns a "timeframe"
 	var span = end - start;
 	if (span >= millennium * 0.75) {
@@ -506,7 +503,7 @@
 	return null;
     }
     
-    var timeFrames = {
+    const timeFrames = {
 	minutes: {
 	    add: function(datetime, no) {
 		return datetime.clone().add(no, 'minutes');
@@ -1433,6 +1430,11 @@
 	
         this.load = function() {};
         this.render = function() {};
+        this.remove = function() {};
+
+        this.needsUpdated = false;
+        this.needsCreated = false;
+        this.needsDeleted = false;
     };
     
     /* 
@@ -1465,7 +1467,7 @@
             return ctr;
         }
         
-	function makeInsertionTemplate() {
+	var makeInsertionTemplate = function() {
 	    return {
                 moving:false,
                   from:undefined,
@@ -1481,7 +1483,29 @@
         this.needsCreated = this.uuid ? false : true;
         this.needsUpdated = false;
         this.needsDeleted = false;
+
+        this.dom_title = $('#notebook-title')
+        this.dom_nb = $('#notebook-items');
+        this.dom_nb_listing = $('#notebook-listing');            
+        this.dom_essay = $('#notebook-essay');
+        this.dom_insert = $('#insert-button')
+            .on('click', function(ev) {
+                nb.makeItem();
+            });
+        
+        this.dom_spacer = $('#insert-space')
+            .on('click', function(ev) {
+                nb.makeItem('spacer');
+            });
 	
+        this.dom_spacer = $('#insert-image')
+            .on('click', function(ev) {
+                nb.makeItem('image');
+            });	    
+        
+        this.dom_nb_list = $('#notebook-list-button');
+        
+        
         this.load = function() {
 	    if (this.uuid) {
 		ENDPOINTS.scrollGet(this.uuid, this);
@@ -1493,23 +1517,24 @@
 	}
         
 	this.render = function() {
-	    $('#notebook-listing').hide();
-            $('#notebook-title').empty();
-            $('#notebook-items').empty();
-            $('#notebook-essay').empty();
-	    var title = 'Untitled Scroll';
+	    nb.dom_nb_listing.hide();
+            nb.dom_title.empty();
+            nb.dom_nb.empty();
+            nb.dom_essay.empty();
+            
+	    var title = 'Untitled';
 	    if (this.scroll.title) {
 		title = this.scroll.title;
 	    }
+            
 	    var editor = $('<div></div>', {class:'notebook-title-editor'})
 		.html(title);
 	    var medium = new MediumEditor(editor, {
 		disableReturn: true,
 		targetBlank: true
-	    });
+            });
 
-	    $('#notebook-title')
-		.append(editor);
+	    $('#notebook-title').append(editor);
             
             medium.subscribe('editableInput', function (event, editor) {
                 nb.needsUpdated = true;
@@ -1530,26 +1555,7 @@
         setInterval(this.scanner, REFRESH_INTERVAL);	
         
 	/* Get our DOM objects */
-        this.dom_title = $('#notebook-title')
-        this.dom_nb = $('#notebook-items');
-        this.dom_nb_listing = $('#notebook-listing');            
-        this.dom_essay = $('#notebook-essay');
-        this.dom_insert = $('#insert-button')
-            .on('click', function(ev) {
-                nb.makeItem();
-            });
-        
-        this.dom_spacer = $('#insert-space')
-            .on('click', function(ev) {
-                nb.makeItem('spacer');
-            });
-	
-        this.dom_spacer = $('#insert-image')
-            .on('click', function(ev) {
-                nb.makeItem('image');
-            });	    
-        
-        this.dom_nb_list = $('#notebook-list-button');            
+
 	
 	this.insertion = makeInsertionTemplate();
 	
@@ -1965,4 +1971,5 @@
             nbitem.textView.append(' ');
 	});
     }
+    
 }(jQuery, Cookies, MediumEditor));
