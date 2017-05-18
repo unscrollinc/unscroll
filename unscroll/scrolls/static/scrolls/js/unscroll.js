@@ -1,9 +1,8 @@
 "use strict";
 (function($, Cookies, MediumEditor) {
-
+    
     const API = 'http://127.0.0.1:8000';
     const AUTH = API + '/rest-auth';
-
    
     var newUser = function() {
         return {username:undefined,
@@ -25,7 +24,6 @@
         end:undefined
     };
 
-    
     GLOBAL.logout = function() {
 	GLOBAL.user = newUser();
 	Cookies.remove('sessionid');
@@ -34,53 +32,8 @@
         $('#account-login').text('login');
         $('#account-create').text('create account');
         console.log('Logged out.');
-    }
+    };
     
-    GLOBAL.editEvent = function(event) {
-	var makeInput = function(name, title, is_rich) {
-	    var vals = {class:'event-input',
-			name:name,
-			value:event[name]};
-	    var editor =  $('<input></input>', vals);
-	    var medium = undefined;
-	    if (is_rich) {
-		editor = $('<div></div>', vals)
-		    .addClass('rte')
-		    .append(event[name]);
-		medium = new MediumEditor(editor, {
-		    disableDoubleReturn: false,
-		    targetBlank: true                
-		});
-	    }
-            return $('<p>')
-		.append(
-		    $('<div></div>', {class:'description'})
-			.append(title),
-		    $('<div></div>', {class:'input'})
-			.append(editor));
-	}
-	var newEvent = $('<div></div>',
-			 {class:'editable-event'})
-	    .append(
-		$('<div></div>').append(
-		    $('<div></div>', {class:'scroll-title'}).html('Scroll: ' + event.scroll_title),
-		    makeInput('title', 'Event title'),
-		    makeInput('datetime', 'Date/time'),
-		    makeInput('content_url', 'Link'),
-		    makeInput('text', 'Event description', true),
-		    makeInput('source_date', 'Source Name (optional)'),
-		    makeInput('source_url', 'Source Link (optional)'),
-		    $('<input></input>', {class:'submit',
-					  type:'submit',
-					  value:'save',
-					  name:'submit'})
-			.on('click', function (ev) {
-			    console.log(event);
-			})));
-	$('#notebook').show();
-	$('#notebook-event').show();
-	$('#notebook-event').append(newEvent);
-    }
     
     const ENDPOINTS = {
 	'userLogin': function(data) {
@@ -134,20 +87,6 @@
 		}
             });
             GLOBAL.logout();
-	},
-	'schema': function() {
-            $.get({
-		url:API + '/schema/',
-		headers: {
-                    'Authorization': 'Token ' + GLOBAL.user.key
-		},
-		failure:function(e) {
-                    console.log('Failure: ' + e);
-		},
-		success:function(o) {
-                    console.log(o);
-		}
-            });
 	},
 	'getUserProfile':function () {
             $.get({
@@ -239,106 +178,26 @@
                     headers: {
 			'Authorization': 'Token ' + GLOBAL.user.key
                     },
-                failure:function(e) {
-		    console.log('Failure: ' + e);
-                },
-                success:function(o) {
-                    this.needsUpdated = false;
-                }
-	    });
-	}
-	else {
-	    console.log('You can only fav things if you\'re logged in.')
-	}
-    },
-    'notesGet':function(scroll_uuid, notebook) {
-	if (GLOBAL.user.key) {
-	    $.ajax({
-                url:API + '/notes/?scroll=' + scroll_uuid,
-                type: 'GET',
-                contentType: 'application/json',
-                dataType: 'json',
-                context:notebook,
-                headers: {
-		    'Authorization': 'Token ' + GLOBAL.user.key
-                },
-                failure:function(e) {
-		    console.log('Failure: ' + e);
-                },
-                success:function(o) {
-                    for (var i=0;i<o.results.length; i++)
-                    {
-                        var nbItem = o.results[i];
-                        var nbi = this.makeItem(nbItem.kind, nbItem.event_full, nbItem);
+                    failure:function(e) {
+			console.log('Failure: ' + e);
+                    },
+                    success:function(o) {
+			this.needsUpdated = false;
                     }
-                }
-	    });
-	}
-	else {
-	    console.log('You can only make notes if you\'re logged in.')
-	}
-    },        
-    'notePost':function(data, items) {
-	if (GLOBAL.user.key) {
-	    $.ajax({
-                url:API + '/notes/',
-                type: 'POST',
-                contentType: 'application/json',
-                dataType: 'json',
-		data:JSON.stringify(data),
-                context:items,
-                headers: {
-		    'Authorization': 'Token ' + GLOBAL.user.key
-                },
-                failure:function(e) {
-		    console.log('Failure: ' + e);
-                },
-                success:function(o) {
-                    for (var i=0;i<o.length; i++) {
-                        this[i].url = o[i].url;
-                        this[i].id = o[i].id;                            
-                        this[i].needsCreated = false;
-                    }
-                }
-	    });
-	}
-	else {
-	    console.log('You can only make notes if you\'re logged in.')
-	}
-    },
-    'notePut':function(data, items) {
-	if (GLOBAL.user.key) {
-	    $.ajax({
-                url:API + '/notes/',
-                type: 'PATCH',
-                contentType: 'application/json',
-                dataType: 'json',
-		data:JSON.stringify(data),
-                context:items,
-                headers: {
-		    'Authorization': 'Token ' + GLOBAL.user.key
-                },
-                failure:function(e) {
-		    console.log('Failure: ' + e);
-                },
-                success:function(o) {
-                    for (var i=0;i<o.length; i++) {
-                        this[i].needsUpdated = false;                            
-                    }
-                }
-	    });
-	}
-	else {
-	    console.log('You can only fav things if you\'re logged in.')
-	}
-    },
-    'noteDelete':function(data, items) {
-	if (GLOBAL.user.key) {
-            for (var i = 0; i<items.length; i++) {
+		});
+	    }
+	    else {
+		console.log('You can only fav things if you\'re logged in.')
+	    }
+	},
+	'notesGet':function(scroll_uuid, notebook) {
+	    if (GLOBAL.user.key) {
 		$.ajax({
-                    url:API + '/notes/' + items[i].id,
-                    type: 'DELETE',
-                    context:items[i],
+                    url:API + '/notes/?scroll=' + scroll_uuid,
+                    type: 'GET',
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    context:notebook,
                     headers: {
 			'Authorization': 'Token ' + GLOBAL.user.key
                     },
@@ -346,23 +205,125 @@
 			console.log('Failure: ' + e);
                     },
                     success:function(o) {
-                        this.needsDeleted = false;                            
+			for (var i=0;i<o.results.length; i++)
+			{
+                            var nbItem = o.results[i];
+                            var nbi = this.makeItem(nbItem.kind, nbItem.event_full, nbItem);
+			}
                     }
-                });
+		});
 	    }
-	}
-	else {
-	    console.log('You can only make notes if you\'re logged in.')
-	}
+	    else {
+		console.log('You can only make notes if you\'re logged in.')
+	    }
+	},        
+	'notePost':function(data, items) {
+	    if (GLOBAL.user.key) {
+		$.ajax({
+                    url:API + '/notes/',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    dataType: 'json',
+		    data:JSON.stringify(data),
+                    context:items,
+                    headers: {
+			'Authorization': 'Token ' + GLOBAL.user.key
+                    },
+                    failure:function(e) {
+			console.log('Failure: ' + e);
+                    },
+                    success:function(o) {
+			for (var i=0;i<o.length; i++) {
+                            this[i].url = o[i].url;
+                            this[i].id = o[i].id;                            
+                            this[i].needsCreated = false;
+			}
+                    }
+		});
+	    }
+	    else {
+		console.log('You can only make notes if you\'re logged in.')
+	    }
+	},
+	'notePut':function(data, items) {
+	    if (GLOBAL.user.key) {
+		$.ajax({
+                    url:API + '/notes/',
+                    type: 'PATCH',
+                    contentType: 'application/json',
+                    dataType: 'json',
+		    data:JSON.stringify(data),
+                    context:items,
+                    headers: {
+			'Authorization': 'Token ' + GLOBAL.user.key
+                    },
+                    failure:function(e) {
+			console.log('Failure: ' + e);
+                    },
+                    success:function(o) {
+			for (var i=0;i<o.length; i++) {
+                            this[i].needsUpdated = false;                            
+			}
+                    }
+		});
+	    }
+	    else {
+		console.log('You can only fav things if you\'re logged in.')
+	    }
+	},
+	'noteDelete':function(data, items) {
+	    if (GLOBAL.user.key) {
+		for (var i = 0; i<items.length; i++) {
+		    $.ajax({
+			url:API + '/notes/' + items[i].id,
+			type: 'DELETE',
+			context:items[i],
+			headers: {
+			    'Authorization': 'Token ' + GLOBAL.user.key
+			},
+			failure:function(e) {
+			    console.log('Failure: ' + e);
+			},
+			success:function(o) {
+                            this.needsDeleted = false;                            
+			}
+                    });
+		}
+	    }
+	    else {
+		console.log('You can only make notes if you\'re logged in.')
+	    }
+	},
 	
-    },
-    'passwordReset':API + '/rest-auth/password/reset/',
-    'passwordResetConfirm':'/rest-auth/password/reset/confirm/',
-    'passwordChange':'/rest-auth/password/change/',
-    'userRegister':'/rest-auth/registration/',
-    'userRegisterVerify':'/rest-auth/registration/verify-email/'
-};
-
+	'eventPost':function(data,event) {
+	},
+	'eventPatch':function(event) {
+	    var data = event.getData();
+	    $.ajax({
+		url:API + '/events/' + event.id,
+		type:'PATCH',
+		context:event,
+		data:event.getData(),
+		headers: {
+		    'Authorization': 'Token ' + GLOBAL.user.key
+		},
+		failure:function(e) {
+		    console.log('Failure: ' + e);
+		},
+		success:function(o) {
+		    console.log('Saved', o, this);
+		}
+            });
+	    
+	},
+	
+	'passwordReset':API + '/rest-auth/password/reset/',
+	'passwordResetConfirm':'/rest-auth/password/reset/confirm/',
+	'passwordChange':'/rest-auth/password/change/',
+	'userRegister':'/rest-auth/registration/',
+	'userRegisterVerify':'/rest-auth/registration/verify-email/'
+    };
+    
     
     
     $(document).ready(function() {
@@ -510,8 +471,71 @@
 	}
 	return null;
     }
+
+    var TimeFrame = function() {
+	this.add = undefined;
+	this.columnStepper = undefined;
+	this.columnAdd = undefined;
+	this.getColumns = undefined;
+	this.getPeriod = undefined;
+	this.getOffset = undefined;
+	this.getEventWidth = undefined;
+	this.getTarget = undefined;
+    }
     
-    const timeFrames = {
+    var Minutes = function() {
+	TimeFrame.call(this);
+	this.add = function(datetime, no) {
+	    return datetime.clone().add(no, 'minutes');
+	};
+	this.columnStepper = function(i, start) {
+	    var spanStart = moment(start).add(1 * i, 'minutes');
+	    var spanEnd = moment(start).add(1 * i, 'minutes');
+	    var _r = {
+		start:spanStart,
+		end:spanEnd,
+		text:spanStart.format('h:mma')
+	    };
+	    return _r;
+	};
+	this.columnAdd = function(datetime, no) {
+	    return datetime.clone().add(no, 'minutes');
+	};
+	this.getColumns = function(count, start, end) {
+	    return 10;
+	};
+	this.getPeriod = function(start) {
+	    return makePeriod(start.format('MMM D, YYYY h:mm:ss')
+			      + ' - '
+			      + moment(start).add(9, 'minutes').add('59', 'seconds').format('h:mm:ssa'),
+			      start.clone().startOf('hour'),
+			      start.clone().endOf('hour'));
+	};
+	this.getOffset = function(datetime, resolution) {
+            if (resolutions[resolution] >= resolutions['minutes']) {
+                return Math.floor(10 * Math.random());
+            }
+	    else {
+                return datetime.minutes() - 10;
+            }
+	};
+	this.getEventWidth = function(columns, len) {
+	    return Math.floor(2 + Math.random() * columns/5);
+	};
+	this.getTarget = function(start, pointerInteger, pointerMantissa) {
+	    var pointerFocus = start.clone().add(pointerInteger, 'minutes');
+	    var columns = 10;
+	    var target = pointerFocus.clone().add(
+		Math.floor( pointerMantissa * columns ),
+		'hours');
+	    return {
+		columns:columns,
+		target:target
+	    };
+	};
+    };
+    
+    GLOBAL.timeFrames = {
 	minutes: {
 	    add: function(datetime, no) {
 		return datetime.clone().add(no, 'minutes');
@@ -1016,8 +1040,12 @@
 	       };
     }
     
-    var Event = function() {
-        var my = this;
+    var Event = function(data, frame, columns) {
+        var event = this;
+	this.frame = frame;
+	this.columns = columns;
+	$.extend(event, data);
+
         // application, audio, example, image, message, model, multipart, text, video
         var players = {
 	    'audio/mpeg':function(event) {
@@ -1037,15 +1065,12 @@
         
         players['audio/mp3'] = players['audio/mpeg'];
         players['text/html'] = players['text/html']
-        
-        this.eventToNotebook = function(event, frame) {
-            GLOBAL.notebook.makeItem('default', event);
-        }
-        
-        this.eventToMeta = function(event, frame, columns) {
+	
+	this.meta = undefined;
+        this.cacheMeta = function() {
             var _dt = moment(event.datetime);
-            
-            function getLink(event) {
+
+            function getLink() {
                 if (players[event.mediatype]) {
                     return $('<a></a>', {class:'play'})
 	                .html('&#9654;')
@@ -1059,7 +1084,7 @@
                 }
             }
             
-	    function getThumbnail(event) {
+	    function getThumbnail() {
 	        if (event.thumbnail) {
 		    return $('<div></div>', {'class':'thumb'})
 		        .append($('<img></img>',
@@ -1072,7 +1097,7 @@
 	        }
 	    }
             
-	    function getScrollThumbnail(event) {
+	    function getScrollThumbnail() {
 	        if (event.scroll_thumb_image) {
 		    return $('<div></div>', {'class':'thumb'})
 		        .append($('<img></img>',
@@ -1082,15 +1107,17 @@
 			          }));
 	        }
 	    }
-	    function getEditLink(event) {
+	    function getEditLink() {
 		if (event.user == GLOBAL.user.url) {
-		    return $('<span></span>', {class:'asnote button'})
-			.html('[+Edit]').on('click', (function(e) {
-			    GLOBAL.editEvent(event);
-			}));
+		    return $('<span></span>',
+			     {class:'asnote button'})
+			.html('[+Edit]').on('click', function(e) {
+			    console.log(event);
+			    event.editor();
+			});
 		}
 	    }
-	    return {
+	    event.meta = {
 	        div: $('<div></div>', {class:'event'}).append(
 		    $('<div></div>', {class:'inner'}).append(
 		        getLink(event),
@@ -1098,11 +1125,8 @@
 		        getThumbnail(event),
                         $('<span></span>', {class:'asnote button'})
                             .html('[+Note]').on('click', (function(e) {
-                                my.eventToNotebook(event, frame);
+                                event.eventToNotebook(event, event.frame);
                             })),
-			
-		        
-			
 		        $('<span></span>', {class:'datetime'})
 			    .html(_dt.format('D MMM, \'YY')),
                         
@@ -1124,10 +1148,75 @@
 		    .mousemove(function(event) {
 		        // Don't move if over event (cut and paste, click, etc);
 		    }),
-	        width:frame.getEventWidth(columns, event.title.length),
-	        offset:frame.getOffset(_dt, event.resolution)
+	        width:event.frame.getEventWidth(event.columns, event.title.length),
+	        offset:event.frame.getOffset(_dt, event.resolution)
 	    };
+        }	
+	this.cacheMeta();
+
+	
+	this.editor = function() {
+	    var makeInput = function(name, title, is_rich) {
+		var vals = {class:'event-input',
+			    name:name,
+			    value:event[name]};
+		var editor =  $('<input></input>', vals);
+		var medium = undefined;
+		if (is_rich) {
+		    editor = $('<div></div>', vals)
+			.addClass('rte')
+			.append(event[name]);
+		    medium = new MediumEditor(editor, {
+			disableDoubleReturn: false,
+			targetBlank: true                
+		    });
+		}
+		return $('<p>')
+		    .append(
+			$('<div></div>', {class:'description'})
+			    .append(title),
+			$('<div></div>', {class:'input'})
+			    .append(editor));
+	    }
+	    var newEvent = $('<div></div>',
+			     {class:'editable-event'})
+		.append(
+		    $('<div></div>').append(
+			$('<div></div>', {class:'scroll-title'}).html('Scroll: ' + event.scroll_title),
+			makeInput('title', 'Event title'),
+			makeInput('datetime', 'Date/time'),
+			makeInput('content_url', 'Link'),
+			makeInput('text', 'Event description', true),
+			makeInput('source_date', 'Source Name (optional)'),
+			makeInput('source_url', 'Source Link (optional)'),
+			$('<input></input>', {class:'submit',
+					      type:'submit',
+					      value:'save',
+					      name:'submit'})
+			    .on('click', function (ev) {
+				console.log(event);
+			    })));
+	    $('#notebook').show();
+	    $('#notebook-event').show();
+	    $('#notebook-event').append(newEvent);
+	    return newEvent;
+	}
+
+	
+	this.getData = function() {
+	    return {
+		title:event.title,
+		datetime:event.datetime,
+		source_name:event.source_name,
+		source_url:event.source_url
+	    }
+	}
+        
+        this.eventToNotebook = function(event, frame) {
+            GLOBAL.notebook.makeItem('default', event);
         }
+
+
     }
     
     var makeUrl = function(env, panel_no, scroll) {
@@ -1151,7 +1240,7 @@
                 console.log('Failure: ' + e);
             },
             success:function(events) {
-                var panel_div = makePanel(panel_no,
+                var panel_div = new Panel(panel_no,
 					  this.frame.add(this.start, panel_no),
 					  this.frame.add(this.end, panel_no),
 					  this,
@@ -1160,65 +1249,65 @@
             }                
         });        
     }
-    
-    var makePanel = function(count, start, end, env, events) {	
-	var buffer = $('#buffer');
-	var dur = end - start;
+
+//    var makePanel = function(count, start, end, env, events) {	
+    var Panel = function(count, start, end, env, events) {
+
+	var panel = this;
+	this.buffer = $('#buffer');
+	this.dur = end - start;
 	// Make a panel, 1 screen wide, that will contain a duration.
-	var panel = $('<div></div>', {'id':count,
-				      'class':'panel'})
+	this.panelHTML = $('<div></div>',
+		       {'id':count,
+			'class':'panel'})
 	    .css({marginLeft:p(100 * (count + 1))});
 	
-	var divs = [];
-	var timeFrame = getTimeFrame(start, end);
-	var frame = timeFrames[timeFrame];
+	this.divs = [];
+	this.timeFrame = getTimeFrame(start, end);
+	this.frame = GLOBAL.timeFrames[this.timeFrame];
 	
-	var columns = frame.getColumns(count, start, end);
-	var cellWidth = env.window.width/columns;
-	var cellHeight = env.window.height/gridHeight * activeHeight;
+	this.columns = this.frame.getColumns(count, start, end);
+	this.cellWidth = env.window.width/this.columns;
+	this.cellHeight = env.window.height/gridHeight * activeHeight;
 	// Add the time period
-	var period = frame.getPeriod(start);
-	divs.push(period);
+	this.period = this.frame.getPeriod(start);
+	
+	this.divs.push(this.period);
         
 	// Add the columns
-	var columnWidth = env.window.width/columns;
-	var el = $(env.timeline.children()[1]);
-	for (var i = 0; i<columns; i++) {
-	    var columnData = frame.columnStepper(i, start);
-	    divs.push(makeColumn(i, columnWidth, columnData));
+	this.columnWidth = env.window.width/this.columns;
+	this.el = $(env.timeline.children()[1]);
+	for (var i = 0; i<this.columns; i++) {
+	    var columnData = this.frame.columnStepper(i, start);
+	    this.divs.push(makeColumn(i, this.columnWidth, columnData));
 	}
 	// Add the events
-	var eventMetas = [];
-	for (var i in events.results) {
-            var e = new Event();
-	    eventMetas.push(e.eventToMeta(events.results[i], frame, columns));
-	}
-        
-        var grid = makeGrid(columns);
+	this.clientEvents = $.map(events.results, function(e) {return new Event(e, panel.frame, panel.columns);});
 	
-	for (var i in eventMetas) {
-	    var e = eventMetas[i];
-	    e.div.css({width:e.width * columnWidth});
-	    buffer.append(e.div);
-	    e.height = Math.ceil(e.div.height()/cellHeight);
-	    
-	    var reservation = makeReservation(grid,
+        this.grid = makeGrid(this.columns);
+
+	$.each(this.clientEvents, function(i, clientEvent) {
+	    var e = clientEvent.meta;
+	    e.div.css({width:e.width * panel.columnWidth});
+	    panel.buffer.append(e.div);
+	    e.height = Math.ceil(e.div.height()/panel.cellHeight);
+	    var reservation = makeReservation(panel.grid,
 					      e.offset,
                                               0,
 					      e.width,
                                               e.height);
 	    if (reservation.success) {
-		panel.append(e.div.css({
-		    marginLeft:(reservation.x * cellWidth) + 'px',
-		    marginTop:(reservation.y * cellHeight) + 'px'
+		panel.panelHTML.append(e.div.css({
+		    marginLeft:(reservation.x * panel.cellWidth) + 'px',
+		    marginTop:(reservation.y * panel.cellHeight) + 'px'
 		}));
 	    }
             else {
                 console.log("reservation failed");
             }
-	}
-	panel.append(divs);
-	return panel;
+	});
+	this.panelHTML.append(this.divs);
+	return this.panelHTML;
     }
     
     var Timeline = function(start, end) {
@@ -1252,7 +1341,7 @@
 	var panels = [-1, 0, 1];
 	
 	var timeframe = getTimeFrame(start, end)
-	var frame = timeFrames[timeframe];	
+	var frame = GLOBAL.timeFrames[timeframe];	
 	var env = {
 	    window: {
 		width:$(window).width(),
@@ -1273,8 +1362,7 @@
             loadPanel(env, pos,
                       function(panel_no, panel_div) {
                           $('#'+panel_no).replaceWith(panel_div);
-                      }
-                     );
+                      });
         }
 	
 	// Whatever
@@ -1973,23 +2061,21 @@
         
         this.notebookView = this.makeNotebookView();
         this.textView.html(this.medium.getContent() + ' ');
-        
 	this.medium.subscribe('focus', function (event, editor) {
 	    $('span.view-item').removeClass('focused');
 	    nbitem.textView.addClass('focused');
 	    var scrollTop = $('#notebook-essay').scrollTop()
-		+ $(nbitem.textView).position().top - 100;
-	    
+		+ $(nbitem.textView).position().top
+		- 100;
 	    $('#notebook-essay').animate({
 		scrollTop: scrollTop
 	    });
-	    
 	});
 	this.medium.subscribe('editableInput', function (event, editor) {
             nbitem.changed();              
             nbitem.textView.html(nbitem.medium.getContent());
             nbitem.textView.append(' ');
 	});
-    }
-    
+    };   
+
 }(jQuery, Cookies, MediumEditor));
