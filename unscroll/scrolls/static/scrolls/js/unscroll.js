@@ -1,4 +1,17 @@
 "use strict";
+
+/* 
+
+stub is:
+- make();
+- load();
+- render();
+- buffer();
+- remove();
+- getData();
+
+*/
+
 (function($, Cookies, MediumEditor) {
     
     const API = 'http://127.0.0.1:8000';
@@ -296,6 +309,7 @@
 	},
 	
 	'eventPost':function(data,event) {
+	    
 	},
 	'eventPatch':function(event) {
 	    var data = event.getData();
@@ -327,6 +341,7 @@
     
     
     $(document).ready(function() {
+
 	$('#notebook-create-button')
 	    .on('click', function(ev) {
 		var data = {
@@ -346,7 +361,6 @@
         GLOBAL.timeline = new Timeline(start, end);
         GLOBAL.start = start;
         GLOBAL.end = end;
-	
         GLOBAL.setUserNameAndLogin = function() {
 	    $('#account-login').text('You are: ' + GLOBAL.user.username);
 	    $('#account-create')
@@ -356,7 +370,6 @@
         }
         
         var session = Cookies.getJSON('session');
-	
         if (session) {
             GLOBAL.user = session;
             GLOBAL.setUserNameAndLogin();
@@ -1192,7 +1205,7 @@
 			$('<input></input>', {class:'submit',
 					      type:'submit',
 					      value:'save',
-					      name:'submit'})
+					      name:'save'})
 			    .on('click', function (ev) {
 				console.log(event);
 			    })));
@@ -1945,10 +1958,8 @@
     };
     
     var NotebookItem = function(kind, event, note) {
-        var creationTime = new Date().getTime();
-        var nbitem = this;
+	var nbitem = this;
         this.event = event;
-        
         this.kind = kind ? kind : 'default';
         this.note = note;
         this.uuid = undefined;
