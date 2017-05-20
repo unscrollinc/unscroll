@@ -25,10 +25,10 @@ class Thumbnail(models.Model):
         max_length=512,
         unique=True,
         null=False)
-    
+
     class Meta:
         db_table = 'thumbnail'
-        
+
     def __unicode__(self):
         return '{}'.format(self.image_location,)
 
@@ -76,9 +76,11 @@ class EventQueryset(models.QuerySet):
         return self.extra(
             select={
                 'rank':
-                "ts_rank_cd(to_tsvector('english', scrolls_event.title || ' ' || scrolls_event.text), plainto_tsquery(%s), 32)"},
+                "ts_rank_cd(to_tsvector('english', scrolls_event.title || "
+                + "' ' || scrolls_event.text), plainto_tsquery(%s), 32)"},
             select_params=(text,),
-            where=("to_tsvector('english', scrolls_event.title || ' ' || scrolls_event.text) @@ plainto_tsquery(%s)",),
+            where=("to_tsvector('english', scrolls_event.title || "
+                   + "' ' || scrolls_event.text) @@ plainto_tsquery(%s)",),
             params=(text,),
             order_by=('-rank',)
         )
@@ -134,11 +136,11 @@ class Event(models.Model):
         null=True)
     deleted = models.BooleanField(
         default=False)
-    
+
     objects = EventQueryset.as_manager()
 
     class Meta:
-#        unique_together = (("user", "title", "text"),)
+        # unique_together = (("user", "title", "text"),)
         db_table = 'event'
         ordering = ['-ranking', 'datetime']
 
@@ -155,7 +157,7 @@ class Note(models.Model):
     uuid = models.UUIDField(
         default=uuid.uuid4,
         editable=False,
-        unique=True)    
+        unique=True)
     scroll = models.ForeignKey(
         Scroll,
         null=True,
