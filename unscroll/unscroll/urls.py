@@ -8,7 +8,7 @@ from rest_framework import generics, serializers, viewsets, routers, response
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
-from scrolls.models import Scroll, Event, Note, NoteMedia, Thumbnail
+from scrolls.models import Scroll, Event, Note, Media, Thumbnail
 from rest_framework_swagger.views import get_swagger_view
 from PIL import Image, ImageOps
 from io import BytesIO

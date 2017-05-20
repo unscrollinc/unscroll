@@ -25,7 +25,10 @@ class Thumbnail(models.Model):
         max_length=512,
         unique=True,
         null=False)
-
+    
+    class Meta:
+        db_table = 'thumbnail'
+        
     def __unicode__(self):
         return '{}'.format(self.image_location,)
 
@@ -60,6 +63,7 @@ class Scroll(models.Model):
         default=False)
 
     class Meta:
+        db_table = 'scroll'
         unique_together = (("title", "user"),)
         ordering = ['-created']
 
@@ -89,7 +93,7 @@ class Event(models.Model):
     uuid = models.UUIDField(
         default=uuid.uuid4,
         editable=False,
-        unique=True)    
+        unique=True)
     scroll = models.ForeignKey(
         Scroll,
         related_name='events')
@@ -135,6 +139,7 @@ class Event(models.Model):
 
     class Meta:
 #        unique_together = (("user", "title", "text"),)
+        db_table = 'event'
         ordering = ['-ranking', 'datetime']
 
     def __unicode__(self):
@@ -178,13 +183,14 @@ class Note(models.Model):
         auto_now_add=True)
 
     class Meta:
+        db_table = 'note'
         ordering = ['order']
 
     def __unicode__(self):
         return '{}'.format(self.text,)
 
 
-class NoteMedia(models.Model):
+class Media(models.Model):
     """"""
     note = models.ForeignKey(
         Note,
@@ -194,6 +200,10 @@ class NoteMedia(models.Model):
         blank=True)
     media_file = models.FileField(
         upload_to=None)
+
+    class Meta:
+        db_table = 'media'
+        ordering = ['note__order']
 
     def __unicode__(self):
         return '{}'.format(self.media_file,)
