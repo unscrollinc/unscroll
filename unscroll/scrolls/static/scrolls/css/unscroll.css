@@ -64,6 +64,10 @@ div.column {
     z-index:-1;
 }
 
+div.first {
+    border-left:3px solid lightblue;
+    margin-left:-2px;
+}
 .column:hover {
 }
 
@@ -202,9 +206,16 @@ div#login {
     padding:0.5em;
     background:white;
     border:1px solid #ddd;
-/*    box-shadow:2px 2px 2px #888; 
-    border-radius:.5em; */
+    box-shadow:1px 1px 0px #888; 
+    border-radius:1em; 
     overflow:hidden;
+}
+
+.event .inner a.title {
+    font-family:Roboto;
+    font-weight:bold;
+    color:black;
+
 }
 
 div.thumb {
@@ -505,4 +516,9 @@ div.notebook-title-editor {
     border-top:1px solid black;
     border-bottom:1px dotted black;
     padding:0.5em;
+}
+
+#user-logout {
+    cursor:hand;    
+    display:none;
 }
