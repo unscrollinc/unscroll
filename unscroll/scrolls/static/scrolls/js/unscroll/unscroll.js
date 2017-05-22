@@ -6,8 +6,10 @@
     const AUTH = API + '/rest-auth';
     const GRIDHEIGHT = 6;
     const ACTIVEHEIGHT = 0.95;          
+    const REFRESH_INTERVAL = 5000; // milliseconds
+    const timeBeforeRefresh = 10; // milliseconds
 
-    var d = function (className) {
+    const d = function (className) {
         if (className) {
             return $('<div></div>', {class:className});
         }
@@ -16,7 +18,7 @@
         }
     };
     
-    var s = function (className) {
+    const s = function (className) {
         if (className) {
             return $('<span></span>', {class:className});
         }
@@ -25,7 +27,7 @@
         }
     };
     
-    var a = function (href, className) {
+    const a = function (href, className) {
         if (className) {
             return $('<a></a>', {class:className,
                                  target:'_new',
@@ -73,18 +75,21 @@
 
         this.data = {};
         this.timeline = undefined;
-        
+        this.currentScroll = undefined;
         this.initialize = function() {
             var _session = Cookies.getJSON('session');
             if (_session) {
                 $.extend(_user.data, _session);
+                
             }
             this.initializeDOM();
         };
         
         this.initializeDOM = function() {
             if (_user.data.key) {
-	        //$('#notebook').toggle();                
+                _user.getProfile();
+                _user.loginDOM();
+	        $('#notebook').toggle();
             }
             
             $('#account-login').on('click', function(){
@@ -141,10 +146,10 @@
 
         this.loginDOM = function() {
     	    $('#account-login').text('You are: ' + _user.data.username);
-            $('#notebook').toggle();
-            $('#login-box').toggle();
-            $('#account-create').toggle();
-            $('#user-logout').toggle();            
+            $('#account-create').hide();            
+            $('#notebook').show();
+            $('#login-box').hide();
+            $('#user-logout').show();
         }
         
         this.getProfile = function() {
@@ -165,10 +170,9 @@
         };
         
         this.logoutDOM = function() {
-            $('#account-login')
-                .text('Login');
-            $('#account-create').toggle();
-            $('#user-logout').toggle();
+            $('#account-login').text('Login');
+            $('#account-create').show();
+            $('#user-logout').hide();
         };
         
         this.logout = function() {
@@ -201,7 +205,8 @@
        ╹ ╹╹ ╹┗━╸╹  ╹┗╸╹ ╹╹ ╹┗━╸
     */
     
-    var TimeFrame = function() {
+    var TimeFrame = function(timeline) {
+        var _timeframe = this;
         this.resolutions = {
             'seconds':0,
             'minutes':1,
@@ -212,7 +217,21 @@
             'decades':6,
             'centuries':7
         }
-        
+        this.timeline = timeline;
+        this.makePeriod = function(text, start, end) {
+	    return $('<a></a>', {class:'period nav',
+			         href:'/?begin='
+			         + start.format()
+			         + '&end='
+			         + end.format()
+			        })
+	        .html(text)
+	        .click(function(e) {
+		    e.preventDefault();
+                    _timeframe.timeline.initialize(start, end);
+	        });
+        }
+        this.resolution = undefined;
 	this.add = undefined;
 	this.columnStepper = undefined;
 	this.columnAdd = undefined;
@@ -225,6 +244,8 @@
 
     var MinutesTimeFrame = function() {
         TimeFrame.call(this);
+        var _timeframe = this;
+        this.resolution = 'seconds';
 	this.add = function(datetime, no) {
 	    return datetime.clone().add(no, 'minutes');
 	};
@@ -245,7 +266,7 @@
 	    return 10;
 	};
 	this.getPeriod = function(start) {
-	    return makePeriod(start.format('MMM D, YYYY h:mm:ss')
+	    return _timeframe.makePeriod(start.format('MMM D, YYYY h:mm:ss')
 			      + ' - '
 			      + moment(start).add(9, 'minutes').add('59', 'seconds').format('h:mm:ssa'),
 			      start.clone().startOf('hour'),
@@ -274,8 +295,13 @@
 	    };
 	}
     };
+    MinutesTimeFrame.prototype = new TimeFrame();
+    
     var HoursTimeFrame = function() {
-        TimeFrame.call(this);    
+        TimeFrame.call(this);
+        var _timeframe = this;
+        this.resolution = 'minutes';        
+        
 	this.add = function(datetime, no) {
 	    return datetime.clone().add(no, 'hours');
 	};
@@ -296,7 +322,7 @@
 	    return 6;
 	};
 	this.getPeriod = function(start) {
-	    return makePeriod(start.format('MMMM D, YYYY h:mm')
+	    return _timeframe.makePeriod(start.format('MMMM D, YYYY h:mm')
 			      + ' - '
 			      + moment(start).add(59, 'minutes').format('h:mma'),
 			      start.clone().startOf('day'),
@@ -325,9 +351,13 @@
 	    };
 	}
     };
+    HoursTimeFrame.prototype = new TimeFrame();
     
     var DaysTimeFrame = function() {
         TimeFrame.call(this);
+        var _timeframe = this;
+        
+        this.resolution = 'hours';        
 	this.add = function(datetime, no) {
 	    return datetime.clone().add(no, 'days');		
 	};
@@ -347,7 +377,7 @@
 	    return 24;
 	};
 	this.getPeriod = function(start) {
-	    return makePeriod(start.format('MMMM D, YYYY'),
+	    return _timeframe.makePeriod(start.format('MMMM D, YYYY'),
 			      start.clone().startOf('month'),
 			      start.clone().endOf('month'));
 	};
@@ -374,11 +404,13 @@
 	    };
 	}
     };
-
+    DaysTimeFrame.prototype = new TimeFrame();
+    
     var MonthsTimeFrame = function() {
         TimeFrame.call(this);
-        var _frame = this;
-        
+        var _timeframe = this;
+
+        this.resolution = 'days';                
 	this.add = function(datetime, no) {
 	    return datetime.clone().add(no, 'months');		
 	};
@@ -402,13 +434,13 @@
 	};
         
 	this.getPeriod = function(start) {
-	    return makePeriod(start.format('MMMM YYYY'),
+	    return _timeframe.makePeriod(start.format('MMMM YYYY'),
 			      start.clone().startOf('year'),
 			      start.clone().endOf('year'));
 	};
         
 	this.getOffset = function(datetime, resolution) {
-            if (_frame.resolutions[resolution] >= _frame.resolutions['months']) {
+            if (_timeframe.resolutions[resolution] >= _timeframe.resolutions['months']) {
                 return Math.floor(28 * Math.random());
             }
 	    else {
@@ -437,7 +469,8 @@
     
     var YearsTimeFrame = function() {
         TimeFrame.call(this);
-        var _frame = this;
+        var _timeframe = this;
+        this.resolution = 'months';        
 	this.add = function(datetime, no) {
 	    return datetime.clone().add(no, 'years');		
 	};
@@ -458,7 +491,7 @@
 	    var year = start.year()/10;
 	    var from = moment((10 * Math.floor(year))+'-01-01');
 	    var to = moment(from).add(10, 'years')
-	    return makePeriod(start.year(),
+	    return _timeframe.makePeriod(start.year(),
 			      from,
 			      to);
 	};
@@ -482,7 +515,9 @@
     
     var DecadesTimeFrame = function() {
         TimeFrame.call(this);
-        
+        var _timeframe = this;
+
+        this.resolution = 'years';                        
 	this.add = function(datetime, no) {
 	    return datetime.clone().add(no * 10, 'years');
 	};
@@ -503,7 +538,7 @@
 	};
 	this.getPeriod = function(start) {
 	    var year = start.year()/100;
-	    return makePeriod(start.year() + '-' + moment(start).add(9,'years').year(),
+	    return _timeframe.makePeriod(start.year() + '-' + moment(start).add(9,'years').year(),
 			      moment((100 * Math.floor(year))+'-01-01'),
 			      moment((100 * Math.ceil(year))+'-01-01'));
 	};
@@ -523,9 +558,13 @@
 	    };
 	}	   	    	    
     };
+    DecadesTimeFrame.prototype = new TimeFrame();
     
     var CenturiesTimeFrame = function() {
         TimeFrame.call(this);
+        var _timeframe = this;
+
+        this.resolution = 'decades';
 	this.add = function(datetime, no) {
 	    return datetime.clone().add(no * 100, 'years');
 	};
@@ -548,7 +587,7 @@
 	    var year = start.year()/1000;
 	    var from = moment((1000 * Math.floor(year))+'-01-01');
 	    var to = moment(from).add(1000, 'years');
-	    return makePeriod(start.year() + '-' + (start.year() + 99),
+	    return _timeframe.makePeriod(start.year() + '-' + (start.year() + 99),
 			      from,
 			      to);
 	};
@@ -568,9 +607,13 @@
 	    };
 	}	 	    	    	    
     };
+    CenturiesTimeFrame.prototype = new TimeFrame();
     
     var MillenniaTimeFrame = function() {
         TimeFrame.call(this);
+        var _timeframe = this;
+
+        this.resolution = 'centuries';        
 	this.add = function(datetime, no) {
 	    return datetime.clone().add(no * 1000, 'years');
 	};
@@ -593,7 +636,7 @@
 	    var year = start.year()/10000;
 	    var from = moment((10000 * Math.floor(year))+'-01-01');
 	    var to = moment(from).add(10000, 'years');
-	    return makePeriod(start.year() + '-' + (start.year() + 999),
+	    return _timeframe.makePeriod(start.year() + '-' + (start.year() + 999),
 			      from,
 			      to);
 	};
@@ -613,7 +656,7 @@
 	    };
 	}	 	    	    	    
     }	
-    
+    MillenniaTimeFrame.prototype = new TimeFrame();    
     
     
     /*
@@ -649,7 +692,7 @@
             _panel.columnWidth = _panel.timeline.window.width/_panel.columns;            
 	    _panel.cellWidth = _panel.timeline.window.width/_panel.columns;
 	    _panel.cellHeight = _panel.timeline.window.height/(GRIDHEIGHT * ACTIVEHEIGHT);
-            _panel.grid = _panel.makeGrid();            
+            _panel.grid = _panel.makeGrid();
             _panel.initializeDOM();
         }
 
@@ -677,11 +720,19 @@
             }
             return columns;
         }
+
+        this.newEvent = function() {
+            console.log(_panel.timeline);
+            var e = new Event({}, _panel);
+            e.editor();
+        }
         
         this.initializeDOM = function() {
             _panel.el.css({marginLeft:(100 * (_panel.offset + 1)) + '%'});
             var h = _panel.makeColumnsHTML();
-            _panel.el.append(h);
+            var period = _panel.timeline.timeframe.getPeriod(_panel.start);
+            _panel.el.append(period, h);
+            _panel.el.on('dblclick', _panel.newEvent);
         }
         
         this.makeUrl = function() {
@@ -769,7 +820,7 @@
             }
             else {
                 var es = $.map(_panel.response.results, function(event) {
-                    return new Event(event);
+                    return new Event(event, _panel);
                 });
 
 	        $.each(es, function(i, e) {
@@ -809,7 +860,6 @@
         }
 
         this.initialize();
-        console.log(this);
     }
 
 /* 
@@ -818,9 +868,13 @@ ________________________________________
 ┣╸ ┃┏┛┣╸ ┃┗┫ ┃
 ┗━╸┗┛ ┗━╸╹ ╹ ╹
 */
-    var Event = function(data) {
+    var Event = function(data, panel) {
         var _event = this;
         this.data = data;
+        this.panel = panel;
+        this.user = panel.timeline.user.data;
+
+        this.patch = {};        
         this.el = $('<div></div>', {class:'event'});
         this.datetime = moment(data.datetime);
         this.needsUpdated = false;
@@ -838,21 +892,182 @@ ________________________________________
 
         this.render = function() {
             var _d = _event.data;
+            var editButton = undefined;
+            var deleteButton = undefined;
+            if (_event.user.username == _d.username) {
+                editButton = a('', 'button')
+                    .html('+[Edit]')
+                    .on('click', _event.editor);
+                deleteButton = a('', 'button')
+                    .html('[X]')
+                    .on('click', _event.delete);                
+            }
+            
             _event.el.append(
                 d('inner').append(
                     a(_event.data.content_url, 'title').html(_d.title + '&mdash;'),
                     s('scroll').html(_d.scroll_title),
                     s('datetime').html(_event.datetime.format('M')),
                     a('', 'button').html('+[Note]'),
-                    a('', 'button').html('+[Edit]')
+                    editButton,
+                    deleteButton
                 ));
         };
 
-        this.editor = function() {
-        };
+        this.delete = function(ev) {
+            ev.preventDefault();
+	    $.ajax({
+		url:_event.data.url,
+		type: 'DELETE',
+		headers: {
+		    'Authorization': 'Token ' + _event.user.key
+		},
+		failure:function(e) {
+		    console.log('Failure: ' + e);
+		},
+		success:function(o) {
+                    _event.el.remove();
+		}
+	    });
+        }
 
-        this.initialize();
+        this.makeEditor = function(exists) {
+            // This needs a config object and a lot of other stuff.
+            var registerChange = function() {
+                if (exists) {
+                    _event.needsUpdated = true;
+                }
+                else {
+                    _event.needsCreated = true;
+                }
+            }
+            var saveFunction = exists ? _event.doPatch : _event.doPost;
+	    var makeInput = function(name, title, is_rich, defaultValue) {
+                var value = _event.data[name] ? _event.data[name] : defaultValue;
+                if (!exists && defaultValue) {
+                    _event.patch[name] = defaultValue;
+                }
+		var vals = {class:'event-input ' + name,
+			    name:name,
+			    value:value};
+		var editor =  $('<input></input>', vals);
+                editor.on('input', function() {
+                    _event.patch[name] = editor.val();
+                    registerChange();
+                })
+		var medium = undefined;
+		if (is_rich) {
+		    editor = $('<div></div>', vals)
+			.addClass('rte')
+			.append(_event.data[name]);
+		    medium = new MediumEditor(editor, {
+			disableDoubleReturn: false,
+			targetBlank: true                
+		    });
+	            medium.subscribe('editableInput', function (event, editor) {
+                        _event.patch[name] = medium.getContent();
+                        registerChange();
+	            });                    
+		}
+                
+		return $('<p>')
+		    .append(
+                        d('description').append(title),
+			d('input').append(editor));
+            }
+	    var newEvent = $('<div></div>',
+			     {class:'editable-event'}).append(
+		                 $('<div></div>').append(
+                                     d('scroll-title').html('Scroll: ' + _event.data.scroll_title),
+			             makeInput('title', 'Event title'),
+			             makeInput('datetime', 'Date/time', false, _event.panel.timeline.pos.target.format()),
+			             makeInput('resolution', 'Resolution', false, _event.panel.timeline.timeframe.resolution),
+			             makeInput('content_url', 'Link', false, 'http://'),
+			             makeInput('text', 'Event description', true),
+			             makeInput('source_date', 'Source Name (optional)'),
+			             makeInput('source_url', 'Source Link (optional)'),
+			             $('<input></input>', {class:'submit',
+					                   type:'submit',
+					                   value:'save',
+					                   name:'save'})
+			                 .on('click', saveFunction)));
+	    return newEvent;
+	}
 
+        this.editor = function(ev) {
+            var exists = false;
+            if (ev) {
+                ev.preventDefault();
+                exists = true;
+            }
+            var el = _event.makeEditor(exists);
+            _event.editorDOM(el);
+        }
+        this.editorDOM = function(el) {
+	    $('#notebook').show();
+	    $('#notebook-event').show().empty().append(el);
+        }
+        
+	this.getData = function() {
+	    return {
+		title:event.title,
+		datetime:event.datetime,
+		source_name:event.source_name,
+		source_url:event.source_url
+	    }
+	}
+        this.doPost = function() {
+            console.log(_event.patch);
+            if (_event.needsCreated) {
+                $.extend(_event.patch, {scroll:_event.user.currentScroll});
+	        $.ajax({
+		    url:API + '/events/',
+		    type:'POST',
+		    data:_event.patch,
+		    headers: {
+		        'Authorization': 'Token ' + _event.user.key
+		    },
+		    failure:function(e) {
+		        console.log('Failure: ' + e);
+		    },
+		    success:function(o) {
+                        $.extend(_event.data, o);
+                        console.log('saved it', o);
+                        _event.patch = {};
+		    }
+                });
+            }
+            else {
+                console.log('No changes seen, so I didn\'t save.');
+            }
+        }
+        this.doPatch = function() {
+            if (_event.needsUpdated) {
+	        $.ajax({
+		    url:_event.data.url,
+		    type:'PATCH',
+		    data:_event.patch,
+		    headers: {
+		        'Authorization': 'Token ' + _event.user.key
+		    },
+		    failure:function(e) {
+		        console.log('Failure: ' + e);
+		    },
+		    success:function(o) {
+                        $.extend(_event.data, o);
+                        _event.patch = {};
+		    }
+                });
+            }
+            else {
+                console.log('No changes seen, so I didn\'t save.');
+            }
+        }
+        
+        this.eventToNotebook = function(event, frame) {
+            GLOBAL.notebook.makeItem('default', event);
+        }
+        this.initialize();        
     }
     
     /*
@@ -914,7 +1129,7 @@ ________________________________________
 	        width:$(window).width(),
 	        height:$(window).height()
             };
-
+            $('#timeline').empty();
             // You always want to drop these into the right part of
             // the DOM in the right order. If you tie the creation of
             // elements into loading from the server it'll get out of
@@ -1030,31 +1245,31 @@ ________________________________________
             var span = _timeline.end - _timeline.start;
             
 	    if (span >= millennium * 0.75) {
-	        this.timeframe = new MillenniaTimeFrame();
+	        this.timeframe = new MillenniaTimeFrame(_timeline);
 	    }		
 	    else if (span >= century * 0.75) {
-	        this.timeframe = new CenturiesTimeFrame();
+	        this.timeframe = new CenturiesTimeFrame(_timeline);
 	    }	
 	    else if (span >= decade * 0.75) {
-	        this.timeframe = new DecadesTimeFrame();
+	        this.timeframe = new DecadesTimeFrame(_timeline);
 	    }
 	    else if (span >= year * 0.75) {
-	        this.timeframe = new YearsTimeFrame();
+	        this.timeframe = new YearsTimeFrame(_timeline);
 	    }
 	    else if (span >= month * 0.75) {
-	        this.timeframe = new MonthsTimeFrame();
+	        this.timeframe = new MonthsTimeFrame(_timeline);
 	    }
 	    else if (span >= week * 0.75) {
-	        this.timeframe = new WeeksTimeFrame();                
+	        this.timeframe = new WeeksTimeFrame(_timeline);                
 	    }
 	    else if (span >= day * 0.75) {
-	        this.timeframe = new DaysTimeFrame();                                
+	        this.timeframe = new DaysTimeFrame(_timeline);                                
 	    }
 	    else if (span >= hour * 0.75) {
-	        this.timeframe = new HoursTimeFrame();
+	        this.timeframe = new HoursTimeFrame(_timeline);
 	    }
 	    else if (span >= minute * 0.75) {
-	        this.timeframe = new MinutesTimeFrame();
+	        this.timeframe = new MinutesTimeFrame(_timeline);
 	    }
             else {
                 this.timeframe = undefined;
@@ -1067,373 +1282,10 @@ ________________________________________
 
     }
     
-    $(document).ready(function() {
-        // Who am I?
-        var user = new User();
-        // What should the timeline show?
-	var start = moment('2001-04-01T00:00:00');
-	var end = start.clone().add(1, 'years');
-        var timeline = new Timeline(start, end, user);
-
-        /* 
-	$('#notebook-create-button')
-	    .on('click', function(ev) {
-		var data = {
-		    title:'untitled',
-		    user:GLOBAL.user.url
-		};
-		Endpoints.scrollPost(data);
-	    });
-	
-	$('#notebook-list-button').on('click', function(ev) {
-	    $('#notebook-listing').toggle();
-	});
-	
-
-        
-        GLOBAL.timeline = new Timeline(start, end);
-        GLOBAL.start = start;
-        GLOBAL.end = end;
-        
-	document.body.addEventListener('touchmove', function(event) {
-	    event.preventDefault();
-	}, false);
-
-
-
-        
-
-        
-        $('#notebook-toggle').on('click', function() {
-            if (GLOBAL.user.username) {
-                $('#notebook').toggle();
-            }
-        });
-	
-        $(document).keyup(function(e) {
-            if (GLOBAL.user.username) {            
-                if (e.keyCode === 27) $('#notebook').toggle();
-            }
-        });       
-*/ 
-    });
     
-    var GLOBAL = {
-        timeline:undefined,
-        notebook:undefined,
-	scroll:undefined,
-        scroll_uuid:undefined,
-        pos:undefined,
-        start:undefined,
-        end:undefined
-    };
-
-    GLOBAL.updateUserScrolls = function() {
-	var makeScrollListing = function(scroll) {
-	    return $('<tr></tr>',
-		     {class:'scroll-listing'})
-		.on('click', function (ev) {
-		    GLOBAL.scroll_uuid = scroll.uuid;
-		    GLOBAL.notebook = new Notebook(scroll.uuid);
-		    GLOBAL.notebook.load();
-                    new Timeline(GLOBAL.start, GLOBAL.end);
-		    
-		})
-		.append(
-		    $('<td></td>').html(scroll.title),
-		    $('<td></td>').html(scroll.public ? 'Public' : 'Private'),
-		    $('<td></td>').html(moment(scroll.created).format('M/D/YYYY h:mma')));
-	}
-	$('#notebook-listing')
-	    .css({})
-	    .append(
-		$('<table></table>', {class:'scroll-listing'})
-		    .append($.map(GLOBAL.user.scrolls, makeScrollListing)));	
-    }
 
     
-       
-    function makePeriod(text, start, end) {
-	return $('<a></a>', {class:'period nav',
-			     href:'/?begin='
-			     + start.format()
-			     + '&end='
-			     + end.format()
-			    })
-	    .html(text)
-	    .click(function(e) {
-		e.preventDefault();		
-                GLOBAL.timeline = new Timeline(start, end);
-	    });
-    }
     
-    
-    
-    var OLDEvent = function(data, frame, columns) {
-        var event = this;
-	this.frame = frame;
-	this.columns = columns;
-	$.extend(event, data);
-
-        // application, audio, example, image, message, model, multipart, text, video
-        var players = {
-	    'audio/mpeg':function(event) {
-	        var player = $('<audio></audio>',
-			       {src:event.content_url,
-			        controls:'controls',
-			        preload:'none',
-			        autoplay:'autoplay',
-			        class:'audioplayer'});
-	        $('div#player').empty().append(player);
-	    },
-	    'video/youtube':function(event) {},
-	    'video/vimeo':function(event) {},
-	    'audio/soundcloud':function(event) {},
-	    'text/wikipedia':function(event) {}
-        }
-        
-        players['audio/mp3'] = players['audio/mpeg'];
-        players['text/html'] = players['text/html']
-	
-	this.meta = undefined;
-        this.cacheMeta = function() {
-            var _dt = moment(event.datetime);
-
-            function getLink() {
-                if (players[event.mediatype]) {
-                    return $('<a></a>', {class:'play'})
-	                .html('&#9654;')
-	                .on('click', function(e) {
-		            players[event.mediatype](event);
-	                });
-                }
-                else {
-                    return $('<a></a>', {class:'link',
-                                         href:event.content_url}).html('LINK ');
-                }
-            }
-            
-	    function getThumbnail() {
-	        if (event.thumbnail) {
-		    return $('<div></div>', {'class':'thumb'})
-		        .append($('<img></img>',
-			          {'class':'thumb',
-			           'width':event.thumb_width,
-			           'height':event.thumb_height,
-			           'src':event.thumb_image,
-			           'title':'Thumbnail image'
-			          }));
-	        }
-	    }
-            
-	    function getScrollThumbnail() {
-	        if (event.scroll_thumb_image) {
-		    return $('<div></div>', {'class':'thumb'})
-		        .append($('<img></img>',
-			          {'class':'thumb',
-			           'src':event.scroll_thumb_image,
-			           'title':''
-			          }));
-	        }
-	    }
-	    function getEditLink() {
-		if (event.user == GLOBAL.user.url) {
-		    return $('<span></span>',
-			     {class:'asnote button'})
-			.html('[+Edit]').on('click', function(e) {
-			    console.log(event);
-			    event.editor();
-			});
-		}
-	    }
-	    event.meta = {
-	        div: $('<div></div>', {class:'event'}).append(
-		    $('<div></div>', {class:'inner'}).append(
-		        getLink(event),
-			getEditLink(event),
-		        getThumbnail(event),
-                        $('<span></span>', {class:'asnote button'})
-                            .html('[+Note]').on('click', (function(e) {
-                                event.eventToNotebook(event, event.frame);
-                            })),
-		        $('<span></span>', {class:'datetime'})
-			    .html(_dt.format('D MMM, \'YY')),
-                        
-		        $('<div></div>', {class:'title'})
-			    .html(event.title),
-		        
-		        $('<div></div>', {class:'text'})
-			    .html(),		    
-                        
-		        $('<div></div>', {class:'scroll-title'})
-	    		    .html(event.scroll_title)
-                            .on('click', function(e) {
-                                $('#search-input').val('scroll:\"'+event.scroll+'"');
-                                GLOBAL.scroll_uuid = event.scroll_uuid;
-                                new Timeline(GLOBAL.start, GLOBAL.end);
-                            })
-			    .append(getScrollThumbnail(event))
-		    ))
-		    .mousemove(function(event) {
-		        // Don't move if over event (cut and paste, click, etc);
-		    }),
-	        width:event.frame.getEventWidth(event.columns, event.title.length),
-	        offset:event.frame.getOffset(_dt, event.resolution)
-	    };
-        }	
-	this.cacheMeta();
-
-	
-	this.editor = function() {
-	    var makeInput = function(name, title, is_rich) {
-		var vals = {class:'event-input',
-			    name:name,
-			    value:event[name]};
-		var editor =  $('<input></input>', vals);
-		var medium = undefined;
-		if (is_rich) {
-		    editor = $('<div></div>', vals)
-			.addClass('rte')
-			.append(event[name]);
-		    medium = new MediumEditor(editor, {
-			disableDoubleReturn: false,
-			targetBlank: true                
-		    });
-		}
-		return $('<p>')
-		    .append(
-			$('<div></div>', {class:'description'})
-			    .append(title),
-			$('<div></div>', {class:'input'})
-			    .append(editor));
-	    }
-	    var newEvent = $('<div></div>',
-			     {class:'editable-event'})
-		.append(
-		    $('<div></div>').append(
-			$('<div></div>', {class:'scroll-title'}).html('Scroll: ' + event.scroll_title),
-			makeInput('title', 'Event title'),
-			makeInput('datetime', 'Date/time'),
-			makeInput('content_url', 'Link'),
-			makeInput('text', 'Event description', true),
-			makeInput('source_date', 'Source Name (optional)'),
-			makeInput('source_url', 'Source Link (optional)'),
-			$('<input></input>', {class:'submit',
-					      type:'submit',
-					      value:'save',
-					      name:'save'})
-			    .on('click', function (ev) {
-				console.log(event);
-			    })));
-	    $('#notebook').show();
-	    $('#notebook-event').show();
-	    $('#notebook-event').append(newEvent);
-	    return newEvent;
-	}
-
-	
-	this.getData = function() {
-	    return {
-		title:event.title,
-		datetime:event.datetime,
-		source_name:event.source_name,
-		source_url:event.source_url
-	    }
-	}
-        
-        this.eventToNotebook = function(event, frame) {
-            GLOBAL.notebook.makeItem('default', event);
-        }
-
-
-    }
-    
-    var makeUrl = function(env, panel_no, scroll) {
-        var url = API
-            + '/events/?start='
-            + env.frame.add(env.start, panel_no).format()
-            + '&before='
-            + env.frame.add(env.end, panel_no).format();
-        if (GLOBAL.scroll_uuid) {
-            url = url + '&scroll=' + GLOBAL.scroll_uuid;
-        }
-        return url;
-    }
-    
-    var loadPanel = function(env, panel_no, f) {
-        var url = makeUrl(env, panel_no);
-        $.ajax({
-            url:url,
-            context:env,
-            failure:function(e) {
-                console.log('Failure: ' + e);
-            },
-            success:function(events) {
-                var panel_div = new Panel(panel_no,
-					  this.frame.add(this.start, panel_no),
-					  this.frame.add(this.end, panel_no),
-					  this,
-					  events);
-                f(panel_no, panel_div);
-            }                
-        });        
-    }
-
-//    var makePanel = function(count, start, end, env, events) {	
-    var XPanel = function(count, start, end, env, events) {
-
-	var panel = this;
-	this.buffer = $('#buffer');
-	this.dur = end - start;
-	// Make a panel, 1 screen wide, that will contain a duration.
-	this.panelHTML = $('<div></div>',
-		       {'id':count,
-			'class':'panel'})
-	    .css({marginLeft:p(100 * (count + 1))});
-	
-	this.divs = [];
-	this.timeFrame = getTimeFrame(start, end);
-	this.frame = Timeframes[this.timeFrame];
-	
-	this.columns = this.frame.getColumns(count, start, end);
-	this.cellWidth = env.window.width/this.columns;
-	this.cellHeight = env.window.height/gridHeight * activeHeight;
-	// Add the time period
-	this.period = this.frame.getPeriod(start);
-	
-	this.divs.push(this.period);
-        
-	// Add the columns
-	this.columnWidth = env.window.width/this.columns;
-	this.el = $(env.timeline.children()[1]);
-	for (var i = 0; i<this.columns; i++) {
-	    var columnData = this.frame.columnStepper(i, start);
-	    this.divs.push(makeColumn(i, this.columnWidth, columnData));
-	}
-	// Add the events
-	this.clientEvents = $.map(events.results, function(e) {return new Event(e, panel.frame, panel.columns);});
-	
-
-	this.panelHTML.append(this.divs);
-	return this.panelHTML;
-    }
-    
-    
-    const REFRESH_INTERVAL = 5000; // milliseconds
-    const timeBeforeRefresh = 10; // milliseconds
-    
-    function timeSince(STATUS) {
-	var lastPatch = STATUS.lastPatch;
-	var lastRefresh = STATUS.lastRefresh;
-        var d = new Date().getTime();
-        var deltaRefresh = d - lastRefresh;
-        var deltaPatch = d - lastPatch;    
-        var shouldRefresh = deltaRefresh > timeBeforeRefresh;
-        var shouldPatch = deltaPatch > timeBeforePatch;
-        return {now:d,
-                shouldRefresh:shouldRefresh,
-                shouldPatch:shouldPatch};
-    }
     
     /* ############################## */
     var NotebookListItem = function() {
@@ -1465,6 +1317,10 @@ ________________________________________
         /* 
            A Scroll is a bag of events and notes.
 
+           - Some events are children of the given scroll.
+           - Some events are children of other scrolls.
+           - All notes are children of the given scroll.
+
            A Notebook is a note-centric view of a scroll.
 
            Notes have an arbitrary order. Rather than try to keep them
@@ -1485,16 +1341,8 @@ ________________________________________
             ctr = ctr - dec;
             return ctr;
         }
-        
-	var makeInsertionTemplate = function() {
-	    return {
-                moving:false,
-                  from:undefined,
-                to:undefined
-            };
-	}
 
-        var nb = this;
+        var _notebook = this;
 
         this.uuid = uuid;
 	this.scroll = undefined;
@@ -1509,17 +1357,17 @@ ________________________________________
         this.dom_essay = $('#notebook-essay');
         this.dom_insert = $('#insert-button')
             .on('click', function(ev) {
-                nb.makeItem();
+                _notebook.makeItem();
             });
         
         this.dom_spacer = $('#insert-space')
             .on('click', function(ev) {
-                nb.makeItem('spacer');
+                _notebook.makeItem('spacer');
             });
 	
         this.dom_spacer = $('#insert-image')
             .on('click', function(ev) {
-                nb.makeItem('image');
+                _notebook.makeItem('image');
             });	    
         
         this.dom_nb_list = $('#notebook-list-button');
@@ -1536,10 +1384,10 @@ ________________________________________
 	}
         
 	this.render = function() {
-	    nb.dom_nb_listing.hide();
-            nb.dom_title.empty();
-            nb.dom_nb.empty();
-            nb.dom_essay.empty();
+	    _notebook.dom_nb_listing.hide();
+            _notebook.dom_title.empty();
+            _notebook.dom__notebook.empty();
+            _notebook.dom_essay.empty();
             
 	    var title = 'Untitled';
 	    if (this.scroll.title) {
@@ -1556,18 +1404,18 @@ ________________________________________
 	    $('#notebook-title').append(editor);
             
             medium.subscribe('editableInput', function (event, editor) {
-                nb.needsUpdated = true;
-                nb.title = medium.getContent();
+                _notebook.needsUpdated = true;
+                _notebook.title = medium.getContent();
 	    });
             
 	}
         this.scanner = function() {
-            if (nb.needsUpdated) {
+            if (_notebook.needsUpdated) {
                 var payload = {
-                    title:nb.title
+                    title:_notebook.title
                 };
                 console.log('Will save: ', payload);
-                Endpoints.scrollPatch(nb.scroll.url, payload, nb);
+                Endpoints.scrollPatch(_notebook.scroll.url, payload, nb);
             }
 
         }
@@ -1575,6 +1423,14 @@ ________________________________________
         
 	/* Get our DOM objects */
 
+        
+	var makeInsertionTemplate = function() {
+	    return {
+                moving:false,
+                  from:undefined,
+                to:undefined
+            };
+	}
 	
 	this.insertion = makeInsertionTemplate();
 	
@@ -1707,7 +1563,7 @@ ________________________________________
 	
         this.makeItem = function(kind, event, note) {
             var item = new NotebookItem(kind, event, note);
-            this.dom_nb.prepend(item.notebookView);
+            this.dom__notebook.prepend(item.notebookView);
             this.dom_essay.prepend(item.textView);
 	    item.order = this.decmin();
 	    
@@ -1716,54 +1572,54 @@ ________________________________________
 		.html('MV');
 	    
 	    item.notebookView.children('.top, .editable').on('click', function(ev){
-		if (nb.insertion.moving) {
+		if (_notebook.insertion.moving) {
 		    ev.stopImmediatePropagation();
 		    ev.preventDefault();
 		    
-		    nb.insertion.from.buttons.children('.mover').removeClass('active');
+		    _notebook.insertion.from.buttons.children('.mover').removeClass('active');
 		    
-		    nb.reorderItems(item);
+		    _notebook.reorderItems(item);
 		    $('.mover').html('MV');
 		}
 	    });
 	    
 	    item.notebookView.hover(
 		function(ev) {
-		    if (nb.insertion.moving == true
-			&& item != nb.insertion.from) {
+		    if (_notebook.insertion.moving == true
+			&& item != _notebook.insertion.from) {
 			var el = $(item.notebookView);
 			el.children()
 			    .css({cursor:'hand'});
 		    }
 		},
 		function(ev) {
-		    if (!nb.moving) {
+		    if (!_notebook.moving) {
 			var el = $(item.notebookView)			
 			el.children().css({cursor:'default'});
 		    }
 		});
 	    
 	    item.mover.on('click', function(ev) {
-		if (nb.insertion.moving) {
-		    if (item == nb.insertion.from) {
+		if (_notebook.insertion.moving) {
+		    if (item == _notebook.insertion.from) {
 			item.mover.removeClass('active');
-			nb.insertion = makeInsertionTemplate();
+			_notebook.insertion = makeInsertionTemplate();
 		    }
 		    else {
-			nb.insertion.to = item;
-			var range = nb.getRange(nb.insertion);
+			_notebook.insertion.to = item;
+			var range = _notebook.getRange(_notebook.insertion);
 			for (i in range) {
 			    range[i].buttons.children('.mover').addClass('active');
 			}
 		    }
 		}
 		else {
-		    nb.insertion.moving = true;
+		    _notebook.insertion.moving = true;
 		    item.mover.addClass('active');
 		    $('.mover').not('.active').each(function(pos, el) {
 			$(el).html('SET RANGE');
 		    });
-		    nb.insertion.from = item;
+		    _notebook.insertion.from = item;
 		}
 	    })
 	    
@@ -1774,8 +1630,8 @@ ________________________________________
 
         this.scanner = function () {
 	    // If we don't have a scroll URL then we can't make a REST query.
-	    if (!nb.scroll) {
-		console.log('[Error] No scroll URL, can\'t save anything', nb);
+	    if (!_notebook.scroll) {
+		console.log('[Error] No scroll URL, can\'t save anything', _notebook);
 	    }
 	    else {
 		var makePost = function(nbItem) {
@@ -1784,7 +1640,7 @@ ________________________________________
                     var data = {
 			order:nbItem.order,
                         kind:nbItem.kind,
-			scroll:nb.scroll.url,
+			scroll:_notebook.scroll.url,
 			text:nbItem.medium.getContent()
                     };
                     if (nbItem.event && nbItem.event.url) {
@@ -1817,20 +1673,20 @@ ________________________________________
 		var deleted = new Array();
 		var created = new Array();
 		
-		for (var i=0; i<nb.items.length; i++) {
-		    if (nb.items[i].needsCreated) {
-			created.push(nb.items[i]);
+		for (var i=0; i<_notebook.items.length; i++) {
+		    if (_notebook.items[i].needsCreated) {
+			created.push(_notebook.items[i]);
 		    }
                     else {
 			// Avoid update or delete before create---if
 			// it needs created then let that happen first
 			// on a subsequent pass.
 			
-			if (nb.items[i].needsUpdated) {
-                            updated.push(nb.items[i]);
+			if (_notebook.items[i].needsUpdated) {
+                            updated.push(_notebook.items[i]);
 			}
-			if (nb.items[i].needsDeleted) {
-                            deleted.push(nb.items[i]);
+			if (_notebook.items[i].needsDeleted) {
+                            deleted.push(_notebook.items[i]);
 			}
 		    }
 		}
@@ -1852,9 +1708,13 @@ ________________________________________
 	    }
 	}
         setInterval(this.scanner, REFRESH_INTERVAL);
-	    
     };
     
+    /* 
+       ┏┓╻┏━┓╺┳╸┏━╸┏┓ ┏━┓┏━┓╻┏ ╻╺┳╸┏━╸┏┳┓
+       ┃┗┫┃ ┃ ┃ ┣╸ ┣┻┓┃ ┃┃ ┃┣┻┓┃ ┃ ┣╸ ┃┃┃
+       ╹ ╹┗━┛ ╹ ┗━╸┗━┛┗━┛┗━┛╹ ╹╹ ╹ ┗━╸╹ ╹
+    */
     var NotebookItem = function(kind, event, note) {
 	var nbitem = this;
         this.event = event;
@@ -1987,6 +1847,34 @@ ________________________________________
 	});
     };   
 
+    /*
+      ╺┳┓┏━┓┏━╸╻ ╻┏┳┓┏━╸┏┓╻╺┳╸ ┏━┓┏━╸┏━┓╺┳┓╻ ╻
+       ┃┃┃ ┃┃  ┃ ┃┃┃┃┣╸ ┃┗┫ ┃  ┣┳┛┣╸ ┣━┫ ┃┃┗┳┛
+      ╺┻┛┗━┛┗━╸┗━┛╹ ╹┗━╸╹ ╹ ╹ ╹╹┗╸┗━╸╹ ╹╺┻┛ ╹
+    */    
+    $(document).ready(function() {
+        // Who am I?
+        var user = new User();
+        
+        // What should the timeline show?
+	var end = moment();
+	var start = end.clone().subtract(1, 'month');
+        var timeline = new Timeline(start, end, user);
+
+        // If I'm a registered user, I get a notebook.
+        if (user.data.key) {
+            var notebook = new Notebook(user);
+        }
+
+        // Escape key triggers Notebook
+        $(document).keyup(function(e) {
+            if (user.data.username) {            
+                if (e.keyCode === 27) $('#notebook').toggle();
+            }
+        });
+    });
+
+    
 }(jQuery,
   Cookies,
   MediumEditor));

@@ -472,16 +472,18 @@ div#new-event {
 }
 
 #notebook-event {
+    overflow:auto;
     position:absolute;
     top:0;
-    background:#ffc;
-    width:90%;
+    background:white;
+    width:50%;
+    height:90%;
     padding:1em;
     border:1px dotted black;
 }
 
 #notebook-event input {
-    font-size:14pt;
+    font-size:10pt;
     padding:0.25em;
     width:90%;   
 }
@@ -494,7 +496,6 @@ div#new-event {
     color:white;
     border:none;
     padding:none;
-
 }
 
 #notebook-event .scroll-title {

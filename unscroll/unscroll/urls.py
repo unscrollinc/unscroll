@@ -207,6 +207,9 @@ class BulkEventSerializer(BulkSerializerMixin,
     scroll_uuid = serializers.UUIDField(
         read_only=True,
         source="scroll.uuid")
+    username = serializers.CharField(
+        read_only=True,
+        source="user.username")
     public = serializers.BooleanField(
         read_only=True,
         source="scroll.public")
@@ -229,6 +232,7 @@ class BulkEventSerializer(BulkSerializerMixin,
             'url',
             'uuid',
             'user',
+            'username',
             'scroll',
             'scroll_uuid',
             'scroll_title',
