@@ -242,9 +242,10 @@
 	this.getTarget = undefined;
     }
 
-    var MinutesTimeFrame = function() {
+    var MinutesTimeFrame = function(timeline) {
         TimeFrame.call(this);
         var _timeframe = this;
+        this.timeline = timeline;
         this.resolution = 'seconds';
 	this.add = function(datetime, no) {
 	    return datetime.clone().add(no, 'minutes');
@@ -297,11 +298,12 @@
     };
     MinutesTimeFrame.prototype = new TimeFrame();
     
-    var HoursTimeFrame = function() {
+    var HoursTimeFrame = function(timeline) {
         TimeFrame.call(this);
         var _timeframe = this;
         this.resolution = 'minutes';        
-        
+
+        this.timeline = timeline;        
 	this.add = function(datetime, no) {
 	    return datetime.clone().add(no, 'hours');
 	};
@@ -353,10 +355,11 @@
     };
     HoursTimeFrame.prototype = new TimeFrame();
     
-    var DaysTimeFrame = function() {
+    var DaysTimeFrame = function(timeline) {
         TimeFrame.call(this);
         var _timeframe = this;
-        
+
+        this.timeline = timeline;        
         this.resolution = 'hours';        
 	this.add = function(datetime, no) {
 	    return datetime.clone().add(no, 'days');		
@@ -406,9 +409,11 @@
     };
     DaysTimeFrame.prototype = new TimeFrame();
     
-    var MonthsTimeFrame = function() {
+    var MonthsTimeFrame = function(timeline) {
         TimeFrame.call(this);
         var _timeframe = this;
+
+        this.timeline = timeline;        
 
         this.resolution = 'days';                
 	this.add = function(datetime, no) {
@@ -467,9 +472,11 @@
     MonthsTimeFrame.prototype = new TimeFrame();    
 
     
-    var YearsTimeFrame = function() {
+    var YearsTimeFrame = function(timeline) {
         TimeFrame.call(this);
         var _timeframe = this;
+
+        this.timeline = timeline;        
         this.resolution = 'months';        
 	this.add = function(datetime, no) {
 	    return datetime.clone().add(no, 'years');		
@@ -513,10 +520,11 @@
     };
     YearsTimeFrame.prototype = new TimeFrame();        
     
-    var DecadesTimeFrame = function() {
+    var DecadesTimeFrame = function(timeline) {
         TimeFrame.call(this);
         var _timeframe = this;
 
+        this.timeline = timeline;
         this.resolution = 'years';                        
 	this.add = function(datetime, no) {
 	    return datetime.clone().add(no * 10, 'years');
@@ -560,10 +568,11 @@
     };
     DecadesTimeFrame.prototype = new TimeFrame();
     
-    var CenturiesTimeFrame = function() {
+    var CenturiesTimeFrame = function(timeline) {
         TimeFrame.call(this);
         var _timeframe = this;
 
+        this.timeline = timeline;
         this.resolution = 'decades';
 	this.add = function(datetime, no) {
 	    return datetime.clone().add(no * 100, 'years');
@@ -609,9 +618,11 @@
     };
     CenturiesTimeFrame.prototype = new TimeFrame();
     
-    var MillenniaTimeFrame = function() {
+    var MillenniaTimeFrame = function(timeline) {
         TimeFrame.call(this);
         var _timeframe = this;
+
+        this.timeline = timeline;
 
         this.resolution = 'centuries';        
 	this.add = function(datetime, no) {

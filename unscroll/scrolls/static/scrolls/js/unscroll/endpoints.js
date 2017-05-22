@@ -36,17 +36,6 @@ const Endpoints = {
             });
 	},
 	'userLogout': function() {
-            $.post({
-		url:AUTH + '/logout/',
-		headers: {
-                    'Authorization': 'Token ' + GLOBAL.user.key
-		},
-		failure:function(e) {
-                    console.log('Failure: ' + e);
-		},
-		success:function(e) {
-		}
-            });
             GLOBAL.logout();
 	},
 	'getUserProfile':function () {
