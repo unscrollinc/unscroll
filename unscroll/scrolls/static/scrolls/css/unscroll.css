@@ -480,6 +480,7 @@ div#new-event {
     height:90%;
     padding:1em;
     border:1px dotted black;
+    display:none;
 }
 
 #notebook-event input {
@@ -522,4 +523,9 @@ div.notebook-title-editor {
 #user-logout {
     cursor:hand;    
     display:none;
+}
+
+tr.notebook-list-item {
+    border-bottom:1px solid #ccc;
+    cursor:hand;
 }

@@ -34,6 +34,7 @@ class Thumbnail(models.Model):
 
 
 class Scroll(models.Model):
+    """A scroll is a bag of Events and Notes controlled by a single user."""
     user = models.ForeignKey(
         User,
         null=True,
@@ -87,7 +88,10 @@ class EventQueryset(models.QuerySet):
 
 
 class Event(models.Model):
-    """"""
+    """
+    An event is something that happened approximately at a moment in
+    time.
+    """
     user = models.ForeignKey(
         User,
         null=True,
@@ -149,7 +153,12 @@ class Event(models.Model):
 
 
 class Note(models.Model):
-    """"""
+    """
+    A Note is...a note. It can be a note on a scroll, or a note on an
+    event. When you add up notes together and put them into order by
+    their order field, you can see that as an essay or article, if you
+    want.
+    """
     user = models.ForeignKey(
         User,
         null=True,
@@ -193,7 +202,9 @@ class Note(models.Model):
 
 
 class Media(models.Model):
-    """"""
+    """
+    We upload things and always hang them off of a Note instance.
+    """
     note = models.ForeignKey(
         Note,
         related_name="media")
