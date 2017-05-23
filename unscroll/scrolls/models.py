@@ -17,6 +17,7 @@ class User(User):
                          first_event=Min('events__datetime'),
                          last_event=Max('events__datetime'))
 
+
 class Thumbnail(models.Model):
     """Thumbnail images."""
     user = models.ForeignKey(
@@ -69,6 +70,8 @@ class Scroll(models.Model):
     subtitle = models.TextField(
         blank=True, null=True)
     description = models.TextField(
+        null=True)
+    citation = models.TextField(
         null=True)
     thumbnail = models.ForeignKey(
         Thumbnail,
@@ -141,6 +144,8 @@ class Event(models.Model):
     content_url = models.URLField(
         max_length=512,
         null=True)
+    citation = models.TextField(
+        null=True)        
     source_name = models.CharField(
         max_length=512,
         blank=True,
