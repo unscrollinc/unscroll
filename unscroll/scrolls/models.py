@@ -1,7 +1,21 @@
 from django.db import models
+from django.db.models import Max, Min, Count
 from django.contrib.auth.models import User
 import uuid
 
+
+class User(User):
+    class Meta:
+        proxy = True
+
+    def full_scrolls(self):
+        return Scroll.objects\
+                     .select_related('user')\
+                     .filter(user__id=self.id, public=True)\
+                     .annotate(
+                         event_count=Count('events'),
+                         first_event=Min('events__datetime'),
+                         last_event=Max('events__datetime'))
 
 class Thumbnail(models.Model):
     """Thumbnail images."""

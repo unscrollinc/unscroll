@@ -238,7 +238,7 @@
 	        .html(text)
 	        .click(function(e) {
 		    e.preventDefault();
-                    _timeframe.timeline.initialize(start, end);
+                    _timeframe.timeline.initialize(start, end, _timeframe.timeline.user);
 	        });
         }
         this.resolution = undefined;
@@ -735,7 +735,9 @@
 		            .html(columnData.text)
 		            .on('click', function(e) {
 			        e.preventDefault();
-			        _panel.timeline = new Timeline(columnData.start, columnData.end, _panel.timeline.user);
+			        _panel.timeline = new Timeline(columnData.start,
+                                                               columnData.end,
+                                                               _panel.timeline.user);
 		            }));
                 columns.push(column);
             }
@@ -1131,6 +1133,7 @@ ________________________________________
         this.start = start;
         this.end = end;
 	this.user = user;
+        this.user.timeline = this;
         this.el = $('#timeline');        
         
         this.timeframe = undefined;
@@ -1274,34 +1277,34 @@ ________________________________________
             var span = _timeline.end - _timeline.start;
             
 	    if (span >= millennium * 0.75) {
-	        this.timeframe = new MillenniaTimeFrame(_timeline);
+	        _timeline.timeframe = new MillenniaTimeFrame(_timeline);
 	    }		
 	    else if (span >= century * 0.75) {
-	        this.timeframe = new CenturiesTimeFrame(_timeline);
+	        _timeline.timeframe = new CenturiesTimeFrame(_timeline);
 	    }	
 	    else if (span >= decade * 0.75) {
-	        this.timeframe = new DecadesTimeFrame(_timeline);
+	        _timeline.timeframe = new DecadesTimeFrame(_timeline);
 	    }
 	    else if (span >= year * 0.75) {
-	        this.timeframe = new YearsTimeFrame(_timeline);
+	        _timeline.timeframe = new YearsTimeFrame(_timeline);
 	    }
 	    else if (span >= month * 0.75) {
-	        this.timeframe = new MonthsTimeFrame(_timeline);
+	        _timeline.timeframe = new MonthsTimeFrame(_timeline);
 	    }
 	    else if (span >= week * 0.75) {
-	        this.timeframe = new WeeksTimeFrame(_timeline);                
+	        _timeline.timeframe = new WeeksTimeFrame(_timeline);                
 	    }
 	    else if (span >= day * 0.75) {
-	        this.timeframe = new DaysTimeFrame(_timeline);                                
+	        _timeline.timeframe = new DaysTimeFrame(_timeline);                                
 	    }
 	    else if (span >= hour * 0.75) {
-	        this.timeframe = new HoursTimeFrame(_timeline);
+	        _timeline.timeframe = new HoursTimeFrame(_timeline);
 	    }
 	    else if (span >= minute * 0.75) {
-	        this.timeframe = new MinutesTimeFrame(_timeline);
+	        _timeline.timeframe = new MinutesTimeFrame(_timeline);
 	    }
             else {
-                this.timeframe = undefined;
+                _timeline.timeframe = undefined;
             }
 	    return null;
         };
@@ -1338,7 +1341,7 @@ ________________________________________
 	this.user = user;
 
         this.initialize = function() {
-	    var scrolls = $.map(user.data.scrolls,
+	    var scrolls = $.map(user.data.full_scrolls,
 				function(s) {
 				    var v = new NotebookListItem(s, _notebooklist.user);
 				    return v.render();
@@ -1421,9 +1424,15 @@ ________________________________________
 	}
         
         this.loadScroll = function() {
-	    console.log(_notebook);
+            var start = moment(_notebook.scroll.first_event);
+            var before = moment(_notebook.scroll.last_event);
+	    console.log(_notebook, _notebook.user.timeline);
 	    $.ajax({
-                url:API + '/scrolls/?uuid=' + _notebook.scroll.uuid,
+                url:API + '/events/?start='
+                    + start.format()
+                    + '&before='
+                    + before.format()
+                    + '&scroll=' + _notebook.scroll.uuid,
                 type: 'GET',
                 contentType: 'application/json',
                 dataType: 'json',
@@ -1435,6 +1444,7 @@ ________________________________________
 		    console.log('Failure: ' + e);
                 },
                 success:function(o) {
+                    _notebook.user.timeline.initialize(start, before, _notebook.user);
 		    // GLOBAL.scroll = o.results[0];
 		    // GLOBAL.notebook.scroll = o.results[0];
 		    // GLOBAL.notebook.render();

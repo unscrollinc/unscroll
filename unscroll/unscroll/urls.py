@@ -1,5 +1,5 @@
 from django.conf.urls import url, include
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
 from django.conf import settings
 from django.conf.urls.static import static
 import django_filters
@@ -8,7 +8,7 @@ from rest_framework import generics, serializers, viewsets, routers, response
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
-from scrolls.models import Scroll, Event, Note, Media, Thumbnail
+from scrolls.models import User, Scroll, Event, Note, Media, Thumbnail
 from rest_framework_swagger.views import get_swagger_view
 from PIL import Image, ImageOps
 from io import BytesIO
@@ -24,34 +24,6 @@ from rest_framework_bulk import (
     BulkSerializerMixin,
     ListBulkCreateUpdateDestroyAPIView,
 )
-
-
-class UserSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = User
-        fields = (
-            'url',
-            'username',
-            'email',
-            'scrolls',
-            'is_staff')
-        depth = 1
-
-
-class UserViewSet(viewsets.ModelViewSet):
-    serializer_class = UserSerializer
-    queryset = User.objects.all()
-    permission_classes = [IsAuthenticated]
-
-    @list_route()
-    def scrolls(self, request):
-        user = self.request.user
-        scrolls = Scroll.objects.filter(user__id=user.id)
-        serializer = ScrollSerializer(
-            scrolls,
-            context={'request': request},
-            many=True)
-        return Response(serializer.data)
 
 
 class ThumbnailSerializer(serializers.HyperlinkedModelSerializer):
@@ -157,9 +129,13 @@ class ScrollSerializer(serializers.HyperlinkedModelSerializer):
             'description',
             'thumbnail',)
         depth = 0
-        read_only_fields = ('uuid', 'user', 'user_username',
-                            'event_count', 'first_event', 'last_event',)
-        
+        read_only_fields = (
+            'uuid',
+            'user',
+            'user_username',
+            'event_count',
+            'first_event',
+            'last_event',)
 
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user
@@ -366,6 +342,43 @@ class BulkNoteViewSet(BulkModelViewSet):
     filter_class = NoteFilter
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     filter_class = NoteFilter
+
+
+class UserSerializer(serializers.HyperlinkedModelSerializer):
+    full_scrolls = ScrollSerializer(User.full_scrolls, many=True)
+
+    class Meta:
+        model = User
+        fields = (
+            'url',
+            'username',
+            'email',
+            'scrolls',
+            'full_scrolls',
+            'is_staff')
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    @list_route()
+    def scrolls(self, request):
+        user = self.request.user
+        scrolls = Scroll.objects\
+                        .select_related('user')\
+                        .filter(user__id=user.id, public=True)\
+                        .annotate(
+                            event_count=Count('events'),
+                            first_event=Min('events__datetime'),
+                            last_event=Max('events__datetime'))
+        # scrolls = Scroll.objects.filter(user__id=user.id)
+        serializer = ScrollSerializer(
+            scrolls,
+            context={'request': request},
+            many=True)
+        return Response(serializer.data)
 
 
         
