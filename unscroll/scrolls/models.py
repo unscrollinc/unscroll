@@ -145,14 +145,14 @@ class Event(models.Model):
         max_length=512,
         null=True)
     citation = models.TextField(
-        null=True)        
+        null=True)
     source_name = models.CharField(
         max_length=512,
         blank=True,
         null=True)
     source_url = models.URLField(
         max_length=512,
-        null=True)    
+        null=True)
     thumbnail = models.ForeignKey(
         Thumbnail,
         related_name='events',
