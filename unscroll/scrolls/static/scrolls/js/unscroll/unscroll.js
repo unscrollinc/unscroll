@@ -4,7 +4,7 @@
     
     const API = 'http://127.0.0.1:8000';
     const AUTH = API + '/rest-auth';
-    const GRIDHEIGHT = 6;
+    const GRIDHEIGHT = 10;
     const ACTIVEHEIGHT = 0.95;          
     const REFRESH_INTERVAL = 25000; // milliseconds
     const timeBeforeRefresh = 10; // milliseconds
@@ -30,12 +30,13 @@
         }
     };
 
-    const td = function (className) {
-        return $('<td></td>', {class:className});
-    }
     const tr = function (className) {
         return $('<tr></tr>', {class:className});
     }    
+    
+    const td = function (className) {
+        return $('<td></td>', {class:className});
+    }
     
     const a = function (href, className) {
         if (className) {
@@ -86,6 +87,8 @@
         this.data = {};
         this.timeline = undefined;
         this.currentScroll = undefined;
+	this.currentNotebook = undefined;
+	
         this.initialize = function() {
             var _session = Cookies.getJSON('session');
             if (_session) {
@@ -291,8 +294,8 @@
                 return datetime.minutes() - 10;
             }
 	};
-	this.getEventWidth = function(columns, len) {
-	    return Math.floor(2 + Math.random() * columns/5);
+	this.getEventWidth = function(width) {
+	    return Math.floor(2 + Math.random() * _timeframe.getColumns()/5);
 	};
 	this.getTarget = function(start, pointerInteger, pointerMantissa) {
 	    var pointerFocus = start.clone().add(pointerInteger, 'minutes');
@@ -313,7 +316,12 @@
         var _timeframe = this;
         this.resolution = 'minutes';        
 
-        this.timeline = timeline;        
+        this.timeline = timeline;
+
+	this.adjust = function(datetime) {
+	    var begin = moment(datetime.format('YYYY-MM-DD:HH:00'));
+	    return begin;
+	}		
 	this.add = function(datetime, no) {
 	    return datetime.clone().add(no, 'hours');
 	};
@@ -348,8 +356,8 @@
                 return datetime.minutes() - 10;
             }
 	};
-	this.getEventWidth = function(columns, len) {
-	    return Math.floor(2 + Math.random() * columns/5);
+	this.getEventWidth = function(width) {
+	    return Math.floor(2 + Math.random() * _timeframe.getColumns()/5);
 	};
 	this.getTarget = function(start, pointerInteger, pointerMantissa) {
 	    var pointerFocus = start.clone().add(pointerInteger, 'minutes');
@@ -370,7 +378,11 @@
         var _timeframe = this;
 
         this.timeline = timeline;        
-        this.resolution = 'hours';        
+        this.resolution = 'hours';
+	this.adjust = function(datetime) {
+	    var begin = moment(datetime.format('YYYY-MM-DD'));
+	    return begin;
+	}	
 	this.add = function(datetime, no) {
 	    return datetime.clone().add(no, 'days');		
 	};
@@ -402,8 +414,8 @@
                 return datetime.hours() - 1;
             }
 	};
-	this.getEventWidth = function(columns, len) {
-	    return Math.floor(4 + Math.random() * columns/5);
+	this.getEventWidth = function(width) {
+	    return Math.floor(4 + Math.random() * _timeFrame.getcolumns/5);
 	};
 	this.getTarget = function(start, pointerInteger, pointerMantissa) {
 	    var pointerFocus = start.clone().add(pointerInteger, 'months');
@@ -425,7 +437,13 @@
 
         this.timeline = timeline;        
 
-        this.resolution = 'days';                
+        this.resolution = 'days';
+
+	this.adjust = function(datetime) {
+	    var begin = moment(datetime.format('YYYY-MM')+'-01');
+	    return begin;
+	}
+	
 	this.add = function(datetime, no) {
 	    return datetime.clone().add(no, 'months');		
 	};
@@ -463,7 +481,7 @@
 	    }
 	};
         
-	this.getEventWidth = function(columns, len) {
+	this.getEventWidth = function(width) {
 	    return Math.floor(3 + Math.random() * 3);
 	};
         
@@ -487,7 +505,11 @@
         var _timeframe = this;
 
         this.timeline = timeline;        
-        this.resolution = 'months';        
+        this.resolution = 'months';
+	this.adjust = function(datetime) {
+	    var begin = moment(datetime.format('YYYY-01-01'));
+	    return begin;
+	}	
 	this.add = function(datetime, no) {
 	    return datetime.clone().add(no, 'years');		
 	};
@@ -515,7 +537,7 @@
 	this.getOffset = function(datetime, resolution) {
 	    return datetime.month();
 	};
-	this.getEventWidth = function(width, len) {
+	this.getEventWidth = function(width) {
 	    return 2;
 	};	    
 	this.getTarget = function(start, pointerInteger, pointerMantissa) {
@@ -535,7 +557,13 @@
         var _timeframe = this;
 
         this.timeline = timeline;
-        this.resolution = 'years';                        
+        this.resolution = 'years';
+	this.adjust = function(datetime) {
+	    var divisor = 10;
+	    var year = datetime.year()/divisor;
+	    var begin = moment(divisor + (divisor * Math.floor(year))+'-01-01');
+	    return begin;
+	}
 	this.add = function(datetime, no) {
 	    return datetime.clone().add(no * 10, 'years');
 	};
@@ -563,8 +591,8 @@
 	this.getOffset = function(datetime, resolution) {
 	    return datetime.year() - 10 * Math.floor(datetime.year()/10);
 	};
-	this.getEventWidth = function(width, len) {
-	    return Math.floor(Math.random() * width/10);
+	this.getEventWidth = function(width) {
+	    return Math.ceil(Math.random() * 2);
 	};	    	    
 	this.getTarget = function(start, pointerInteger, pointerMantissa) {
 	    var pointerFocus = start.clone().add(10 * pointerInteger, 'years');
@@ -584,6 +612,12 @@
 
         this.timeline = timeline;
         this.resolution = 'decades';
+	this.adjust = function(datetime) {
+	    var divisor = 100;
+	    var year = datetime.year()/divisor;
+	    var begin = moment((divisor * Math.floor(year))+'-01-01');
+	    return begin;
+	}	
 	this.add = function(datetime, no) {
 	    return datetime.clone().add(no * 100, 'years');
 	};
@@ -613,8 +647,8 @@
 	this.getOffset = function(datetime, resolution) {
 	    return datetime.year() - 100 * Math.floor(datetime.year()/100);
 	};
-	this.getEventWidth = function(width, len) {
-	    return Math.floor(Math.random() * width/10);
+	this.getEventWidth = function(width) {
+	    return Math.ceil(Math.random() * 2);
 	};
 	this.getTarget = function(start, pointerInteger, pointerMantissa) {
 	    var pointerFocus = start.clone().add(100 * pointerInteger, 'years');
@@ -633,8 +667,13 @@
         var _timeframe = this;
 
         this.timeline = timeline;
-
-        this.resolution = 'centuries';        
+        this.resolution = 'centuries';
+	this.adjust = function(datetime) {
+	    var divisor = 1000;
+	    var year = datetime.year()/divisor;
+	    var begin = moment((divisor * Math.floor(year))+'-01-01');
+	    return begin;
+	}	
 	this.add = function(datetime, no) {
 	    return datetime.clone().add(no * 1000, 'years');
 	};
@@ -664,8 +703,8 @@
 	this.getOffset = function(datetime, resolution) {
 	    return datetime.year() - 1000 * Math.floor(datetime.year()/1000);
 	};
-	this.getEventWidth = function(width, len) {
-	    return Math.floor(Math.random() * width/100);
+	this.getEventWidth = function(width) {
+	    return 1;
 	};
 	this.getTarget = function(start, pointerInteger, pointerMantissa) {
 	    var pointerFocus = start.clone().add(1000 * pointerInteger, 'years');
@@ -692,8 +731,9 @@
     var Panel = function(offset, el, timeline) {
         var _panel = this;
 
+
         this.start = timeline.timeframe.add(timeline.start, offset);
-        this.end = timeline.timeframe.add(timeline.end, offset);
+        this.end = timeline.timeframe.add(moment(this.start), 1);
         this.el = el;
         this.offset = offset;
         this.timeline = timeline;
@@ -745,7 +785,6 @@
         }
 
         this.newEvent = function() {
-            console.log(_panel.timeline);
             var e = new Event({}, _panel);
             e.editor();
         }
@@ -757,17 +796,37 @@
             _panel.el.append(period, h);
             _panel.el.on('dblclick', _panel.newEvent);
         }
-        
+        this.makeLocation = function () {
+	    var url = '/static/scrolls/index.html?start='
+		+ _panel.start.format()
+		+ '&before='
+		+ _panel.end.format();
+            if (_panel.timeline.user.currentScroll
+		&&
+		_panel.timeline.user.currentScroll.uuid) {		
+                url = url
+                    + '&scroll='
+                    + _panel.timeline.user.currentScroll.uuid;
+	    }
+	    window.history.replaceState(
+		{},
+		'Unscroll: From X to Y',
+		url);
+	}
+	
+	
         this.makeUrl = function() {
             var url = API
                 + '/events/?start='
                 + _panel.start.format()
                 + '&before='
                 + _panel.end.format();
-            if (_panel.timeline.scroll_uuid) {
+            if (_panel.timeline.user.currentScroll
+		&&
+		_panel.timeline.user.currentScroll.uuid) {		
                 url = url
                     + '&scroll='
-                    + _panel.timeline.scroll_uuid;
+                    + _panel.timeline.user.currentScroll.uuid;
             }
             return url;
         }
@@ -848,7 +907,7 @@
 
 	        $.each(es, function(i, e) {
                     var el = e.el;
-                    e.width = _panel.timeline.timeframe.getEventWidth();
+                    e.width = _panel.timeline.timeframe.getEventWidth(el.width());
                     e.offset = _panel.timeline.timeframe.getOffset(e.datetime, e.data.resolution);
 	            _panel.buffer.append(el);
 	            el.css({width:e.width * _panel.columnWidth});
@@ -878,6 +937,7 @@
                 success:function(response) {
                     $.extend(_panel.response, response);
                     _panel.render();
+		    _panel.makeLocation();
                 }                
             });        
         }
@@ -885,12 +945,12 @@
         this.initialize();
     }
 
-/* 
-________________________________________
-┏━╸╻ ╻┏━╸┏┓╻╺┳╸
-┣╸ ┃┏┛┣╸ ┃┗┫ ┃
-┗━╸┗┛ ┗━╸╹ ╹ ╹
-*/
+    /* 
+       ________________________________________
+       ┏━╸╻ ╻┏━╸┏┓╻╺┳╸
+       ┣╸ ┃┏┛┣╸ ┃┗┫ ┃
+       ┗━╸┗┛ ┗━╸╹ ╹ ╹
+    */
     var Event = function(data, panel) {
         var _event = this;
         this.data = data;
@@ -913,11 +973,26 @@ ________________________________________
             }
         }
 
+	this.formatByResolution = function() {
+	    var getRes = function() {
+		switch (_event.data.resolution) {
+		case 'years':
+		    return 'YYYY';
+		case 'months':
+		    return 'MMM \'YY'
+		case 'days':
+		    return 'ddd MMM D, YYYY';
+		}
+	    }
+	    return _event.datetime.format(getRes());
+	}
+
         this.render = function() {
             var _d = _event.data;
             var editButton = undefined;
             var deleteButton = undefined;
-            if (_event.user.username == _d.username) {
+
+	    if (_event.user.username == _d.username) {
                 editButton = a('', 'button')
                     .html('+[Edit]')
                     .on('click', _event.editor);
@@ -925,13 +1000,18 @@ ________________________________________
                     .html('[X]')
                     .on('click', _event.delete);                
             }
+	    var noteButton = a('', 'button').html('+[Note]');
+	    noteButton
+		.on('click', _event.makeNote)
+	    
             
             _event.el.append(
                 d('inner').append(
-                    a(_event.data.content_url, 'title').html(_d.title + '&mdash;'),
-                    s('scroll').html(_d.scroll_title),
-                    s('datetime').html(_event.datetime.format('M')),
-                    a('', 'button').html('+[Note]'),
+                    d('datetime').html(_event.formatByResolution()),
+                    d('title').append(
+			a(_event.data.content_url, 'title').html(_d.title)),
+                    d('scroll-title').html(_d.scroll_title),
+		    noteButton,
                     editButton,
                     deleteButton
                 ));
@@ -953,7 +1033,12 @@ ________________________________________
 		}
 	    });
         }
-
+	this.makeNote = function(ev) {
+	    ev.preventDefault();
+	    var notebook = panel.timeline.user.currentNotebook;
+            notebook.makeItem('default', _event);    
+	}
+	
         this.makeEditor = function(exists) {
             // This needs a config object and a lot of other stuff.
             var registerChange = function() {
@@ -1095,9 +1180,6 @@ ________________________________________
             }
         }
         
-        this.eventToNotebook = function(event, frame) {
-            GLOBAL.notebook.makeItem('default', event);
-        }
         this.initialize();        
     }
     
@@ -1149,9 +1231,11 @@ ________________________________________
         };
 
         this.initialize = function(start, end) {
-            _timeline.start = start;
-            _timeline.end = end;
-            _timeline.getTimeFrame();
+            _timeline.timeframe = _timeline.getTimeFrame(start, end);
+	    console.log('good so far');
+	    
+	    _timeline.start = _timeline.timeframe.adjust(start);
+	    _timeline.end = _timeline.timeframe.add(moment(_timeline.start), 1);	    
             _timeline.panels = new Array();
             _timeline.initializeDOM();     
         };
@@ -1271,48 +1355,54 @@ ________________________________________
             var panel = new Panel(offset, el, _timeline)
         }
 
-        this.getTimeFrame = function() {
+        this.getTimeFrame = function(start, end) {
 	    // Expects two instances of Moment, sets a "timeframe object"
 
-            var span = _timeline.end - _timeline.start;
+            var span = end - start;
             
 	    if (span >= millennium * 0.75) {
-	        _timeline.timeframe = new MillenniaTimeFrame(_timeline);
+	        return new MillenniaTimeFrame(_timeline);
 	    }		
 	    else if (span >= century * 0.75) {
-	        _timeline.timeframe = new CenturiesTimeFrame(_timeline);
+	        return new CenturiesTimeFrame(_timeline);
 	    }	
 	    else if (span >= decade * 0.75) {
-	        _timeline.timeframe = new DecadesTimeFrame(_timeline);
+	        return new DecadesTimeFrame(_timeline);
 	    }
 	    else if (span >= year * 0.75) {
-	        _timeline.timeframe = new YearsTimeFrame(_timeline);
+	        return new YearsTimeFrame(_timeline);
 	    }
 	    else if (span >= month * 0.75) {
-	        _timeline.timeframe = new MonthsTimeFrame(_timeline);
+	        return new MonthsTimeFrame(_timeline);
 	    }
 	    else if (span >= week * 0.75) {
-	        _timeline.timeframe = new WeeksTimeFrame(_timeline);                
+	        return new WeeksTimeFrame(_timeline);                
 	    }
 	    else if (span >= day * 0.75) {
-	        _timeline.timeframe = new DaysTimeFrame(_timeline);                                
+	        return new DaysTimeFrame(_timeline);                                
 	    }
 	    else if (span >= hour * 0.75) {
-	        _timeline.timeframe = new HoursTimeFrame(_timeline);
+	        return new HoursTimeFrame(_timeline);
 	    }
 	    else if (span >= minute * 0.75) {
-	        _timeline.timeframe = new MinutesTimeFrame(_timeline);
+	        return new MinutesTimeFrame(_timeline);
 	    }
             else {
-                _timeline.timeframe = undefined;
+                return undefined;
             }
 	    return null;
         };
 
-	this.initialize(start, end);
+	this.initialize(this.start, this.end);	
     }
 
-    /* ############################## */
+    /*
+      ________________________________________
+      ┏┓╻┏━┓╺┳╸┏━╸┏┓ ┏━┓┏━┓╻┏ ╻  ╻┏━┓╺┳╸╻╺┳╸┏━╸┏┳┓
+      ┃┗┫┃ ┃ ┃ ┣╸ ┣┻┓┃ ┃┃ ┃┣┻┓┃  ┃┗━┓ ┃ ┃ ┃ ┣╸ ┃┃┃
+      ╹ ╹┗━┛ ╹ ┗━╸┗━┛┗━┛┗━┛╹ ╹┗━╸╹┗━┛ ╹ ╹ ╹ ┗━╸╹ ╹
+    */
+    
     var NotebookListItem = function(item, user) {
 	var _notebooklistitem = this;
 	
@@ -1323,18 +1413,23 @@ ________________________________________
 	    var line =
 		tr('notebook-list-item')
 		.append(
-		    td('notebook-list-date').text(moment(item.last_modified).fromNow()),
+		    td('notebook-list-date').text(moment(item.created).fromNow()),
 		    td('notebook-list-title').html(item.title),
 		    td('notebook-list-public').text(item.public ? 'Public' : 'Private'));
 	    line.on('click', function(ev) {
-		user.currentScroll = item;
 		var notebook = new Notebook(item, _notebooklistitem.user);
+		_notebooklistitem.user.currentNotebook = notebook;
 	    });
 	    return line;
 	};
     }
     
-    /* ############################## */
+    /*
+      ________________________________________
+      ┏┓╻┏━┓╺┳╸┏━╸┏┓ ┏━┓┏━┓╻┏ ╻  ╻┏━┓╺┳╸
+      ┃┗┫┃ ┃ ┃ ┣╸ ┣┻┓┃ ┃┃ ┃┣┻┓┃  ┃┗━┓ ┃
+      ╹ ╹┗━┛ ╹ ┗━╸┗━┛┗━┛┗━┛╹ ╹┗━╸╹┗━┛ ╹      
+     */
     var NotebookList = function(user) {
 
 	var _notebooklist = this;
@@ -1348,9 +1443,18 @@ ________________________________________
 				});
 	    _notebooklist.initializeDOM(scrolls);
 	};
+	
 	this.initializeDOM = function(scrolls) {
-	    $('#notebook-listing').append(
+	    var nbl = $('#notebook-listing');
+		nbl.append(
 		$('<table></table>').append(scrolls));
+	    
+	    $('#notebook-list-button')
+		.on('click', function (ev) {
+		    nbl.toggle();
+		});
+	    
+
 	}
 	
 	this.initialize();
@@ -1382,7 +1486,8 @@ ________________________________________
            This is all pretty speculative and will take some fixing.
 
            This is a tiny function that counts down. 
-         */
+        */
+	
         const max = 2000000000;
         const dec = 100;
         var ctr = max;
@@ -1395,23 +1500,62 @@ ________________________________________
 	
 	this.scroll = scroll;
 	this.user = user;
-        
+	this.user.currentScroll = scroll;
+	this.data = {};
+	this.patch = {};
+	
+	this.itemsEl = undefined;
+	this.essayEl = undefined;
+	
         this.needsCreated = this.scroll ? false : true;
         this.needsUpdated = false;
         this.needsDeleted = false;
 
 	this.initialize = function() {
-	    console.log('Initializing', _notebook);
-	    _notebook.load();
+	    if (_notebook.needsCreated) {
+
+		var title = "";
+		var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+		for( var i=0; i < 6; i++ ) {
+		    title += possible.charAt(Math.floor(Math.random() * possible.length));
+		}
+		var data = {title:'Untitled ' + title, public:true}
+		$.ajax({
+                    url:API + '/scrolls/',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    dataType: 'json',
+		    data:JSON.stringify(data),
+                    headers: {
+			'Authorization': 'Token ' + _notebook.user.data.key
+                    },
+                    failure:function(e) {
+			console.log('Failure: ' + e);
+                    },
+                    success:function(o) {
+			$.extend(_notebook.data, o);
+			_notebook.editor();
+                    }
+		});
+	    }
+	    else {
+		_notebook.loadScroll();
+		_notebook.loadNotes();
+	    }
+	    
 	    _notebook.initializeDOM();
 	}
 
 	this.initializeDOM = function() {
+	    
+	    _notebook.itemsEl = $('#notebook-items');
+	    _notebook.essayEl = $('#notebook-essay');	    
+	    
             $('#insert-button')
 		.on('click', function(ev) {
                     _notebook.makeItem('default');
 		});
-        
+            
             $('#insert-space')
 		.on('click', function(ev) {
                     _notebook.makeItem('spacer');
@@ -1420,70 +1564,48 @@ ________________________________________
             $('#insert-image')
 		.on('click', function(ev) {
                     _notebook.makeItem('image');
-		});	    
+		});
 	}
-        
+
+        this.editor = function() {
+	    this.editorDOM();
+	}
+	this.editorDOM = function() {
+	    var editize = function(fieldName, fieldValue) {
+		var el = d('field-input scroll-' + fieldName + ' ' + fieldName).html(_notebook.data[fieldName]);
+		var medium = new MediumEditor(el, { disableReturn: true});
+		medium.subscribe('editableInput', function (event, editor) {
+                    _notebook.needsUpdated = true;
+		    _notebook.patch[fieldName] = medium.getContent();
+		    console.log(_notebook.patch);
+		});
+		return d('field').append(
+		    d('field-title').html(fieldName),
+		    el
+		);
+	    }
+	    $('#scroll-header').append(
+		editize('title', 'Notebook title'),
+		editize('subtitle', 'Notebook subtitle'),
+		editize('description', 'Notebook description')
+	    );
+	}
+
+
         this.loadScroll = function() {
             var start = moment(_notebook.scroll.first_event);
             var before = moment(_notebook.scroll.last_event);
-	    console.log(_notebook, _notebook.user.timeline);
-	    $.ajax({
-                url:API + '/events/?start='
-                    + start.format()
-                    + '&before='
-                    + before.format()
-                    + '&scroll=' + _notebook.scroll.uuid,
-                type: 'GET',
-                contentType: 'application/json',
-                dataType: 'json',
-		context:notebook,
-                headers: {
-		    'Authorization': 'Token ' + _notebook.user.data.key
-                },
-                failure:function(e) {
-		    console.log('Failure: ' + e);
-                },
-                success:function(o) {
-                    _notebook.user.timeline.initialize(start, before, _notebook.user);
-		    // GLOBAL.scroll = o.results[0];
-		    // GLOBAL.notebook.scroll = o.results[0];
-		    // GLOBAL.notebook.render();
-                }
-	    });
+            _notebook.user.timeline.initialize(start, before, _notebook.user);	    
 	};
 
         this.loadNotes = function() {
 	}
 
 	this.load = function() {
-	    _notebook.loadScroll();
-	    _notebook.loadNotes();	    
+
 	}
 
 /*	
-	'scrollPost':function(data) {
-	    if (GLOBAL.user.key) {
-		$.ajax({
-                    url:API + '/scrolls/',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    dataType: 'json',
-		    data:JSON.stringify(data),
-                    headers: {
-			'Authorization': 'Token ' + GLOBAL.user.key
-                    },
-                    failure:function(e) {
-			console.log('Failure: ' + e);
-                    },
-                    success:function(o) {
-			GLOBAL.scroll = o;
-                    }
-		});
-	    }
-	    else {
-		console.log('You can only make notes if you\'re logged in.')
-	    }
-	},
 	'scrollPatch':function(url, data, notebook) {
 	    if (GLOBAL.user.key) {
 		$.ajax({
@@ -1613,8 +1735,6 @@ ________________________________________
 	    }
 	},
 */
-	this.initialize();
-
         
 	this.render = function() {
 	    _notebook.dom_nb_listing.hide();
@@ -1627,8 +1747,7 @@ ________________________________________
 		title = this.scroll.title;
 	    }
             
-	    var editor = $('<div></div>', {class:'notebook-title-editor'})
-		.html(title);
+	    var editor = d('notebook-title-editor').html(title);
 	    var medium = new MediumEditor(editor, {
 		disableReturn: true,
 		targetBlank: true
@@ -1790,13 +1909,10 @@ ________________________________________
 	    return span;
 	}
 	
-        this.ajaxPackage = {};
-	
-	
         this.makeItem = function(kind, event, note) {
             var item = new NotebookItem(kind, event, note);
-            this.dom__notebook.prepend(item.notebookView);
-            this.dom_essay.prepend(item.textView);
+            _notebook.itemsEl.prepend(item.notebookView);
+            _notebook.essayEl.prepend(item.textView);
 	    item.order = this.decmin();
 	    
 	    item.mover = $('<span></span>',
@@ -1940,6 +2056,9 @@ ________________________________________
 	    }
 	}
         setInterval(this.scanner, REFRESH_INTERVAL);
+	
+	this.initialize();
+
     };
     
     /* 
@@ -1948,7 +2067,7 @@ ________________________________________
        ╹ ╹┗━┛ ╹ ┗━╸┗━┛┗━┛┗━┛╹ ╹╹ ╹ ┗━╸╹ ╹
     */
     var NotebookItem = function(kind, event, note) {
-	var nbitem = this;
+	var _notebookitem = this;
         this.event = event;
         this.kind = kind ? kind : 'default';
         this.note = note;
@@ -1972,82 +2091,77 @@ ________________________________________
 	this.mover = undefined;
 	
         this.render = function() {
-	    var d = $('<div></div>', {class:'top'});
-            if (this.kind == 'default' && this.event) {
-                return d.html(event.title);
+	    console.log(_notebookitem.event);
+	    var div = $('<div></div>', {class:'top'});
+            if (_notebookitem.event && _notebookitem.event.data) {
+                var el = div.append(
+		    a(event.data.content_url, 'notebook-event-title')
+			.append(d('notebook-event-title').html(event.data.title)),
+		    d('notebook-event-datetime').html(event.data.datetime),
+		    d('notebook-event-text').html(event.data.text)
+		);
+		return div;
             }
             else if (this.kind=='closer') {
-		return d.html('&mdash; FIN &mdash;')
+		return div.html('&mdash; FIN &mdash;')
             }
 	    else if (this.kind=='spacer') {
 		this.buttons.append(
 		    $('<span></span>', {class:'button'}).html('Space &times; 2')
 			.addClass('active')
 			.on('click', function() {
-			    nbitem.buttons.children('span.button')
+			    _notebookitem.buttons.children('span.button')
                                 .removeClass('active');
 			    $(this).addClass('active');
-			    nbitem.medium.setContent('<br/><br/>');}),
+			    _notebookitem.medium.setContent('<br/><br/>');}),
 		    $('<span></span>', {class:'button'}).html('&mdash;')
 			.on('click', function() {
-			    nbitem.buttons.children('span.button')
+			    _notebookitem.buttons.children('span.button')
                                 .removeClass('active');
 			    $(this).addClass('active');				
-			    nbitem.medium.setContent('<hr></hr>');
+			    _notebookitem.medium.setContent('<hr></hr>');
 			}));
 		return d;
             }
-            else if (this.kind=='image') {
-                return d.html('image');
+            else if (_notebookitem.kind=='image') {
+                return div.html('image');
             }		
             else {
-                return d.html('Card');
+                return div.html('Card');
             }
-        }
-	
-        this.eventHTML = this.render();
-	
-	if (this.kind == 'spacer') {
-	    
         }
 	
         this.editor = $('<div></div>', {class:'editable'});
         if (this.kind == 'spacer') {
-            this.editor.html($('<br/><br/>'));
+	    this.editor.html($('<br/><br/>'));
         }
 	else if (note && note.text) {
 	    this.editor.html(note.text);
 	}
 	
         this.medium = new MediumEditor(this.editor, {
-            disableReturn: true,
-            disableDoubleReturn: false,
-            disableExtraSpaces: true,
-            targetBlank: true                
+	    disableReturn: true,
+	    disableDoubleReturn: false,
+	    disableExtraSpaces: false,
+	    targetBlank: true                
         });
 	
-        this.textView = $('<span></span>',
-                          {'class':'view-item'})
-            .on('click', function() {
-	    });
-	
+        this.textView = s('view-item').on('click', function() {});
         this.changed = function() {
-            this.needsUpdated = true;
+	    this.needsUpdated = true;
         };
 	
-        this.deleteButton = $('<span></span>',
-                              {'class':'button'})
-            .html('X')
-            .on('click', function(ev) {
-                nbitem.needsDeleted = true;
-		nbitem.notebookView.remove();
-		nbitem.textView.remove();		    
-            });	    
+        this.deleteButton = s('button')
+	    .html('[Del]')
+	    .on('click', function(ev) {
+                _notebookitem.needsDeleted = true;
+		_notebookitem.notebookView.remove();
+		_notebookitem.textView.remove();		    
+	    });	    
 	
         this.makeNotebookView = function() {
 	    if (this.kind != 'closer') {
-                return $('<div></div>',
-			 {class:'nb-item ' + kind})
+                return d('nb-item ' + kind)
 		    .append(this.buttons
 			    .append(this.deleteButton))
 		    .append(this.eventHTML)
@@ -2064,18 +2178,18 @@ ________________________________________
         this.textView.html(this.medium.getContent() + ' ');
 	this.medium.subscribe('focus', function (event, editor) {
 	    $('span.view-item').removeClass('focused');
-	    nbitem.textView.addClass('focused');
+	    _notebookitem.textView.addClass('focused');
 	    var scrollTop = $('#notebook-essay').scrollTop()
-		+ $(nbitem.textView).position().top
+		+ $(_notebookitem.textView).position().top
 		- 100;
 	    $('#notebook-essay').animate({
 		scrollTop: scrollTop
 	    });
 	});
 	this.medium.subscribe('editableInput', function (event, editor) {
-            nbitem.changed();              
-            nbitem.textView.html(nbitem.medium.getContent());
-            nbitem.textView.append(' ');
+            _notebookitem.changed();              
+            _notebookitem.textView.html(_notebookitem.medium.getContent());
+            _notebookitem.textView.append(' ');
 	});
     };   
 
@@ -2092,6 +2206,13 @@ ________________________________________
 	var end = moment();
 	var start = end.clone().subtract(1, 'month');
         var timeline = new Timeline(start, end, user);
+	var n = new Notebook(undefined, user);
+
+	$('#notebook-create-button')
+	    .on('click', function(ev) {
+		console.log(ev);
+	    });
+	
 
         // Escape key triggers Notebook
         $(document).keyup(function(e) {
@@ -2105,13 +2226,3 @@ ________________________________________
 }(jQuery,
   Cookies,
   MediumEditor));
-
-/*
-	window.history.replaceState(
-	    {},
-	    'Unscroll: From X to Y',
-	    '/static/scrolls/index.html?start='
-		+ start.format()
-		+ '&before='
-		+ end.format());
-*/

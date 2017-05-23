@@ -4,6 +4,7 @@ from datetime import datetime
 from unscroll import UnscrollClient
 import re
 import random
+import pprint
 
 MONTHS = {'January': '01',
           'February': '02',
@@ -69,7 +70,7 @@ def __main__():
     docs = parsed['rfc-index']['rfc-entry']
     events = [rfc_to_event(x) for x in docs]
     c = UnscrollClient()
-    print(c)
+    pprint.pprint(c)
     c.__batch__(
         api='http://127.0.0.1:8000',
         username='admin',

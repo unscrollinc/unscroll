@@ -140,6 +140,9 @@ form#search-form {
     color:#888;
     border:none;
 }
+#search-form input:focus {
+    color:#2F9ECA;
+}
 
 input#search-input {
     border-bottom:1px solid black;
@@ -197,7 +200,6 @@ div#login {
 .event {
     position:absolute;
     text-align:left;
-    font-size:80%;
     line-height:150%;
 }
 
@@ -205,16 +207,14 @@ div#login {
     margin:0.25em;
     padding:0.5em;
     background:white;
-    border:1px solid #ddd;
-    box-shadow:1px 1px 0px #888; 
-    border-radius:1em; 
+    border:1px solid #2F9ECA;;
+    border-radius:0.5em; 
     overflow:hidden;
 }
 
 .event .inner a.title {
     font-family:Roboto;
-    font-weight:bold;
-    color:black;
+    color:#2F9ECA;    
 
 }
 
@@ -231,7 +231,7 @@ img.thumb {
 .event .inner .datetime {
     font-weight:bold;
     display:inline-block;
-    margin:0 1em 0 0;
+    font:10pt Roboto;
     color:#888;
 }
 
@@ -271,20 +271,17 @@ div#player {
 
 .button {
     font-weight:bold;
-    border-bottom:2px solid #d9eaf3;    
+    border-bottom:1px solid #d9eaf3;    
     cursor:hand;
-    text-transform:uppercase;
-    font-family:sans-serif;
-    font-size:8pt;
+    font:10pt Roboto;
+    color:#666;
     padding:0.25em 0.5em 0.25em 0.5em;
-//    box-shadow: 1px 1px 2px 0px rgba(0,0,0,0.4);
 }
 
 .button.active {
     color:white;
     background:red;
     cursor:hand;
-    text-transform:uppercase;
     box-shadow:none;
 }
 
@@ -292,7 +289,6 @@ div#player {
     color:white;
     background:red;
     cursor:hand;
-    text-transform:uppercase;
 }
 
 
@@ -344,11 +340,13 @@ div#notebook-body {
     margin-left:auto;
     overflow:hidden;
 }
+
 div#notebook-items {
-    height:95%;    
+    height:100%;    
     overflow:auto;
     width:49%;
     float:left;
+    border-right:1px solid #888;
 }
 
 div#notebook-essay {
@@ -385,10 +383,16 @@ div.nb-item {
     padding:.25em;
     margin:1.5em 0.5em 0 0.5em;
     border-top:1px dotted #d9eaf3;
-    font:10pt Roboto;
     color:#333;
 }
 
+div.notebook-event-text {
+    max-height:15%;
+    overflow:auto;
+    line-height:1.5em;
+    font-size:85%;
+    color:#444;
+}
 
 div.nb-item .top {
     padding:1em 0.25em 1em 0.25em;
@@ -424,8 +428,8 @@ div.buttons span.button {
 div.editable {
     background:white;
     padding:1em 0.25em 1em 0.25em;
-    border:1px solid #d9eaf3;
-    font:10pt Roboto;
+    border:1px solid black;
+    font:12pt Roboto;
 }
 
 div.save-state {
@@ -524,8 +528,26 @@ div.notebook-title-editor {
     cursor:hand;    
     display:none;
 }
-
+#notebook-listing {
+    display:none;
+}
 tr.notebook-list-item {
     border-bottom:1px solid #ccc;
     cursor:hand;
+}
+.field {
+    padding:0.5em;
+}
+.field-title {
+    font:10pt Roboto;
+    color:#666;
+    margin-bottom:1em;
+}
+
+.field-input {
+    border-bottom:1px solid #666;
+}
+
+.scroll-title {
+    font-size:120%;
 }

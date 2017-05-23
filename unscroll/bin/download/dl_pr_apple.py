@@ -4,21 +4,22 @@ import favicon
 from pprint import pprint
 from unscroll import UnscrollClient
 from dateparser import parse
+from random import random
 
 APPLE_URL = 'https://www.apple.com'
 APPLE_PR_URL = 'https://www.apple.com/pr/library'
 
 c = UnscrollClient(api='http://127.0.0.1:8000',
-               username='admin',
-               password='password')
+                   username='admin',
+                   password='password')
 
 c.login()
 favicon_url = c.fetch_favicon_url(APPLE_URL)
 favthumb = c.cache_thumbnail(favicon_url['url'])
 print(favthumb)
 
-c.create_scroll('Apple Public Relations 2000-',
-                thumbnail=favthumb['url'])
+c.create_or_retrieve_scroll('Apple Press Releases, 2000-2017',
+                            thumbnail=favthumb['url'])
 
 
 for i in range(2000,2018):
@@ -45,16 +46,15 @@ for i in range(2000,2018):
     
             title = "".join([x for x in link.stripped_strings])
             event = {
-                'media_type':'text/html',
-                'content_type':'press release',
+                'media_type': 'text/html',
+                'content_type': 'press release',
                 'title': title,
-                'text':text,                
-                'ranking':0.2,
+                'text': text,
+                'ranking': random(),
                 'datetime': date,
-                'resolution':'days',
-                'source_url': href,
-                'thumbnail':None
+                'resolution': 'days',
+                'content_url': href,
+                'thumbnail': None
                 }
             res = c.create_event(event)
-            pprint(res.json())
-    
+            pprint(event)
