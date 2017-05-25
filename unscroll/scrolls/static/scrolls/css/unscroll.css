@@ -271,11 +271,9 @@ div#player {
 
 .button {
     font-weight:bold;
-    border-bottom:1px solid #d9eaf3;    
     cursor:hand;
     font:10pt Roboto;
-    color:#666;
-    padding:0.25em 0.5em 0.25em 0.5em;
+    padding:0 1em 0 0;
 }
 
 .button.active {
@@ -325,8 +323,10 @@ div#notebook {
 }
 
 div#notebook-head {
+    background:#d9eaf3;
+    border-bottom:1px solid black;
     height:5%;
-    padding-left:0.25em;
+    padding-left:0.5em;
     position:relative;
 }
 
@@ -340,12 +340,12 @@ div#notebook-body {
     margin-left:auto;
     overflow:hidden;
 }
-
-div#notebook-items {
+div#notebook-items-wrapper {
     height:100%;    
     overflow:auto;
     width:49%;
     float:left;
+    padding:0.5em;
     border-right:1px solid #888;
 }
 
@@ -354,9 +354,6 @@ div#notebook-essay {
     height:100%;
     font-family:Merriweather;
     overflow:auto;
-    width:45%;
-    float:left;
-    padding:2.5%;
     line-height:149%;
     font-size:12pt;
     padding-bottom:250px;
@@ -449,20 +446,28 @@ div.save-state.true {
 table {
     border-collapse:collapse;
 }
-tr.scroll-listing {
+tr.notebook-list-item {
     background:white;
     border-bottom:1px solid #888;
     cursor:hand;
 }
-tr.scroll-listing:hover {
+tr.notebook-list-item:hover {
     background:#d9eaf3;
 }
 
-td {
+th {
+    font-weight:bold;
+    background:;#d9eaf3;
+    text-align:left;
+}
+td, th {
     font-family:Roboto;
     text-align:middle;
     font-size:80%;
     padding:1em;
+}
+tr.alt {
+    background:#e8e8e8;
 }
 td.description {
     font-family:Roboto;
@@ -506,7 +511,6 @@ div#new-event {
 #notebook-event .scroll-title {
     font-family:Roboto;
     font-size:bold;
-    padding-top:1em;
 }
 
 #notebook-event .rte {
@@ -528,9 +532,22 @@ div.notebook-title-editor {
     cursor:hand;    
     display:none;
 }
+
 #notebook-listing {
+    overflow:auto;
+    position:absolute;
+    background:white;
+    max-height:100%;
+    width:100%;
     display:none;
+    z-index:100;
 }
+
+#notebook-listing table {
+    width:100%;
+    margin-bottom:55px;
+}
+
 tr.notebook-list-item {
     border-bottom:1px solid #ccc;
     cursor:hand;
@@ -550,4 +567,12 @@ tr.notebook-list-item {
 
 .scroll-title {
     font-size:120%;
+    line-height:150%;
+}
+
+#notebook-essay-wrapper {
+    width:45%;
+    margin-left:55%;
+    position:absolute;
+    top:10%;
 }

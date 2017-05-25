@@ -1,17 +1,26 @@
 "use strict";
 
 (function($, Cookies, MediumEditor) {
-    
+
+    /* 
+       ________________________________________
+       ┏━╸╻  ┏━┓┏┓ ┏━┓╻  ┏━┓
+       ┃╺┓┃  ┃ ┃┣┻┓┣━┫┃  ┗━┓
+       ┗━┛┗━╸┗━┛┗━┛╹ ╹┗━╸┗━┛
+    */
     const API = 'http://127.0.0.1:8000';
     const AUTH = API + '/rest-auth';
-    const GRIDHEIGHT = 10;
+    const GRIDHEIGHT = 8;
     const ACTIVEHEIGHT = 0.95;          
-    const REFRESH_INTERVAL = 25000; // milliseconds
+    const REFRESH_INTERVAL = 10000; // milliseconds
     const timeBeforeRefresh = 10; // milliseconds
 
-    // A few tiny utility methods for making elements (<div>s,
-    // <span>s, <a>s)
-    
+    /*
+      ________________________________________
+      ╻ ╻╺┳╸╻╻  ╻╺┳╸╻┏━╸┏━┓
+      ┃ ┃ ┃ ┃┃  ┃ ┃ ┃┣╸ ┗━┓
+      ┗━┛ ╹ ╹┗━╸╹ ╹ ╹┗━╸┗━┛
+    */
     const d = function (className) {
         if (className) {
             return $('<div></div>', {class:className});
@@ -20,7 +29,6 @@
             return $('<div></div>');
         }
     };
-    
     const s = function (className) {
         if (className) {
             return $('<span></span>', {class:className});
@@ -29,15 +37,19 @@
             return $('<span></span>');
         }
     };
-
     const tr = function (className) {
         return $('<tr></tr>', {class:className});
     }    
-    
     const td = function (className) {
         return $('<td></td>', {class:className});
     }
-    
+    const th = function (className) {
+        return $('<th></th>', {class:className});
+    }
+    const i = function (className, value) {
+        return $('<input></input>', {value:value,
+                                     class:className});
+    }        
     const a = function (href, className) {
         if (className) {
             return $('<a></a>', {class:className,
@@ -724,13 +736,11 @@
       ┏━┓┏━┓┏┓╻┏━╸╻
       ┣━┛┣━┫┃┗┫┣╸ ┃
       ╹  ╹ ╹╹ ╹┗━╸┗━╸
-      
       A timeline is made up of panels.
     */
 
     var Panel = function(offset, el, timeline) {
         var _panel = this;
-
 
         this.start = timeline.timeframe.add(timeline.start, offset);
         this.end = timeline.timeframe.add(moment(this.start), 1);
@@ -1033,6 +1043,7 @@
 		}
 	    });
         }
+
 	this.makeNote = function(ev) {
 	    ev.preventDefault();
 	    var notebook = panel.timeline.user.currentNotebook;
@@ -1184,12 +1195,11 @@
     }
     
     /*
-________________________________________
-╺┳╸╻┏┳┓┏━╸╻  ╻┏┓╻┏━╸
- ┃ ┃┃┃┃┣╸ ┃  ┃┃┗┫┣╸
- ╹ ╹╹ ╹┗━╸┗━╸╹╹ ╹┗━╸
+      ________________________________________
+      ╺┳╸╻┏┳┓┏━╸╻  ╻┏┓╻┏━╸
+       ┃ ┃┃┃┃┣╸ ┃  ┃┃┗┫┣╸
+       ╹ ╹╹ ╹┗━╸┗━╸╹╹ ╹┗━╸
     */
-
     var Timeline = function(start, end, user) {
         
         var _timeline = this;
@@ -1225,19 +1235,29 @@ ________________________________________
         this.gridHeight = 6;
         this.activeHeight = 0.95;
         
-        this.pos = {
-            lastOffset:0,
-            offset:0
-        };
+        this.pos = {};
 
         this.initialize = function(start, end) {
-            _timeline.timeframe = _timeline.getTimeFrame(start, end);
-	    console.log('good so far');
-	    
-	    _timeline.start = _timeline.timeframe.adjust(start);
-	    _timeline.end = _timeline.timeframe.add(moment(_timeline.start), 1);	    
+            var _start = start;
+            var _end = end;
+            console.log(_start, _end);
+
+            if (!_start || !_end) {
+	        _end = moment();
+	        _start = _end.clone().subtract(1, 'month');
+            }                                
+            
+            _timeline.pos = {
+                lastOffset:0,
+                offset:0
+            };
+            _timeline.el.css({marginLeft:'0%'});
+            _timeline.timeframe = _timeline.getTimeFrame(_start, _end);
+	    _timeline.start = _timeline.timeframe.adjust(_start);
+	    _timeline.end = _timeline.timeframe.add(moment(_timeline.start), 1);
             _timeline.panels = new Array();
-            _timeline.initializeDOM();     
+            _timeline.initializeDOM();
+
         };
         
 	this.initializeDOM = function() {
@@ -1357,9 +1377,8 @@ ________________________________________
 
         this.getTimeFrame = function(start, end) {
 	    // Expects two instances of Moment, sets a "timeframe object"
-
             var span = end - start;
-            
+
 	    if (span >= millennium * 0.75) {
 	        return new MillenniaTimeFrame(_timeline);
 	    }		
@@ -1396,70 +1415,6 @@ ________________________________________
 	this.initialize(this.start, this.end);	
     }
 
-    /*
-      ________________________________________
-      ┏┓╻┏━┓╺┳╸┏━╸┏┓ ┏━┓┏━┓╻┏ ╻  ╻┏━┓╺┳╸╻╺┳╸┏━╸┏┳┓
-      ┃┗┫┃ ┃ ┃ ┣╸ ┣┻┓┃ ┃┃ ┃┣┻┓┃  ┃┗━┓ ┃ ┃ ┃ ┣╸ ┃┃┃
-      ╹ ╹┗━┛ ╹ ┗━╸┗━┛┗━┛┗━┛╹ ╹┗━╸╹┗━┛ ╹ ╹ ╹ ┗━╸╹ ╹
-    */
-    
-    var NotebookListItem = function(item, user) {
-	var _notebooklistitem = this;
-	
-        // this.load = function() {};
-	this.item = item;
-	this.user = user;
-        this.render = function() {
-	    var line =
-		tr('notebook-list-item')
-		.append(
-		    td('notebook-list-date').text(moment(item.created).fromNow()),
-		    td('notebook-list-title').html(item.title),
-		    td('notebook-list-public').text(item.public ? 'Public' : 'Private'));
-	    line.on('click', function(ev) {
-		var notebook = new Notebook(item, _notebooklistitem.user);
-		_notebooklistitem.user.currentNotebook = notebook;
-	    });
-	    return line;
-	};
-    }
-    
-    /*
-      ________________________________________
-      ┏┓╻┏━┓╺┳╸┏━╸┏┓ ┏━┓┏━┓╻┏ ╻  ╻┏━┓╺┳╸
-      ┃┗┫┃ ┃ ┃ ┣╸ ┣┻┓┃ ┃┃ ┃┣┻┓┃  ┃┗━┓ ┃
-      ╹ ╹┗━┛ ╹ ┗━╸┗━┛┗━┛┗━┛╹ ╹┗━╸╹┗━┛ ╹      
-     */
-    var NotebookList = function(user) {
-
-	var _notebooklist = this;
-	this.user = user;
-
-        this.initialize = function() {
-	    var scrolls = $.map(user.data.full_scrolls,
-				function(s) {
-				    var v = new NotebookListItem(s, _notebooklist.user);
-				    return v.render();
-				});
-	    _notebooklist.initializeDOM(scrolls);
-	};
-	
-	this.initializeDOM = function(scrolls) {
-	    var nbl = $('#notebook-listing');
-		nbl.append(
-		$('<table></table>').append(scrolls));
-	    
-	    $('#notebook-list-button')
-		.on('click', function (ev) {
-		    nbl.toggle();
-		});
-	    
-
-	}
-	
-	this.initialize();
-    };
-    
     /* 
        ________________________________________
        ┏┓╻┏━┓╺┳╸┏━╸┏┓ ┏━┓┏━┓╻┏
@@ -1495,10 +1450,16 @@ ________________________________________
             ctr = ctr - dec;
             return ctr;
         }
-
         var _notebook = this;
-	
-	this.scroll = scroll;
+
+        if (scroll) {
+	    this.scroll = scroll;
+        }
+        else {
+	    this.scroll = {};            
+        }
+
+        
 	this.user = user;
 	this.user.currentScroll = scroll;
 	this.data = {};
@@ -1507,234 +1468,263 @@ ________________________________________
 	this.itemsEl = undefined;
 	this.essayEl = undefined;
 	
-        this.needsCreated = this.scroll ? false : true;
+        this.needsCreated = scroll ? false : true;
         this.needsUpdated = false;
         this.needsDeleted = false;
+        this.networkOperationInProgress = false;
 
 	this.initialize = function() {
 	    if (_notebook.needsCreated) {
-
-		var title = "";
-		var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-		for( var i=0; i < 6; i++ ) {
-		    title += possible.charAt(Math.floor(Math.random() * possible.length));
-		}
-		var data = {title:'Untitled ' + title, public:true}
-		$.ajax({
-                    url:API + '/scrolls/',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    dataType: 'json',
-		    data:JSON.stringify(data),
-                    headers: {
-			'Authorization': 'Token ' + _notebook.user.data.key
-                    },
-                    failure:function(e) {
-			console.log('Failure: ' + e);
-                    },
-                    success:function(o) {
-			$.extend(_notebook.data, o);
-			_notebook.editor();
-                    }
-		});
+                _notebook.create();
 	    }
 	    else {
 		_notebook.loadScroll();
-		_notebook.loadNotes();
+//		_notebook.loadNotes();
 	    }
-	    
 	    _notebook.initializeDOM();
-	}
-
+	};
+        
 	this.initializeDOM = function() {
-	    
+    
 	    _notebook.itemsEl = $('#notebook-items');
-	    _notebook.essayEl = $('#notebook-essay');	    
-	    
+	    _notebook.essayEl = $('#notebook-essay');
+            
             $('#insert-button')
+                .off()
 		.on('click', function(ev) {
+                    ev.preventDefault();
                     _notebook.makeItem('default');
 		});
             
             $('#insert-space')
+                .off()
 		.on('click', function(ev) {
+                    ev.preventDefault();
                     _notebook.makeItem('spacer');
 		});
 	
             $('#insert-image')
+                .off()
 		.on('click', function(ev) {
+                    ev.preventDefault();                    
                     _notebook.makeItem('image');
 		});
-	}
+	};
 
         this.editor = function() {
+            console.log(_notebook.scroll);
 	    this.editorDOM();
-	}
+	};
+        
 	this.editorDOM = function() {
-	    var editize = function(fieldName, fieldValue) {
-		var el = d('field-input scroll-' + fieldName + ' ' + fieldName).html(_notebook.data[fieldName]);
-		var medium = new MediumEditor(el, { disableReturn: true});
-		medium.subscribe('editableInput', function (event, editor) {
-                    _notebook.needsUpdated = true;
-		    _notebook.patch[fieldName] = medium.getContent();
-		    console.log(_notebook.patch);
-		});
+            var essayHeader = $('#scroll-header-essay');
+            essayHeader.empty();
+            
+            console.log('SCROLL', _notebook);
+	    var editize = function(o) {
+                var fieldName = o.fieldName;
+                var fieldTitle = o.fieldTitle;
+                var richText = o.richText;
+		var el = undefined;
+                var essayEl = undefined;
+
+                essayEl = d('essay ' + fieldName);
+                essayHeader.append(essayEl);
+
+                if (richText) {
+                    el = d('field-input scroll-'
+                           + fieldName
+                           + ' '
+                           + fieldName)
+                        .html(_notebook.scroll[fieldName]);
+                    essayEl.html(_notebook.scroll[fieldName]);
+		    var medium = new MediumEditor(el, { disableReturn: true});
+		    medium.subscribe('editableInput', function (event, editor) {
+                        _notebook.needsUpdated = true;
+		        _notebook.patch[fieldName] = medium.getContent();
+                        essayEl.html(medium.getContent());
+                        essayHeader.append(essayEl);                        
+		    });
+                }
+                else {
+                    el = i('field-input scroll-'
+                           + fieldName
+                           + ' '
+                           + fieldName, _notebook.scroll[fieldName]);
+                    essayEl.text(_notebook.scroll[fieldName]);
+                    el.on('input', function(ev) {
+                        _notebook.patch[name] = el.val();
+                        essayEl.text(el.val());
+                        essayHeader.append(essayEl);                        
+                    });
+                }
+                         
 		return d('field').append(
-		    d('field-title').html(fieldName),
+		    d('field-title').html(fieldTitle),
 		    el
 		);
 	    }
-	    $('#scroll-header').append(
-		editize('title', 'Notebook title'),
-		editize('subtitle', 'Notebook subtitle'),
-		editize('description', 'Notebook description')
-	    );
-	}
 
+	    $('#scroll-header')
+                .empty()
+                .append(
+		    editize({fieldName:'title', fieldTitle:'Notebook title', richText:true}),
+		    editize({fieldName:'subtitle', fieldTitle:'Subtitle', richText:true}),
+		    editize({fieldName:'description', fieldTitle:'Description', richText:true}));
+	}
 
         this.loadScroll = function() {
-            var start = moment(_notebook.scroll.first_event);
-            var before = moment(_notebook.scroll.last_event);
-            _notebook.user.timeline.initialize(start, before, _notebook.user);	    
+            var start = _notebook.scroll.first_event ? moment(_notebook.scroll.first_event) : undefined ;
+            var before = _notebook.scroll.last_event ? moment(_notebook.scroll.last_event) : undefined ;
+            _notebook.read();
+            _notebook.user.timeline.initialize(start, before, _notebook.user);
 	};
 
-        this.loadNotes = function() {
+	this.read = function() {
+	    $.ajax({
+                url:_notebook.scroll.url,
+                type: 'GET',
+                contentType: 'application/json',
+                dataType: 'json',
+                headers: {
+		    'Authorization': 'Token ' + _notebook.user.data.key
+                },
+                failure:function(e) {
+		    console.log('Failure: ' + e);
+                },
+                success:function(o) {
+                    $.extend(_notebook.scroll, o);
+                    _notebook.editor();
+                }
+	    });            
 	}
 
-	this.load = function() {
+        this.create = function() {
+	    var title = "";
+	    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	    for( var i=0; i < 6; i++ ) {
+		title += possible.charAt(Math.floor(Math.random() * possible.length));
+	    }
+	    var data = {title:'Untitled ' + title, public:true}
+	    $.ajax({
+                url:API + '/scrolls/',
+                type: 'POST',
+                contentType: 'application/json',
+                dataType: 'json',
+		data:JSON.stringify(data),
+                headers: {
+		    'Authorization': 'Token ' + _notebook.user.data.key
+                },
+                failure:function(e) {
+		    console.log('Failure: ' + e);
+                },
+                success:function(o) {
+		    $.extend(_notebook.scroll, o);
+		    _notebook.editor();
+                }
+	    });
+        }
 
-	}
-
-/*	
-	'scrollPatch':function(url, data, notebook) {
-	    if (GLOBAL.user.key) {
-		$.ajax({
-                    url:url,
-                    type: 'PATCH',
-                    contentType: 'application/json',
-                    dataType: 'json',
-		    data:JSON.stringify(data),
-                    context:notebook,
-                    headers: {
-			'Authorization': 'Token ' + GLOBAL.user.key
-                    },
-                    failure:function(e) {
-			console.log('Failure: ' + e);
-                    },
-                    success:function(o) {
-			this.needsUpdated = false;
-                    }
-		});
-	    }
-	    else {
-		console.log('You can only fav things if you\'re logged in.')
-	    }
-	},
-	'notesGet':function(scroll_uuid, notebook) {
-	    if (GLOBAL.user.key) {
-		$.ajax({
-                    url:API + '/notes/?scroll=' + scroll_uuid,
-                    type: 'GET',
-                    contentType: 'application/json',
-                    dataType: 'json',
-                    context:notebook,
-                    headers: {
-			'Authorization': 'Token ' + GLOBAL.user.key
-                    },
-                    failure:function(e) {
-			console.log('Failure: ' + e);
-                    },
-                    success:function(o) {
-			for (var i=0;i<o.results.length; i++)
-			{
-                            var nbItem = o.results[i];
-                            var nbi = this.makeItem(nbItem.kind, nbItem.event_full, nbItem);
-			}
-                    }
-		});
-	    }
-	    else {
-		console.log('You can only make notes if you\'re logged in.')
-	    }
-	},        
-	'notePost':function(data, items) {
-	    if (GLOBAL.user.key) {
-		$.ajax({
-                    url:API + '/notes/',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    dataType: 'json',
-		    data:JSON.stringify(data),
-                    context:items,
-                    headers: {
-			'Authorization': 'Token ' + GLOBAL.user.key
-                    },
-                    failure:function(e) {
-			console.log('Failure: ' + e);
-                    },
-                    success:function(o) {
-			for (var i=0;i<o.length; i++) {
-                            this[i].url = o[i].url;
-                            this[i].id = o[i].id;                            
-                            this[i].needsCreated = false;
-			}
-                    }
-		});
-	    }
-	    else {
-		console.log('You can only make notes if you\'re logged in.')
-	    }
-	},
-	'notePut':function(data, items) {
-	    if (GLOBAL.user.key) {
-		$.ajax({
-                    url:API + '/notes/',
-                    type: 'PATCH',
-                    contentType: 'application/json',
-                    dataType: 'json',
-		    data:JSON.stringify(data),
-                    context:items,
-                    headers: {
-			'Authorization': 'Token ' + GLOBAL.user.key
-                    },
-                    failure:function(e) {
-			console.log('Failure: ' + e);
-                    },
-                    success:function(o) {
-			for (var i=0;i<o.length; i++) {
-                            this[i].needsUpdated = false;                            
-			}
-                    }
-		});
-	    }
-	    else {
-		console.log('You can only fav things if you\'re logged in.')
-	    }
-	},
-	'noteDelete':function(data, items) {
-	    if (GLOBAL.user.key) {
-		for (var i = 0; i<items.length; i++) {
-		    $.ajax({
-			url:API + '/notes/' + items[i].id,
-			type: 'DELETE',
-			context:items[i],
-			headers: {
-			    'Authorization': 'Token ' + GLOBAL.user.key
-			},
-			failure:function(e) {
-			    console.log('Failure: ' + e);
-			},
-			success:function(o) {
-                            this.needsDeleted = false;                            
-			}
-                    });
+        this.delete = function(ev) {
+            ev.preventDefault();
+	    $.ajax({
+		url:_notebook.data.url,
+		type: 'DELETE',
+		headers: {
+		    'Authorization': 'Token ' + _event.user.key
+		},
+		failure:function(e) {
+		    console.log('Failure: ' + e);
+		},
+		success:function(o) {
+                    _event.el.remove();
 		}
+	    });
+        };
+        
+        this.notesRead = function() {
+	    $.ajax({
+                url:API + '/notes/?scroll=' + _notebook.user.currentScroll.data.uuid,
+                type: 'GET',
+                contentType: 'application/json',
+                dataType: 'json',
+                headers: {
+		    'Authorization': 'Token ' + _notebook.user.key
+                },
+                failure:function(e) {
+		    console.log('Failure: ' + e);
+                },
+                success:function(o) {
+		    for (var i=0;i<o.results.length; i++)
+		    {
+                        var nbItem = o.results[i];
+                        var nbi = Notebook.makeItem(nbItem.kind, nbItem.event_full, nbItem);
+		    }
+                }
+	    });
+        };
+        
+	this.notesCreate = function(data, items) {
+	    $.ajax({
+                url:API + '/notes/',
+                type: 'POST',
+                contentType: 'application/json',
+                dataType: 'json',
+		data:JSON.stringify(data),
+                context:items,
+                headers: {
+		    'Authorization': 'Token ' + _notebook.user.data.key
+                },
+                failure:function(e) {
+		    console.log('Failure: ' + e);
+                },
+                success:function(o) {
+		    for (var i=0;i<o.length; i++) {
+                        $.extend(_notebook.items[i], o[i]);
+		    }
+                }
+	    });
+	};
+        
+	this.notesUpdate = function(data, items) {
+	    $.ajax({
+                url:API + '/notes/',
+                type: 'PATCH',
+                contentType: 'application/json',
+                dataType: 'json',
+		data:JSON.stringify(data),
+                context:items,
+                headers: {
+		    'Authorization': 'Token ' + _notebook.user.data.key
+                },
+                failure:function(e) {
+		    console.log('Failure: ' + e);
+                },
+                success:function(o) {
+		    for (var i=0;i<o.length; i++) {
+                        items[i].needsUpdated = false;                            
+		    }
+                }
+	    });
+	};
+        this.notesDelete = function(data, items)  {
+	    for (var i = 0; i<items.length; i++) {
+		$.ajax({
+		    url:API + '/notes/' + items[i].id,
+		    type: 'DELETE',
+		    context:items[i],
+		    headers: {
+			'Authorization': 'Token ' + _notebook.user.data.key
+		    },
+		    failure:function(e) {
+			console.log('Failure: ' + e);
+		    },
+		    success:function(o) {
+                        items[i].needsDeleted = false;                            
+		    }
+                });
 	    }
-	    else {
-		console.log('You can only make notes if you\'re logged in.')
-	    }
-	},
-*/
+	};
         
 	this.render = function() {
 	    _notebook.dom_nb_listing.hide();
@@ -1760,17 +1750,37 @@ ________________________________________
                 _notebook.title = medium.getContent();
 	    });
 	}
-        this.scanner = function() {
-            if (_notebook.needsUpdated) {
-                var payload = {
-                    title:_notebook.title
-                };
-                console.log('Will save: ', payload);
-                Endpoints.scrollPatch(_notebook.scroll.url, payload, nb);
-            }
-
+        this.update = function() {
+                _notebook.networkOperationInProgress = true;
+		$.ajax({
+                    url:_notebook.scroll.url,
+                    type: 'PATCH',
+                    contentType: 'application/json',
+                    dataType: 'json',
+		    data:JSON.stringify(_notebook.patch),
+                    headers: {
+			'Authorization': 'Token ' + _notebook.user.data.key
+                    },
+                    failure:function(e) {
+                        _notebook.networkOperationInProgress = false;
+			console.log('Failure: ' + e);
+                    },
+                    success:function(o) {
+                        _notebook.networkOperationInProgress = false;
+                        $.extend(_notebook.data, o);
+                        _notebook.patch = {};
+                        console.log('Saved notebook, received', o);
+		        var notebookList = new NotebookList(_notebook.user);                        
+                    }
+		});
         }
-        setInterval(this.scanner, REFRESH_INTERVAL);	
+        this.notebookScanner = function() {
+            if (!$.isEmptyObject(_notebook.patch)
+                && !_notebook.networkOperationInProgress) {
+                _notebook.update();                
+            }  
+	};
+        setInterval(this.notebookScanner, REFRESH_INTERVAL);	
         
 	/* Get our DOM objects */
 
@@ -1822,6 +1832,7 @@ ________________________________________
 			    this.items[j].order = this.decmin();
 			}
 		    }
+                    
 		    else {
 			var oneback = this.items[i-1];
 			for (var j = from_loc; j<=to_loc; j++) {
@@ -1858,14 +1869,15 @@ ________________________________________
 		    return this.items[i+1];
 		}
 	    }
-	}
+	};
+        
 	this.getPrev = function(item) {
 	    for (var i = 0; i<this.items.length; i++) {
 		if (this.items[i] == item) {
 		    return this.items[i-1];
 		}
 	    }
-	}
+	};
 	
 	// You can select a range bottom up. If that happens
 	// switch "from" and "to".
@@ -1881,7 +1893,7 @@ ________________________________________
 	    }
 	    
 	    return {from:_from, to:_to}
-	}
+	};
 	
 	// You can move a range of notes at once.
 	this.getRange = function(insertion) {
@@ -1907,7 +1919,7 @@ ________________________________________
 		}
 	    }
 	    return span;
-	}
+	};
 	
         this.makeItem = function(kind, event, note) {
             var item = new NotebookItem(kind, event, note);
@@ -1975,7 +1987,6 @@ ________________________________________
 	    this.items.unshift(item);
         }
 
-
         this.scanner = function () {
 	    // If we don't have a scroll URL then we can't make a REST query.
 	    if (!_notebook.scroll) {
@@ -2040,18 +2051,15 @@ ________________________________________
 		}
 		
 		if (created.length > 0) {
-                    Endpoints.notePost($.map(created, makePost),
-                                       created);
+                    _notebook.notesCreate($.map(created, makePost), created);
 		}
 		
 		if (updated.length > 0) {
-                    Endpoints.notePut($.map(updated, makePost),
-                                      updated);
+                    _notebook.notesUpdate($.map(updated, makePost), updated);
 		}
 		
 		if (deleted.length > 0) {
-                    Endpoints.noteDelete($.map(deleted, makeDelete),
-					 deleted);
+                    _notebook.notesDelete($.map(deleted, makeDelete), deleted);
 		}
 	    }
 	}
@@ -2060,7 +2068,7 @@ ________________________________________
 	this.initialize();
 
     };
-    
+
     /* 
        ┏┓╻┏━┓╺┳╸┏━╸┏┓ ┏━┓┏━┓╻┏ ╻╺┳╸┏━╸┏┳┓
        ┃┗┫┃ ┃ ┃ ┣╸ ┣┻┓┃ ┃┃ ┃┣┻┓┃ ┃ ┣╸ ┃┃┃
@@ -2092,7 +2100,7 @@ ________________________________________
 	
         this.render = function() {
 	    console.log(_notebookitem.event);
-	    var div = $('<div></div>', {class:'top'});
+	    var div = d('top');
             if (_notebookitem.event && _notebookitem.event.data) {
                 var el = div.append(
 		    a(event.data.content_url, 'notebook-event-title')
@@ -2107,14 +2115,14 @@ ________________________________________
             }
 	    else if (this.kind=='spacer') {
 		this.buttons.append(
-		    $('<span></span>', {class:'button'}).html('Space &times; 2')
+		    s('button').html('Space &times; 2')
 			.addClass('active')
 			.on('click', function() {
 			    _notebookitem.buttons.children('span.button')
                                 .removeClass('active');
 			    $(this).addClass('active');
 			    _notebookitem.medium.setContent('<br/><br/>');}),
-		    $('<span></span>', {class:'button'}).html('&mdash;')
+		    s('button').html('&mdash;')
 			.on('click', function() {
 			    _notebookitem.buttons.children('span.button')
                                 .removeClass('active');
@@ -2187,12 +2195,80 @@ ________________________________________
 	    });
 	});
 	this.medium.subscribe('editableInput', function (event, editor) {
-            _notebookitem.changed();              
+            _notebookitem.changed();
             _notebookitem.textView.html(_notebookitem.medium.getContent());
             _notebookitem.textView.append(' ');
 	});
     };   
+    
+    /*
+      ________________________________________
+      ┏┓╻┏━┓╺┳╸┏━╸┏┓ ┏━┓┏━┓╻┏ ╻  ╻┏━┓╺┳╸
+      ┃┗┫┃ ┃ ┃ ┣╸ ┣┻┓┃ ┃┃ ┃┣┻┓┃  ┃┗━┓ ┃
+      ╹ ╹┗━┛ ╹ ┗━╸┗━┛┗━┛┗━┛╹ ╹┗━╸╹┗━┛ ╹      
+     */
+    var NotebookList = function(user) {
 
+	var _notebooklist = this;
+	this.user = user;
+        this.el = $('#notebook-listing');
+        this.initialize = function() {
+	    var scrolls = $.map(user.data.full_scrolls,
+				function(s) {
+				    var v = new NotebookListItem(s, _notebooklist);
+				    return v.render();
+				});
+	    _notebooklist.initializeDOM(scrolls);
+	};
+	
+	this.initializeDOM = function(scrolls) {
+            _notebooklist.el.append($('<table></table>')
+                                    .append(
+                                        tr('notebook-list-item header')
+                                            .append(
+                                                th('when').text('Created'),
+                                                th('title').text('Title'),
+                                                th('username').text('Creator'),                                                
+                                                th('public').text('Public?')),
+                                        scrolls));
+	    $('#notebook-list-button')
+		.on('click', function (ev) {
+                    _notebooklist.el.toggle();
+		});
+	}
+	
+	this.initialize();
+    };
+
+    /*
+      ________________________________________
+      ┏┓╻┏━┓╺┳╸┏━╸┏┓ ┏━┓┏━┓╻┏ ╻  ╻┏━┓╺┳╸╻╺┳╸┏━╸┏┳┓
+      ┃┗┫┃ ┃ ┃ ┣╸ ┣┻┓┃ ┃┃ ┃┣┻┓┃  ┃┗━┓ ┃ ┃ ┃ ┣╸ ┃┃┃
+      ╹ ╹┗━┛ ╹ ┗━╸┗━┛┗━┛┗━┛╹ ╹┗━╸╹┗━┛ ╹ ╹ ╹ ┗━╸╹ ╹
+    */
+    var NotebookListItem = function(item, notebooklist, user) {
+	var _notebooklistitem = this;
+
+	this.item = item;
+	this.notebooklist = notebooklist;
+	this.user = notebooklist.user;
+        this.render = function() {
+	    var line =
+		tr('notebook-list-item')
+		.append(
+		    td('notebook-list-date').text(moment(item.created).fromNow()),
+		    td('notebook-list-title').html(item.title),
+		    td('notebook-list-username').html(_notebooklistitem.user.data.username),                    
+		    td('notebook-list-public').text(item.public ? 'Public' : 'Private'));
+	    line.on('click', function(ev) {
+		var notebook = new Notebook(item, _notebooklistitem.user);
+		_notebooklistitem.user.currentNotebook = notebook;
+                _notebooklistitem.notebooklist.el.toggle();
+	    });
+	    return line;
+	};
+    }
+    
     /*
       ╺┳┓┏━┓┏━╸╻ ╻┏┳┓┏━╸┏┓╻╺┳╸ ┏━┓┏━╸┏━┓╺┳┓╻ ╻
        ┃┃┃ ┃┃  ┃ ┃┃┃┃┣╸ ┃┗┫ ┃  ┣┳┛┣╸ ┣━┫ ┃┃┗┳┛
