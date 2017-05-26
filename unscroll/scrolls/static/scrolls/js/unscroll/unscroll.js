@@ -232,6 +232,49 @@
         this.initialize();
     }
 
+    /*
+
+     */
+    var Search = function(timeline, user) {
+	var _search = this;
+
+	this.timeline = timeline;
+	this.user = user;
+	this.input = undefined;
+	this.query = {
+	    scroll:undefined,
+	    term:undefined
+	};
+	
+	this.initialize = function() {
+	    _search.initializeDOM();
+	}
+
+	this.parseQuery = function(qs) {
+	    console.log('query is', qs)
+	    _search.query.term = qs;
+	};
+	
+	this.initializeDOM = function() {
+	    this.input = $('#search-input');
+	    
+	    _search.input.focus(function (ev) {
+		_search.input.val('');
+	    });
+	    
+	    _search.input.keypress(function (e) {
+		if (e.which == 13) {
+		    _search.parseQuery(_search.input.val());
+		    _search.timeline.search = _search.query;
+		    _search.timeline.initialize();
+		    return false; 
+		}
+	    });
+	}	
+	this.initialize();
+	
+    };
+    
     /* 
        ________________________________________
       ╺┳╸╻┏┳┓┏━╸┏━╸┏━┓┏━┓┏┳┓┏━╸
@@ -815,6 +858,7 @@
             _panel.el.append(period, h);
             _panel.el.on('dblclick', _panel.newEvent);
         }
+	
         this.makeLocation = function () {
 	    var url = '/static/scrolls/index.html?start='
 		+ _panel.start.format()
@@ -835,12 +879,18 @@
 	
 	
         this.makeUrl = function() {
+	    console.log(_panel.timeline.search);
             var url = API
                 + '/events/?start='
                 + _panel.start.format()
                 + '&before='
                 + _panel.end.format();
-            if (_panel.timeline.user.currentScroll
+	    if (_panel.timeline.search.term) {
+                url = url
+                    + '&q='
+                    + _panel.timeline.search.term;
+	    }
+            else if (_panel.timeline.user.currentScroll
 		&&
 		_panel.timeline.user.currentScroll.uuid) {		
                 url = url
@@ -1244,7 +1294,8 @@
         this.activeHeight = 0.95;
         
         this.pos = {};
-
+	this.search = {};
+	
         this.initialize = function(start, end) {
             var _start = start;
             var _end = end;
@@ -2137,7 +2188,7 @@
 	var end = moment();
 	var start = end.clone().subtract(1, 'month');
         var timeline = new Timeline(start, end, user);
-
+	var search = new Search(timeline, user);
 	$('#notebook-create-button')
 	    .on('click', function(ev) {
 		console.log(ev);

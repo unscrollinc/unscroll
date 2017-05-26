@@ -99,11 +99,11 @@ class EventQueryset(models.QuerySet):
         return self.extra(
             select={
                 'rank':
-                "ts_rank_cd(to_tsvector('english', scrolls_event.title || "
-                + "' ' || scrolls_event.text), plainto_tsquery(%s), 32)"},
+                "ts_rank_cd(to_tsvector('english', event.title || "
+                + "' ' || event.text), plainto_tsquery(%s), 32)"},
             select_params=(text,),
-            where=("to_tsvector('english', scrolls_event.title || "
-                   + "' ' || scrolls_event.text) @@ plainto_tsquery(%s)",),
+            where=("to_tsvector('english', event.title || "
+                   + "' ' || event.text) @@ plainto_tsquery(%s)",),
             params=(text,),
             order_by=('-rank',)
         )
