@@ -4,6 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 import django_filters
 from django.db.models import Max, Min, Count
+from rest_framework import pagination
 from rest_framework import generics, serializers, viewsets, routers, response
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthenticatedOrReadOnly
@@ -18,6 +19,7 @@ import hashlib
 from baseconv import base36
 from os import makedirs
 from rest_framework_bulk.routes import BulkRouter
+
 from rest_framework_bulk import (
     BulkListSerializer,
     BulkModelViewSet,
@@ -46,7 +48,6 @@ class ThumbnailSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ThumbnailViewSet(viewsets.ModelViewSet):
-    
     queryset = Thumbnail.objects.all()
     serializer_class = ThumbnailSerializer
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
@@ -96,8 +97,6 @@ class ThumbnailViewSet(viewsets.ModelViewSet):
             sha1=hashed['img_hash'])
 
 
-
-
 class EventFilter(django_filters.rest_framework.FilterSet):
     start = django_filters.IsoDateTimeFilter(
         name='datetime',
@@ -110,7 +109,7 @@ class EventFilter(django_filters.rest_framework.FilterSet):
 
     q = django_filters.CharFilter(method='filter_by_q', distinct=True)
 
-    def filter_by_q(self, queryset, what_is_this_value, value):
+    def filter_by_q(self, queryset, what_is_this_arg_i_do_not_know, value):
         return queryset.full_text_search(value)
 
     class Meta:
@@ -182,27 +181,61 @@ class BulkEventSerializer(BulkSerializerMixin,
         return s
 
 
+class EventPagination(pagination.PageNumberPagination):
+    page_x = None
+    page_y = None
+    
+    def get_paginated_response(self, data,  first_event=None, last_event=None):
+        return Response({
+            'first_event': first_event,
+            'last_event': last_event,
+            'next': self.get_next_link(),
+            'previous': self.get_previous_link(),
+            'count': self.page.paginator.count,
+            'results': data
+        })
+
+
 class BulkEventViewSet(BulkModelViewSet):
-    permission_classes = [IsAuthenticatedOrReadOnly]    
+    permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Event.objects.select_related('scroll', 'user')\
                             .filter(scroll__public=True)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     filter_class = EventFilter
     serializer_class = BulkEventSerializer
+    pagination_class = EventPagination
 
+    @list_route()
+    def maxmin(self, request):
+        filtered = EventFilter(request.GET, queryset=Event.objects)
 
+        qs = filtered.qs.aggregate(
+            last_event=Max('datetime'),
+            first_event=Min('datetime')
+        )
+        return Response(qs)
+
+    @list_route()
+    def search(self, request):
+        filtered = EventFilter(request.GET,
+                               queryset=Event.objects
+                               .select_related('scroll', 'user', 'thumbnail')
+                               .filter(scroll__public=True))
+
+        page = self.paginate_queryset(filtered.qs)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
 
 # ##############################
 # NOTES
 # ##############################
-
-
 class NoteSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Note
         fields = (
-            'id',            
+            'id',
             'url',
             'uuid',
             'scroll',
@@ -343,7 +376,7 @@ class ScrollSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ScrollViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticatedOrReadOnly]    
+    permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = ScrollSerializer
     queryset = Scroll.objects.select_related('user')\
                              .filter(public=True)\
@@ -377,7 +410,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticatedOrReadOnly]        
+    permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = UserSerializer
     queryset = User.objects.all()
     permission_classes = [IsAuthenticated]
