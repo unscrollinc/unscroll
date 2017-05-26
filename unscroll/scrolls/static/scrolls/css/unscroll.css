@@ -289,6 +289,12 @@ div#player {
     cursor:hand;
 }
 
+span.button {
+    cursor:hand;
+    font:10pt Roboto;
+    padding:0 0.30em 0 0.25em;
+    color:#666;
+}
 
 div.ranger {
     border:1px solid black;
@@ -349,18 +355,6 @@ div#notebook-items-wrapper {
     border-right:1px solid #888;
 }
 
-div#notebook-essay {
-    background:white;
-    height:100%;
-    font-family:Merriweather;
-    overflow:auto;
-    line-height:149%;
-    font-size:12pt;
-    padding-bottom:250px;
-}
-div.buttons span.button {
-    font-size:75%;
-}
 div#notebook-essay h2 {
     line-height:139%;
 }
@@ -562,6 +556,7 @@ tr.notebook-list-item {
 }
 
 .field-input {
+    line-height:1.85em;
     border-bottom:1px solid #666;
 }
 
@@ -571,8 +566,56 @@ tr.notebook-list-item {
 }
 
 #notebook-essay-wrapper {
-    width:45%;
-    margin-left:55%;
+    width:44.25%;
+    padding-top:2.5%;
+    margin-left:52.75%;
     position:absolute;
-    top:10%;
+}
+
+div#notebook-essay {
+    height:100%;
+    font-family:Merriweather;
+    overflow:auto;
+    line-height:149%;
+    font-size:12pt;
+    padding-bottom:250px;
+}
+
+
+.essay.title {
+    font-size:200%;
+    color:#444;
+    width:80%;
+}
+
+.essay.subtitle {
+    padding-top:0.5em;
+    font-size:150%;
+    color:#444;
+    width:80%;
+}
+
+.essay.description {
+    padding-top:1em;
+    line-height:1.85em;
+    font-size:12pt
+    font-style:Italic;
+    color:#888;
+    border-bottom:1px dotted #ccc;
+    padding-bottom:1em;
+}
+
+
+span.button.move {
+}
+span.button.range {
+    display:none;
+}
+span.button.drop {
+    display:none;
+}
+span.button.delete {}
+
+.in-range {
+    background:pink;
 }

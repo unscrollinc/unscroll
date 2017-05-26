@@ -46,6 +46,7 @@ class ThumbnailSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ThumbnailViewSet(viewsets.ModelViewSet):
+    
     queryset = Thumbnail.objects.all()
     serializer_class = ThumbnailSerializer
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
@@ -95,64 +96,6 @@ class ThumbnailViewSet(viewsets.ModelViewSet):
             sha1=hashed['img_hash'])
 
 
-class ScrollFilter(django_filters.rest_framework.FilterSet):
-    class Meta:
-        model = Scroll
-        fields = ['uuid', 'title']
-
-
-class ScrollSerializer(serializers.HyperlinkedModelSerializer):
-    user_username = serializers.CharField(
-        read_only=True,
-        source="user.username")
-    first_event = serializers.DateTimeField(
-        read_only=True)
-    last_event = serializers.DateTimeField(
-        read_only=True)
-    event_count = serializers.IntegerField(
-        read_only=True)
-
-    class Meta:
-        model = Scroll
-        fields = (
-            'uuid',
-            'url',
-            'user',
-            'user_username',
-            'event_count',
-            'first_event',
-            'last_event',
-            'created',
-            'title',
-            'public',
-            'subtitle',
-            'description',
-            'thumbnail',)
-        depth = 0
-        read_only_fields = (
-            'uuid',
-            'user',
-            'user_username',
-            'event_count',
-            'first_event',
-            'last_event',)
-
-    def create(self, validated_data):
-        validated_data['user'] = self.context['request'].user
-        s = Scroll(**validated_data)
-        s.save()
-        return s
-
-
-class ScrollViewSet(viewsets.ModelViewSet):
-    serializer_class = ScrollSerializer
-    queryset = Scroll.objects.select_related('user')\
-                             .filter(public=True)\
-                             .annotate(
-                                 event_count=Count('events'),
-                                 first_event=Min('events__datetime'),
-                                 last_event=Max('events__datetime'))
-    filter_class = ScrollFilter
 
 
 class EventFilter(django_filters.rest_framework.FilterSet):
@@ -240,6 +183,7 @@ class BulkEventSerializer(BulkSerializerMixin,
 
 
 class BulkEventViewSet(BulkModelViewSet):
+    permission_classes = [IsAuthenticatedOrReadOnly]    
     queryset = Event.objects.select_related('scroll', 'user')\
                             .filter(scroll__public=True)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
@@ -258,6 +202,7 @@ class NoteSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Note
         fields = (
+            'id',            
             'url',
             'uuid',
             'scroll',
@@ -276,10 +221,13 @@ class NoteSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class NoteViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticatedOrReadOnly]    
     queryset = Note.objects.all()
     serializer_class = NoteSerializer
     ordering_fields = ('order',)
     ordering = ('order',)
+
+    
 
 
 class BulkNoteSerializer(BulkSerializerMixin,
@@ -344,6 +292,77 @@ class BulkNoteViewSet(BulkModelViewSet):
     filter_class = NoteFilter
 
 
+class ScrollFilter(django_filters.rest_framework.FilterSet):
+    class Meta:
+        model = Scroll
+        fields = ['uuid', 'title']
+
+
+class ScrollSerializer(serializers.HyperlinkedModelSerializer):
+    user_username = serializers.CharField(
+        read_only=True,
+        source="user.username")
+    first_event = serializers.DateTimeField(
+        read_only=True)
+    last_event = serializers.DateTimeField(
+        read_only=True)
+    event_count = serializers.IntegerField(
+        read_only=True)
+
+    class Meta:
+        model = Scroll
+        fields = (
+            'uuid',
+            'url',
+            'user',
+            'user_username',
+            'event_count',
+            'first_event',
+            'last_event',
+            'created',
+            'title',
+            'public',
+            'subtitle',
+            'description',
+            'thumbnail',)
+        depth = 0
+        read_only_fields = (
+            'uuid',
+            'user',
+            'notes',
+            'user_username',
+            'event_count',
+            'first_event',
+            'last_event',)
+
+    def create(self, validated_data):
+        validated_data['user'] = self.context['request'].user
+        s = Scroll(**validated_data)
+        s.save()
+        return s
+
+
+class ScrollViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticatedOrReadOnly]    
+    serializer_class = ScrollSerializer
+    queryset = Scroll.objects.select_related('user')\
+                             .filter(public=True)\
+                             .annotate(
+                                 event_count=Count('events'),
+                                 first_event=Min('events__datetime'),
+                                 last_event=Max('events__datetime'))
+    filter_class = ScrollFilter
+
+    @detail_route(methods=['get'])
+    def notes(self, request, pk=None):
+        notes = Note.objects.filter(scroll__id=pk)
+        serializer = NoteSerializer(
+            notes,
+            context={'request': request},
+            many=True)
+        return Response(serializer.data)
+
+
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     full_scrolls = ScrollSerializer(User.full_scrolls, many=True)
 
@@ -353,12 +372,12 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
             'url',
             'username',
             'email',
-            'scrolls',
             'full_scrolls',
             'is_staff')
 
 
 class UserViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticatedOrReadOnly]        
     serializer_class = UserSerializer
     queryset = User.objects.all()
     permission_classes = [IsAuthenticated]
@@ -373,15 +392,12 @@ class UserViewSet(viewsets.ModelViewSet):
                             event_count=Count('events'),
                             first_event=Min('events__datetime'),
                             last_event=Max('events__datetime'))
-        # scrolls = Scroll.objects.filter(user__id=user.id)
         serializer = ScrollSerializer(
             scrolls,
             context={'request': request},
             many=True)
         return Response(serializer.data)
 
-
-        
 # Routers provide a way of automatically determining the URL conf.
 router = BulkRouter()
 # router = routers.DefaultRouter()
@@ -393,13 +409,13 @@ router.register(r'thumbnails', ThumbnailViewSet)
 router.register(r'events', BulkEventViewSet)
 router.register(r'notes', BulkNoteViewSet)
 
-schema_view = get_swagger_view(title='Unscroll API')
+# schema_view = get_swagger_view(title='Unscroll API')
 # schema_view = get_schema_view(title="Unscroll API")
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
-#    url('^schema/$', schema_view),
+    # url('^schema/$', schema_view),
     url(r'^', include(router.urls)),
     url(r'^rest-auth/', include('rest_auth.urls')),
     url(r'^api-auth/', include('rest_framework.urls',

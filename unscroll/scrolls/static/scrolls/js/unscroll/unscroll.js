@@ -12,7 +12,7 @@
     const AUTH = API + '/rest-auth';
     const GRIDHEIGHT = 8;
     const ACTIVEHEIGHT = 0.95;          
-    const REFRESH_INTERVAL = 10000; // milliseconds
+    const REFRESH_INTERVAL = 4000; // milliseconds
     const timeBeforeRefresh = 10; // milliseconds
 
     /*
@@ -189,7 +189,16 @@
 		success:function(o) {
                     $.extend(_user.data, o.results[0]);
                     _user.loginDOM();
-		    var notebookList = new NotebookList(_user);
+		    var notebooklist = new NotebookList(_user);
+		    var notebook = new Notebook(notebooklist.first().data, _user);
+/*
+		    notebook.makeItem(undefined, undefined, undefined);
+		    notebook.makeItem(undefined, undefined, undefined);
+		    notebook.makeItem(undefined, undefined, undefined);
+		    notebook.makeItem(undefined, undefined, undefined);
+		    notebook.makeItem(undefined, undefined, undefined);
+		    notebook.makeItem(undefined, undefined, undefined);		    		    
+*/
 		}
             });            
         };
@@ -1143,7 +1152,6 @@
 	}
 	
         this.doPost = function() {
-            console.log(_event.patch);
             if (_event.needsCreated) {
                 $.extend(_event.patch, {scroll:_event.user.currentScroll});
 	        $.ajax({
@@ -1240,7 +1248,6 @@
         this.initialize = function(start, end) {
             var _start = start;
             var _end = end;
-            console.log(_start, _end);
 
             if (!_start || !_end) {
 	        _end = moment();
@@ -1453,24 +1460,244 @@
         var _notebook = this;
 
         if (scroll) {
-	    this.scroll = scroll;
+	    this.data = scroll;
         }
         else {
-	    this.scroll = {};            
+	    this.data = {};            
         }
 
-        
+	this.newMoveStatus = function() {
+	    return {
+		fromNote:{el:undefined, pos:undefined},
+		throughNote:{el:undefined, pos:undefined},
+		toBeforeNote:{el:undefined, pos:undefined}
+	    }
+	}
+
+	this.moveStatus = this.newMoveStatus();
+
+	this.convertMoveStatus = function() {
+	    var from = _notebook.moveStatus.fromNote.pos;
+	    var to = _notebook.moveStatus.throughNote.pos;
+	    var target = _notebook.moveStatus.toBeforeNote.pos;
+	    
+	    if (!to) {
+		to = from;
+	    }
+
+	    if (to < from) {
+		var _to = from;
+		var _from = to;
+		to = _to;
+		from = _from;
+	    }
+	    return {from:from, to:to, target:target};
+	}
+	
+	this.rearrange = function() {
+	    _notebook.tagRanges();
+
+	    var itemsKids = _notebook.itemsEl.children();
+	    var essayKids = _notebook.essayEl.children();		
+	    
+	    var newItems = new Array();
+	    var splice = new Array();
+
+	    var movePositions = _notebook.convertMoveStatus();
+	    var from = movePositions.from;
+	    var to = movePositions.to;
+	    var target = movePositions.target;
+	    
+	    console.log('from', from, 'to', to, 'target', target);
+	    if (from > -1 && to > -1 && target > -1) {
+		$.each(_notebook.items, function(i, e) {
+		    if (i >=from && i <= to) {
+			splice.push(e);
+		    }
+		});
+
+		var reorderEnd = _notebook.items[target].data.order;
+		var reorderBegin = undefined;
+
+		if (target==0) {
+		    reorderBegin = reorderEnd - 100;
+		}
+		else {
+		    reorderBegin = _notebook.items[target - 1].data.order;
+		}
+
+		var multiplier = (reorderEnd - reorderBegin)/(splice.length + 1)
+		
+		$.each(_notebook.items, function(i, e) {
+		    if (i >=from && i <= to) {
+			//do nothing; this is the splice
+		    }
+		    else if (i == target) {
+			$.each(splice, function(j, f) {
+			    f.needsUpdated = true;
+			    f.data.order = reorderBegin + ((j + 1) * multiplier);
+			    newItems.push(f);
+			    f.editized.formView.insertBefore(itemsKids[i]);
+			    f.editized.essayView.insertBefore(essayKids[i]);			    
+			});
+			newItems.push(e);			
+		    }
+		    else {
+			newItems.push(e);
+		    }
+		});
+	    }
+	    _notebook.items = newItems;
+	    _notebook.moveStatus = _notebook.newMoveStatus();
+
+	    $('.in-range').removeClass('in-range');
+	    $('.button.move').show();
+	    $('.button.range').hide();
+	    $('.button.drop').hide();		
+	    $('.button.delete').show();
+	}
+	
+	this.tagRanges = function() {
+	    $.each(_notebook.items, function(i, e) {
+		if (e == _notebook.moveStatus.fromNote.el) {
+		    _notebook.moveStatus.fromNote.pos = i;					    
+		}
+		if (e == _notebook.moveStatus.toBeforeNote.el) {
+		    _notebook.moveStatus.toBeforeNote.pos = i;		    
+		}
+		if (e == _notebook.moveStatus.throughNote.el) {
+		    _notebook.moveStatus.throughNote.pos = i;			
+		}
+	    });	    
+	}
+	
+	this.setRange = function() {
+	    _notebook.tagRanges();
+	    var movePositions = _notebook.convertMoveStatus();
+	    console.log(_notebook.moveStatus, movePositions);
+	    var from = movePositions.from;
+	    var to = movePositions.to;
+	    var target = movePositions.target;
+	    console.log('setRange', from, to, target);
+	    $.each(_notebook.items, function(i, e) {
+		if (i >=from && i <= to) {
+		    e.editized.formView.addClass('in-range');
+		}
+	    });
+	    $('.button.move').hide();
+	    $('.button.range').show();
+	    $('.button.drop').show();		
+	    $('.button.delete').hide();
+	    
+	}
+
+	// Utility function for producing interactive text els
+	var editize = function(o) {
+
+	    var fieldName = o.fieldName;
+            var fieldTitle = o.fieldTitle;
+            var isRichText = o.isRichText;
+	    var isNote = o.isNote;
+	    var caller = o.caller;
+	    var data = caller.data;
+	    var patch = caller.patch;
+
+	    var formField = d('field');
+	    
+	    var el = undefined;
+	    var essayChild = undefined;
+	    
+	    if (isNote) {
+		essayChild = s('note essay ' + fieldName);
+	    }
+	    else {
+		essayChild = d('header essay ' + fieldName);
+	    }
+
+            if (isRichText) {
+                el = d('field-input scroll-'
+                       + fieldName
+                       + ' '
+                       + fieldName)
+                    .html(data[fieldName]);
+
+                essayChild.html(data[fieldName]);
+		
+		var medium = new MediumEditor(el, {disableReturn: true});
+		
+		medium.subscribe('editableInput', function (event, editor) {
+                    caller.needsUpdated = true;
+		    data[fieldName] = medium.getContent();
+                    essayChild.html(medium.getContent() + ' ');
+		});
+            }
+            else {
+                el = i('field-input scroll-'
+                       + fieldName
+                       + ' '
+                       + fieldName, data[fieldName]);
+		
+                essayChild.text(data[fieldName]);
+		
+                el.on('input', function(ev) {
+                    patch[name] = el.val();
+                    essayChild.text(el.val());
+                });
+            }
+
+	    if (isNote) {
+		var buttons = d('buttons');
+		buttons.append(
+		    s('button order').text(data.order),
+
+		    s('button move').text('Move')
+			.on('click', function(ev) {
+			    _notebook.moveStatus.fromNote.el = caller;
+			    _notebook.setRange();
+			}),
+
+		    s('button range').text('Range')
+			.on('click', function(ev) {
+			    _notebook.moveStatus.throughNote.el = caller;
+			    _notebook.setRange();			    
+			}),
+
+		    s('button drop').text('Drop')
+			.on('click', function(ev) {
+			    _notebook.moveStatus.toBeforeNote.el = caller;
+			    _notebook.rearrange();   
+			}),
+		    
+		    s('button delete').text('Delete')
+			.on('click', function(ev) {
+			    caller.needsDeleted = true;
+			    caller.editized.essayView.remove();
+			    caller.editized.formView.remove();			    
+			}));
+		el.prepend(buttons);
+	    }
+
+	    formField.append(buttons,
+			     d('field-title').html(fieldTitle),
+			     el);
+	    return {
+		formView: formField,
+		essayView: essayChild
+	    };
+	};
+	
 	this.user = user;
 	this.user.currentScroll = scroll;
-	this.data = {};
 	this.patch = {};
-	
+
+	this.items = new Array();
 	this.itemsEl = undefined;
 	this.essayEl = undefined;
 	
         this.needsCreated = scroll ? false : true;
         this.needsUpdated = false;
         this.needsDeleted = false;
+
         this.networkOperationInProgress = false;
 
 	this.initialize = function() {
@@ -1479,21 +1706,40 @@
 	    }
 	    else {
 		_notebook.loadScroll();
-//		_notebook.loadNotes();
+		_notebook.loadNotes();
 	    }
 	    _notebook.initializeDOM();
 	};
+
+        this.makeItem = function(kind, event, note) {
+            var item = new NotebookItem(kind, event, note, _notebook);
+	    if (!item.data.order) {
+		item.data.order = this.decmin();
+	    }
+	    var text = note ? note.text : '';
+	    item.editized = editize({fieldName:'text',
+				     fieldTitle:'Note',
+				     isRichText:true,
+				     isNote:true,
+				     caller:item});
+	    _notebook.items.unshift(item);
+            _notebook.itemsEl.prepend(item.editized.formView);
+            _notebook.essayEl.prepend(item.editized.essayView);
+	    return item;
+	}
+	
         
 	this.initializeDOM = function() {
     
 	    _notebook.itemsEl = $('#notebook-items');
 	    _notebook.essayEl = $('#notebook-essay');
             
-            $('#insert-button')
+            $('#note-default-create-button')
                 .off()
 		.on('click', function(ev) {
                     ev.preventDefault();
-                    _notebook.makeItem('default');
+		    console.log('Clicked on default create button');
+                    _notebook.makeItem('default', undefined, undefined);
 		});
             
             $('#insert-space')
@@ -1512,77 +1758,56 @@
 	};
 
         this.editor = function() {
-            console.log(_notebook.scroll);
 	    this.editorDOM();
 	};
         
 	this.editorDOM = function() {
-            var essayHeader = $('#scroll-header-essay');
-            essayHeader.empty();
-            
-            console.log('SCROLL', _notebook);
-	    var editize = function(o) {
-                var fieldName = o.fieldName;
-                var fieldTitle = o.fieldTitle;
-                var richText = o.richText;
-		var el = undefined;
-                var essayEl = undefined;
 
-                essayEl = d('essay ' + fieldName);
-                essayHeader.append(essayEl);
+	    var title = editize({
+		fieldName:'title',
+		fieldTitle:'Notebook title',
+		isRichText:true,
+		caller:_notebook
+	    });
+	    
+	    var subtitle = editize({
+		fieldName:'subtitle',
+		fieldTitle:'Subtitle',
+		isRichText:true,
+		caller:_notebook		
+	    });
 
-                if (richText) {
-                    el = d('field-input scroll-'
-                           + fieldName
-                           + ' '
-                           + fieldName)
-                        .html(_notebook.scroll[fieldName]);
-                    essayEl.html(_notebook.scroll[fieldName]);
-		    var medium = new MediumEditor(el, { disableReturn: true});
-		    medium.subscribe('editableInput', function (event, editor) {
-                        _notebook.needsUpdated = true;
-		        _notebook.patch[fieldName] = medium.getContent();
-                        essayEl.html(medium.getContent());
-                        essayHeader.append(essayEl);                        
-		    });
-                }
-                else {
-                    el = i('field-input scroll-'
-                           + fieldName
-                           + ' '
-                           + fieldName, _notebook.scroll[fieldName]);
-                    essayEl.text(_notebook.scroll[fieldName]);
-                    el.on('input', function(ev) {
-                        _notebook.patch[name] = el.val();
-                        essayEl.text(el.val());
-                        essayHeader.append(essayEl);                        
-                    });
-                }
-                         
-		return d('field').append(
-		    d('field-title').html(fieldTitle),
-		    el
-		);
-	    }
+	    var description = editize({
+		fieldName:'description',
+		fieldTitle:'Description',
+		isRichText:true,
+		caller:_notebook				
+	    });	 
 
 	    $('#scroll-header')
                 .empty()
-                .append(
-		    editize({fieldName:'title', fieldTitle:'Notebook title', richText:true}),
-		    editize({fieldName:'subtitle', fieldTitle:'Subtitle', richText:true}),
-		    editize({fieldName:'description', fieldTitle:'Description', richText:true}));
+                .append(title.formView, subtitle.formView, description.formView);
+	    
+	    $('#scroll-header-essay')
+                .empty()
+                .append(title.essayView, subtitle.essayView, description.essayView);
+
 	}
 
         this.loadScroll = function() {
-            var start = _notebook.scroll.first_event ? moment(_notebook.scroll.first_event) : undefined ;
-            var before = _notebook.scroll.last_event ? moment(_notebook.scroll.last_event) : undefined ;
+            var start = _notebook.data.first_event ? moment(_notebook.data.first_event) : undefined ;
+            var before = _notebook.data.last_event ? moment(_notebook.data.last_event) : undefined ;
             _notebook.read();
             _notebook.user.timeline.initialize(start, before, _notebook.user);
 	};
 
+	this.loadNotes = function() {
+	    _notebook.notesRead();
+	}
+
 	this.read = function() {
 	    $.ajax({
-                url:_notebook.scroll.url,
+                url:_notebook.data.url,
                 type: 'GET',
                 contentType: 'application/json',
                 dataType: 'json',
@@ -1593,7 +1818,7 @@
 		    console.log('Failure: ' + e);
                 },
                 success:function(o) {
-                    $.extend(_notebook.scroll, o);
+                    $.extend(_notebook.data, o);
                     _notebook.editor();
                 }
 	    });            
@@ -1619,7 +1844,7 @@
 		    console.log('Failure: ' + e);
                 },
                 success:function(o) {
-		    $.extend(_notebook.scroll, o);
+		    $.extend(_notebook.data, o);
 		    _notebook.editor();
                 }
 	    });
@@ -1631,7 +1856,7 @@
 		url:_notebook.data.url,
 		type: 'DELETE',
 		headers: {
-		    'Authorization': 'Token ' + _event.user.key
+		    'Authorization': 'Token ' + _event.user.data.key
 		},
 		failure:function(e) {
 		    console.log('Failure: ' + e);
@@ -1644,27 +1869,26 @@
         
         this.notesRead = function() {
 	    $.ajax({
-                url:API + '/notes/?scroll=' + _notebook.user.currentScroll.data.uuid,
+                url:_notebook.data.url + 'notes/',
                 type: 'GET',
                 contentType: 'application/json',
                 dataType: 'json',
                 headers: {
-		    'Authorization': 'Token ' + _notebook.user.key
+		    'Authorization': 'Token ' + _notebook.user.data.key
                 },
                 failure:function(e) {
 		    console.log('Failure: ' + e);
                 },
                 success:function(o) {
-		    for (var i=0;i<o.results.length; i++)
-		    {
-                        var nbItem = o.results[i];
-                        var nbi = Notebook.makeItem(nbItem.kind, nbItem.event_full, nbItem);
+		    for (var i=o.length - 1;i>=0;i--) {
+                        var nbItem = o[i];
+                        _notebook.makeItem(nbItem.kind, nbItem.event_full, nbItem);
 		    }
                 }
 	    });
         };
         
-	this.notesCreate = function(data, items) {
+	this.notesPost = function(data, items) {
 	    $.ajax({
                 url:API + '/notes/',
                 type: 'POST',
@@ -1680,16 +1904,18 @@
                 },
                 success:function(o) {
 		    for (var i=0;i<o.length; i++) {
-                        $.extend(_notebook.items[i], o[i]);
+			items[i].needsCreated = false;
+                        $.extend(items[i].data, o[i]);
 		    }
                 }
 	    });
 	};
         
-	this.notesUpdate = function(data, items) {
+	this.notesPut = function(data, items) {
+	    console.log('CALLING NOTES PUT', data, items);
 	    $.ajax({
                 url:API + '/notes/',
-                type: 'PATCH',
+                type: 'PUT',
                 contentType: 'application/json',
                 dataType: 'json',
 		data:JSON.stringify(data),
@@ -1707,10 +1933,12 @@
                 }
 	    });
 	};
-        this.notesDelete = function(data, items)  {
+	
+        this.notesDelete = function(items)  {
 	    for (var i = 0; i<items.length; i++) {
+		console.log('GONNA DELETE', items[i]);
 		$.ajax({
-		    url:API + '/notes/' + items[i].id,
+		    url:items[i].data.url,
 		    type: 'DELETE',
 		    context:items[i],
 		    headers: {
@@ -1720,351 +1948,77 @@
 			console.log('Failure: ' + e);
 		    },
 		    success:function(o) {
-                        items[i].needsDeleted = false;                            
+                        this.needsDeleted = false;                            
 		    }
                 });
 	    }
 	};
-        
-	this.render = function() {
-	    _notebook.dom_nb_listing.hide();
-            _notebook.dom_title.empty();
-            _notebook.dom__notebook.empty();
-            _notebook.dom_essay.empty();
-            
-	    var title = 'Untitled';
-	    if (this.scroll.title) {
-		title = this.scroll.title;
-	    }
-            
-	    var editor = d('notebook-title-editor').html(title);
-	    var medium = new MediumEditor(editor, {
-		disableReturn: true,
-		targetBlank: true
-            });
-
-	    $('#notebook-title').append(editor);
-            
-            medium.subscribe('editableInput', function (event, editor) {
-                _notebook.needsUpdated = true;
-                _notebook.title = medium.getContent();
-	    });
-	}
+        	
         this.update = function() {
-                _notebook.networkOperationInProgress = true;
-		$.ajax({
-                    url:_notebook.scroll.url,
-                    type: 'PATCH',
-                    contentType: 'application/json',
-                    dataType: 'json',
-		    data:JSON.stringify(_notebook.patch),
-                    headers: {
-			'Authorization': 'Token ' + _notebook.user.data.key
+            _notebook.networkOperationInProgress = true;
+	    $.ajax({
+                url:_notebook.data.url,
+                type: 'PUT',
+                contentType: 'application/json',
+                dataType: 'json',
+		data:JSON.stringify(_notebook.data),
+                headers: {
+		    'Authorization': 'Token ' + _notebook.user.data.key
+                },
+                failure:function(e) {
+                    _notebook.networkOperationInProgress = false;
+		    console.log('Failure: ' + e);
                     },
-                    failure:function(e) {
-                        _notebook.networkOperationInProgress = false;
-			console.log('Failure: ' + e);
-                    },
-                    success:function(o) {
-                        _notebook.networkOperationInProgress = false;
+                success:function(o) {
+                    _notebook.networkOperationInProgress = false;
+		    _notebook.needsUpdated = false;
                         $.extend(_notebook.data, o);
-                        _notebook.patch = {};
-                        console.log('Saved notebook, received', o);
-		        var notebookList = new NotebookList(_notebook.user);                        
-                    }
-		});
+		    var notebookList = new NotebookList(_notebook.user);                        
+                }
+	    });
         }
+	
         this.notebookScanner = function() {
-            if (!$.isEmptyObject(_notebook.patch)
-                && !_notebook.networkOperationInProgress) {
+            if (!_notebook.networkOperationInProgress && _notebook.needsUpdated) {
                 _notebook.update();                
             }  
 	};
         setInterval(this.notebookScanner, REFRESH_INTERVAL);	
-        
-	/* Get our DOM objects */
 
-        
-	var makeInsertionTemplate = function() {
-	    return {
-                moving:false,
-                  from:undefined,
-                to:undefined
-            };
+	this.noteScanner = function() {
+	    var toCreate = $.grep(_notebook.items, function(e) {return e.needsCreated;});
+	    if (toCreate.length > 0) {
+		var posts = $.map(toCreate, function(e) {
+		    return $.extend(e.data, {scroll:_notebook.data.url});
+		});
+                _notebook.notesPost(posts, toCreate);
+	    }
+
+	    var toPut = $.grep(_notebook.items, function(e) {
+		return (e.needsUpdated && !e.needsCreated);
+	    });
+	    if (toPut.length > 0) {
+		var puts = $.map(toPut, function(e) {
+		    return $.extend(e.data, {scroll:_notebook.data.url});		    
+		});
+		console.log('PUTS', puts);
+                _notebook.notesPut(puts, toPut);
+	    }
+	    
+	    var toDelete = $.grep(_notebook.items, function(e) {
+		return (e.needsDeleted && !e.needsCreated && !e.Updated);		
+	    });
+	    if (toDelete.length > 0) {
+		_notebook.notesDelete(toDelete);
+	    }
+
 	}
-	
-	this.insertion = makeInsertionTemplate();
+        setInterval(this.noteScanner, REFRESH_INTERVAL);		
 	
         this.title = undefined;
         this.items = new Array();
 	
-	// This is where we reorder items.
-	this.reorderItems = function(target) {
-	    var replace = new Array();
-	    
-	    var ordered = this.fixOrder(this.insertion);
-	    
-	    var to_loc = undefined;
-	    var from_loc = undefined;		
-	    var target_loc = undefined;
-	    
-	    for (var i = 0; i<this.items.length; i++) {
-		if (this.items[i] == ordered.from) {
-		    from_loc = i;
-		}
-		if (this.items[i] == ordered.to) {
-		    to_loc = i;
-		}
-		if (this.items[i] == target) {
-		    target_loc = i;
-		}		    		    
-	    }
-	    // If to is undefined we have a range of one
-	    if (!ordered.to) {
-		to_loc = from_loc;
-	    }
-	    
-	    for (var i = 0; i<this.items.length; i++) {
-		if (i == target_loc) {
-		    // Paste them in here
-		    if (i==0) {
-			for (var j = to_loc; j>=from_loc; j--) {
-			    this.items[j].order = this.decmin();
-			}
-		    }
-                    
-		    else {
-			var oneback = this.items[i-1];
-			for (var j = from_loc; j<=to_loc; j++) {
-			    var between = this.items[i].order - oneback.order;
-			    var div = to_loc - from_loc + 2;
-			    this.items[j].order = oneback.order + between/div;
-			    
-			}
-		    }
-		    
-		    for (var j=from_loc; j<=to_loc; j++) {
-			this.items[j].needsUpdated = true;
-			$(target.notebookView).before(this.items[j].notebookView);
-			$(target.textView).before(this.items[j].textView);
-			replace.push(this.items[j]);
-		    }
-		    replace.push(this.items[i]);
-		}
-		else if (i >= from_loc && i <= to_loc) {
-		    // nothing
-		}
-		else {
-		    replace.push(this.items[i]);
-		}
-		
-	    }
-	    this.insertion = makeInsertionTemplate();
-	    this.items = replace;
-	}
-	
-	this.getNext = function(item) {
-	    for (var i = 0; i<this.items.length; i++) {
-		if (this.items[i] == item) {
-		    return this.items[i+1];
-		}
-	    }
-	};
-        
-	this.getPrev = function(item) {
-	    for (var i = 0; i<this.items.length; i++) {
-		if (this.items[i] == item) {
-		    return this.items[i-1];
-		}
-	    }
-	};
-	
-	// You can select a range bottom up. If that happens
-	// switch "from" and "to".
-	this.fixOrder = function(insertion) {
-	    var _from = insertion.from;
-	    var _to = insertion.to;
-	    
-	    if (_to) {
-		if (_from.order > _to.order) {
-		    _from = _to;
-		    _to = _from;
-		}
-	    }
-	    
-	    return {from:_from, to:_to}
-	};
-	
-	// You can move a range of notes at once.
-	this.getRange = function(insertion) {
-	    var span = new Array();
-	    var ordered = this.fixOrder(insertion);
-	    var _from = ordered.from;
-	    var _to = ordered.to;
-	    var started = false;
-	    var finished = false;
-	    for (var i = 0; i<this.items.length; i++) {
-		if (!finished) {
-		    if (this.items[i] == _from) {
-			span.push(this.items[i]);
-			started = true;
-		    }
-		    else if (this.items[i] == _to) {
-			span.push(this.items[i]);
-			finished = true;
-		    }
-		    else if (started) {
-			span.push(this.items[i]);			    
-		    }
-		}
-	    }
-	    return span;
-	};
-	
-        this.makeItem = function(kind, event, note) {
-            var item = new NotebookItem(kind, event, note);
-            _notebook.itemsEl.prepend(item.notebookView);
-            _notebook.essayEl.prepend(item.textView);
-	    item.order = this.decmin();
-	    
-	    item.mover = $('<span></span>',
-			   {class:'button mover'})
-		.html('MV');
-	    
-	    item.notebookView.children('.top, .editable').on('click', function(ev){
-		if (_notebook.insertion.moving) {
-		    ev.stopImmediatePropagation();
-		    ev.preventDefault();
-		    
-		    _notebook.insertion.from.buttons.children('.mover').removeClass('active');
-		    
-		    _notebook.reorderItems(item);
-		    $('.mover').html('MV');
-		}
-	    });
-	    
-	    item.notebookView.hover(
-		function(ev) {
-		    if (_notebook.insertion.moving == true
-			&& item != _notebook.insertion.from) {
-			var el = $(item.notebookView);
-			el.children()
-			    .css({cursor:'hand'});
-		    }
-		},
-		function(ev) {
-		    if (!_notebook.moving) {
-			var el = $(item.notebookView)			
-			el.children().css({cursor:'default'});
-		    }
-		});
-	    
-	    item.mover.on('click', function(ev) {
-		if (_notebook.insertion.moving) {
-		    if (item == _notebook.insertion.from) {
-			item.mover.removeClass('active');
-			_notebook.insertion = makeInsertionTemplate();
-		    }
-		    else {
-			_notebook.insertion.to = item;
-			var range = _notebook.getRange(_notebook.insertion);
-			for (i in range) {
-			    range[i].buttons.children('.mover').addClass('active');
-			}
-		    }
-		}
-		else {
-		    _notebook.insertion.moving = true;
-		    item.mover.addClass('active');
-		    $('.mover').not('.active').each(function(pos, el) {
-			$(el).html('SET RANGE');
-		    });
-		    _notebook.insertion.from = item;
-		}
-	    })
-	    
-	    item.buttons.prepend(item.mover);
-	    this.items.unshift(item);
-        }
 
-        this.scanner = function () {
-	    // If we don't have a scroll URL then we can't make a REST query.
-	    if (!_notebook.scroll) {
-		console.log('[Error] No scroll URL, can\'t save anything', _notebook);
-	    }
-	    else {
-		var makePost = function(nbItem) {
-                    var event = undefined;
-                    
-                    var data = {
-			order:nbItem.order,
-                        kind:nbItem.kind,
-			scroll:_notebook.scroll.url,
-			text:nbItem.medium.getContent()
-                    };
-                    if (nbItem.event && nbItem.event.url) {
-			data['event'] = nbItem.event.url;
-                    }
-                    if (nbItem.url) {
-			data['url'] = nbItem.url;
-                    }
-                    if (nbItem.id) {
-			data['id'] = nbItem.id;
-                    }
-                    if (nbItem.uuid) {
-			data['uuid'] = nbItem.uuid;
-                    }
-                    return data;
-		}
-		
-		var makeDelete = function(nbItem) {
-                    var data = {};
-                    if (nbItem.id) {
-			data['id'] = nbItem.id;
-                    }
-                    if (nbItem.url) {
-			data['url'] = nbItem.url;
-                    }
-                    return data;
-		}
-		
-		var updated = new Array();
-		var deleted = new Array();
-		var created = new Array();
-		
-		for (var i=0; i<_notebook.items.length; i++) {
-		    if (_notebook.items[i].needsCreated) {
-			created.push(_notebook.items[i]);
-		    }
-                    else {
-			// Avoid update or delete before create---if
-			// it needs created then let that happen first
-			// on a subsequent pass.
-			
-			if (_notebook.items[i].needsUpdated) {
-                            updated.push(_notebook.items[i]);
-			}
-			if (_notebook.items[i].needsDeleted) {
-                            deleted.push(_notebook.items[i]);
-			}
-		    }
-		}
-		
-		if (created.length > 0) {
-                    _notebook.notesCreate($.map(created, makePost), created);
-		}
-		
-		if (updated.length > 0) {
-                    _notebook.notesUpdate($.map(updated, makePost), updated);
-		}
-		
-		if (deleted.length > 0) {
-                    _notebook.notesDelete($.map(deleted, makeDelete), deleted);
-		}
-	    }
-	}
-        setInterval(this.scanner, REFRESH_INTERVAL);
-	
 	this.initialize();
 
     };
@@ -2074,131 +2028,19 @@
        ┃┗┫┃ ┃ ┃ ┣╸ ┣┻┓┃ ┃┃ ┃┣┻┓┃ ┃ ┣╸ ┃┃┃
        ╹ ╹┗━┛ ╹ ┗━╸┗━┛┗━┛┗━┛╹ ╹╹ ╹ ┗━╸╹ ╹
     */
-    var NotebookItem = function(kind, event, note) {
+    var NotebookItem = function(kind, event, note, notebook) {
 	var _notebookitem = this;
-        this.event = event;
-        this.kind = kind ? kind : 'default';
-        this.note = note;
-        this.uuid = undefined;
-        if (this.note) {
-            this.uuid = this.note.url;
-        }
-        this.id = undefined;
-        if (this.note) {
-            this.id = this.note.id;
-        }            
 
-        this.data = {};
-	this.order = undefined;
+        this.kind = kind ? kind : 'default';
+        this.event = event;
+	this.notebook = notebook;
+        this.data = $.extend(note, {kind:kind});
 	
         this.needsCreated = note ? false : true;
         this.needsUpdated = false;
         this.needsDeleted = false;
-	
-	this.buttons = $('<div></div>', {class:'buttons'});
-	this.mover = undefined;
-	
-        this.render = function() {
-	    console.log(_notebookitem.event);
-	    var div = d('top');
-            if (_notebookitem.event && _notebookitem.event.data) {
-                var el = div.append(
-		    a(event.data.content_url, 'notebook-event-title')
-			.append(d('notebook-event-title').html(event.data.title)),
-		    d('notebook-event-datetime').html(event.data.datetime),
-		    d('notebook-event-text').html(event.data.text)
-		);
-		return div;
-            }
-            else if (this.kind=='closer') {
-		return div.html('&mdash; FIN &mdash;')
-            }
-	    else if (this.kind=='spacer') {
-		this.buttons.append(
-		    s('button').html('Space &times; 2')
-			.addClass('active')
-			.on('click', function() {
-			    _notebookitem.buttons.children('span.button')
-                                .removeClass('active');
-			    $(this).addClass('active');
-			    _notebookitem.medium.setContent('<br/><br/>');}),
-		    s('button').html('&mdash;')
-			.on('click', function() {
-			    _notebookitem.buttons.children('span.button')
-                                .removeClass('active');
-			    $(this).addClass('active');				
-			    _notebookitem.medium.setContent('<hr></hr>');
-			}));
-		return d;
-            }
-            else if (_notebookitem.kind=='image') {
-                return div.html('image');
-            }		
-            else {
-                return div.html('Card');
-            }
-        }
-	
-        this.editor = $('<div></div>', {class:'editable'});
-        if (this.kind == 'spacer') {
-	    this.editor.html($('<br/><br/>'));
-        }
-	else if (note && note.text) {
-	    this.editor.html(note.text);
-	}
-	
-        this.medium = new MediumEditor(this.editor, {
-	    disableReturn: true,
-	    disableDoubleReturn: false,
-	    disableExtraSpaces: false,
-	    targetBlank: true                
-        });
-	
-        this.textView = s('view-item').on('click', function() {});
-        this.changed = function() {
-	    this.needsUpdated = true;
-        };
-	
-        this.deleteButton = s('button')
-	    .html('[Del]')
-	    .on('click', function(ev) {
-                _notebookitem.needsDeleted = true;
-		_notebookitem.notebookView.remove();
-		_notebookitem.textView.remove();		    
-	    });	    
-	
-        this.makeNotebookView = function() {
-	    if (this.kind != 'closer') {
-                return d('nb-item ' + kind)
-		    .append(this.buttons
-			    .append(this.deleteButton))
-		    .append(this.eventHTML)
-		    .append(this.editor);
-	    }
-	    else {
-                return $('<div></div>',
-			 {class:'nb-item ' + kind})
-		    .append(this.eventHTML);
-	    }
-        }
-        
-        this.notebookView = this.makeNotebookView();
-        this.textView.html(this.medium.getContent() + ' ');
-	this.medium.subscribe('focus', function (event, editor) {
-	    $('span.view-item').removeClass('focused');
-	    _notebookitem.textView.addClass('focused');
-	    var scrollTop = $('#notebook-essay').scrollTop()
-		+ $(_notebookitem.textView).position().top
-		- 100;
-	    $('#notebook-essay').animate({
-		scrollTop: scrollTop
-	    });
-	});
-	this.medium.subscribe('editableInput', function (event, editor) {
-            _notebookitem.changed();
-            _notebookitem.textView.html(_notebookitem.medium.getContent());
-            _notebookitem.textView.append(' ');
-	});
+	this.editized = undefined;
+
     };   
     
     /*
@@ -2212,13 +2054,18 @@
 	var _notebooklist = this;
 	this.user = user;
         this.el = $('#notebook-listing');
+	this.scrolls = new Array();
+	
+	this.first = function() {
+	    return this.scrolls[0];
+	}
+	
         this.initialize = function() {
-	    var scrolls = $.map(user.data.full_scrolls,
-				function(s) {
-				    var v = new NotebookListItem(s, _notebooklist);
-				    return v.render();
-				});
-	    _notebooklist.initializeDOM(scrolls);
+	    _notebooklist.scrolls = $.map(user.data.full_scrolls,
+					  function(s) {
+					      return new NotebookListItem(s, _notebooklist);});
+	    var els = $.map(_notebooklist.scrolls, function(s) {return s.el});
+	    _notebooklist.initializeDOM(els);
 	};
 	
 	this.initializeDOM = function(scrolls) {
@@ -2228,7 +2075,7 @@
                                             .append(
                                                 th('when').text('Created'),
                                                 th('title').text('Title'),
-                                                th('username').text('Creator'),                                                
+                                                th('username').text('Creator'),
                                                 th('public').text('Public?')),
                                         scrolls));
 	    $('#notebook-list-button')
@@ -2249,24 +2096,32 @@
     var NotebookListItem = function(item, notebooklist, user) {
 	var _notebooklistitem = this;
 
-	this.item = item;
+	this.data = item;
 	this.notebooklist = notebooklist;
 	this.user = notebooklist.user;
-        this.render = function() {
+	this.el = undefined;
+	
+	this.initialize = function() {
+	    _notebooklistitem.el = _notebooklistitem.initializeDOM();
+	}
+	
+        this.initializeDOM = function() {
 	    var line =
 		tr('notebook-list-item')
 		.append(
-		    td('notebook-list-date').text(moment(item.created).fromNow()),
-		    td('notebook-list-title').html(item.title),
+		    td('notebook-list-date').text(moment(_notebooklistitem.data.created).fromNow()),
+		    td('notebook-list-title').html(_notebooklistitem.data.title),
 		    td('notebook-list-username').html(_notebooklistitem.user.data.username),                    
-		    td('notebook-list-public').text(item.public ? 'Public' : 'Private'));
+		    td('notebook-list-public').text(_notebooklistitem.data.public ? 'Public' : 'Private'));
 	    line.on('click', function(ev) {
-		var notebook = new Notebook(item, _notebooklistitem.user);
+		var notebook = new Notebook(_notebooklistitem.data, _notebooklistitem.user);
 		_notebooklistitem.user.currentNotebook = notebook;
                 _notebooklistitem.notebooklist.el.toggle();
 	    });
 	    return line;
 	};
+
+	this.initialize();
     }
     
     /*
@@ -2282,7 +2137,6 @@
 	var end = moment();
 	var start = end.clone().subtract(1, 'month');
         var timeline = new Timeline(start, end, user);
-	var n = new Notebook(undefined, user);
 
 	$('#notebook-create-button')
 	    .on('click', function(ev) {

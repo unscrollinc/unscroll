@@ -85,6 +85,11 @@ class Scroll(models.Model):
         unique_together = (("title", "user"),)
         ordering = ['-created']
 
+    def full_notes(self):
+        return Note.objects\
+                   .select_related('scroll')\
+                   .filter(scroll__id=self.id)
+
     def __unicode__(self):
         return '{}'.format(self.title,)
 
