@@ -129,13 +129,13 @@ form#search-form {
     display:inline;
     top:15px;
     position:absolute;
-    margin:0px;
+    margin-left:5px;
 }
 
 #search-form input {
     width:80%;
     margin:0px;
-    padding:0px;
+    padding:0 0 0 20px;
     font-size:20px;
     color:#888;
     border:none;
@@ -146,25 +146,12 @@ form#search-form {
 
 input#search-input {
     border-bottom:1px solid black;
-    padding-left:15px;
+    padding-left:0px;
 }
 
 input#search-input:focus, input#search-input:hover {
     outline:none;
     color:black;
-}
-
-input#search-submit {
-    display:none;
-    padding:0 10px 0 10px;
-    background:white;
-    cursor:hand;        
-}
-
-input#search-submit:hover {
-}
-
-input#search-submit:focus {
 }
 
 /* Login */
@@ -200,10 +187,10 @@ div#login {
 .event {
     position:absolute;
     text-align:left;
-    line-height:150%;
 }
 
 .event .inner {
+    line-height:100%;
     margin:0.25em;
     padding:0.5em;
     background:white;
@@ -214,6 +201,7 @@ div#login {
 
 .event .inner a.title {
     font-family:Roboto;
+    font-size:10pt;
     color:#2F9ECA;    
 
 }
@@ -226,6 +214,7 @@ img.thumb {
     max-width:64px;
     max-height:64px;
     margin:0 8px 0 0;
+    float:right;
 }
 
 .event .inner .datetime {
@@ -235,17 +224,10 @@ img.thumb {
     color:#888;
 }
 
-div.title {
-    font-variant:Italic;
-    font-weight:bold;
-}
-
 .event .inner .scroll-title {
-    color:#444;
-    font-size:80%;
-    float:right;
-    font-weight:bold;
-    font-variant:Italic;
+    font:10pt Roboto;
+    color:#666;
+    margin-bottom:0em;
 }
 
 .noselect {
@@ -502,11 +484,6 @@ div#new-event {
     padding:none;
 }
 
-#notebook-event .scroll-title {
-    font-family:Roboto;
-    font-size:bold;
-}
-
 #notebook-event .rte {
     padding:1%;
     background:white;
@@ -618,4 +595,20 @@ span.button.delete {}
 
 .in-range {
     background:pink;
+}
+.note-event {
+    font-family:Roboto;
+    font-size:10pt;
+}
+
+#search-alert {
+    background:red;
+    color:white;
+    left:35%;
+    top:0;
+    position:fixed;
+    display:block;
+    padding:0.5em;
+    z-index:2000;
+    display:none;
 }

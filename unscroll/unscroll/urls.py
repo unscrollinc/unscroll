@@ -181,21 +181,6 @@ class BulkEventSerializer(BulkSerializerMixin,
         return s
 
 
-class EventPagination(pagination.PageNumberPagination):
-    page_x = None
-    page_y = None
-    
-    def get_paginated_response(self, data,  first_event=None, last_event=None):
-        return Response({
-            'first_event': first_event,
-            'last_event': last_event,
-            'next': self.get_next_link(),
-            'previous': self.get_previous_link(),
-            'count': self.page.paginator.count,
-            'results': data
-        })
-
-
 class BulkEventViewSet(BulkModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Event.objects.select_related('scroll', 'user')\
@@ -203,16 +188,18 @@ class BulkEventViewSet(BulkModelViewSet):
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     filter_class = EventFilter
     serializer_class = BulkEventSerializer
-    pagination_class = EventPagination
 
     @list_route()
     def maxmin(self, request):
-        filtered = EventFilter(request.GET, queryset=Event.objects)
-
-        qs = filtered.qs.aggregate(
-            last_event=Max('datetime'),
-            first_event=Min('datetime')
-        )
+        filtered = EventFilter(request.GET,
+                               queryset=Event.objects)
+        qs = filtered.qs\
+                     .filter(scroll__public=True)\
+                     .aggregate(
+                         count=Count('*'),
+                         last_event=Max('datetime'),
+                         first_event=Min('datetime')
+                     )
         return Response(qs)
 
     @list_route()
@@ -251,6 +238,27 @@ class NoteSerializer(serializers.HyperlinkedModelSerializer):
         s = Note(**validated_data)
         s.save()
         return s
+
+
+class NoteEventSerializer(serializers.HyperlinkedModelSerializer):
+    event_full = BulkEventSerializer(
+        source='event',
+        many=False,
+        read_only=True)
+
+    class Meta:
+        model = Note
+        fields = (
+            'id',
+            'url',
+            'uuid',
+            'scroll',
+            'user',
+            'event_full',
+            'order',
+            'created',
+            'last_updated',
+            'text',)
 
 
 class NoteViewSet(viewsets.ModelViewSet):
@@ -388,8 +396,10 @@ class ScrollViewSet(viewsets.ModelViewSet):
 
     @detail_route(methods=['get'])
     def notes(self, request, pk=None):
-        notes = Note.objects.filter(scroll__id=pk)
-        serializer = NoteSerializer(
+        notes = Note.objects\
+                    .select_related('event')\
+                    .filter(scroll_id=pk)
+        serializer = NoteEventSerializer(
             notes,
             context={'request': request},
             many=True)

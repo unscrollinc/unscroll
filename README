@@ -6,7 +6,53 @@
 https://unscroll.com
 A writing tool for people who need to get it right.
 
-* For June 10, 2017 demo
+* Presentation: When a Side Project Wants to Kill You
+
+- Write four or five essays
+  - Explain why I'm doing readings
+  - Press releases
+  - Raccoon
+  - Something personal about a human being
+  - Something about creative energy getting unleashed
+  - Lincoln center and a place in which energy is unleashed
+  - Most things are a social network with activity hanging off of them
+
+- The five motivations
+  - Curiosity
+  - The Failure of Historical timelines
+    - Book on timelines
+    - You can fall in love with an interface but it's not what you thought it would be.
+    - So now I'd built some timelines.
+    - And I put them aside for a while.
+    - Then about four years ago, I signed a book contract.
+  - Jealousy
+  - Being awesome
+  - Procrastination/Fraudulence
+    - Started a company
+      - I can't bring them into my mess until I truly knew what my mess even was.
+      - You are what you do when you procrastinate. You think you're the thing you're putting off. But you're the thing.
+      - So around Christmas I just started over.
+  - Personal transformation
+
+  - A deadline
+    - And they came to me . St
+    - The second time I tried to launch it
+    - Discovery and Curiousity
+
+- Make the five videos
+  - Timeline in use with no events
+  - Timeline responding to search and playing a song
+  - Timeline playing a song
+  - Adding things to the timeline
+  - Writing in the timeline
+  - Essay
+
+
+
+
+
+* For June 9 Demo
+
 - Account 
   + [ ] Register
   + [ ] Confirm
@@ -14,9 +60,10 @@ A writing tool for people who need to get it right.
   + [X] Log out
 
 - API
-  - [ ] Endpoints for notebook
-  - [ ] Search endpoint and database modification
+  - [X] Endpoints for notebook
+  - [X] Search endpoint and database modification
   - [ ] Search only a scroll
+  - [ ] Delete a scroll
   - [ ] List scrolls owned by person
   - [ ] List scrolls by search title
   - [ ] List scrolls by mediatype
@@ -27,26 +74,14 @@ A writing tool for people who need to get it right.
   - [X] Show prioritization of time
   - [X] Listen to something
   - [ ] Switch to "list view"
-  - [ ] Add an event
-    - [ ] Pop up event input
-  - [ ] Edit an event
+  - [X] Add an event
+    - [X] Pop up event input
+  - [X] Edit an event
 
 - Notebook 
-  - [ ] Make a new notebook.
-  - [ ] Title notebook
+  - [X] Make a new notebook.
+  - [X] Title notebook
   - [X] Add event to notebook
   - [X] Show notebook as "essay"
   - [X] Add to notebook
-  - [ ] Publish a notebook
-
-
-
-- contentytpes
-world/transpired
-world/born
-world/died
-music/copyrighted/
-music/published/
-software/github-commit
-software/
-digital/
+  - [X] Publish a notebook

@@ -77,6 +77,8 @@ class Scroll(models.Model):
         Thumbnail,
         related_name='scrolls',
         null=True)
+    fiction = models.BooleanField(
+        default=False)
     deleted = models.BooleanField(
         default=False)
 

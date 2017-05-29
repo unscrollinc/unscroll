@@ -87,13 +87,13 @@ class UnscrollClient():
 
     def create_event_batch(self, events):
         print("Batching {} events.".format(len(events)))
-        revents = []
+        r_events = []
         for event in events:
             event['scroll'] = self.scroll_url
-            revents.append(event)
+            r_events.append(event)
         r = requests.post(self.api + '/events/',
                           headers=self.authentication_header,
-                          json=revents)
+                          json=r_events)
         return r.json()
 
     def create_event(self, event):
@@ -137,15 +137,14 @@ class UnscrollClient():
             return None
 
     def cache_thumbnail(self, url):
-        print(self.api + '/thumbnails/')
         r = requests.post(self.api + '/thumbnails/',
                           headers=self.authentication_header,
-                          data={'source_url':url})
-        print(r.status_code, r)
-        
+                          data={'source_url': url})
+#       print(r.status_code, r)
+
         if r.status_code == 500:
             return None
-        
+
         if r.status_code == 400:
             j = r.json()
             if 'source_url' in j:
@@ -155,6 +154,5 @@ class UnscrollClient():
                     if (len(d['results']) > 0):
                         return d['results'][0]
             return None
-        
-        return r.json()                                
 
+        return r.json()

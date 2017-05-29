@@ -21,31 +21,26 @@
       ┃ ┃ ┃ ┃┃  ┃ ┃ ┃┣╸ ┗━┓
       ┗━┛ ╹ ╹┗━╸╹ ╹ ╹┗━╸┗━┛
     */
-    const d = function (className) {
+
+    const elMaker = function (elType, className, kids) {
+        var el = undefined;
         if (className) {
-            return $('<div></div>', {class:className});
+            el = $('<'+elType+'></'+elType+'>', {class:className});
         }
         else {
-            return $('<div></div>');
+            el = $('<div></div>');
         }
+        if (kids) {
+            el.append(kids);
+        }
+        return el;
     };
-    const s = function (className) {
-        if (className) {
-            return $('<span></span>', {class:className});
-        }
-        else {
-            return $('<span></span>');
-        }
-    };
-    const tr = function (className) {
-        return $('<tr></tr>', {class:className});
-    }    
-    const td = function (className) {
-        return $('<td></td>', {class:className});
-    }
-    const th = function (className) {
-        return $('<th></th>', {class:className});
-    }
+    const d = function (className, kids) { return elMaker('div', className, kids); };
+    const s = function (className, kids) { return elMaker('span', className, kids); };
+    const tr = function (className, kids) { return elMaker('tr', className, kids); };
+    const td = function (className, kids) { return elMaker('td', className, kids); };
+    const th = function (className, kids) { return elMaker('th', className, kids); };                
+
     const i = function (className, value) {
         return $('<input></input>', {value:value,
                                      class:className});
@@ -191,14 +186,7 @@
                     _user.loginDOM();
 		    var notebooklist = new NotebookList(_user);
 		    var notebook = new Notebook(notebooklist.first().data, _user);
-/*
-		    notebook.makeItem(undefined, undefined, undefined);
-		    notebook.makeItem(undefined, undefined, undefined);
-		    notebook.makeItem(undefined, undefined, undefined);
-		    notebook.makeItem(undefined, undefined, undefined);
-		    notebook.makeItem(undefined, undefined, undefined);
-		    notebook.makeItem(undefined, undefined, undefined);		    		    
-*/
+		    _user.currentNotebook = notebook;                    
 		}
             });            
         };
@@ -250,10 +238,58 @@
 	    _search.initializeDOM();
 	}
 
+        this.alert = function(html) {
+            var alert = d('alert').html(html);
+            _search.alertDOM(alert)
+        };
+
+        this.alertDOM = function(alert) {
+            $('#search-alert').empty().append(alert).show().delay(4000).fadeOut();
+        };
+
+        this.success = function(html) {
+            var alert = d('alert').html(html);
+            _search.successDOM(alert)
+        };
+
+        this.successDOM = function(alert) {
+            $('#search-alert').empty().append(alert).show().delay(4000).fadeOut();
+        }
+        
 	this.parseQuery = function(qs) {
 	    console.log('query is', qs)
 	    _search.query.term = qs;
 	};
+
+        this.preSearch = function() {
+	    _search.parseQuery(_search.input.val());
+            
+            $.ajax({
+                type: 'GET',                
+                url: API + '/events/maxmin/',
+                data: {q:_search.query.term},
+                contentType: 'application/json',
+                dataType: 'json',                
+                failure: function(e) {
+		    console.log('Failure: ' + e);
+                },
+                success: function(o) {
+                    console.log('Success: ' + o);
+                    if (o.count > 0) {
+                        _search.success('Found ' + o.count + ' results from ' + moment(o.last_event).year() + ' to ' + moment(o.first_event).year());
+		        _search.timeline.search = _search.query;
+		        _search.timeline.initialize(moment(o.first_event),
+                                                    moment(o.last_event));
+                    }
+                    else {
+                        _search.alert('No results.');
+                        
+                    }
+                    return false;                    
+                }
+            });
+            return false;
+        }
 	
 	this.initializeDOM = function() {
 	    this.input = $('#search-input');
@@ -261,12 +297,15 @@
 	    _search.input.focus(function (ev) {
 		_search.input.val('');
 	    });
-	    
-	    _search.input.keypress(function (e) {
-		if (e.which == 13) {
-		    _search.parseQuery(_search.input.val());
-		    _search.timeline.search = _search.query;
-		    _search.timeline.initialize();
+                    
+	    _search.input.submit(function (ev) {
+                ev.preventDefault();
+            });
+            
+	    _search.input.keypress(function (ev) {
+		if (ev.which == 13) {
+                    ev.preventDefault();
+                    _search.preSearch();
 		    return false; 
 		}
 	    });
@@ -656,7 +695,7 @@
 	    return datetime.year() - 10 * Math.floor(datetime.year()/10);
 	};
 	this.getEventWidth = function(width) {
-	    return Math.ceil(Math.random() * 2);
+            return 2;
 	};	    	    
 	this.getTarget = function(start, pointerInteger, pointerMantissa) {
 	    var pointerFocus = start.clone().add(10 * pointerInteger, 'years');
@@ -879,7 +918,6 @@
 	
 	
         this.makeUrl = function() {
-	    console.log(_panel.timeline.search);
             var url = API
                 + '/events/?start='
                 + _panel.start.format()
@@ -1025,6 +1063,7 @@
         this.data = data;
         this.panel = panel;
         this.user = panel.timeline.user.data;
+        this.notebook = panel.timeline.user.currentNotebook;
 
         this.patch = {};        
         this.el = $('<div></div>', {class:'event'});
@@ -1070,16 +1109,21 @@
                     .on('click', _event.delete);                
             }
 	    var noteButton = a('', 'button').html('+[Note]');
-	    noteButton
-		.on('click', _event.makeNote)
+	    noteButton.on('click', _event.makeNote)
 	    
-            
+            var thumb = undefined;
+            if (_d.thumb_image) {
+                thumb = $('<img></img>', {class:'thumb',
+                                  style:'height:'+_d.thumb_height+';width:'+_d.thumb_width,
+                                  src:_d.thumb_image})
+            }
             _event.el.append(
                 d('inner').append(
+                    d('scroll-title').html(_d.scroll_title),
                     d('datetime').html(_event.formatByResolution()),
+                    thumb,
                     d('title').append(
 			a(_event.data.content_url, 'title').html(_d.title)),
-                    d('scroll-title').html(_d.scroll_title),
 		    noteButton,
                     editButton,
                     deleteButton
@@ -1105,8 +1149,9 @@
 
 	this.makeNote = function(ev) {
 	    ev.preventDefault();
-	    var notebook = panel.timeline.user.currentNotebook;
-            notebook.makeItem('default', _event);    
+            console.log(_event);
+	    var notebook = _event.notebook;
+            notebook.makeItem('default', _event.data, undefined);
 	}
 	
         this.makeEditor = function(exists) {
@@ -1699,8 +1744,6 @@
 	    if (isNote) {
 		var buttons = d('buttons');
 		buttons.append(
-		    s('button order').text(data.order),
-
 		    s('button move').text('Move')
 			.on('click', function(ev) {
 			    _notebook.moveStatus.fromNote.el = caller;
@@ -1728,9 +1771,29 @@
 		el.prepend(buttons);
 	    }
 
-	    formField.append(buttons,
-			     d('field-title').html(fieldTitle),
-			     el);
+            var eventEl = undefined;
+            
+	    if (caller.event) {
+                var _d = caller.event;
+
+                var thumb = undefined;
+                if (_d.thumb_image) {
+                    thumb = $('<img></img>', {class:'thumb',
+                                              style:'height:'+_d.thumb_height+';width:'+_d.thumb_width,
+                                              src:_d.thumb_image});
+                }
+                eventEl = d('note-event', [
+                    d('event-datetime').html(moment(_d.datetime).format()),
+                    thumb,                    
+                    a(_d.content_url, 'event-link').append(
+                        d('event-title').html(_d.title),
+                    ),
+                    d('event-text').html(_d.text),
+                ]);
+            }            
+                
+	    formField.append(buttons, d('field-title').html(fieldTitle), eventEl, el);
+            
 	    return {
 		formView: formField,
 		essayView: essayChild
@@ -1768,14 +1831,31 @@
 		item.data.order = this.decmin();
 	    }
 	    var text = note ? note.text : '';
-	    item.editized = editize({fieldName:'text',
-				     fieldTitle:'Note',
-				     isRichText:true,
-				     isNote:true,
-				     caller:item});
+            
+            if (item.event) {
+	        item.editized = editize({fieldName:'text',
+				         fieldTitle:'Event',
+				         isRichText:true,
+				         isNote:true,
+				         caller:item});
+            }
+            else {
+	        item.editized = editize({fieldName:'text',
+				         fieldTitle:'Note',
+				         isRichText:true,
+				         isNote:true,
+				         caller:item});                
+            }
+
+            // Add to actual array
 	    _notebook.items.unshift(item);
+
+            // Add to left notebook
             _notebook.itemsEl.prepend(item.editized.formView);
+
+            // Add to right notebook
             _notebook.essayEl.prepend(item.editized.essayView);
+            
 	    return item;
 	}
 	
@@ -1849,8 +1929,14 @@
             var start = _notebook.data.first_event ? moment(_notebook.data.first_event) : undefined ;
             var before = _notebook.data.last_event ? moment(_notebook.data.last_event) : undefined ;
             _notebook.read();
+            _notebook.loadScrollDOM();
             _notebook.user.timeline.initialize(start, before, _notebook.user);
 	};
+
+        this.loadScrollDOM = function() {
+            $('#notebook-items').empty();
+            $('#notebook-essay').empty();            
+        }
 
 	this.loadNotes = function() {
 	    _notebook.notesRead();
@@ -1963,7 +2049,6 @@
 	};
         
 	this.notesPut = function(data, items) {
-	    console.log('CALLING NOTES PUT', data, items);
 	    $.ajax({
                 url:API + '/notes/',
                 type: 'PUT',
@@ -1987,7 +2072,6 @@
 	
         this.notesDelete = function(items)  {
 	    for (var i = 0; i<items.length; i++) {
-		console.log('GONNA DELETE', items[i]);
 		$.ajax({
 		    url:items[i].data.url,
 		    type: 'DELETE',
@@ -2052,7 +2136,6 @@
 		var puts = $.map(toPut, function(e) {
 		    return $.extend(e.data, {scroll:_notebook.data.url});		    
 		});
-		console.log('PUTS', puts);
                 _notebook.notesPut(puts, toPut);
 	    }
 	    
@@ -2085,13 +2168,12 @@
         this.kind = kind ? kind : 'default';
         this.event = event;
 	this.notebook = notebook;
-        this.data = $.extend(note, {kind:kind});
-	
+        var event_url = this.event ? this.event.url : undefined;
+        this.data = $.extend(note, {kind:kind, event:event_url});
         this.needsCreated = note ? false : true;
         this.needsUpdated = false;
         this.needsDeleted = false;
 	this.editized = undefined;
-
     };   
     
     /*
