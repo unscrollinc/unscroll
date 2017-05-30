@@ -13,3 +13,4 @@ db.sqlite3-journal
 node_modules/
 unscroll/bin/download/cache/
 unscroll/scrolls/static/scrolls/img/
+gunicorn.sock

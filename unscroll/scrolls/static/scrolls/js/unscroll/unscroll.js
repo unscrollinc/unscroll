@@ -8,7 +8,7 @@
        ┃╺┓┃  ┃ ┃┣┻┓┣━┫┃  ┗━┓
        ┗━┛┗━╸┗━┛┗━┛╹ ╹┗━╸┗━┛
     */
-    const API = 'http://127.0.0.1:8000';
+    const API = 'http://127.0.0.1';
     const AUTH = API + '/rest-auth';
     const GRIDHEIGHT = 8;
     const ACTIVEHEIGHT = 0.95;          
@@ -899,7 +899,7 @@
         }
 	
         this.makeLocation = function () {
-	    var url = '/static/scrolls/index.html?start='
+	    var url = '/?start='
 		+ _panel.start.format()
 		+ '&before='
 		+ _panel.end.format();
@@ -910,10 +910,12 @@
                     + '&scroll='
                     + _panel.timeline.user.currentScroll.uuid;
 	    }
+
 	    window.history.replaceState(
 		{},
 		'Unscroll: From X to Y',
 		url);
+
 	}
 	
 	
@@ -1872,6 +1874,13 @@
 		    console.log('Clicked on default create button');
                     _notebook.makeItem('default', undefined, undefined);
 		});
+
+
+	    $('#notebook-create-button')
+	        .on('click', function(ev) {
+                    _notebook.create();
+                    
+	        });
             
             $('#insert-space')
                 .off()
@@ -1913,7 +1922,10 @@
 		fieldTitle:'Description',
 		isRichText:true,
 		caller:_notebook				
-	    });	 
+	    });
+
+            $('#notebook-items').empty();
+            $('#notebook-essay').empty();            
 
 	    $('#scroll-header')
                 .empty()
@@ -2271,10 +2283,6 @@
 	var start = end.clone().subtract(1, 'month');
         var timeline = new Timeline(start, end, user);
 	var search = new Search(timeline, user);
-	$('#notebook-create-button')
-	    .on('click', function(ev) {
-		console.log(ev);
-	    });
 	
 
         // Escape key triggers Notebook
