@@ -3,9 +3,6 @@
 ┗━┛╹ ╹┗━┛┗━╸╹┗╸┗━┛┗━╸┗━╸
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-https://unscroll.com
-A writing tool for people who need to get it right.
-
 * Presentation: When a Side Project Wants to Kill You
 
 - Write four or five essays
@@ -49,8 +46,6 @@ A writing tool for people who need to get it right.
 
 
 
-
-
 * For June 9 Demo
 
 - Account 
@@ -87,7 +82,22 @@ A writing tool for people who need to get it right.
   - [X] Publish a notebook
 
 
-* Installing on Ubuntu
+* Actual Notes
+
+** Startup is basically:
+
+# nginx -c"/home/unscroll/unscroll/config/nginx/nginx.conf" -s reload
+# su - unscroll
+$ gunicorn -p /home/unscroll/socket/gunicorn.sock --bind 0.0.0.0:8000 unscroll.wsgi:application
+
+Nothing is daemonized or in upstart or anything.
+
+https://unscroll.com
+A writing tool for people who need to get it right.
+
+
+
+** Installing on Ubuntu
 
 Cake to get a working postgresql. Hardly any work.
 
@@ -122,3 +132,4 @@ Took a minute to figure out.
 
 In general though getting from Mac to Ubuntu took an hour or two to
 smooth things out.
+
