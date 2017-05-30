@@ -18,7 +18,7 @@ SECRET_KEY = 'dw$b#f!l@s8r&)^yf1@69rfb7)atm@2aqv2zjj5)k!)kzf1ghj)'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '159.203.98.40', 'unscroll.com']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '159.203.98.40', 'unscroll.com', 'www.unscroll.com']
 
 # Application definition
 
@@ -123,4 +123,4 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 THUMBNAIL_SIZE = 256, 256
-THUMBNAIL_DIR = '/Users/ford/dev/unscroll/unscroll/scrolls/static/scrolls'
+THUMBNAIL_DIR = '/home/unscroll/unscroll/unscroll/scrolls/static/scrolls/'
