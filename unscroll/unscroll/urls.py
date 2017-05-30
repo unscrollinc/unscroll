@@ -14,7 +14,6 @@ from rest_framework_swagger.views import get_swagger_view
 from PIL import Image, ImageOps
 from io import BytesIO
 import requests
-from unscroll.settings import THUMBNAIL_SIZE, THUMBNAIL_DIR
 import hashlib
 from baseconv import base36
 from os import makedirs
@@ -73,16 +72,20 @@ class ThumbnailViewSet(viewsets.ModelViewSet):
         img.convert("RGBA")
         width, height = img.size
         thumb = img
-        if width > THUMBNAIL_SIZE[0]:
-            thumb = ImageOps.fit(img, THUMBNAIL_SIZE)
+        if width > settings.THUMBNAIL_SIZE[0]:
+            thumb = ImageOps.fit(img, settings.THUMBNAIL_SIZE)
             width, height = thumb.size
         hashed = self.hash_image(thumb.tobytes())
         try:
-            makedirs('{}/{}'.format(THUMBNAIL_DIR, hashed['img_dir'],))
-            thumb.save('{}/{}'.format(THUMBNAIL_DIR, hashed['img_filename']),
-                       quality=50,
-                       optimize=True,
-                       progressive=True)
+            makedirs('{}/{}'.format(settings.THUMBNAIL_DIR,
+                                    hashed['img_dir'],))
+            thumb\
+                .convert('RGB')\
+                .save('{}/{}'
+                      .format(settings.THUMBNAIL_DIR, hashed['img_filename']),
+                      quality=50,
+                      optimize=True,
+                      progressive=True)
 
         except FileExistsError as e:
             print(e)

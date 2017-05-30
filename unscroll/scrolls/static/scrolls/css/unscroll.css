@@ -199,11 +199,17 @@ div#login {
     overflow:hidden;
 }
 
+
+
 .event .inner a.title {
     font-family:Roboto;
     font-size:10pt;
-    color:#2F9ECA;    
+    color:#2F9ECA;
+}
 
+.event .inner .title {
+    font-family:Roboto;
+    font-size:10pt;
 }
 
 div.thumb {
@@ -217,6 +223,11 @@ img.thumb {
     float:right;
 }
 
+.event .inner .text {
+    font-family:Roboto;
+    color:#888;
+    font-size:10pt;
+}
 .event .inner .datetime {
     font-weight:bold;
     display:inline-block;

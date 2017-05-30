@@ -1119,13 +1119,22 @@
                                   style:'height:'+_d.thumb_height+';width:'+_d.thumb_width,
                                   src:_d.thumb_image})
             }
+
+	    var title = undefined;
+	    if (_d.content_url) {
+		title = d('title').append(a(_d.content_url, 'title').html(_d.title));
+	    }
+	    else {
+		title = d('title').html(_d.title);
+	    }
+	    
             _event.el.append(
-                d('inner').append(
+	        d('inner').append(
                     d('scroll-title').html(_d.scroll_title),
                     d('datetime').html(_event.formatByResolution()),
-                    thumb,
-                    d('title').append(
-			a(_event.data.content_url, 'title').html(_d.title)),
+		    a(_event.data.content_url, 'title').append(thumb),
+		    title,
+                    d('text').html(_d.text),
 		    noteButton,
                     editButton,
                     deleteButton

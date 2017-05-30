@@ -6,6 +6,7 @@ from datetime import datetime
 import requests
 import random
 from unscroll import UnscrollClient
+import argparse
 
 MONTH_NAMES = 'January|February|March|April|May|June|July|'\
               'August|September|October|November|December'
@@ -39,13 +40,14 @@ class WikipediaText():
 
     def __init__(self, year=None):
         self.year = year
-        r = requests.get('https://en.wikipedia.org/wiki/{}'.format(year))
+        self.wiki_url = 'https://en.wikipedia.org/wiki/{}'.format(year)
+        r = requests.get(self.wiki_url)
         self.parsed = BeautifulSoup(r.content, 'html.parser')
         self.unscroll_client = UnscrollClient(api='http://127.0.0.1:8000',
                                               username='admin',
                                               password='password')
         self.unscroll_client.login()
-        self.unscroll_client.create_scroll('Wikipedia Year Pages')
+        self.unscroll_client.create_or_retrieve_scroll('Wikipedia Years')
 
     def tidy(self, txt=None):
         return re.sub('\[edit\]\s*', '', txt)
@@ -62,27 +64,28 @@ class WikipediaText():
         contents = [str(x) for x in wikihtml.children]
         joined = "".join(contents)
         linked = re.sub(r'/wiki/', 'http://en.wikipedia.org/wiki/', joined)
-        
+        targeted = re.sub(r'href=', 'target="_blank" href=', linked)
+
         trimmed = re.sub(r'^(<a href=".+('
                          + MONTH_NAMES
                          + ')\s+\d+)</a>\s+[-–]\s+',
-                         '', linked)
-        
+                         '', targeted)
+
         unlinked = re.sub(r'<[^>]+>', '', trimmed)
         titles = [x['title'] for x in wikihtml.find_all('a')
                   if x.has_attr('title')]
         filtered = [x for x in titles if not MONTH_REGEX.match(x)]
-        
+
         title = None
         subject = None
         if len(filtered) == 0:
-            title = " ".join(unlinked.split(" ")[0:4]) + '...'            
+            title = " ".join(unlinked.split(" ")[0:4]) + '...'
         else:
             title = filtered[0]
             subject = title
 
         thumbnail = None
-        
+
         if subject is not None:
             image_d  = self.unscroll_client.fetch_wiki_thumbnail_data(title=subject)
             image_url = image_d.get('url') if image_d is not None else None
@@ -91,18 +94,18 @@ class WikipediaText():
                 if thumbnail_d is not None:
                     thumbnail = thumbnail_d['url']
 
-        if kind == 'world/birth':
-            title = 'Born: {}'.format(title)
-        elif kind == 'world/death':
-            title = 'Died: {}'.format(title)            
+        if kind == 'human/birth':
+            trimmed = 'Born: {}'.format(trimmed)
+        elif kind == 'human/death':
+            trimmed = 'Died: {}'.format(trimmed)            
 
         ranking = 1 - random.random()/3
         if kind == 'world/event':
             ranking = 1 - random.random()/10
             
         event = {
-            'title': title,
-            'text': trimmed,
+            'title': trimmed,
+            'text': None,
             'resolution': 'days',
             'ranking': ranking,
             'datetime': datetime.combine(
@@ -110,6 +113,9 @@ class WikipediaText():
                 datetime.min.time()
             ).isoformat(' '),
             'thumbnail': thumbnail,
+            'content_url': None,
+            'source_url': self.wiki_url,
+            'source_name': 'Wikipedia',
             'content_type': kind
         }
         e = self.unscroll_client.create_event(event)
@@ -143,30 +149,42 @@ class WikipediaText():
 
     def get_events(self):
         event_types = {'#Events': 'world/event',
-                       '#Births': 'world/birth',
-                       '#Deaths': 'world/death'}
+                       '#Births': 'human/birth',
+                       '#Deaths': 'human/death'}
         events = []
         for keytype in event_types:
-            events_h2 = self.parsed.select(keytype)[0].parent
-            for event in events_h2.next_siblings:
-                if event.name == "h2":
-                    break
-                else:
-                    if event.name == "h3":
-                        pass
-                    if event.name == 'ul':
-                        es = self.descend(ul=event.descendants,
-                                          kind=event_types[keytype])
-                        if es is not None:
-                            events += es
+            try:
+                events_h2 = self.parsed.select(keytype)[0].parent
+                for event in events_h2.next_siblings:
+                    if event.name == "h2":
+                        break
+                    else:
+                        if event.name == "h3":
+                            pass
+                        if event.name == 'ul':
+                            es = self.descend(ul=event.descendants,
+                                              kind=event_types[keytype])
+                            if es is not None:
+                                events += es
+            except IndexError:
+                print('No {}'.format(keytype,))
         return events
 
 
 def __main__(year=None):
-    wt = WikipediaText(year)
-    events = wt.get_events()
-    print(len(events))
-    return True
+    parser = argparse.ArgumentParser(
+        description='Get a Wikipedia Year page by year '
+        'and turn it into events as well as is possible.')
+    parser.add_argument('--year',
+                        required=True,
+                        type=int,
+                        help='A year')
+    args = parser.parse_args()
+    if (args.year is not None):
+        wt = WikipediaText(args.year)
+        events = wt.get_events()
+        print(len(events))
+        return True
 
 
-__main__(2001)
+__main__()
