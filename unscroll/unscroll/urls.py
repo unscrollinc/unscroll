@@ -444,29 +444,28 @@ class UserViewSet(viewsets.ModelViewSet):
 # Routers provide a way of automatically determining the URL conf.
 router = BulkRouter()
 # router = routers.DefaultRouter()
-router.register(r'api/users', UserViewSet)
-router.register(r'api/scrolls', ScrollViewSet)
+router.register(r'users', UserViewSet)
+router.register(r'scrolls', ScrollViewSet)
 # router.register(r'events', EventViewSet)
 # router.register(r'notes', NoteViewSet)
-router.register(r'api/thumbnails', ThumbnailViewSet)
-router.register(r'api/events', BulkEventViewSet)
-router.register(r'api/notes', BulkNoteViewSet)
+router.register(r'thumbnails', ThumbnailViewSet)
+router.register(r'events', BulkEventViewSet)
+router.register(r'notes', BulkNoteViewSet)
 
-# schema_view = get_swagger_view(title='Unscroll API')
+schema_view = get_swagger_view(title='Unscroll API')
 # schema_view = get_schema_view(title="Unscroll API")
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
-    # url('^schema/$', schema_view),
-    url(r'^/', include(router.urls)),
-    url(r'^/rest-auth/', include('rest_auth.urls')),
-    url(r'^/api-auth/', include('rest_framework.urls',
+    url(r'', include(router.urls)),    
+    url('^schema/$', schema_view),
+    url(r'^rest-auth/', include('rest_auth.urls')),
+    url(r'^api-auth/', include('rest_framework.urls',
                                namespace='rest_framework')),
-    url(r'^/rest-auth/registration/',
+    url(r'^rest-auth/registration/',
         include('rest_auth.registration.urls')),
-    url(r'^/accounts/', include('django.contrib.auth.urls')),
-#    url(r'^/silk/', include('silk.urls', namespace='silk')),
-]
+    url(r'^accounts/', include('django.contrib.auth.urls')),
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
-# + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+

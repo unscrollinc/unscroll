@@ -8,7 +8,7 @@
        ┃╺┓┃  ┃ ┃┣┻┓┣━┫┃  ┗━┓
        ┗━┛┗━╸┗━┛┗━┛╹ ╹┗━╸┗━┛
     */
-    const API = 'http://127.0.0.1';
+    const API = '';
     const AUTH = API + '/rest-auth';
     const GRIDHEIGHT = 8;
     const ACTIVEHEIGHT = 0.95;          

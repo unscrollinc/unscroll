@@ -5,7 +5,7 @@ Django settings for unscroll project.
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 
-SILKY_PYTHON_PROFILER = False
+# SILKY_PYTHON_PROFILER = False
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -18,11 +18,11 @@ SECRET_KEY = 'dw$b#f!l@s8r&)^yf1@69rfb7)atm@2aqv2zjj5)k!)kzf1ghj)'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '159.203.98.40', 'unscroll.com']
 
 # Application definition
 
-REST_SESSION_LOGIN = False
+REST_SESSION_LOGIN = True
 
 INSTALLED_APPS = (
     'scrolls.apps.ScrollsConfig',
@@ -38,8 +38,9 @@ INSTALLED_APPS = (
     'rest_framework.authtoken',
     'rest_auth',
     'allauth',
+    'allauth.account',
     'rest_auth.registration',
-    'crispy_forms',
+    'rest_framework_swagger',
 )
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS':
@@ -76,6 +77,7 @@ SWAGGER_SETTINGS = {
         }
     },
 }
+
 SITE_ID = 1
 ROOT_URLCONF = 'unscroll.urls'
 
