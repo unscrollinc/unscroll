@@ -5,7 +5,7 @@ Django settings for unscroll project.
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 
-SILKY_PYTHON_PROFILER = True
+SILKY_PYTHON_PROFILER = False
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -13,7 +13,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'yfm@2aqv2zjj5)k!dw$b#f!l@s8r&)^1@69rfb7)t)kzf1ghj)'
+SECRET_KEY = 'dw$b#f!l@s8r&)^yf1@69rfb7)atm@2aqv2zjj5)k!)kzf1ghj)'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -34,14 +34,11 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django.contrib.postgres',
-    'silk',
     'rest_framework',
     'rest_framework.authtoken',
     'rest_auth',
     'allauth',
-    'allauth.account',
     'rest_auth.registration',
-    'rest_framework_swagger',
     'crispy_forms',
 )
 REST_FRAMEWORK = {
@@ -60,7 +57,6 @@ REST_FRAMEWORK = {
 
 
 MIDDLEWARE_CLASSES = (
-    'silk.middleware.SilkyMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -106,10 +102,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'unscroll',
-        'USER': 'ford',
-        'PASSWORD': 'password',
-        'HOST': 'localhost',
-        'PORT': '',
+        'USER': 'unscroll',
     }
 }
 
