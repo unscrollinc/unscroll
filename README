@@ -86,9 +86,16 @@
 
 ** Startup is basically:
 
-# nginx -c"/home/unscroll/unscroll/config/nginx/nginx.conf" -s reload
-# su - unscroll
-$ gunicorn -p /home/unscroll/socket/gunicorn.sock --bind 0.0.0.0:8000 unscroll.wsgi:application
+*** Local Dev
+- # nginx -c"/home/unscroll/unscroll/config/nginx/nginx.conf" -s reload
+- # su - unscroll
+- $ gunicorn -p /home/unscroll/socket/gunicorn.sock --bind 0.0.0.0:8000 unscroll.wsgi:application
+
+*** Local Dev
+- # nginx -c"/home/unscroll/unscroll/config/nginx/nginx.conf" -s reload
+- # su - unscroll'
+- $ gunicorn -p /home/unscroll/socket/gunicorn.sock --bind 0.0.0.0:8000 unscroll.wsgi:application
+
 
 Nothing is daemonized or in upstart or anything.
 
