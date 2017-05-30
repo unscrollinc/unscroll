@@ -85,3 +85,40 @@ A writing tool for people who need to get it right.
   - [X] Show notebook as "essay"
   - [X] Add to notebook
   - [X] Publish a notebook
+
+
+* Installing on Ubuntu
+
+Cake to get a working postgresql. Hardly any work.
+
+Got rid of all migrations and started fresh, with a custom migration
+after the initial to set up the full-text indexes.
+
+Took a while to get pip working, just normal stuff.
+- Needs Python3.6.
+- cryptography didn't want to install.
+- unded up googling around until I found
+  - apt-get install libffi-dev libssl-dev libxml2-dev libxslt1-dev libjpeg8-dev zlib1g-dev
+- Which I installed
+
+After that Gunicorn seems to just be running. Had to add the server's
+IP and so unscroll.com to allowed hosts. Took most of the
+configuration settings from the Gunicorn.
+
+All the regular nginx stuff. I copied a bit over from the default
+nginx setup to get the user/group right.
+
+Only big surprise was that once I got everything configured right with
+the proxy the ^/ regexp URL matcher stopped working for the API
+proxying; just matching the API to '' worked fine.
+
+	  url(r'^/', include(router.urls)),
+
+Needed to become
+
+	  url(r'', include(router.urls)),
+
+Took a minute to figure out.
+
+In general though getting from Mac to Ubuntu took an hour or two to
+smooth things out.
