@@ -648,9 +648,16 @@ tr.panel-list td {
 tr.panel-list td.panel-datetime {
     text-align:right;
     font-weight:bold;
-
 }
+
+tr.panel-list td.panel-thumb img {
+    max-width:128px;
+    max-height:128px;
+    float:none;
+}
+
 div.panel-list {
+    padding-left:5%;
     position:fixed;
     top:100px;
     height:100%;
