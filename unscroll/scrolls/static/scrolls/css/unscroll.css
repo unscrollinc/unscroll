@@ -73,6 +73,10 @@ div.first {
 
 .column .head {
     font-weight:normal;
+    display:block;
+    background:#2F9ECA;
+    color:white;
+    width:100%;
 }
 
 .column .head:hover {
@@ -627,10 +631,11 @@ span.button.delete {}
     display:none;
 }
 
-.as-list {
-    width:25%;
-    position:absolute;
-    margin-left:0%;
+div.as-list {
+    position:relative;
+    left:0;
+    text-align:left;
+    width:10%;
     font-size:20px;
     top:-65px;
     display:block;
@@ -657,7 +662,7 @@ tr.panel-list td.panel-thumb img {
 }
 
 div.panel-list {
-    padding-left:5%;
+    padding-left:1%;
     position:fixed;
     top:100px;
     height:100%;
@@ -665,4 +670,5 @@ div.panel-list {
     background:white;
     overflow:auto;
     z-index:10;
+    border:1px solid #2F9ECA;    
 }

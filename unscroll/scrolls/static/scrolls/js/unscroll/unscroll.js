@@ -10,7 +10,7 @@
     */
     const API = '';
     const AUTH = API + '/rest-auth';
-    const GRIDHEIGHT = 8;
+    const GRIDHEIGHT = 12;
     const ACTIVEHEIGHT = 0.95;          
     const REFRESH_INTERVAL = 4000; // milliseconds
     const timeBeforeRefresh = 10; // milliseconds
@@ -846,20 +846,23 @@
         this.timeline = timeline;
         this.response = {};
         this.grid = undefined;
-        this.list = false;
         this.columns = undefined;
         this.buffer = $('#buffer');
         this.cellWidth = undefined;
         this.cellHeight = undefined;
         this.columnWidth = undefined;
-        
+        this.listView = undefined;
+	
         this.initialize = function() {
             // kick off server calls
             _panel.load();
             _panel.columns = _panel.timeline.timeframe.getColumns(_panel.start);
-            _panel.columnWidth = _panel.timeline.window.width/_panel.columns;            
-	    _panel.cellWidth = _panel.timeline.window.width/_panel.columns;
-	    _panel.cellHeight = _panel.timeline.window.height/(GRIDHEIGHT * ACTIVEHEIGHT);
+	    // _panel.columnWidth = _panel.timeline.window.width/_panel.columns;
+	    // _panel.cellWidth = _panel.timeline.window.width/_panel.columns;
+	    // _panel.cellHeight = _panel.timeline.window.height/(GRIDHEIGHT * ACTIVEHEIGHT);	    
+	    _panel.columnWidth = 100/_panel.columns;
+	    _panel.cellWidth = 100/_panel.columns;
+	    _panel.cellHeight = 100/GRIDHEIGHT;
             _panel.grid = _panel.makeGrid();
             _panel.initializeDOM();
         }
@@ -870,8 +873,8 @@
                 var first = i==0 ? ' first' : '';
 	        var columnData = _panel.timeline.timeframe.columnStepper(i, _panel.start);
 	        var column = d('column nav'  + first)
-	            .css({width:_panel.columnWidth,
-		          left:_panel.columnWidth * i})
+	            .css({width:_panel.columnWidth + '%',
+		          left:_panel.columnWidth * i + '%'})
 	            .append(
 		        $('<a></a>', {class:'head',
 			              href:'/?start='
@@ -902,19 +905,20 @@
             var period = _panel.timeline.timeframe.getPeriod(_panel.start);
             _panel.el.append(period, h);
 
-	    var list = s('as-list').text(' [list]')
+	    var list = d('as-list').text(' [Timeline View]')
 		.on('click', function(ev) {
 		    var t = $(this);
-		    if (t.text() == ' [timeline]') {
-			t.text(' [list]');
+		    if (t.text() == ' [List View]') {
+			t.text(' [Timeline View]');
+			_panel.listView.fadeOut();
 		    }
 		    else {
-			t.text(' [timeline]');
+			t.text(' [List View]');
 			_panel.asList();
 		    }
 		});
 	    
-	    _panel.el.append(list);
+	    _panel.el.prepend(list);
 
             _panel.el.on('dblclick', _panel.newEvent);
         }
@@ -964,6 +968,7 @@
 	this.asList = function() {
 	    if (_panel.response) {
 		var es = _panel.response.results;
+		es.sort(function(a,b) {return moment(a.datetime) - moment(b.datetime);})
 		var trs = new Array();
 		for (var i = 0; i<es.length;i++) {
 		    var e = es[i];
@@ -975,7 +980,7 @@
 		    }
 		    var el = tr('panel-list',
 				[   td('panel-datetime').html(moment(e.datetime).format('M/D/YY')),
-				    td('panel-title').html(e.title),
+				    td('panel-title').html(a(e.content_url, 'panel-title').html(e.title)),
 				    td('panel-text').html(e.text),
 				    td('panel-creator').html(e.username),
 				    td('panel-scroll').html(e.scroll_title),
@@ -997,9 +1002,11 @@
 			    th('panel-header scroll').text('Scroll'),
 			    th('panel-header thumb').text('Thumb')
 			]);
-			var l = d('panel-list').append($('<table></table>').append(_th, trs));
-	    console.log(_panel.el, l);
-	    _panel.el.prepend(l);
+	    var l = d('panel-list').append($('<table></table>').append(_th, trs));
+	    _panel.listView = l;
+	    l.hide();
+	    _panel.el.append(l);
+	    l.fadeIn();
 	}
 	
         this.makeGrid = function() {
@@ -1062,40 +1069,43 @@
 		    h:h};
         }
 
+	$(window).resize(function(ev) {
+	    _panel.render();
+	});
+	
         this.render = function() {
-            if (_panel.list) {
-                var list = new Array();
-                $.each(_panel.response.results, function(i, e) {
-                    var eHTML = d().html(e.title);
-                    list.push(eHTML);
-                });
-                _panel.el.append(list);           
-            }
-            else {
-                var es = $.map(_panel.response.results, function(event) {
-                    return new Event(event, _panel);
-                });
+	    var window_height = $(window).height();
+	    _panel.grid = _panel.makeGrid();
+	    _panel.buffer.empty();
+	    _panel.el.find('.event').empty();
+	    
+            var es = $.map(_panel.response.results, function(event) {
+                return new Event(event, _panel);
+            });
 
-	        $.each(es, function(i, e) {
-                    var el = e.el;
-                    e.width = _panel.timeline.timeframe.getEventWidth(el.width());
-                    e.offset = _panel.timeline.timeframe.getOffset(e.datetime, e.data.resolution);
-	            _panel.buffer.append(el);
-	            el.css({width:e.width * _panel.columnWidth});
-	            e.height = Math.ceil(el.height()/_panel.cellHeight);
-	            var reservation = _panel.makeReservation(e.offset, 0, e.width, e.height);
-	            if (reservation.success) {
-		        _panel.el.append(e.el.css({
-		            marginLeft:(reservation.x * _panel.cellWidth) + 'px',
-		            marginTop:(reservation.y * _panel.cellHeight) + 'px'}));
-	            }
-                    else {
-                        console.log("reservation failed");
-                    }
-	        });
+	    $.each(es, function(i, e) {
+                var el = e.el;
+                e.width = _panel.timeline.timeframe.getEventWidth(el.width());
+                e.offset = _panel.timeline.timeframe.getOffset(e.datetime, e.data.resolution);
+	        _panel.buffer.append(el);
+	        el.css({width:e.width * _panel.columnWidth + '%'});
+
+		e.height = Math.ceil(el.height()/window_height * GRIDHEIGHT)
+		
+		console.log({offset:e.offset, top:0, width:e.width, height:e.height});
+	        var reservation = _panel.makeReservation(e.offset, 0, e.width, e.height);
+	        if (reservation.success) {
+		    console.log({el:e.el, reservationY:reservation.y, cellHeight:_panel.cellHeight});		    
+		    _panel.el.append(e.el.css({
+		        marginLeft:(reservation.x * _panel.cellWidth) + '%',
+		        marginTop:(reservation.y * _panel.cellHeight) + '%'}));
+	        }
+                else {
+                    console.log("reservation failed");
+                }
+	    });
                 
-                _panel.el.append(es);
-            }
+            _panel.el.append(es);
         }
         
         this.load = function() {
@@ -1436,7 +1446,14 @@
             _timeline.initializeDOM();
 
         };
-        
+
+	this.resize = function() {
+	    _timeline.window = {
+	        width:$(window).width(),
+	        height:$(window).height()
+            };
+	};
+	
 	this.initializeDOM = function() {
 	    _timeline.window = {
 	        width:$(window).width(),
@@ -2355,7 +2372,9 @@
 	var start = end.clone().subtract(1, 'month');
         var timeline = new Timeline(start, end, user);
 	var search = new Search(timeline, user);
-	
+	$(window).resize(function(ev) {
+	    timeline.resize();
+	})
         // Escape key triggers Notebook
         $(document).keyup(function(e) {
             if (user.data.username) {            
