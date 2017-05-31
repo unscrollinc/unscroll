@@ -37,9 +37,9 @@
     };
     const d = function (className, kids) { return elMaker('div', className, kids); };
     const s = function (className, kids) { return elMaker('span', className, kids); };
+    const th = function (className, kids) { return elMaker('th', className, kids); };
     const tr = function (className, kids) { return elMaker('tr', className, kids); };
     const td = function (className, kids) { return elMaker('td', className, kids); };
-    const th = function (className, kids) { return elMaker('th', className, kids); };                
 
     const i = function (className, value) {
         return $('<input></input>', {value:value,
@@ -337,17 +337,19 @@
         }
         this.timeline = timeline;
         this.makePeriod = function(text, start, end) {
-	    return $('<a></a>', {class:'period nav',
-			         href:'/?start='
-			         + start.format()
-			         + '&before='
-			         + end.format()
-			        })
-	        .html(text)
-	        .click(function(e) {
+	    var link = $('<a></a>', {class:'period nav',
+			             href:'/?start='
+			             + start.format()
+			             + '&before='
+			             + end.format()})
+		.html(text)
+		.click(function(e) {
 		    e.preventDefault();
                     _timeframe.timeline.initialize(start, end, _timeframe.timeline.user);
 	        });
+	    
+	    return s('period', [link]);
+
         }
         this.resolution = undefined;
 	this.add = undefined;
@@ -512,12 +514,12 @@
 			      start.clone().endOf('month'));
 	};
 	this.getOffset = function(datetime, resolution) {
-            if (resolutions[resolution] >= resolutions['days']) {
+            if (_timeframe.resolutions[resolution] <= _timeframe.resolutions['days']) {
                 return Math.floor(24 * Math.random());
             }
 	    else {
-                return datetime.hours() - 1;
-            }
+		return datetime.date() - 1;
+	    }	    
 	};
 	this.getEventWidth = function(width) {
 	    return Math.floor(4 + Math.random() * _timeFrame.getcolumns/5);
@@ -578,7 +580,7 @@
 	};
         
 	this.getOffset = function(datetime, resolution) {
-            if (_timeframe.resolutions[resolution] >= _timeframe.resolutions['months']) {
+            if (_timeframe.resolutions[resolution] <= _timeframe.resolutions['months']) {
                 return Math.floor(28 * Math.random());
             }
 	    else {
@@ -899,6 +901,21 @@
             var h = _panel.makeColumnsHTML();
             var period = _panel.timeline.timeframe.getPeriod(_panel.start);
             _panel.el.append(period, h);
+
+	    var list = s('as-list').text(' [list]')
+		.on('click', function(ev) {
+		    var t = $(this);
+		    if (t.text() == ' [timeline]') {
+			t.text(' [list]');
+		    }
+		    else {
+			t.text(' [timeline]');
+			_panel.asList();
+		    }
+		});
+	    
+	    _panel.el.append(list);
+
             _panel.el.on('dblclick', _panel.newEvent);
         }
 	
@@ -943,7 +960,48 @@
             }
             return url;
         }
-        
+
+	this.asList = function() {
+	    if (_panel.response) {
+		var es = _panel.response.results;
+		var trs = new Array();
+		for (var i = 0; i<es.length;i++) {
+		    var e = es[i];
+		    var thumb = undefined;
+		    if (e.thumb_image) {
+			thumb = $('<img></img>', {class:'thumb',
+						  style:'height:'+e.thumb_height+';width:'+e.thumb_width,
+						  src:e.thumb_image})
+		    }
+		    var el = tr('panel-list',
+				[   td('panel-datetime').html(moment(e.datetime).format('M/D/YY')),
+				    td('panel-title').html(e.title),
+				    td('panel-text').html(e.text),
+				    td('panel-creator').html(e.username),
+				    td('panel-scroll').html(e.scroll_title),
+				    td('panel-thumb').append(thumb)
+				])
+		    trs.push(el);
+		}
+	    }
+	    _panel.asListDOM(trs);
+	}
+
+	this.asListDOM  = function(trs) {
+	    var _th = tr('panel-list',
+			[
+			    th('panel-header datetime').text('Date'),
+			    th('panel-header title').text('Title'),
+			    th('panel-header text').text('Text'),
+			    th('panel-header creator').text('Creator'),
+			    th('panel-header scroll').text('Scroll'),
+			    th('panel-header thumb').text('Thumb')
+			]);
+			var l = d('panel-list').append($('<table></table>').append(_th, trs));
+	    console.log(_panel.el, l);
+	    _panel.el.prepend(l);
+	}
+	
         this.makeGrid = function() {
 	    // Expects an integer, which is hard to check for.
 	    var grid = new Array(GRIDHEIGHT);
@@ -1027,7 +1085,6 @@
 	            e.height = Math.ceil(el.height()/_panel.cellHeight);
 	            var reservation = _panel.makeReservation(e.offset, 0, e.width, e.height);
 	            if (reservation.success) {
-                        console.log("reservation worked", _panel, e);                        
 		        _panel.el.append(e.el.css({
 		            marginLeft:(reservation.x * _panel.cellWidth) + 'px',
 		            marginTop:(reservation.y * _panel.cellHeight) + 'px'}));
@@ -1139,7 +1196,7 @@
                     d('datetime').html(_event.formatByResolution()),
 		    a(_event.data.content_url, 'title').append(thumb),
 		    title,
-                    d('text').html(_d.text),
+                    // d('text').html(_d.text),
 		    noteButton,
                     editButton,
                     deleteButton
@@ -2299,7 +2356,6 @@
         var timeline = new Timeline(start, end, user);
 	var search = new Search(timeline, user);
 	
-
         // Escape key triggers Notebook
         $(document).keyup(function(e) {
             if (user.data.username) {            

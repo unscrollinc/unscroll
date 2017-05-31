@@ -81,7 +81,7 @@ div.first {
     cursor:hand;
 }
 
-a.period {
+span.period {
     width:25%;
     position:absolute;
     margin-left:37.5%;
@@ -625,4 +625,37 @@ span.button.delete {}
     padding:0.5em;
     z-index:2000;
     display:none;
+}
+
+.as-list {
+    width:25%;
+    position:absolute;
+    margin-left:0%;
+    font-size:20px;
+    top:-65px;
+    display:block;
+    padding:.25em;
+    cursor:hand;
+}
+
+tr.panel-list {
+    border-bottom:1px solid #2F9ECA;
+}
+tr.panel-list td {
+    vertical-align:top;
+}
+
+tr.panel-list td.panel-datetime {
+    text-align:right;
+    font-weight:bold;
+
+}
+div.panel-list {
+    position:fixed;
+    top:100px;
+    height:100%;
+    width:50%;
+    background:white;
+    overflow:auto;
+    z-index:10;
 }
