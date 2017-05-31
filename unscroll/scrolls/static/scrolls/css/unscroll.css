@@ -217,16 +217,19 @@ div.thumb {
 }
 
 img.thumb {
-    max-width:128px;
-    max-height:128px;
-    margin:0 8px 0 0;
+    max-width:64px;
+    max-height:64px;    
     float:right;
+    border:1px solid #2F9ECA;
+    margin:0 0 0 8px;
 }
 
 .event .inner .text {
     font-family:Roboto;
     color:#888;
     font-size:10pt;
+    max-height:100px;
+    overflow:auto;
 }
 .event .inner .datetime {
     font-weight:bold;
