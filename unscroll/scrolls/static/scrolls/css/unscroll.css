@@ -217,8 +217,8 @@ div.thumb {
 }
 
 img.thumb {
-    max-width:64px;
-    max-height:64px;
+    max-width:128px;
+    max-height:128px;
     margin:0 8px 0 0;
     float:right;
 }

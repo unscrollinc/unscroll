@@ -87,13 +87,16 @@
 ** Startup is basically:
 
 *** Local Dev
+- # nginx -c"/Users/ford/dev/unscroll/config/nginx/nginx_dev.conf" -s reload
+- $ DJANGO_SETTINGS_MODULE=unscroll.settings_dev gunicorn -p /tmp/gunicorn.sock --bind 0.0.0.0:8000 unscroll.wsgi:application
+- (or)
+- $ DJANGO_SETTINGS_MODULE=unscroll.settings_dev ./manage.py runserver
+
+
+*** Server dev
 - # nginx -c"/home/unscroll/unscroll/config/nginx/nginx.conf" -s reload
 - # su - unscroll
-- $ gunicorn -p /home/unscroll/socket/gunicorn.sock --bind 0.0.0.0:8000 unscroll.wsgi:application
-
-*** Local Dev
-- # nginx -c"/home/unscroll/unscroll/config/nginx/nginx.conf" -s reload
-- # su - unscroll'
+- $ cd /home/unscroll/unscroll/unscroll/
 - $ gunicorn -p /home/unscroll/socket/gunicorn.sock --bind 0.0.0.0:8000 unscroll.wsgi:application
 
 

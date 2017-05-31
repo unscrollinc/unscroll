@@ -185,8 +185,8 @@
                     $.extend(_user.data, o.results[0]);
                     _user.loginDOM();
 		    var notebooklist = new NotebookList(_user);
-		    var notebook = new Notebook(notebooklist.first().data, _user);
-		    _user.currentNotebook = notebook;                    
+//		    var notebook = new Notebook(notebooklist.first().data, _user);
+//                  _user.currentNotebook = notebook;                    
 		}
             });            
         };
@@ -198,6 +198,13 @@
         };
         
         this.logout = function() {
+            _user.data = {};
+	    Cookies.remove('sessionid');
+	    Cookies.remove('session');
+	    Cookies.remove('csrftoken');
+            console.log('Logged out.');
+            _user.logoutDOM();            
+            
             $.post({
 		url:AUTH + '/logout/',
 		headers: {
@@ -207,17 +214,11 @@
                     console.log('Failure: ' + e);
 		},
 		success:function(e) {
-                    _user.data = {};
-	            Cookies.remove('sessionid');
-	            Cookies.remove('session');
-	            Cookies.remove('csrftoken');
-                    console.log('Logged out.');
-                    _user.logoutDOM();
+                    
 		}
             });
         };
         
-        this.initialize();
     }
 
     /*
@@ -276,7 +277,7 @@
                 success: function(o) {
                     console.log('Success: ' + o);
                     if (o.count > 0) {
-                        _search.success('Found ' + o.count + ' results from ' + moment(o.last_event).year() + ' to ' + moment(o.first_event).year());
+                        _search.success('Found ' + o.count + ' results from ' + moment(o.first_event).year() + ' to ' + moment(o.last_event).year());
 		        _search.timeline.search = _search.query;
 		        _search.timeline.initialize(moment(o.first_event),
                                                     moment(o.last_event));
@@ -324,14 +325,15 @@
     var TimeFrame = function(timeline) {
         var _timeframe = this;
         this.resolutions = {
-            'seconds':0,
-            'minutes':1,
-            'hours':2,
-            'days':3,
-            'months':4,
-            'years':5,
-            'decades':6,
-            'centuries':7
+            'seconds':19,
+            'minutes':16,
+            'hours':13,
+            'days':10,
+            'months':7,
+            'years':4,
+            'decades':3,
+            'centuries':2,
+            'millennia':1
         }
         this.timeline = timeline;
         this.makePeriod = function(text, start, end) {
@@ -664,7 +666,7 @@
 	this.adjust = function(datetime) {
 	    var divisor = 10;
 	    var year = datetime.year()/divisor;
-	    var begin = moment(divisor + (divisor * Math.floor(year))+'-01-01');
+	    var begin = moment((divisor * Math.floor(year))+'-01-01');
 	    return begin;
 	}
 	this.add = function(datetime, no) {
@@ -748,11 +750,13 @@
 			      to);
 	};
 	this.getOffset = function(datetime, resolution) {
-	    return datetime.year() - 100 * Math.floor(datetime.year()/100);
+	    return Math.floor((datetime.year() - (100 * Math.floor(datetime.year()/100)))/10);
 	};
-	this.getEventWidth = function(width) {
-	    return Math.ceil(Math.random() * 2);
+
+        this.getEventWidth = function(width) {
+	    return Math.ceil(1 + Math.random() * 2);
 	};
+
 	this.getTarget = function(start, pointerInteger, pointerMantissa) {
 	    var pointerFocus = start.clone().add(100 * pointerInteger, 'years');
 	    var columns = 10;
@@ -804,10 +808,10 @@
 			      to);
 	};
 	this.getOffset = function(datetime, resolution) {
-	    return datetime.year() - 1000 * Math.floor(datetime.year()/1000);
+	    return Math.floor((datetime.year() - (1000 * Math.floor(datetime.year()/1000)))/100);            
 	};
 	this.getEventWidth = function(width) {
-	    return 1;
+	    return 4;
 	};
 	this.getTarget = function(start, pointerInteger, pointerMantissa) {
 	    var pointerFocus = start.clone().add(1000 * pointerInteger, 'years');
@@ -1023,6 +1027,7 @@
 	            e.height = Math.ceil(el.height()/_panel.cellHeight);
 	            var reservation = _panel.makeReservation(e.offset, 0, e.width, e.height);
 	            if (reservation.success) {
+                        console.log("reservation worked", _panel, e);                        
 		        _panel.el.append(e.el.css({
 		            marginLeft:(reservation.x * _panel.cellWidth) + 'px',
 		            marginTop:(reservation.y * _panel.cellHeight) + 'px'}));
@@ -1346,7 +1351,7 @@
 	this.panels = undefined;
         this.window = undefined;
         
-        this.gridHeight = 6;
+        this.gridHeight = 7;
         this.activeHeight = 0.95;
         
         this.pos = {};
@@ -1365,8 +1370,9 @@
                 lastOffset:0,
                 offset:0
             };
-            _timeline.el.css({marginLeft:'0%'});
+            _timeline.el.css({marginLeft:'-100%'});
             _timeline.timeframe = _timeline.getTimeFrame(_start, _end);
+            console.log(_timeline.timeframe);
 	    _timeline.start = _timeline.timeframe.adjust(_start);
 	    _timeline.end = _timeline.timeframe.add(moment(_timeline.start), 1);
             _timeline.panels = new Array();
