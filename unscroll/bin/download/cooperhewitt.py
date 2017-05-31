@@ -96,7 +96,8 @@ def chjson_to_event(j=None, client=None):
             thumbnail_url = None
             if img is not None:
                 thumbnail_d = client.cache_thumbnail(img)
-                thumbnail_url = thumbnail_d.get('url')
+                if (thumbnail_d is not None):
+                    thumbnail_url = thumbnail_d.get('url')
 
             event = {
                 'title': title,
