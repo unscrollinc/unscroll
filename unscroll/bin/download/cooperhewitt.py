@@ -122,7 +122,7 @@ def __main__(year=None):
     c.login()
     c.create_or_retrieve_scroll('Cooper-Hewitt')
 
-    for filename in glob.iglob('/Users/ford/dev/collection/objects/**/*.json', recursive=True):
+    for filename in glob.iglob('/home/unscroll/src/collection/objects/**/*.json', recursive=True):
         j = open(filename)
         p = json.load(j)
         event = chjson_to_event(j=p, client=c)
