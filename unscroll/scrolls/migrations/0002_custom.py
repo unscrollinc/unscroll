@@ -12,7 +12,9 @@ class Migration(migrations.Migration):
     ]
     operations = [
         migrations.RunSQL(        
-            "CREATE INDEX scroll_ts_idx ON scroll USING gin(to_tsvector('english', title || ' ' || subtitle || ' ' || description)); ",
-            "CREATE INDEX event_ts_idx ON event USING gin(to_tsvector('english', title || ' ' || text));",
+            [
+                "CREATE INDEX scroll_ts_idx ON scroll USING gin(to_tsvector('english', title || ' ' || subtitle || ' ' || description)); ",
+                "CREATE INDEX event_ts_idx ON event USING gin(to_tsvector('english', title || ' ' || text));",
+            ]
         )
     ]
