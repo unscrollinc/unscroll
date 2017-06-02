@@ -97,81 +97,133 @@
 	this.currentNotebook = undefined;
 	
         this.initialize = function() {
+	    console.log('Cookies A', Cookies.get());
             var _session = Cookies.getJSON('session');
             if (_session) {
                 $.extend(_user.data, _session);
-                
             }
             this.initializeDOM();
+	    console.log('Cookies B', Cookies.get());	    
         };
         
         this.initializeDOM = function() {
+	    console.log('USER is', _user);
+	    var data = {};
+	    var miniEditize = function(o) {
+		var _e = this;
+		var ruby = o.ruby;
+		var type = o.type;
+		var field = o.field;
+		var data = o.data;
+		var _el = $('<input></input>',
+			    {class:field + ' user-form',
+			     name:field,
+			     type:type,
+			     value:undefined});
+		_el.on('input', function(ev) {
+		    data[field] = _el.val();
+		    console.log(data);
+		});
+		var rubyEl = undefined;
+		if (ruby) {
+		    rubyEl = d('ruby user-form').html(ruby);
+		}
+		return d('user-form-field', [
+		    rubyEl,
+		    _el]);
+	    }
+	    
             if (_user.data.key) {
                 _user.getProfile();
-                _user.loginDOM();
-	        $('#notebook').toggle();
             }
-            
-            $('#account-login').on('click', function(){
-                $('#login-box').toggle();
-            });
-            
-            $('#login-submit').on('click', function(e) {
-                e.preventDefault();
-                _user.login({'username':$('#login-handle').val(),
-                             'password':$('#login-password').val()});
-            });
-
-	    $('#user-logout')
-                .text('Logout')
-                .on('click',
-		    function(e) {
-                        _user.logout();
-                    });
+	    else {
+		var loginBox = d('login-box').empty();
+		var login = s('login')
+		    .text('Login')
+		    .on('click', function(ev) {
+			var submit = miniEditize({field:'submit',
+						  type:'submit',
+						  ruby:undefined,
+						  data:data});
+			var errorsBox = d('errors').text('No errors');
+			submit.on('click', function(ev){
+			    ev.preventDefault();
+			    _user.login(data, loginBox, errorsBox);
+			});
+			var form = d('form',
+				     [miniEditize({field:'username',
+						   type:'text',
+						   ruby:'Username or email',
+						   data:data}),
+				      miniEditize({field:'password',
+						   type:'password',
+						   ruby:'Password',
+						   data:data}),
+				      submit
+				     ]);
+			loginBox.append(form, errorsBox);
+			$('body').append(loginBox);
+		    });
+		var create = s('create-account')
+		    .text('Create account')
+		    .on('click', function(ev) {});	    		
+		$('#login').empty().append(login, create);
+	    }
         };
 
-        this.login = function(data) {
+        this.login = function(data, loginBox, errorsBox) {
             var d = $.extend({}, _user.data);
             delete d.scrolls;
-	    Cookies.set('session', d);
-	
-	    /* These show up when we browse the browseable API, and they
-	       get us in trouble. For now, we blow them away and just go
-	       with a single session auth token. */
-	    
+	    //_user.deleteCookies('Deleting all the cookies');
 	    $.post({
 		url:AUTH + '/login/',
-		data:data,
-		failure:function(e) {
-		    console.log('Failure: ' + e);
+		data:JSON.stringify(data),		
+                contentType: 'application/json',
+                dataType: 'json',		
+		context:{loginBox:loginBox, errorsBox:errorsBox},
+		beforeSend: function(xhr, settings) {
 		},
-                
+		failure:function(e) {
+		    this.errorsBox.text('Failure: ' + e);
+		},
 		error: function(e) {
 		    if (e.status === 400) {
-			console.log('[ERROR] ' + e.responseJSON.non_field_errors[0]);
+			this.errorsBox.text('[ERROR] ' + e.responseJSON.non_field_errors[0]);
+		    }
+		    else if (e.status === 403) {
+			this.errorsBox.text(e.detail);			
 		    }
 		    else {
-			console.log('[ERROR] ' + 'Uncaught error condition: ', e);
+			this.errorsBox.text('[ERROR] ' + 'Uncaught error condition: ', e);
 		    }
 		},
                 
 		success:function(o) {
                     $.extend(_user.data, o);
-                    console.log('USER', _user);
                     _user.getProfile();
                     Cookies.set('session', _user.data);
+		    this.loginBox.remove();
                 }
             });
         };
 
         this.loginDOM = function() {
-    	    $('#account-login').text('You are: ' + _user.data.username);
-            $('#account-create').hide();            
-            $('#notebook').show();
-            $('#login-box').hide();
-            $('#user-logout').show();
+	    var username = s('username')
+		.text('You are: ' + _user.data.username);
+	    var notebook = s('notebook')
+		.text('Notebook')
+		.on('click', function(ev) {
+		    _user.currentNotebook = new Notebook(undefined, _user);
+		});	    
+
+	    var logout = s('logout')
+		.text('Logout')
+		.on('click', function(ev) {
+		    _user.logout();
+		});	    	    
+	    $('#login').empty().append(username, notebook, logout);
         }
-        
+
         this.getProfile = function() {
             $.get({
 		url:API + '/users/',
@@ -185,40 +237,52 @@
                     $.extend(_user.data, o.results[0]);
                     _user.loginDOM();
 		    var notebooklist = new NotebookList(_user);
-//		    var notebook = new Notebook(notebooklist.first().data, _user);
-//                  _user.currentNotebook = notebook;                    
+		    // var notebook = new Notebook(notebooklist.first().data, _user);
+                    // _user.currentNotebook = notebook;                    
 		}
             });            
         };
         
         this.logoutDOM = function() {
-            $('#account-login').text('Login');
-            $('#account-create').show();
-            $('#user-logout').hide();
+	    var login = s('login').text('Login');
+	    var create = s('logout').text('Create account');
+	    $('#login').empty().append(login, create);
         };
-        
-        this.logout = function() {
-            _user.data = {};
-	    Cookies.remove('sessionid');
+	
+	this.deleteCookies = function(e) {
+	    console.log('Deleting cookies', Cookies.get(), e);
 	    Cookies.remove('session');
 	    Cookies.remove('csrftoken');
-            console.log('Logged out.');
-            _user.logoutDOM();            
-            
-            $.post({
-		url:AUTH + '/logout/',
-		headers: {
-                    'Authorization': 'Token ' + _user.data.key
-		},
-		failure:function(e) {
-                    console.log('Failure: ' + e);
-		},
-		success:function(e) {
-                    
-		}
-            });
+	    Cookies.set('sessionid', undefined, {});
+	    console.log('Deleted cookies', Cookies.get(), e);	    
+
+//	    window.location = location.href;
+	};
+
+        this.logout = function() {
+            _user.data = {};
+            _user.logoutDOM();
+	    
+	    if (_user.data.key) {
+		$.post({
+		    url:AUTH + '/logout/',
+		    headers: {
+			'Authorization': 'Token ' + _user.data.key
+		    },
+		    failure:function(e) {
+			console.log('Failure: ' + e);
+			_user.deleteCookies(e);
+		    },
+		    success:function(e) {
+			_user.deleteCookies(e);		    
+		    }
+		});
+	    }
+	    else {
+		_user.deleteCookies('no user key');
+	    }
         };
-        
+        this.initialize();
     }
 
     /*
@@ -905,17 +969,21 @@
             var period = _panel.timeline.timeframe.getPeriod(_panel.start);
             _panel.el.append(period, h);
 
-	    var list = d('as-list').text(' [Timeline View]')
+	    var timelineburger = '&#9776;';
+	    var tableburger = '&#9783;';	    
+	    var flipper = false;
+	    var list = d('as-list').html(timelineburger)
 		.on('click', function(ev) {
 		    var t = $(this);
-		    if (t.text() == ' [List View]') {
-			t.text(' [Timeline View]');
+		    if (flipper) {
+			t.html(timelineburger);
 			_panel.listView.fadeOut();
 		    }
 		    else {
-			t.text(' [List View]');
+			t.html(tableburger);
 			_panel.asList();
 		    }
+		    flipper = !flipper;
 		});
 	    
 	    _panel.el.prepend(list);
@@ -1091,14 +1159,14 @@
 	        el.css({width:e.width * _panel.columnWidth + '%'});
 
 		e.height = Math.ceil(el.height()/window_height * GRIDHEIGHT)
-		
-		console.log({offset:e.offset, top:0, width:e.width, height:e.height});
 	        var reservation = _panel.makeReservation(e.offset, 0, e.width, e.height);
 	        if (reservation.success) {
-		    console.log({el:e.el, reservationY:reservation.y, cellHeight:_panel.cellHeight});		    
-		    _panel.el.append(e.el.css({
+		    e.el.hide();
+		    e.el.css({
 		        marginLeft:(reservation.x * _panel.cellWidth) + '%',
-		        marginTop:(reservation.y * _panel.cellHeight) + '%'}));
+		        marginTop:(reservation.y * _panel.cellHeight) + '%'})		    
+		    _panel.el.append(e.el);
+		    e.el.fadeIn();
 	        }
                 else {
                     console.log("reservation failed");
@@ -1312,7 +1380,6 @@
         }
 
         this.editorDOM = function(el) {
-	    $('#notebook').show();
 	    $('#notebook-event').show().empty().append(el);
         }
 

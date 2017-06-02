@@ -1,4 +1,5 @@
 from django.conf.urls import url, include
+from django.views.decorators.csrf import csrf_exempt
 # from django.contrib.auth.models import User
 from django.conf import settings
 from django.conf.urls.static import static
@@ -18,6 +19,11 @@ import hashlib
 from baseconv import base36
 from os import makedirs
 from rest_framework_bulk.routes import BulkRouter
+from rest_auth.views import (
+    LoginView, LogoutView, UserDetailsView, PasswordChangeView,
+    PasswordResetView, PasswordResetConfirmView
+)
+
 
 from rest_framework_bulk import (
     BulkListSerializer,
