@@ -24,13 +24,7 @@
         <input id="search-input" class="nav" name="search" value="Search">
         <span id="search-alert"></span>
       </form>
-      <div id="login">
-        <a id="create-scroll" class="nav">+[Scroll]</a> //
-        <a id="account-login" class="nav">Login</a> //
-        <a id="account-create" class="nav">Create account</a>
-        <a id="user-logout" class="nav">Logout</a>
-      </div>
-      <div id="mousepos"></div>
+      <div id="login"></div>
     </div>
     <div id="notebook">
       <div id="notebook-head">
@@ -73,6 +67,27 @@
         <input id="login-submit" type="submit" value="Log in">
         <p>Forgot password</p>
       </form>
+    </div>
+    <div id="register-box">
+      <form>
+        <div>
+          <span class="ruby">your username</span>
+          <input id="register-handle" type="text" name="email" value="">
+        </div>
+        <div>
+          <span class="ruby">your email</span>
+          <input id="register-handle" type="text" name="email" value="">
+        </div>
+        <div>
+          <span class="ruby">your password</span>
+          <input id="register-password-one" type="password" name="password" value="">
+        </div>
+        <div>
+          <span class="ruby">your password again</span>
+          <input id="register-password-two" type="password" name="password" value="">
+        </div>	
+        <input id="register-submit" type="submit" value="Log in">
+      </form>      
     </div>
 </script>
 </body>

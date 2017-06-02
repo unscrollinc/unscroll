@@ -1,4 +1,5 @@
 from django.conf.urls import url, include
+from django.views.decorators.csrf import csrf_exempt
 # from django.contrib.auth.models import User
 from django.conf import settings
 from django.conf.urls.static import static
@@ -18,6 +19,11 @@ import hashlib
 from baseconv import base36
 from os import makedirs
 from rest_framework_bulk.routes import BulkRouter
+from rest_auth.views import (
+    LoginView, LogoutView, UserDetailsView, PasswordChangeView,
+    PasswordResetView, PasswordResetConfirmView
+)
+
 
 from rest_framework_bulk import (
     BulkListSerializer,
@@ -463,12 +469,25 @@ schema_view = get_swagger_view(title='Unscroll API')
 urlpatterns = [
     url(r'', include(router.urls)),    
     url('^schema/$', schema_view),
-    url(r'^rest-auth/', include('rest_auth.urls')),
-    url(r'^api-auth/', include('rest_framework.urls',
-                               namespace='rest_framework')),
     url(r'^rest-auth/registration/',
         include('rest_auth.registration.urls')),
+    url(r'^api-auth/', include('rest_framework.urls',
+                               namespace='rest_framework')),
     url(r'^accounts/', include('django.contrib.auth.urls')),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    # URLs that do not require a session or valid token
+    url(r'^rest-auth/password/reset/$', PasswordResetView.as_view(),
+        name='rest_password_reset'),
+    url(r'^rest-auth/password/reset/confirm/$',
+        PasswordResetConfirmView.as_view(),
+        name='rest_password_reset_confirm'),
+    url(r'^rest-auth/login/$', csrf_exempt(LoginView.as_view()),
+        name='rest_login'),
+    # URLs that require a user to be logged in with a valid session / token.
+    url(r'^rest-auth/logout/$', LogoutView.as_view(), name='rest_logout'),
+    url(r'^rest-auth/user/$', UserDetailsView.as_view(),
+        name='rest_user_details'),
+    url(r'^rest-auth/password/change/$', PasswordChangeView.as_view(),
+        name='rest_password_change'),
+]
 
 

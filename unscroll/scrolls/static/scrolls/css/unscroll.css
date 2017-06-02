@@ -16,7 +16,11 @@ a {
     font-family: 'Roboto', sans-serif;
 }
 
-div#login-box {
+div#login span {
+    padding-right:0.5em;
+    cursor:hand;
+}
+div#login-box, div#register-box {
     z-index:100;
     top:50px;
     left:50%;
@@ -28,6 +32,7 @@ div#login-box {
     background:white;
     display:none;
 }
+
 div#login-box input {
     display:block;
     height:60px;
@@ -57,7 +62,7 @@ div#login-box input#login-submit:hover {
 div.column {
     display:block;
     height:100%;
-    border-right:1px solid lightblue;
+    border-right:1px solid #4FBEEA;
     position:absolute;
     top:-25px;
     text-align:center;
@@ -80,8 +85,8 @@ div.first {
 }
 
 .column .head:hover {
-    background:blue;
-    color:white;
+    color:#2F9ECA;
+    background:white;
     cursor:hand;
 }
 
@@ -97,7 +102,7 @@ span.period {
 }
 
 .period:hover {
-    background:red;
+    background:#2F9ECA;
     color:white;
     cursor:hand;
 }
@@ -258,7 +263,6 @@ img.thumb {
 }     
 
 div#player {
-    background:blue;
     left:100%;
     float:right;
     margin-top:20%;
@@ -648,6 +652,7 @@ tr.panel-list {
 }
 tr.panel-list td {
     vertical-align:top;
+    font-size:12pt;
 }
 
 tr.panel-list td.panel-datetime {
@@ -671,4 +676,14 @@ div.panel-list {
     overflow:auto;
     z-index:10;
     border:1px solid #2F9ECA;    
+}
+
+div.login-box {
+    position:fixed;
+    background:white;
+    border:1px solid red;
+    margin-top:55px;
+    margin-left:75%;
+    width:25%;
+    z-index:1000;
 }
