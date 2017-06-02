@@ -89,17 +89,17 @@ DJOSER = {
     'SERIALIZERS': {},
 }
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django_smtp_ssl.SSLEmailBackend'
 # Host for sending e-mail.
-# EMAIL_HOST = 'localhost'
+EMAIL_HOST = 'smtp.gmail.com'
 
 # Port for sending e-mail.
-# EMAIL_PORT = 1025
+EMAIL_PORT = 587
 
 # Optional SMTP authentication information for EMAIL_HOST.
-# EMAIL_HOST_USER = ''
-# EMAIL_HOST_PASSWORD = ''
-# EMAIL_USE_TLS = False
+EMAIL_HOST_USER = 'unscroll@unscroll.com'
+EMAIL_HOST_PASSWORD = 'B8Uh1cLXjSkln1vaj'
+EMAIL_USE_TLS = True
 
 
 SITE_ID = 1
