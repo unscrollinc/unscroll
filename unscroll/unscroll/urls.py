@@ -461,14 +461,6 @@ schema_view = get_swagger_view(title='Unscroll API')
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
-    url(r'', include(router.urls)),    
-    url('^schema/$', schema_view),
-    url(r'^rest-auth/', include('rest_auth.urls')),
-    url(r'^api-auth/', include('rest_framework.urls',
-                               namespace='rest_framework')),
-    url(r'^rest-auth/registration/',
-        include('rest_auth.registration.urls')),
-    url(r'^accounts/', include('django.contrib.auth.urls')),
+    url(r'', include(router.urls)),
+    url(r'^auth/', include('djoser.urls.authtoken')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-
-

@@ -18,7 +18,11 @@ SECRET_KEY = 'dw$b#f!l@s8r&)^yf1@69rfb7)atm@2aqv2zjj5)k!)kzf1ghj)'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '159.203.98.40', 'unscroll.com', 'www.unscroll.com']
+ALLOWED_HOSTS = ['localhost',
+                 '127.0.0.1',
+                 '159.203.98.40',
+                 'unscroll.com',
+                 'www.unscroll.com']
 
 # Application definition
 
@@ -36,22 +40,18 @@ INSTALLED_APPS = (
     'django.contrib.postgres',
     'rest_framework',
     'rest_framework.authtoken',
-    'rest_auth',
-    'allauth',
-    'allauth.account',
-    'rest_auth.registration',
-    'rest_framework_swagger',
+    'djoser',
 )
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS':
     ('django_filters.rest_framework.DjangoFilterBackend',),
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'DEFAULT_PAGINATION_CLASS':
+    'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 30,
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ],
 }
@@ -68,15 +68,39 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.security.SecurityMiddleware',
 )
 
-SWAGGER_SETTINGS = {
-    'SECURITY_DEFINITIONS': {
-        'api_key': {
-            'type': 'apiKey',
-            'in': 'header',
-            'name': 'Authorization'
-        }
-    },
+# SWAGGER_SETTINGS = {
+#     'SECURITY_DEFINITIONS': {
+#         'api_key': {
+#             'type': 'apiKey',
+#             'in': 'header',
+#             'name': 'Authorization'
+#         }
+#     },
+# }
+
+DJOSER = {
+    'DOMAIN': '127.0.0.1:8000',
+    'SITE_NAME': 'Unscroll',
+    'PASSWORD_RESET_CONFIRM_URL':
+    '?passwordconfirm=true&uid={uid}&token={token}',
+    'ACTIVATION_URL': '?activate=true&uid={uid}&token={token}',
+    'SEND_ACTIVATION_EMAIL': True,
+    'PASSWORD_VALIDATORS': [],
+    'SERIALIZERS': {},
 }
+
+EMAIL_BACKEND = 'django_smtp_ssl.SSLEmailBackend'
+# Host for sending e-mail.
+EMAIL_HOST = 'smtp.gmail.com'
+
+# Port for sending e-mail.
+EMAIL_PORT = 587
+
+# Optional SMTP authentication information for EMAIL_HOST.
+EMAIL_HOST_USER = 'unscroll@unscroll.com'
+EMAIL_HOST_PASSWORD = 'B8Uh1cLXjSkln1vaj'
+EMAIL_USE_TLS = True
+
 
 SITE_ID = 1
 ROOT_URLCONF = 'unscroll.urls'
@@ -91,7 +115,7 @@ TEMPLATES = [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages', 
+                'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.request',
             ],
         },
