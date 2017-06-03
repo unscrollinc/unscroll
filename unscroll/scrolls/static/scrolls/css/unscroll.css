@@ -69,10 +69,13 @@ span.period {
     cursor:hand;
 }
 
-.period:hover {
+span.period:hover {
     background:#2F9ECA;
     color:white;
     cursor:hand;
+}
+span.period a:hover {
+    color:white;
 }
 div#main-links {
 }
@@ -84,18 +87,7 @@ div#statusbar {
     position:fixed;
     border-bottom:1px solid black;
     font-size:20px;
-}
-#mousepos {
-    font-family:monospace;
-    font-size:18px;
-    background:black;
-    color:white;
-    width:100%;
-    display:none;
-}
-
-#notebook-toggle, #list-toggle, #account-login, #account-create {
-    cursor:hand;
+    z-index:20000;
 }
 
 /* Form */
@@ -133,12 +125,12 @@ input#search-input:focus, input#search-input:hover {
 
 /* Login */
 div#login {
-    width:50%;
-    top:15px;
-    border-left:1px solid black;
-    padding-left:15px;
-    position:absolute;
+    width:48%;
     left:50%;    
+    top:15px;
+    position:fixed;
+    text-align:right;
+    z-index:2000000;
 }
 
 /* Grid */
@@ -242,30 +234,18 @@ div#player {
 /* Notebook */
 
 .button {
+    background:#2F9ECA;
+    color:white;
     font-weight:bold;
     cursor:hand;
     font:10pt Roboto;
     padding:0 1em 0 0;
 }
 
-.button.active {
-    color:white;
-    background:red;
-    cursor:hand;
-    box-shadow:none;
-}
-
-.button:hover {
-    color:white;
-    background:red;
-    cursor:hand;
-}
-
-span.button {
-    cursor:hand;
-    font:10pt Roboto;
-    padding:0 0.30em 0 0.25em;
-    color:#666;
+.button.active, .button:hover {
+    background:white;
+    color:#2F9ECA;    
+    background:white;
 }
 
 div.ranger {
@@ -286,31 +266,69 @@ div.selected {
     opacity:0.1;
 }
 
-div#notebook {
-    z-index:100;
+div#notebook-wrapper {
+    z-index:1;
+    background:pink;
     left:50%;
     width:50%;
     position:fixed;
-    height:95%;
-    top:50px;
+    margin-top:0px;
+    height:100%;
     margin-left:auto;
-    border-left:1px solid black;
-    border-top:1px solid black;
-    background:white;
     display:none;
 }
 
+#notebook-essay-wrapper {
+    position:absolute;
+    height:100%;
+    width:50%;
+    left:50%;
+    padding-top:2.5%;
+    padding-bottom:250px;
+    overflow:auto;
+}
+
+div#notebook {
+    margin-top:51px;
+    border-left:1px solid black;
+    background:white;
+}
+
+
+div#notebook-essay {
+    height:100%;
+    font-family:Merriweather;
+    overflow:auto;
+    line-height:149%;
+    font-size:12pt;
+    padding-bottom:250px;
+}
+
 div#notebook-head {
-    background:#d9eaf3;
-    border-bottom:1px solid black;
-    height:5%;
+    background:#2F9ECA;
+    padding-top:15px;
+    height:35px;
+    color:black;
     padding-left:0.5em;
     position:relative;
 }
 
 div#notebook-controls {
-    position:absolute;
-    bottom:12.5%;
+    background:#2F9ECA;
+    font-size:20px;
+    color:white;
+    font-family:Roboto;
+}
+
+div#notebook-controls span.shim {
+    color:#6FCEFA;
+}
+div#notebook-controls span {
+    cursor:hand;
+}
+div#notebook-controls span:hover {
+    background:white;
+    color:#2F9ECA;
 }
 
 div#notebook-body {
@@ -498,6 +516,7 @@ div.notebook-title-editor {
     overflow:auto;
     position:absolute;
     background:white;
+    height:100%;
     max-height:100%;
     width:100%;
     display:none;
@@ -532,21 +551,6 @@ tr.notebook-list-item {
     line-height:150%;
 }
 
-#notebook-essay-wrapper {
-    width:44.25%;
-    padding-top:2.5%;
-    margin-left:52.75%;
-    position:absolute;
-}
-
-div#notebook-essay {
-    height:100%;
-    font-family:Merriweather;
-    overflow:auto;
-    line-height:149%;
-    font-size:12pt;
-    padding-bottom:250px;
-}
 
 
 .essay.title {
@@ -647,18 +651,108 @@ div.panel-list {
 }
 
 div#uxbox {
+    text-align:right;
     position:fixed;
     border:1px solid black;
     background:white;
     font-size:120%;
     padding:1em;
-    left:50%;
-    width:25%;
+    right:0;
     top:50px;
     display:none;
+    font-family:Roboto;
 }
+
+div#uxbox .user-form-help {
+    color:#666;
+    font-size:10pt;
+    margin-bottom:1em;
+}
+
+
+
+div#uxbox input {
+    font-family:Roboto;    
+    color:#666;
+    font-size:14pt;
+    background:#eee;
+    border:1px solid black;
+    margin-bottom:1em;
+    line-height:1.85em;
+    border-bottom:1px solid #666;
+}
+
+div#uxbox input:active {
+    background:white;
+}
+
+div#uxbox .submit {
+    background:#2F9ECA;
+    color:white;
+    
+}
+
 
 .editable-event {
     background:yellow;
-    z-index:20000000;
+    z-index:20000;
 }
+
+.active {
+    color:#2F9ECA;
+}
+#notebook-list-button.active {
+    color:#6FCEFA;
+}
+
+.modal {
+    position:fixed;
+    width:33%;
+    left:33%;
+    background:white;
+    color:black;
+    font-size:120x;
+    top:33%;
+    padding:1em;
+    border:1em solid red;
+    z-index:100000;
+    font-family:Roboto;
+}
+
+.modal-button {
+    width:33%;
+    font-size:120%;
+    float:left;
+    border:3px solid red;
+    padding:0.25em;
+}
+
+.modal .header {
+    font-size:150%;
+    border-bottom:1px solid red;
+}
+
+.modal .explanation {
+    margin-top:1em;
+    margin-bottom:1em;
+}
+.modal-button.nodelete {
+    background:white;
+    margin-right:3em;
+    cursor:hand;
+}
+.modal-button.delete {
+    background:red;
+    color:white;
+    cursor:hand;    
+}
+
+
+.delete,.button {
+    float:right;
+}
+
+.shim {
+    color:#666;
+}
+

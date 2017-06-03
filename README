@@ -8,9 +8,11 @@ DELETE FROM event WHERE id IN (SELECT id FROM (SELECT id, ROW_NUMBER() OVER (par
 * Presentation: When a Side Project Wants to Kill You
 
 - Write four or five essays
+  - Looking at books
   - Explain why I'm doing readings
   - Press releases
   - Raccoon
+  - My life in software
   - Something personal about a human being
   - Something about creative energy getting unleashed
   - Lincoln center and a place in which energy is unleashed
@@ -48,18 +50,26 @@ DELETE FROM event WHERE id IN (SELECT id FROM (SELECT id, ROW_NUMBER() OVER (par
 
 
 
+
+
 * For June 9 Demo
 
+- Final checklisty stuff
+  - [ ] Delete a scroll
+  - [ ] Fix reordering bugs
+  - [ ] Reflow events when event is added.
+  - [ ] List all my events?
+
 - Account 
-  + [ ] Register
-  + [ ] Confirm
+  + [X] Register
+  + [X] Confirm
   + [X] Log in to the site
   + [X] Log out
 
 - API
   - [X] Endpoints for notebook
   - [X] Search endpoint and database modification
-  - [ ] Search only a scroll
+  - [X] Search only a scroll
   - [ ] Delete a scroll
   - [ ] List scrolls owned by person
   - [ ] List scrolls by search title
@@ -70,7 +80,7 @@ DELETE FROM event WHERE id IN (SELECT id FROM (SELECT id, ROW_NUMBER() OVER (par
   - [X] Zoom in and out of time
   - [X] Show prioritization of time
   - [X] Listen to something
-  - [ ] Switch to "list view"
+  - [X] Switch to "list view"
   - [X] Add an event
     - [X] Pop up event input
   - [X] Edit an event

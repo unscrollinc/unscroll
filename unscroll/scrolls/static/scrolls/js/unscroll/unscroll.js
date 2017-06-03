@@ -11,7 +11,7 @@
 
     const API = '';
     const AUTH = API + '/auth';
-    const GRIDHEIGHT = 12;
+    const GRIDHEIGHT = 8;
     const ACTIVEHEIGHT = 0.95;          
     const REFRESH_INTERVAL = 4000; // milliseconds
     const timeBeforeRefresh = 10; // milliseconds
@@ -65,8 +65,9 @@
     */
     var UserBindings = function(user) {
 	var _bindings = this;
-	
+
 	this.user = user;
+	this.user.bindings = this;
 	this.uxbox = $('#uxbox');
 	this.navbox = $('#login');	
 	this.data = {};
@@ -103,7 +104,7 @@
 			class:'user-box wrapper'});
 	    _d.html(_s)
 		.on('click', function(ev) {
-		    _bindings.uxbox.fadeIn('fast');
+		    _bindings.uxbox.toggle();
 		    
 		    var el = _bindings[_s].makeEl();
 		    _bindings.uxbox.children().detach();
@@ -113,7 +114,11 @@
 	    _bindings.navbox.append(_d);
 	    return d;
 	};
-	
+
+	this.shim = function() {
+	    _bindings.navbox.append(s('shim').text('//'));
+
+	}
 	this.error = function(e, msg) {
 	    var notice = '';	    
 	    if (e) {
@@ -175,13 +180,32 @@
 		});
 	    }
 	}
-	
+	this['Notebook'] = {
+	    el:undefined,
+	    makeEl:function() {
+		return s('action')
+		    .html('Notebook')
+		    .on('click', function() {
+			if ($('#notebook').is(':visible')) {
+			    $('#notebook').fadeOut('fast');
+			    $(this).removeClass('active');
+			}
+			else {
+			    $('#notebook').fadeIn('fast');
+			    $(this).addClass('active');
+			    $('#notebook-wrapper').fadeIn('fast');
+			    
+			}
+		    });
+	    }
+	}
+		
 	this['Login'] = {
 	    el:undefined,
 	    makeEl:function() {
 		return s('user-box login')
 		    .append(
-			$('<h3></h3>').html('Login'),
+			$('<h3></h3>').html('Login to Unscroll'),
 			$('<div></div>').append(
 			    _bindings.getField({name:'username',
 						ruby:'Your username',
@@ -191,36 +215,12 @@
 						ruby:'Your password',
 						type:'password',
 						data:_bindings.data}),
-			    _bindings.getField({name:'submit',
+			    _bindings.getField({name:'Login',
 						type:'submit',
 						data:_bindings.data})
 				.on('click', function() {
 				    _bindings['Login'].endpoint();
 				})));
-	    },
-	    buildout:function(o) {
-		$.extend(_bindings.user.data, o);
-		
-		_bindings.getProfile();			
-		
-		Cookies.set('session', _bindings.user.data);
-		
-		_bindings.uxbox.children().detach();
-		_bindings['Login'].el.detach();
-		_bindings['Register'].el.detach();
-		
-		_bindings['Username'].el = _bindings['Username'].makeEl();
-		_bindings.navbox.append(_bindings['Username'].el);			
-		
-		_bindings['Logout'].el = _bindings['Logout'].makeEl();
-		_bindings.navbox.append(_bindings['Logout'].el);
-		
-		_bindings.data = {};
-		
-		_bindings.uxbox.toggle();
-		
-		_bindings.user.currentNotebook = new Notebook(undefined, _bindings.user);
-		
 	    },
             endpoint:function(ev) {
 		var data = _bindings.data;
@@ -236,16 +236,12 @@
 			console.log('Error: ' + e);
 	            },                    
 	            success:function(o) {
-			this['Login'].buildout(o);
+			$.extend(_bindings.user.data, o);
+			_bindings.getProfile();
 	            }
 		});
             }
 	};
-        this['Notebook'] = {
-	    el:undefined,
-	    makeEl:function() {return s('Notebook');},
-	    endpoint:undefined
-	};	
         this['Register'] = {
 	    el:undefined,	    
 	    makeEl:function() {
@@ -310,15 +306,7 @@
 			console.log('Error: ' + e);
 	            },                    
 	            success:function(o) {
-			Cookies.remove('session');
-			Cookies.remove('csrftoken');
-			_bindings['Logout'].el.detach();
-			_bindings['Username'].el.detach();
-			
-			_bindings.navbox.append(_bindings['Login'].el);
-			_bindings.navbox.append(_bindings['Register'].el);			
-			console.log(o);
-			_bindings.data = {};			
+			_bindings.teardown();
 	            }
 		});
             }
@@ -368,21 +356,47 @@
                     console.log('Failure: ' + e);
 		},
 		success:function(o) {
-		    console.log(o);
 		    _bindings.user.data.scrolls = o.results;
 		    var notebooklist = new NotebookList(_bindings.user);
-		    console.log('Notebooklist', notebooklist);
-		    if (notebooklist.first()) {
-			var notebook = new Notebook(notebooklist.first().data, _bindings.user);
-			_bindings.user.currentNotebook = notebook;
-		    }
+                    notebooklist.el.toggle();
+		    $('#notebook-list-button').addClass('active');		    
 		}
 	    });
 	};
+	this.teardown = function() {
+	    Cookies.remove('session');
+	    Cookies.remove('csrftoken');
+	    _bindings.navbox.children().detach();
+	    _bindings.uxbox.children().detach();
+	    _bindings.wire('Register')
+	    _bindings.shim();
+	    _bindings.wire('Login')	    
+	    
+	    
+	}
+	this.buildout = function(o) {
+	    $.extend(_bindings.user.data, o);
+	    Cookies.set('session', _bindings.user.data);
+	    _bindings.navbox.children().detach();
+	    _bindings.uxbox.children().detach();
+
+ 	    _bindings['Notebook'].el = _bindings['Notebook'].makeEl();
+	    _bindings.navbox.append(_bindings['Notebook'].el);
+	    _bindings.shim();	    	    
+ 	    _bindings['Username'].el = _bindings['Username'].makeEl();
+	    _bindings.navbox.append(_bindings['Username'].el);
+	    _bindings.shim();	    
+	    _bindings['Logout'].el = _bindings['Logout'].makeEl();
+	    _bindings.navbox.append(_bindings['Logout'].el);
+	    
+	    _bindings.data = {};
+	    
+	    _bindings.uxbox.toggle();
+	    
+	};
 
 	this.getProfile = function() {
-	    console.log(_bindings.user.data);
-				     
+	    console.log(_bindings);
             $.get({
 		url:AUTH+ '/me/',
 		headers: {
@@ -392,7 +406,7 @@
                     console.log('Failure: ' + e);
 		},
 		success:function(o) {
-		    console.log(o);
+		    _bindings.buildout(o);
 		    $.extend(_bindings.user.data, o);
 		    _bindings.getScrolls();
 		}
@@ -436,7 +450,7 @@
         */
         
         var _user = this;
-
+	this.bindings = undefined;
         this.data = {};
         this.timeline = undefined;
         this.currentScroll = undefined;
@@ -452,29 +466,6 @@
         
         this.initializeDOM = function() {
 	    var data = {};
-	    var miniEditize = function(o) {
-		var _e = this;
-		var ruby = o.ruby;
-		var type = o.type;
-		var field = o.field;
-		var data = o.data;
-		var _el = $('<input></input>',
-			    {class:field + ' user-form',
-			     name:field,
-			     type:type,
-			     value:undefined});
-		_el.on('input', function(ev) {
-		    data[field] = _el.val();
-		    console.log(data);
-		});
-		var rubyEl = undefined;
-		if (ruby) {
-		    rubyEl = d('ruby user-form').html(ruby);
-		}
-		return d('user-form-field', [
-		    rubyEl,
-		    _el]);
-	    }
 	};
 
         this.loginDOM = function() {
@@ -1478,17 +1469,18 @@
             var _d = _event.data;
             var editButton = undefined;
             var deleteButton = undefined;
-
+	    var noteButton = undefined;
 	    if (_event.user.username == _d.username) {
                 editButton = a('', 'button')
                     .html('+[Edit]')
                     .on('click', _event.editor);
                 deleteButton = a('', 'button')
-                    .html('[X]')
-                    .on('click', _event.delete);                
+                    .html('-[Delete]')
+                    .on('click', _event.delete);
+		noteButton = a('', 'button')
+		    .html('+[Note]')
+		    .on('click', _event.makeNote)
             }
-	    var noteButton = a('', 'button').html('+[Note]');
-	    noteButton.on('click', _event.makeNote)
 	    
             var thumb = undefined;
             if (_d.thumb_image) {
@@ -1524,7 +1516,7 @@
 		url:_event.data.url,
 		type: 'DELETE',
 		headers: {
-		    'Authorization': 'Token ' + _event.user.data.auth_token
+		    'Authorization': 'Token ' + _event.user.auth_token
 		},
 		failure:function(e) {
 		    console.log('Failure: ' + e);
@@ -1926,6 +1918,7 @@
        ╹ ╹┗━┛ ╹ ┗━╸┗━┛┗━┛┗━┛╹ ╹
     */
     var Notebook = function(scroll, user) {
+
         /* 
            A Scroll is a bag of events and notes.
 
@@ -2118,8 +2111,26 @@
                        + fieldName)
                     .html(data[fieldName]);
 
-                essayChild.html(data[fieldName]);
-		
+		var display = data[fieldName];
+		if (!display) {
+		    display='';
+		}
+
+                essayChild.html(display + ' ');
+
+		el.on('keyup',function(ev) {
+		    if (ev.keyCode==13) {
+			if (caller.notebook) {
+			    caller.notebook.makeItem('default', undefined, undefined, caller);
+			}
+		    };
+		});
+		el.on('blur', function() {
+		    essayChild.removeClass('active');
+		});
+		el.on('focus', function() {
+		    essayChild.addClass('active');
+		})		
 		var medium = new MediumEditor(el, {disableReturn: true});
 		
 		medium.subscribe('editableInput', function (event, editor) {
@@ -2208,7 +2219,7 @@
 	this.items = new Array();
 	this.itemsEl = undefined;
 	this.essayEl = undefined;
-	
+
         this.needsCreated = scroll ? false : true;
         this.needsUpdated = false;
         this.needsDeleted = false;
@@ -2226,11 +2237,13 @@
 	    _notebook.initializeDOM();
 	};
 
-        this.makeItem = function(kind, event, note) {
+        this.makeItem = function(kind, event, note, insertAfterItem) {
             var item = new NotebookItem(kind, event, note, _notebook);
+
 	    if (!item.data.order) {
 		item.data.order = this.decmin();
 	    }
+	    
 	    var text = note ? note.text : '';
             
             if (item.event) {
@@ -2248,14 +2261,33 @@
 				         caller:item});                
             }
 
-            // Add to actual array
-	    _notebook.items.unshift(item);
 
-            // Add to left notebook
-            _notebook.itemsEl.prepend(item.editized.formView);
+	    if (insertAfterItem) {
+		var reorder = new Array();
+		var lastOrder = undefined;
+		for (var i=0; i<_notebook.items.length; i++) {
+		    reorder.push(_notebook.items[i]);		    
+		    if (_notebook.items[i] == insertAfterItem) {
+			reorder.push(item);
+			item.editized.formView.insertAfter(_notebook.items[i].editized.formView);
+			item.editized.essayView.insertAfter(_notebook.items[i].editized.essayView);			
+		    }
+		    var lastOrder = item.data.order;
+		}
+		_notebook.items = reorder;
 
-            // Add to right notebook
-            _notebook.essayEl.prepend(item.editized.essayView);
+		
+	    }
+	    else {
+		// Add to actual array
+		_notebook.items.unshift(item);
+
+		// Add to left notebook
+		_notebook.itemsEl.prepend(item.editized.formView);
+		
+		// Add to right notebook
+		_notebook.essayEl.prepend(item.editized.essayView);
+	    }
             
 	    return item;
 	}
@@ -2299,8 +2331,34 @@
         this.editor = function() {
 	    this.editorDOM();
 	};
-        
+
 	this.editorDOM = function() {
+
+	    var deleteButton = s('button delete');
+	    
+	    deleteButton.html('Delete scroll')
+		.on('click', function(ev) {
+		    var warning = d('modal warning').append(
+			d('header').html('Really delete?'),
+			d('explanation').html('Do you really want to delete this scroll? That will be the end of the scroll. All of the events will become disconnected and the notes will be lost. There is no going back or backup right now. I\'m sorry, but that is how it is.'));
+		    
+		    var yesDelete = s('modal-button delete')
+			.html('Yes, delete forever')
+			.on('click', function(ev) {
+			    _notebook.delete();
+			    warning.remove();
+			});		    
+		    
+		    var noDelete = s('modal-button nodelete')
+			.html('No, don\'t delete')
+			.on('click', function(ev) {
+			    warning.remove();
+			});
+
+		    warning.append(noDelete, yesDelete);
+
+		    $('body').append(warning);
+		});
 
 	    var title = editize({
 		fieldName:'title',
@@ -2324,11 +2382,14 @@
 	    });
 
             $('#notebook-items').empty();
-            $('#notebook-essay').empty();            
+	    $('#notebook-essay').empty();            
 
 	    $('#scroll-header')
                 .empty()
-                .append(title.formView, subtitle.formView, description.formView);
+                .append(deleteButton,
+			title.formView,
+			subtitle.formView,
+			description.formView);
 	    
 	    $('#scroll-header-essay')
                 .empty()
@@ -2379,6 +2440,7 @@
 		title += possible.charAt(Math.floor(Math.random() * possible.length));
 	    }
 	    var data = {title:'Untitled ' + title, public:true}
+	    
 	    $.ajax({
                 url:API + '/scrolls/',
                 type: 'POST',
@@ -2399,18 +2461,17 @@
         }
 
         this.delete = function(ev) {
-            ev.preventDefault();
 	    $.ajax({
 		url:_notebook.data.url,
 		type: 'DELETE',
 		headers: {
-		    'Authorization': 'Token ' + _event.user.data.auth_token
+		    'Authorization': 'Token ' + _notebook.user.data.auth_token
 		},
 		failure:function(e) {
 		    console.log('Failure: ' + e);
 		},
 		success:function(o) {
-                    _event.el.remove();
+		    _notebook.user.bindings.getScrolls();		    
 		}
 	    });
         };
@@ -2519,7 +2580,7 @@
                     _notebook.networkOperationInProgress = false;
 		    _notebook.needsUpdated = false;
                         $.extend(_notebook.data, o);
-		    var notebookList = new NotebookList(_notebook.user);                        
+		    var notebookList = new NotebookList(_notebook.user);
                 }
 	    });
         }
@@ -2615,6 +2676,7 @@
 	};
 	
 	this.initializeDOM = function(scrolls) {
+	    _notebooklist.el.empty();
             _notebooklist.el.append($('<table></table>')
                                     .append(
                                         tr('notebook-list-item header')
@@ -2625,8 +2687,17 @@
                                                 th('public').text('Public?')),
                                         scrolls));
 	    $('#notebook-list-button')
+		.off()
 		.on('click', function (ev) {
-                    _notebooklist.el.toggle();
+		    if (_notebooklist.el.is(':visible')) {
+			_notebooklist.el.fadeOut('fast');
+			$(this).removeClass('active');
+		    }
+		    else {
+			_notebooklist.el.fadeIn('fast');
+			$(this).addClass('active');			
+		    }
+
 		});
 	}
 	
@@ -2680,33 +2751,36 @@
 
         // Who am I?
         var user = new User();
-
 	
 	var _b = new UserBindings(user);
-	_b.wire('Login');
-	_b.wire('Register');
-	_b.wire('Notebook');	
-	
+
 	if (_url.query.activate=='true') {
 	    _b['Activate'].endpoint(_url.query);
 	}
 
 	if (user.data.auth_token) {
-	    _b['Login'].buildout();
+	    _b.getProfile();
         }
+	else {
+	    _b.wire('Register');
+	    _b.shim();
+	    _b.wire('Login');
+	}
 	
         // What should the timeline show?
 	var end = moment();
 	var start = end.clone().subtract(1, 'month');
-        var timeline = new Timeline(start, end, user);
+
+	var timeline = new Timeline(start, end, user);
 	var search = new Search(timeline, user);
+	
 	$(window).resize(function(ev) {
 	    timeline.resize();
 	})
         // Escape key triggers Notebook
         $(document).keyup(function(e) {
             if (user.data.username) {            
-                if (e.keyCode === 27) $('#notebook').toggle();
+                if (e.keyCode === 27) $('#notebook-wrapper').toggle();
             }
         });
     });
