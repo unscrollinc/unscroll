@@ -114,12 +114,17 @@ class Scroll(models.Model):
 class EventQueryset(models.QuerySet):
     def full_text_search(self, text):
         return self.extra(
-            select={'a': "plainto_tsquery(%s) AS q"},
+            select={
+                'rank':
+                "ts_rank_cd(to_tsvector('english', event.title || "
+                + "' ' || event.text), plainto_tsquery(%s), 32)"},
             select_params=(text,),
-            where=("(tsv @@ q)",),
+            where=("to_tsvector('english', event.title || "
+                   + "' ' || event.text) @@ plainto_tsquery(%s)",),
             params=(text,),
-            order_by=('-datetime',)
+            order_by=('-rank',)
         )
+
 
 class Event(models.Model):
     """

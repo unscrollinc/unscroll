@@ -16,15 +16,10 @@ from PIL import Image, ImageOps
 from io import BytesIO
 import requests
 import hashlib
+import pprint
 from baseconv import base36
 from os import makedirs
 from rest_framework_bulk.routes import BulkRouter
-from rest_auth.views import (
-    LoginView, LogoutView, UserDetailsView, PasswordChangeView,
-    PasswordResetView, PasswordResetConfirmView
-)
-
-
 from rest_framework_bulk import (
     BulkListSerializer,
     BulkModelViewSet,
@@ -207,8 +202,7 @@ class BulkEventViewSet(BulkModelViewSet):
                      .aggregate(
                          count=Count('*'),
                          last_event=Max('datetime'),
-                         first_event=Min('datetime')
-                     )
+                         first_event=Min('datetime'))
         return Response(qs)
 
     @list_route()
@@ -345,7 +339,7 @@ class BulkNoteViewSet(BulkModelViewSet):
 class ScrollFilter(django_filters.rest_framework.FilterSet):
     class Meta:
         model = Scroll
-        fields = ['uuid', 'title']
+        fields = ['uuid', 'title', 'user__username']
 
 
 class ScrollSerializer(serializers.HyperlinkedModelSerializer):
@@ -429,7 +423,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAdminUser]
     serializer_class = UserSerializer
     queryset = User.objects.all()
     permission_classes = [IsAuthenticated]

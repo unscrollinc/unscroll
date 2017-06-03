@@ -79,7 +79,7 @@ MIDDLEWARE_CLASSES = (
 # }
 
 DJOSER = {
-    'DOMAIN': '127.0.0.1:8000',
+    'DOMAIN': '127.0.0.1',
     'SITE_NAME': 'Unscroll',
     'PASSWORD_RESET_CONFIRM_URL':
     '?passwordconfirm=true&uid={uid}&token={token}',
@@ -89,7 +89,7 @@ DJOSER = {
     'SERIALIZERS': {},
 }
 
-EMAIL_BACKEND = 'django_smtp_ssl.SSLEmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # Host for sending e-mail.
 EMAIL_HOST = 'smtp.gmail.com'
 

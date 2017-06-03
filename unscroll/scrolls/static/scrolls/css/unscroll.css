@@ -20,38 +20,6 @@ div#login span {
     padding-right:0.5em;
     cursor:hand;
 }
-div#login-box, div#register-box {
-    z-index:100;
-    top:50px;
-    left:50%;
-    width:50%;
-    height:50%;
-    position:absolute;
-    padding:1em;
-    border:1px solid black;
-    background:white;
-    display:none;
-}
-
-div#login-box input {
-    display:block;
-    height:60px;
-    margin-bottom:20px;
-    padding:.25em;
-    border:1px solid black;
-    font-size:20px;
-}
-div#login-box input#login-submit {
-    border:none;
-    outline:none;
-    background:white;
-}
-
-div#login-box input#login-submit:hover {
-    background:blue;
-    color:white;
-}
-
 #timeline {
     width:300%;
     position:fixed;
@@ -165,12 +133,12 @@ input#search-input:focus, input#search-input:hover {
 
 /* Login */
 div#login {
-    width:25%;
+    width:50%;
     top:15px;
     border-left:1px solid black;
     padding-left:15px;
     position:absolute;
-    left:75%;    
+    left:50%;    
 }
 
 /* Grid */
@@ -678,12 +646,19 @@ div.panel-list {
     border:1px solid #2F9ECA;    
 }
 
-div.login-box {
+div#uxbox {
     position:fixed;
+    border:1px solid black;
     background:white;
-    border:1px solid red;
-    margin-top:55px;
-    margin-left:75%;
+    font-size:120%;
+    padding:1em;
+    left:50%;
     width:25%;
-    z-index:1000;
+    top:50px;
+    display:none;
+}
+
+.editable-event {
+    background:yellow;
+    z-index:20000000;
 }

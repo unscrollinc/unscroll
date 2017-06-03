@@ -1,6 +1,6 @@
 "use strict";
 
-(function($, Cookies, MediumEditor) {
+(function($, Cookies, MediumEditor, URL) {
 
     /* 
        ________________________________________
@@ -8,8 +8,9 @@
        ┃╺┓┃  ┃ ┃┣┻┓┣━┫┃  ┗━┓
        ┗━┛┗━╸┗━┛┗━┛╹ ╹┗━╸┗━┛
     */
+
     const API = '';
-    const AUTH = API + '/rest-auth';
+    const AUTH = API + '/auth';
     const GRIDHEIGHT = 12;
     const ACTIVEHEIGHT = 0.95;          
     const REFRESH_INTERVAL = 4000; // milliseconds
@@ -40,7 +41,6 @@
     const th = function (className, kids) { return elMaker('th', className, kids); };
     const tr = function (className, kids) { return elMaker('tr', className, kids); };
     const td = function (className, kids) { return elMaker('td', className, kids); };
-
     const i = function (className, value) {
         return $('<input></input>', {value:value,
                                      class:className});
@@ -48,7 +48,7 @@
     const a = function (href, className) {
         if (className) {
             return $('<a></a>', {class:className,
-                                 target:'_new',
+                                 target:'_blank',
                                  href:href});
         }
         else {
@@ -57,6 +57,352 @@
                       target:'_new'});
         }
     }    
+
+    /*
+      ╻ ╻┏━┓┏━╸┏━┓┏┓ ╻┏┓╻╺┳┓╻┏┓╻┏━╸┏━┓
+      ┃ ┃┗━┓┣╸ ┣┳┛┣┻┓┃┃┗┫ ┃┃┃┃┗┫┃╺┓┗━┓
+      ┗━┛┗━┛┗━╸╹┗╸┗━┛╹╹ ╹╺┻┛╹╹ ╹┗━┛┗━┛
+    */
+    var UserBindings = function(user) {
+	var _bindings = this;
+	
+	this.user = user;
+	this.uxbox = $('#uxbox');
+	this.navbox = $('#login');	
+	this.data = {};
+	
+	this.getField = function(o) {
+            var _name = o.name;
+            var _ruby = o.ruby;
+            var _type = o.type;
+            var _data = o.data;
+            var _wrap = $('<div></div>', {class:'user-form'});
+            var _help = undefined;
+	    
+            if (_ruby) {
+		_help = $('<div></div>', {class:'user-form-help ' + _name}).html(_ruby);
+            }
+	    
+            var _input = $('<input></input>',
+			   {class:'user-form-input ' + _name,
+			    type:_type,
+			    value:undefined})
+            
+            _input.on('input', function(e) {
+		_data[_name] = $(this).val();
+            });
+            
+            
+            _wrap.append(_help,_input);
+            return _wrap;
+	}
+	
+	this.wire = function(_s) {
+	    var _d = $('<span></span>',
+		       {id:_s,
+			class:'user-box wrapper'});
+	    _d.html(_s)
+		.on('click', function(ev) {
+		    _bindings.uxbox.fadeIn('fast');
+		    
+		    var el = _bindings[_s].makeEl();
+		    _bindings.uxbox.children().detach();
+		    _bindings.uxbox.append(el);
+		});
+	    _bindings[_s].el = _d;
+	    _bindings.navbox.append(_d);
+	    return d;
+	};
+	
+	this.error = function(e, msg) {
+	    var notice = '';	    
+	    if (e) {
+		var k = Object.keys(e);
+		for (var i=0;i<k.length;i++) {
+		    notice += '<div class="error-def">' + k[i] + ': ' + e[k[i]] + '</div>';
+		}
+	    }
+	    return $('<div></div>', {class:'error'})
+		.html('Error: ' + msg + notice + '<p>Click to get rid of this.</p>')
+		.on('click', function(e) {
+		    _bindings.uxbox.fadeOut();
+		    $(this).detach();
+		});
+	}
+	
+	this.notice = function(e, msg) {
+	    return $('<div></div>', {class:'error'})
+		.html('Notice: ' + msg + e)
+		.on('click', function(e) {
+		    $(this).detach();
+		});	    
+	}
+	this['Username'] = {
+	    el:undefined,
+	    makeEl:function() {
+		return s('username').html('You are: ' + _bindings.user.data.username);
+	    }
+	}
+	
+	this['Activate'] = {
+	    el:undefined,
+	    makeEl:function () {
+		return _bindings.notice('', 'Welcome! You\'re activated.');
+	    },
+	    endpoint:function(data) {
+		var url = new Url();
+		$.ajax({
+	            url:AUTH + '/activate/',
+	            type:'POST',
+                    data:{uid:data.uid, token:data.token},
+	            error:function(e) {
+			console.log('Error: ', e.responseJSON);
+			_bindings.uxbox.append(_bindings.error('', e.responseJSON.detail));			
+			_bindings.data = {};
+			_bindings.uxbox.toggle();			
+	            },
+	            failure:function(e) {
+			console.log('Failure: ' + e);
+	            },                    
+	            success:function(o) {
+			console.log(o);
+			_bindings['Activate'].el = _bindings['Activate'].makeEl();
+			_bindings.uxbox.append(_bindings['Activate'].el);			
+			_bindings.uxbox.show();
+			_bindings.data = {};
+
+	            }
+		});
+	    }
+	}
+	
+	this['Login'] = {
+	    el:undefined,
+	    makeEl:function() {
+		return s('user-box login')
+		    .append(
+			$('<h3></h3>').html('Login'),
+			$('<div></div>').append(
+			    _bindings.getField({name:'username',
+						ruby:'Your username',
+						type:'text',
+						data:_bindings.data}),
+			    _bindings.getField({name:'password',
+						ruby:'Your password',
+						type:'password',
+						data:_bindings.data}),
+			    _bindings.getField({name:'submit',
+						type:'submit',
+						data:_bindings.data})
+				.on('click', function() {
+				    _bindings['Login'].endpoint();
+				})));
+	    },
+	    buildout:function(o) {
+		$.extend(_bindings.user.data, o);
+		
+		_bindings.getProfile();			
+		
+		Cookies.set('session', _bindings.user.data);
+		
+		_bindings.uxbox.children().detach();
+		_bindings['Login'].el.detach();
+		_bindings['Register'].el.detach();
+		
+		_bindings['Username'].el = _bindings['Username'].makeEl();
+		_bindings.navbox.append(_bindings['Username'].el);			
+		
+		_bindings['Logout'].el = _bindings['Logout'].makeEl();
+		_bindings.navbox.append(_bindings['Logout'].el);
+		
+		_bindings.data = {};
+		
+		_bindings.uxbox.toggle();
+		
+		_bindings.user.currentNotebook = new Notebook(undefined, _bindings.user);
+		
+	    },
+            endpoint:function(ev) {
+		var data = _bindings.data;
+		$.ajax({
+	            url:AUTH + '/login/',
+	            type:'POST',
+                    data:{username:data.username,
+			  password:data.password},
+	            error:function(e) {
+			console.log('Failure: ', e.responseJSON);
+	            },
+	            failure:function(e) {
+			console.log('Error: ' + e);
+	            },                    
+	            success:function(o) {
+			this['Login'].buildout(o);
+	            }
+		});
+            }
+	};
+        this['Notebook'] = {
+	    el:undefined,
+	    makeEl:function() {return s('Notebook');},
+	    endpoint:undefined
+	};	
+        this['Register'] = {
+	    el:undefined,	    
+	    makeEl:function() {
+		return s('user-box register')
+		    .append(
+			$('<h3></h3>').html('Register'),        
+			$('<div></div>').append(
+			    _bindings.getField({name:'username', ruby:'Your username', type:'text', data:_bindings.data}),
+			    _bindings.getField({name:'email', ruby:'Your email', type:'text', data:_bindings.data}),
+			    _bindings.getField({name:'password', ruby:'Your password', type:'password', data:_bindings.data}),
+			    _bindings.getField({name:'register', type:'submit', data:_bindings.data})            
+				.on('click', function() {
+				    _bindings['Register'].endpoint();
+				})))
+	    },
+	    endpoint:function(ev) {
+		var data = _bindings.data;
+		$.ajax({
+		    url:AUTH + '/register/',
+		    type:'POST',
+		    data:_bindings.data,
+		    error:function(e) {
+			console.log('Error: ', e.responseJSON);
+			_bindings.uxbox.append(_bindings.error(e.responseJSON, 'Something went wrong: '))
+			
+		    },
+		    failure:function(e) {
+			console.log('Failure: ' + e);
+	            },                    
+	            success:function(o) {
+			$.extend(user,o);
+			_bindings['Register'].el.detach();
+			_bindings.uxbox.children().detach();
+			_bindings.uxbox.append(_bindings.notice(e.responseJSON, 'Great, I sent you an email: '));
+			console.log(o);
+			_bindings.data = {};			
+	            }
+		});
+            }
+	},
+        this['Logout'] = {
+	    el:undefined,
+	    makeEl:function() {
+		return s('user-box logout')
+		    .append(
+			s('logout')
+			    .html('Logout')
+			    .on('click', _bindings['Logout'].endpoint));
+	    },
+	    endpoint:function(ev) {
+		var data = _bindings.data;
+		$.ajax({
+	            url:AUTH + '/logout/',
+	            type:'POST',
+                    headers: {
+			'Authorization': 'Token ' + user.data.auth_token
+                    },            
+	            error:function(e) {
+			console.log('Failure: ', e.responseJSON);
+	            },
+	            failure:function(e) {
+			console.log('Error: ' + e);
+	            },                    
+	            success:function(o) {
+			Cookies.remove('session');
+			Cookies.remove('csrftoken');
+			_bindings['Logout'].el.detach();
+			_bindings['Username'].el.detach();
+			
+			_bindings.navbox.append(_bindings['Login'].el);
+			_bindings.navbox.append(_bindings['Register'].el);			
+			console.log(o);
+			_bindings.data = {};			
+	            }
+		});
+            }
+	},
+        this['Recover password'] = {
+	    el:function() {
+		$('<div></div>', {class:'user-box recover-password'})
+		    .append(
+			$('<h3></h3>').html('Recover password'),
+			_bindings.getField({name:'email', ruby:'Your email', type:'text', data:_bindings.data}),
+			$('<div></div>').append(
+			    _bindings.getField({name:'logout', type:'submit', data:_bindings.data})            
+				.on('click', function() {
+				    _bindings['Recover password'].endpoint();				    
+				})))
+	    },
+	    endpoint:function(ev) {
+		var data = _bindings.data;
+		$.ajax({
+	            url:AUTH + '/password/reset/',
+		    data:{email:data.email},
+	            type:'POST',
+                    headers: {
+			'Authorization': 'Token ' + user.data.auth_token
+                    },            
+	            error:function(e) {
+			console.log('Failure: ', e.responseJSON);
+	            },
+	            failure:function(e) {
+			console.log('Error: ' + e);
+	            },                    
+	            success:function(o) {
+			console.log(o);
+			_bindings.data = {};			
+	            }
+		});	
+	    }
+	};
+
+        this.getScrolls = function() {
+            $.get({
+		url:API + '/scrolls/?user__username=' + _bindings.user.data.username,
+		headers: {
+                    'Authorization': 'Token ' + _bindings.user.data.auth_token
+		},
+		failure:function(e) {
+                    console.log('Failure: ' + e);
+		},
+		success:function(o) {
+		    console.log(o);
+		    _bindings.user.data.scrolls = o.results;
+		    var notebooklist = new NotebookList(_bindings.user);
+		    console.log('Notebooklist', notebooklist);
+		    if (notebooklist.first()) {
+			var notebook = new Notebook(notebooklist.first().data, _bindings.user);
+			_bindings.user.currentNotebook = notebook;
+		    }
+		}
+	    });
+	};
+
+	this.getProfile = function() {
+	    console.log(_bindings.user.data);
+				     
+            $.get({
+		url:AUTH+ '/me/',
+		headers: {
+                    'Authorization': 'Token ' + _bindings.user.data.auth_token
+		},
+		failure:function(e) {
+                    console.log('Failure: ' + e);
+		},
+		success:function(o) {
+		    console.log(o);
+		    $.extend(_bindings.user.data, o);
+		    _bindings.getScrolls();
+		}
+            });            
+        };
+	
+
+	
+    }
+
     
     /*
       ________________________________________
@@ -97,17 +443,14 @@
 	this.currentNotebook = undefined;
 	
         this.initialize = function() {
-	    console.log('Cookies A', Cookies.get());
             var _session = Cookies.getJSON('session');
             if (_session) {
                 $.extend(_user.data, _session);
             }
             this.initializeDOM();
-	    console.log('Cookies B', Cookies.get());	    
         };
         
         this.initializeDOM = function() {
-	    console.log('USER is', _user);
 	    var data = {};
 	    var miniEditize = function(o) {
 		var _e = this;
@@ -132,121 +475,14 @@
 		    rubyEl,
 		    _el]);
 	    }
-	    
-            if (_user.data.key) {
-                _user.getProfile();
-            }
-	    else {
-		var loginBox = d('login-box').empty();
-		var login = s('login')
-		    .text('Login')
-		    .on('click', function(ev) {
-			var submit = miniEditize({field:'submit',
-						  type:'submit',
-						  ruby:undefined,
-						  data:data});
-			var errorsBox = d('errors').text('No errors');
-			submit.on('click', function(ev){
-			    ev.preventDefault();
-			    _user.login(data, loginBox, errorsBox);
-			});
-			var form = d('form',
-				     [miniEditize({field:'username',
-						   type:'text',
-						   ruby:'Username or email',
-						   data:data}),
-				      miniEditize({field:'password',
-						   type:'password',
-						   ruby:'Password',
-						   data:data}),
-				      submit
-				     ]);
-			loginBox.append(form, errorsBox);
-			$('body').append(loginBox);
-		    });
-		var create = s('create-account')
-		    .text('Create account')
-		    .on('click', function(ev) {});	    		
-		$('#login').empty().append(login, create);
-	    }
-        };
-
-        this.login = function(data, loginBox, errorsBox) {
-            var d = $.extend({}, _user.data);
-            delete d.scrolls;
-	    //_user.deleteCookies('Deleting all the cookies');
-	    $.post({
-		url:AUTH + '/login/',
-		data:JSON.stringify(data),		
-                contentType: 'application/json',
-                dataType: 'json',		
-		context:{loginBox:loginBox, errorsBox:errorsBox},
-		beforeSend: function(xhr, settings) {
-		},
-		failure:function(e) {
-		    this.errorsBox.text('Failure: ' + e);
-		},
-		error: function(e) {
-		    if (e.status === 400) {
-			this.errorsBox.text('[ERROR] ' + e.responseJSON.non_field_errors[0]);
-		    }
-		    else if (e.status === 403) {
-			this.errorsBox.text(e.detail);			
-		    }
-		    else {
-			this.errorsBox.text('[ERROR] ' + 'Uncaught error condition: ', e);
-		    }
-		},
-                
-		success:function(o) {
-                    $.extend(_user.data, o);
-                    _user.getProfile();
-                    Cookies.set('session', _user.data);
-		    this.loginBox.remove();
-                }
-            });
-        };
+	};
 
         this.loginDOM = function() {
-	    var username = s('username')
-		.text('You are: ' + _user.data.username);
-	    var notebook = s('notebook')
-		.text('Notebook')
-		.on('click', function(ev) {
-		    _user.currentNotebook = new Notebook(undefined, _user);
-		});	    
-
-	    var logout = s('logout')
-		.text('Logout')
-		.on('click', function(ev) {
-		    _user.logout();
-		});	    	    
-	    $('#login').empty().append(username, notebook, logout);
         }
 
-        this.getProfile = function() {
-            $.get({
-		url:API + '/users/',
-		headers: {
-                    'Authorization': 'Token ' + _user.data.key
-		},
-		failure:function(e) {
-                    console.log('Failure: ' + e);
-		},
-		success:function(o) {
-                    $.extend(_user.data, o.results[0]);
-                    _user.loginDOM();
-		    var notebooklist = new NotebookList(_user);
-		    // var notebook = new Notebook(notebooklist.first().data, _user);
-                    // _user.currentNotebook = notebook;                    
-		}
-            });            
-        };
+
         
         this.logoutDOM = function() {
-	    var login = s('login').text('Login');
-	    var create = s('logout').text('Create account');
-	    $('#login').empty().append(login, create);
         };
 	
 	this.deleteCookies = function(e) {
@@ -263,11 +499,11 @@
             _user.data = {};
             _user.logoutDOM();
 	    
-	    if (_user.data.key) {
+	    if (_user.data.auth_token) {
 		$.post({
 		    url:AUTH + '/logout/',
 		    headers: {
-			'Authorization': 'Token ' + _user.data.key
+			'Authorization': 'Token ' + _user.data.auth_token
 		    },
 		    failure:function(e) {
 			console.log('Failure: ' + e);
@@ -1004,10 +1240,11 @@
                     + _panel.timeline.user.currentScroll.uuid;
 	    }
 
-	    window.history.replaceState(
+/*	    window.history.replaceState(
 		{},
 		'Unscroll: From X to Y',
 		url);
+*/
 
 	}
 	
@@ -1169,7 +1406,7 @@
 		    e.el.fadeIn();
 	        }
                 else {
-                    console.log("reservation failed");
+                    // console.log("reservation failed");
                 }
 	    });
                 
@@ -1287,7 +1524,7 @@
 		url:_event.data.url,
 		type: 'DELETE',
 		headers: {
-		    'Authorization': 'Token ' + _event.user.key
+		    'Authorization': 'Token ' + _event.user.data.auth_token
 		},
 		failure:function(e) {
 		    console.log('Failure: ' + e);
@@ -1316,6 +1553,7 @@
                 }
             }
             var saveFunction = exists ? _event.doPatch : _event.doPost;
+	    
 	    var makeInput = function(name, title, is_rich, defaultValue) {
                 var value = _event.data[name] ? _event.data[name] : defaultValue;
                 if (!exists && defaultValue) {
@@ -1349,11 +1587,12 @@
                         d('description').append(title),
 			d('input').append(editor));
             }
+	    console.log(_event);
 	    var newEvent =
 		$('<div></div>',
 		  {class:'editable-event'}).append(
 		      $('<div></div>').append(
-                          d('scroll-title').html('Scroll: ' + _event.data.scroll_title),
+                          d('scroll-title').html('Scroll: ' + _event.panel.timeline.user.currentScroll.title),
 			  makeInput('title', 'Event title'),
 			  makeInput('datetime', 'Date/time', false, _event.panel.timeline.pos.target.format()),
 			  makeInput('resolution', 'Resolution', false, _event.panel.timeline.timeframe.resolution),
@@ -1366,6 +1605,7 @@
 					        value:'save',
 					        name:'save'})
 			      .on('click', saveFunction)));
+	    _event.patch['scroll'] = _event.panel.timeline.user.currentScroll.url;
 	    return newEvent;
 	}
 
@@ -1404,7 +1644,7 @@
 		    type:'POST',
 		    data:_event.patch,
 		    headers: {
-		        'Authorization': 'Token ' + _event.user.key
+		        'Authorization': 'Token ' + _event.panel.timeline.user.data.auth_token
 		    },
 		    failure:function(e) {
 		        console.log('Failure: ' + e);
@@ -1427,7 +1667,7 @@
 		    type:'PATCH',
 		    data:_event.patch,
 		    headers: {
-		        'Authorization': 'Token ' + _event.user.key
+		        'Authorization': 'Token ' + _event.user.data.auth_token
 		    },
 		    failure:function(e) {
 		        console.log('Failure: ' + e);
@@ -1505,8 +1745,11 @@
                 offset:0
             };
             _timeline.el.css({marginLeft:'-100%'});
-            _timeline.timeframe = _timeline.getTimeFrame(_start, _end);
-            console.log(_timeline.timeframe);
+            var tf = _timeline.getTimeFrame(_start, _end);
+	    if (!tf) {
+		tf = new MonthsTimeFrame(_timeline);
+	    }
+	    _timeline.timeframe = tf;	    
 	    _timeline.start = _timeline.timeframe.adjust(_start);
 	    _timeline.end = _timeline.timeframe.add(moment(_timeline.start), 1);
             _timeline.panels = new Array();
@@ -2117,7 +2360,7 @@
                 contentType: 'application/json',
                 dataType: 'json',
                 headers: {
-		    'Authorization': 'Token ' + _notebook.user.data.key
+		    'Authorization': 'Token ' + _notebook.user.data.auth_token
                 },
                 failure:function(e) {
 		    console.log('Failure: ' + e);
@@ -2143,7 +2386,7 @@
                 dataType: 'json',
 		data:JSON.stringify(data),
                 headers: {
-		    'Authorization': 'Token ' + _notebook.user.data.key
+		    'Authorization': 'Token ' + _notebook.user.data.auth_token
                 },
                 failure:function(e) {
 		    console.log('Failure: ' + e);
@@ -2161,7 +2404,7 @@
 		url:_notebook.data.url,
 		type: 'DELETE',
 		headers: {
-		    'Authorization': 'Token ' + _event.user.data.key
+		    'Authorization': 'Token ' + _event.user.data.auth_token
 		},
 		failure:function(e) {
 		    console.log('Failure: ' + e);
@@ -2179,7 +2422,7 @@
                 contentType: 'application/json',
                 dataType: 'json',
                 headers: {
-		    'Authorization': 'Token ' + _notebook.user.data.key
+		    'Authorization': 'Token ' + _notebook.user.data.auth_token
                 },
                 failure:function(e) {
 		    console.log('Failure: ' + e);
@@ -2202,7 +2445,7 @@
 		data:JSON.stringify(data),
                 context:items,
                 headers: {
-		    'Authorization': 'Token ' + _notebook.user.data.key
+		    'Authorization': 'Token ' + _notebook.user.data.auth_token
                 },
                 failure:function(e) {
 		    console.log('Failure: ' + e);
@@ -2225,7 +2468,7 @@
 		data:JSON.stringify(data),
                 context:items,
                 headers: {
-		    'Authorization': 'Token ' + _notebook.user.data.key
+		    'Authorization': 'Token ' + _notebook.user.data.auth_token
                 },
                 failure:function(e) {
 		    console.log('Failure: ' + e);
@@ -2245,7 +2488,7 @@
 		    type: 'DELETE',
 		    context:items[i],
 		    headers: {
-			'Authorization': 'Token ' + _notebook.user.data.key
+			'Authorization': 'Token ' + _notebook.user.data.auth_token
 		    },
 		    failure:function(e) {
 			console.log('Failure: ' + e);
@@ -2266,7 +2509,7 @@
                 dataType: 'json',
 		data:JSON.stringify(_notebook.data),
                 headers: {
-		    'Authorization': 'Token ' + _notebook.user.data.key
+		    'Authorization': 'Token ' + _notebook.user.data.auth_token
                 },
                 failure:function(e) {
                     _notebook.networkOperationInProgress = false;
@@ -2362,9 +2605,11 @@
 	}
 	
         this.initialize = function() {
-	    _notebooklist.scrolls = $.map(user.data.full_scrolls,
-					  function(s) {
-					      return new NotebookListItem(s, _notebooklist);});
+	    _notebooklist.scrolls =
+		$.map(user.data.scrolls,
+		      function(s) {
+			  return new NotebookListItem(s, _notebooklist);
+		      });
 	    var els = $.map(_notebooklist.scrolls, function(s) {return s.el});
 	    _notebooklist.initializeDOM(els);
 	};
@@ -2431,9 +2676,25 @@
       ╺┻┛┗━┛┗━╸┗━┛╹ ╹┗━╸╹ ╹ ╹ ╹╹┗╸┗━╸╹ ╹╺┻┛ ╹
     */    
     $(document).ready(function() {
+	var _url = new Url;
+
         // Who am I?
         var user = new User();
-        
+
+	
+	var _b = new UserBindings(user);
+	_b.wire('Login');
+	_b.wire('Register');
+	_b.wire('Notebook');	
+	
+	if (_url.query.activate=='true') {
+	    _b['Activate'].endpoint(_url.query);
+	}
+
+	if (user.data.auth_token) {
+	    _b['Login'].buildout();
+        }
+	
         // What should the timeline show?
 	var end = moment();
 	var start = end.clone().subtract(1, 'month');
@@ -2453,4 +2714,5 @@
     
 }(jQuery,
   Cookies,
-  MediumEditor));
+  MediumEditor,
+  URL));
