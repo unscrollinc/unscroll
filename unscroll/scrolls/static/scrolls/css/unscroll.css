@@ -268,7 +268,6 @@ div.selected {
 
 div#notebook-wrapper {
     z-index:1;
-    background:pink;
     left:50%;
     width:50%;
     position:fixed;
