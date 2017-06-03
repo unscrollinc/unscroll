@@ -692,9 +692,18 @@ div#uxbox .submit {
 }
 
 
-.editable-event {
-    background:yellow;
+.event-editor-wrapper {
+    position:fixed;
+    width:33%;
+    left:33%;
+    top:100px;
+    background:#eee;
+    border:1px solid black;
     z-index:20000;
+    border:1px solid #eee;
+}
+.editable-event {
+    padding:1em;
 }
 
 .active {

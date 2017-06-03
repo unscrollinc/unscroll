@@ -1437,6 +1437,7 @@
 
         this.patch = {};        
         this.el = $('<div></div>', {class:'event'});
+	this.editorEl = undefined;
         this.datetime = moment(data.datetime);
         this.needsUpdated = false;
         this.needsCreated = false;
@@ -1551,7 +1552,7 @@
                 if (!exists && defaultValue) {
                     _event.patch[name] = defaultValue;
                 }
-		var vals = {class:'event-input ' + name,
+		var vals = {class:name,
 			    name:name,
 			    value:value};
 		var editor =  $('<input></input>', vals);
@@ -1562,7 +1563,7 @@
 		var medium = undefined;
 		if (is_rich) {
 		    editor = $('<div></div>', vals)
-			.addClass('rte')
+			.addClass(name)
 			.append(_event.data[name]);
 		    medium = new MediumEditor(editor, {
 			disableDoubleReturn: false,
@@ -1574,30 +1575,39 @@
 	            });                    
 		}
                 
-		return $('<p>')
+		return d('field')
 		    .append(
-                        d('description').append(title),
-			d('input').append(editor));
+                        d('field-title').append(title),
+			d('field-input').append(editor));
             }
-	    console.log(_event);
+
+	    var scrollTitle = _event.data.scroll_title;
+	    if (!scrollTitle) {
+		scrollTitle = _event.panel.timeline.user.currentScroll.title;
+	    }
+	    if (!scrollTitle) {
+		console.log('YOU NEED A SCROLL!');
+	    }
 	    var newEvent =
-		$('<div></div>',
-		  {class:'editable-event'}).append(
-		      $('<div></div>').append(
-                          d('scroll-title').html('Scroll: ' + _event.panel.timeline.user.currentScroll.title),
-			  makeInput('title', 'Event title'),
-			  makeInput('datetime', 'Date/time', false, _event.panel.timeline.pos.target.format()),
-			  makeInput('resolution', 'Resolution', false, _event.panel.timeline.timeframe.resolution),
-			  makeInput('content_url', 'Link', false, 'http://'),
-			  makeInput('text', 'Event description', true),
-			  makeInput('source_date', 'Source Name (optional)'),
-			  makeInput('source_url', 'Source Link (optional)'),
-			  $('<input></input>', {class:'submit',
-					        type:'submit',
-					        value:'save',
-					        name:'save'})
-			      .on('click', saveFunction)));
-	    _event.patch['scroll'] = _event.panel.timeline.user.currentScroll.url;
+		d('event-editor-wrapper').append(
+		    d('editable-event').append(
+			$('<div></div>').append(
+                            d('scroll-title').html('Scroll: ' + scrollTitle),
+			    makeInput('title', 'Event title', true),
+			    makeInput('datetime', 'Date/time', false, _event.panel.timeline.pos.target.format()),
+			    makeInput('resolution', 'Resolution', false, _event.panel.timeline.timeframe.resolution),
+			    makeInput('content_url', 'Link', false, ''),
+			    makeInput('text', 'Event description', true),
+			    makeInput('source_date', 'Source Name (optional)'),
+			    makeInput('source_url', 'Source Link (optional)'),
+			    $('<input></input>', {class:'submit',
+					          type:'submit',
+					          value:'save',
+					          name:'save'})
+				.on('click', saveFunction))));
+	    if (_event.patch['scroll']) {
+		_event.patch['scroll'] = _event.panel.timeline.user.currentScroll.url;
+	    }
 	    return newEvent;
 	}
 
@@ -1607,8 +1617,8 @@
                 ev.preventDefault();
                 exists = true;
             }
-            var el = _event.makeEditor(exists);
-            _event.editorDOM(el);
+	    _event.editorEl = _event.makeEditor(exists);
+	    $('body').append(_event.editorEl);
         }
 
         this.editorDOM = function(el) {
@@ -1616,7 +1626,7 @@
         }
 
 	this.editorPostSaveDOM = function() {
-	    $('#notebook-event').empty().hide();
+	    _event.editorEl.remove();
 	}
         
 	this.getData = function() {
@@ -1644,6 +1654,7 @@
 		    success:function(o) {
                         $.extend(_event.data, o);
                         _event.patch = {};
+			_event.editorPostSaveDOM();
 		    }
                 });
             }
@@ -1659,7 +1670,7 @@
 		    type:'PATCH',
 		    data:_event.patch,
 		    headers: {
-		        'Authorization': 'Token ' + _event.user.data.auth_token
+		        'Authorization': 'Token ' + _event.panel.timeline.user.data.auth_token
 		    },
 		    failure:function(e) {
 		        console.log('Failure: ' + e);
@@ -1667,7 +1678,7 @@
 		    success:function(o) {
                         $.extend(_event.data, o);
                         _event.patch = {};
-			_event.editorPostSaveDOM;
+			_event.editorPostSaveDOM();
 		    }
                 });
             }
