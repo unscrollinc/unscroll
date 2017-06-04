@@ -141,7 +141,8 @@ class Event(models.Model):
         unique=True)
     scroll = models.ForeignKey(
         Scroll,
-        related_name='events')
+        related_name='events',
+        on_delete=models.CASCADE)
     created = models.DateTimeField(
         auto_now_add=True)
     media_type = models.CharField(
@@ -211,7 +212,8 @@ class Note(models.Model):
     scroll = models.ForeignKey(
         Scroll,
         null=True,
-        related_name="notes")
+        related_name="notes",
+        on_delete=models.CASCADE)
     event = models.ForeignKey(
         Event,
         null=True,

@@ -2305,6 +2305,7 @@
 	
         
 	this.initializeDOM = function() {
+            console.log('OKAY');
     
 	    _notebook.itemsEl = $('#notebook-items');
 	    _notebook.essayEl = $('#notebook-essay');
@@ -2318,11 +2319,6 @@
 		});
 
 
-	    $('#notebook-create-button')
-	        .on('click', function(ev) {
-                    _notebook.create();
-                    
-	        });
             
             $('#insert-space')
                 .off()
@@ -2761,15 +2757,15 @@
 	var _url = new Url;
 
         // Who am I?
-        var user = new User();
+        var _user = new User();
 	
-	var _b = new UserBindings(user);
+	var _b = new UserBindings(_user);
 
 	if (_url.query.activate=='true') {
 	    _b['Activate'].endpoint(_url.query);
 	}
 
-	if (user.data.auth_token) {
+	if (_user.data.auth_token) {
 	    _b.getProfile();
         }
 	else {
@@ -2778,19 +2774,27 @@
 	    _b.wire('Login');
 	}
 	
+	$('#scroll-create-button')
+	    .on('click', function(ev) {
+                console.log(ev);
+                var _notebook = new Notebook(undefined, _user);
+                _notebook.create();
+            });
+
+        
         // What should the timeline show?
 	var end = moment();
 	var start = end.clone().subtract(1, 'month');
 
-	var timeline = new Timeline(start, end, user);
-	var search = new Search(timeline, user);
+	var timeline = new Timeline(start, end, _user);
+	var search = new Search(timeline, _user);
 	
 	$(window).resize(function(ev) {
 	    timeline.resize();
 	})
         // Escape key triggers Notebook
         $(document).keyup(function(e) {
-            if (user.data.username) {            
+            if (_user.data.username) {            
                 if (e.keyCode === 27) $('#notebook-wrapper').toggle();
             }
         });

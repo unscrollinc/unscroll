@@ -694,8 +694,8 @@ div#uxbox .submit {
 
 .event-editor-wrapper {
     position:fixed;
-    width:33%;
-    left:33%;
+    width:50%;
+    left:50%;
     top:100px;
     background:#eee;
     border:1px solid black;
@@ -704,6 +704,12 @@ div#uxbox .submit {
 }
 .editable-event {
     padding:1em;
+}
+.event-editor-wrapper input {
+    font-size:10pt;
+    padding:0.25em;
+    width:90%;
+    margin-bottom:1em;
 }
 
 .active {
