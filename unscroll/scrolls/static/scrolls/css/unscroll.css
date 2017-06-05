@@ -59,9 +59,8 @@ div.first {
 }
 
 span.period {
-    width:25%;
     position:absolute;
-    margin-left:37.5%;
+    left:0.5%;
     font-size:20px;
     top:-65px;
     display:block;
@@ -234,8 +233,8 @@ div#player {
 /* Notebook */
 
 .button {
-    background:#2F9ECA;
-    color:white;
+    color:#2F9ECA;
+    background:white;
     font-weight:bold;
     cursor:hand;
     font:10pt Roboto;
@@ -543,6 +542,7 @@ tr.notebook-list-item {
 .field-input {
     line-height:1.85em;
     border-bottom:1px solid #666;
+    font-family:Roboto;
 }
 
 .scroll-title {
@@ -692,24 +692,25 @@ div#uxbox .submit {
 }
 
 
-.event-editor-wrapper {
+#event-editor-wrapper {
     position:fixed;
     width:50%;
     left:50%;
     top:100px;
-    background:#eee;
-    border:1px solid black;
+    background:#fff;
+    border-left:1px solid black;
+    height:100%;
+    display:none;
     z-index:20000;
-    border:1px solid #eee;
 }
 .editable-event {
     padding:1em;
 }
-.event-editor-wrapper input {
+#event-editor-wrapper input {
     font-size:10pt;
     padding:0.25em;
-    width:90%;
-    margin-bottom:1em;
+    width:75%;
+    margin-bottom:0.5em;
 }
 
 .active {

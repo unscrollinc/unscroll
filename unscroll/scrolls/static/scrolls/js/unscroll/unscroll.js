@@ -13,7 +13,7 @@
     const AUTH = API + '/auth';
     const GRIDHEIGHT = 8;
     const ACTIVEHEIGHT = 0.95;          
-    const REFRESH_INTERVAL = 4000; // milliseconds
+    const REFRESH_INTERVAL = 15000; // milliseconds
     const timeBeforeRefresh = 10; // milliseconds
 
     /*
@@ -36,6 +36,7 @@
         }
         return el;
     };
+
     const d = function (className, kids) { return elMaker('div', className, kids); };
     const s = function (className, kids) { return elMaker('span', className, kids); };
     const th = function (className, kids) { return elMaker('th', className, kids); };
@@ -358,8 +359,8 @@
 		success:function(o) {
 		    _bindings.user.data.scrolls = o.results;
 		    var notebooklist = new NotebookList(_bindings.user);
-                    notebooklist.el.toggle();
-		    $('#notebook-list-button').addClass('active');		    
+		    $('#notebook-list-button').addClass('active');
+                    notebooklist.el.fadeIn('fast');
 		}
 	    });
 	};
@@ -455,7 +456,7 @@
         this.timeline = undefined;
         this.currentScroll = undefined;
 	this.currentNotebook = undefined;
-	
+	this.notebook = undefined;
         this.initialize = function() {
             var _session = Cookies.getJSON('session');
             if (_session) {
@@ -813,7 +814,7 @@
 	    }	    
 	};
 	this.getEventWidth = function(width) {
-	    return Math.floor(4 + Math.random() * _timeFrame.getcolumns/5);
+	    return Math.floor(4 + Math.random() * _timeframe.getColumns()/5);
 	};
 	this.getTarget = function(start, pointerInteger, pointerMantissa) {
 	    var pointerFocus = start.clone().add(pointerInteger, 'months');
@@ -880,7 +881,7 @@
 	};
         
 	this.getEventWidth = function(width) {
-	    return Math.floor(3 + Math.random() * 3);
+	    return Math.floor(5 + Math.random() * 3);
 	};
         
 	this.getTarget = function(start, pointerInteger, pointerMantissa) {
@@ -1214,7 +1215,6 @@
 		});
 	    
 	    _panel.el.prepend(list);
-
             _panel.el.on('dblclick', _panel.newEvent);
         }
 	
@@ -1365,15 +1365,11 @@
 		    h:h};
         }
 
-	$(window).resize(function(ev) {
-	    _panel.render();
-	});
-	
         this.render = function() {
 	    var window_height = $(window).height();
 	    _panel.grid = _panel.makeGrid();
 	    _panel.buffer.empty();
-	    _panel.el.find('.event').empty();
+	    _panel.el.find('.event').remove();
 	    
             var es = $.map(_panel.response.results, function(event) {
                 return new Event(event, _panel);
@@ -1397,7 +1393,7 @@
 		    e.el.fadeIn();
 	        }
                 else {
-                    // console.log("reservation failed");
+                    console.log("reservation failed");
                 }
 	    });
                 
@@ -1479,7 +1475,7 @@
                     .html('-[Delete]')
                     .on('click', _event.delete);
 		noteButton = a('', 'button')
-		    .html('+[Note]')
+		    .html('+[Save]')
 		    .on('click', _event.makeNote)
             }
 	    
@@ -1580,36 +1576,78 @@
                         d('field-title').append(title),
 			d('field-input').append(editor));
             }
-
-	    var scrollTitle = _event.data.scroll_title;
-	    if (!scrollTitle) {
-		scrollTitle = _event.panel.timeline.user.currentScroll.title;
-	    }
-	    if (!scrollTitle) {
-		console.log('YOU NEED A SCROLL!');
-	    }
-	    var newEvent =
-		d('event-editor-wrapper').append(
-		    d('editable-event').append(
-			$('<div></div>').append(
-                            d('scroll-title').html('Scroll: ' + scrollTitle),
-			    makeInput('title', 'Event title', true),
-			    makeInput('datetime', 'Date/time', false, _event.panel.timeline.pos.target.format()),
-			    makeInput('resolution', 'Resolution', false, _event.panel.timeline.timeframe.resolution),
-			    makeInput('content_url', 'Link', false, ''),
-			    makeInput('text', 'Event description', true),
-			    makeInput('source_date', 'Source Name (optional)'),
-			    makeInput('source_url', 'Source Link (optional)'),
-			    $('<input></input>', {class:'submit',
-					          type:'submit',
-					          value:'save',
-					          name:'save'})
-				.on('click', saveFunction))));
-	    if (_event.patch['scroll']) {
-		_event.patch['scroll'] = _event.panel.timeline.user.currentScroll.url;
-	    }
+            
+	    var scrollTitle = undefined;
+            var scrollUrl = undefined;
+            
+            if (exists) {
+	        scrollUrl = _event.data.scroll;
+                scrollTitle = _event.data.scroll_title;
+            }
+            else {
+                if (_event.panel.timeline.user.currentScroll) {
+                    scrollUrl = _event.panel.timeline.user.currentScroll.url;
+                    scrollTitle = _event.panel.timeline.user.currentScroll.scroll_title;
+                }
+            }
+            console.log(_event);
+            var newEvent = undefined;
+	    if (scrollUrl) {
+		_event.patch['scroll'] = scrollUrl 
+	        newEvent =
+		    $('#event-editor-wrapper')
+                    .empty()
+                    .fadeIn('fast')
+                    .append(
+		        d('editable-event').append(
+			    $('<div></div>').append(
+                                d('scroll-title').html('Create a new event in: ' + scrollTitle),
+			        makeInput('datetime', 'Date/time', false, _event.panel.timeline.pos.target.format()),
+			        makeInput('title', 'Event title', true),
+			        //makeInput('text', 'Event description', true),
+			        //makeInput('resolution', 'Resolution', false, _event.panel.timeline.timeframe.resolution),
+			        //makeInput('content_url', 'Link', false, ''),
+			        //makeInput('source_date', 'Source Name (optional)'),
+			        //makeInput('source_url', 'Source Link (optional)'),
+			        $('<input></input>', {class:'submit',
+					              type:'submit',
+					              value:'save',
+					              name:'save'})
+				    .on('click', saveFunction))));
+            }
+            else {
+		var warning = d('modal warning').append(
+		    d('header').html('You need to select or create a Scroll first'),
+		    d('explanation').html('You double-clicked, which lets you add events to the timeline. But&mdash;you need to put events somewhere so you can find them later. You need to add them <i>to a scroll</i>. You make a scroll by going to Notebook and clicking "+ Scroll," or by clicking List Scrolls and picking one from a list.'));
+		    
+		var ok = s('modal-button nodelete')
+		    .html('Got it')
+		    .on('click', function(ev) {
+			warning.remove();
+		    });
+                
+		var newScroll = s('modal-button nodelete')
+		    .html('Make new scroll')
+		    .on('click', function(ev) {
+                        console.log(_event.panel.timeline.user);
+                        if (!_event.panel.timeline.user.currentNotebook) {
+                            var _notebook = new Notebook(undefined, _event.panel.timeline.user);
+                            _notebook.create();                                                
+                        }
+                        else {
+                            _event.panel.timeline.user.currentNotebook.create();
+                        }
+			$('#notebook').fadeIn('fast');                            
+			warning.remove();
+		    });                    
+                
+		warning.append(ok, newScroll);
+		$('body').append(warning);
+                _event.editorEl = warning;
+            }
+            
 	    return newEvent;
-	}
+        };
 
         this.editor = function(ev) {
             var exists = false;
@@ -1624,9 +1662,20 @@
         this.editorDOM = function(el) {
 	    $('#notebook-event').show().empty().append(el);
         }
-
+// ***
 	this.editorPostSaveDOM = function() {
-	    _event.editorEl.remove();
+            _event.editorEl.fadeOut('fast').empty();
+            var results = new Array();
+            results.push(_event.data);
+            var old = _event.panel.response.results;
+            console.log(old, _event.data);
+            for (var i=0;i<old.length;i++) {
+                if (old[i].data.url !== _event.data.url) {
+                    results.push(old[i]);
+                }
+            }
+            _event.panel.response.results = results;            
+            _event.panel.render();
 	}
         
 	this.getData = function() {
@@ -1659,6 +1708,7 @@
                 });
             }
             else {
+		_event.editorPostSaveDOM();                
                 console.log('No changes seen, so I didn\'t save.');
             }
         }
@@ -1683,6 +1733,7 @@
                 });
             }
             else {
+		_event.editorPostSaveDOM();                                
                 console.log('No changes seen, so I didn\'t save.');
             }
         }
@@ -1959,7 +2010,22 @@
             return ctr;
         }
         var _notebook = this;
+	this.user = user;
+	this.user.currentScroll = scroll;
+        this.user.currentNotebook = this;
+	this.patch = {};
 
+	this.items = new Array();
+	this.itemsEl = undefined;
+	this.essayEl = undefined;
+
+        this.needsCreated = scroll ? false : true;
+        this.needsUpdated = false;
+        this.needsDeleted = false;
+
+        this.networkOperationInProgress = false;
+
+        
         if (scroll) {
 	    this.data = scroll;
         }
@@ -2223,19 +2289,6 @@
 	    };
 	};
 	
-	this.user = user;
-	this.user.currentScroll = scroll;
-	this.patch = {};
-
-	this.items = new Array();
-	this.itemsEl = undefined;
-	this.essayEl = undefined;
-
-        this.needsCreated = scroll ? false : true;
-        this.needsUpdated = false;
-        this.needsDeleted = false;
-
-        this.networkOperationInProgress = false;
 
 	this.initialize = function() {
 	    if (_notebook.needsCreated) {
@@ -2305,8 +2358,6 @@
 	
         
 	this.initializeDOM = function() {
-            console.log('OKAY');
-    
 	    _notebook.itemsEl = $('#notebook-items');
 	    _notebook.essayEl = $('#notebook-essay');
             
@@ -2354,6 +2405,7 @@
 			.on('click', function(ev) {
 			    _notebook.delete();
 			    warning.remove();
+                            _notebook.user.bindings.getScrolls();
 			});		    
 		    
 		    var noDelete = s('modal-button nodelete')
@@ -2462,6 +2514,7 @@
                 },
                 success:function(o) {
 		    $.extend(_notebook.data, o);
+                    _notebook.user.bindings.getScrolls();
 		    _notebook.editor();
                 }
 	    });
@@ -2740,7 +2793,7 @@
 	    line.on('click', function(ev) {
 		var notebook = new Notebook(_notebooklistitem.data, _notebooklistitem.user);
 		_notebooklistitem.user.currentNotebook = notebook;
-                _notebooklistitem.notebooklist.el.toggle();
+                _notebooklistitem.notebooklist.el.hide();
 	    });
 	    return line;
 	};
@@ -2778,7 +2831,6 @@
 	    .on('click', function(ev) {
                 console.log(ev);
                 var _notebook = new Notebook(undefined, _user);
-                _notebook.create();
             });
 
         
@@ -2790,7 +2842,7 @@
 	var search = new Search(timeline, _user);
 	
 	$(window).resize(function(ev) {
-	    timeline.resize();
+	     timeline.resize();
 	})
         // Escape key triggers Notebook
         $(document).keyup(function(e) {
