@@ -207,8 +207,8 @@ img.thumb {
 }
 
 div.event div.inner div.scroll-title {
-    font:10pt 'Merriweather Sans';
     color:#666;
+    font-style:Italic;
     margin-bottom:0em;
     margin-top:0.25em;
     padding-top:0.25em;    

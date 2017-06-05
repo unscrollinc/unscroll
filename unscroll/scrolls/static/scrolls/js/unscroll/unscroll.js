@@ -1509,7 +1509,6 @@
 	    
             _event.el.append(
 	        d('inner').append(
-                    
                     d('datetime').html(_event.formatByResolution()),
 		    a(_event.data.content_url, 'title').append(thumb),
 		    title,
