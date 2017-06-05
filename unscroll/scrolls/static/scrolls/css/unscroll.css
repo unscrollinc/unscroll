@@ -192,8 +192,10 @@ img.thumb {
     margin:0 0 0 8px;
 }
 
+.event {
+    font-family:'Merriweather Sans';    
+}
 .event .inner .text {
-    font-family:'Merriweather Sans';
     color:#888;
     font-size:10pt;
     max-height:100px;
@@ -208,6 +210,7 @@ img.thumb {
 
 div.event div.inner div.scroll-title {
     color:#666;
+    font-size:10pt;
     font-style:Italic;
     margin-bottom:0em;
     margin-top:0.25em;
