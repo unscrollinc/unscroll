@@ -56,6 +56,7 @@ for i in range(1,828):
             'content_url': href,
             'thumbnail': None
         }
+        print(title)
         events.append(event)
     c.create_event_batch(events)
 

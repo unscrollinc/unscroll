@@ -54,7 +54,7 @@ def rfc_to_event(rfc):
         'title': "{}".format(rfc['title']),
         'text': html_to_txt(rfc['abstract']) if 'abstract' in rfc else None,
         'mediatype': "text/html",
-        'resolution': 'months',
+        'resolution': '7',
         'ranking': random.random()/2,
         'content_url': normalize_rfc_id_to_url(rfc['doc-id']),
         'datetime': date(rfc['date'])
