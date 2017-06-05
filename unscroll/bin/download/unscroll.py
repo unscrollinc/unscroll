@@ -9,6 +9,7 @@ from os.path import exists
 import config
 import favicon
 from urllib.parse import quote_plus
+import pprint
 
 class UnscrollClient():
     api = None
@@ -49,13 +50,15 @@ class UnscrollClient():
                 print("Logged {}".format(res))
 
     def login(self):
-        r = requests.post(self.api + '/rest-auth/login/',
+        r = requests.post(self.api + '/auth/login/',
                           json={'username': self.username,
                                 'password': self.password})
+        pprint.pprint(r)
         login = r.json()
-        print(login)
+
         self.authentication_header = {'Authorization':
-                                      'Token {}'.format(login.get('key'),)}
+                                      'Token {}'.format(login.get('auth_token'),)}
+        
         return True
 
     def create_or_retrieve_scroll(self, title,

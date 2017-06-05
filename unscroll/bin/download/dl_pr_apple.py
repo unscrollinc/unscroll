@@ -9,7 +9,7 @@ from random import random
 APPLE_URL = 'https://www.apple.com'
 APPLE_PR_URL = 'https://www.apple.com/pr/library'
 
-c = UnscrollClient(api='http://127.0.0.1:8000',
+c = UnscrollClient(api='http://unscroll.com',
                    username='admin',
                    password='password')
 
@@ -22,12 +22,12 @@ c.create_or_retrieve_scroll('Apple Press Releases, 2000-2017',
                             thumbnail=favthumb['url'])
 
 
-for i in range(2000,2018):
-    pr_url = '{}/{}'.format(APPLE_PR_URL, i,)
+for i in range(1,65):
+    pr_url = 'https://www.apple.com/newsroom/archive/?page={}'.format(i,)
     print(pr_url)
     r = requests.get(pr_url)
     parsed = BeautifulSoup(r.content, 'html.parser')
-    dts = parsed.find_all('dt')
+    dts = parsed.find_all('a.result__item')
     for dt in dts:
         _date = dt.text
         date = parse(_date)
@@ -52,7 +52,7 @@ for i in range(2000,2018):
                 'text': text,
                 'ranking': random(),
                 'datetime': date,
-                'resolution': 'days',
+                'resolution': '10',
                 'content_url': href,
                 'thumbnail': None
                 }
