@@ -392,7 +392,7 @@
 	    
 	    _bindings.data = {};
 	    
-	    _bindings.uxbox.toggle();
+	    _bindings.uxbox.hide();
 	    
 	};
 
@@ -470,7 +470,7 @@
 	};
 
         this.loginDOM = function() {
-        }
+        };
 
 
         
@@ -569,7 +569,12 @@
                 success: function(o) {
                     console.log('Success: ' + o);
                     if (o.count > 0) {
-                        _search.success('Found ' + o.count + ' results from ' + moment(o.first_event).year() + ' to ' + moment(o.last_event).year());
+                        _search.success('Found '
+					+ o.count
+					+ ' results from '
+					+ moment(o.first_event).year()
+					+ ' to '
+					+ moment(o.last_event).year());
 		        _search.timeline.search = _search.query;
 		        _search.timeline.initialize(moment(o.first_event),
                                                     moment(o.last_event));
@@ -1475,7 +1480,7 @@
                     .html('-[Delete]')
                     .on('click', _event.delete);
 		noteButton = a('', 'button')
-		    .html('+[Save]')
+		    .html('+[Note]')
 		    .on('click', _event.makeNote)
             }
 	    
@@ -1532,8 +1537,8 @@
 	}
 	
         this.makeEditor = function(exists) {
-            // This needs a config object and a lot of other stuff.
             var registerChange = function() {
+		_event.notebook.saveButton.removeClass('saved');		
                 if (exists) {
                     _event.needsUpdated = true;
                 }
@@ -2017,6 +2022,7 @@
 	this.user.currentScroll = scroll;
         this.user.currentNotebook = this;
 	this.patch = {};
+	this.saveButton = undefined;
 
 	this.items = new Array();
 	this.itemsEl = undefined;
@@ -2106,6 +2112,7 @@
 			$.each(splice, function(j, f) {
 			    f.needsUpdated = true;
 			    f.data.order = reorderBegin + ((j + 1) * multiplier);
+			    console.log('----------------------------------------', f.data.order);
 			    newItems.push(f);
 			    f.editized.formView.insertBefore(itemsKids[i]);
 			    f.editized.essayView.insertBefore(essayKids[i]);			    
@@ -2113,6 +2120,7 @@
 			newItems.push(e);			
 		    }
 		    else {
+			console.log(e.data.order);			
 			newItems.push(e);
 		    }
 		});
@@ -2214,6 +2222,11 @@
 		var medium = new MediumEditor(el, {disableReturn: true});
 		
 		medium.subscribe('editableInput', function (event, editor) {
+
+		    // this is balky but figure out if it's a notebook
+		    // or a notebookitem
+		    var nb = caller.notebook ? caller.notebook : caller;
+		    nb.saveButton.removeClass('saved');
                     caller.needsUpdated = true;
 		    data[fieldName] = medium.getContent();
                     essayChild.html(medium.getContent() + ' ');
@@ -2238,24 +2251,28 @@
 		buttons.append(
 		    s('button move').text('Move')
 			.on('click', function(ev) {
+			    _notebook.saveButton.removeClass('saved');
 			    _notebook.moveStatus.fromNote.el = caller;
 			    _notebook.setRange();
 			}),
 
 		    s('button range').text('Range')
 			.on('click', function(ev) {
+			    _notebook.saveButton.removeClass('saved');			    			    
 			    _notebook.moveStatus.throughNote.el = caller;
 			    _notebook.setRange();			    
 			}),
 
 		    s('button drop').text('Drop')
 			.on('click', function(ev) {
+			    _notebook.saveButton.removeClass('saved');			    			    
 			    _notebook.moveStatus.toBeforeNote.el = caller;
 			    _notebook.rearrange();   
 			}),
 		    
 		    s('button delete').text('Delete')
 			.on('click', function(ev) {
+			    _notebook.saveButton.removeClass('saved');			    			    
 			    caller.needsDeleted = true;
 			    caller.editized.essayView.remove();
 			    caller.editized.formView.remove();			    
@@ -2394,9 +2411,17 @@
 	};
 
 	this.editorDOM = function() {
-
-	    var deleteButton = s('button delete');
+	    var saveButton = s('button save saved');
+	    _notebook.saveButton = saveButton;
+	    saveButton
+		.html('Save')
+		.on('click', function(ev) {
+		    _notebook.notebookScanner();
+		    _notebook.noteScanner();
+		    _notebook.saveButton.addClass('saved');
+		});
 	    
+	    var deleteButton = s('button delete');
 	    deleteButton.html('Delete scroll')
 		.on('click', function(ev) {
 		    var warning = d('modal warning').append(
@@ -2448,7 +2473,8 @@
 
 	    $('#scroll-header')
                 .empty()
-                .append(deleteButton,
+                .append(saveButton,
+			deleteButton,
 			title.formView,
 			subtitle.formView,
 			description.formView);
@@ -2552,9 +2578,20 @@
 		    console.log('Failure: ' + e);
                 },
                 success:function(o) {
+		    // TODO right now I'm checking re-ordering here. There has to be a better way.
+		    var lastOrder = undefined;
 		    for (var i=o.length - 1;i>=0;i--) {
                         var nbItem = o[i];
-                        _notebook.makeItem(nbItem.kind, nbItem.event_full, nbItem);
+			var order = nbItem.order;
+			console.log('Order', order, 'last', lastOrder, nbItem.text);
+			if (order <= lastOrder) {
+			    nbItem.order = lastOrder - 100;
+			}
+                        var itemInContext = _notebook.makeItem(nbItem.kind, nbItem.event_full, nbItem);
+			if (order <= lastOrder) {
+			    itemInContext.needsUpdated = true;
+			}
+			var lastOrder = nbItem.order;			
 		    }
                 }
 	    });
@@ -2650,7 +2687,9 @@
 	
         this.notebookScanner = function() {
             if (!_notebook.networkOperationInProgress && _notebook.needsUpdated) {
-                _notebook.update();                
+                _notebook.update();
+		//TODO THIS COULD LEAD TO TOP HALF OF DOC GETTING SAVED WHILE NOTES NOTE GETTING SAVED
+		_notebook.saveButton.addClass('saved');
             }  
 	};
         setInterval(this.notebookScanner, REFRESH_INTERVAL);	
@@ -2681,6 +2720,9 @@
 		_notebook.notesDelete(toDelete);
 	    }
 
+	    //TODO THIS COULD LEAD TO TOP HALF OF DOC GETTING SAVED WHILE NOTES NOTE GETTING SAVED
+	    _notebook.saveButton.addClass('saved');	    
+
 	}
         setInterval(this.noteScanner, REFRESH_INTERVAL);		
 	
@@ -2699,10 +2741,9 @@
     */
     var NotebookItem = function(kind, event, note, notebook) {
 	var _notebookitem = this;
-
+	this.notebook = notebook;
         this.kind = kind ? kind : 'default';
         this.event = event;
-	this.notebook = notebook;
         var event_url = this.event ? this.event.url : undefined;
         this.data = $.extend(note, {kind:kind, event:event_url});
         this.needsCreated = note ? false : true;
