@@ -4,12 +4,14 @@ import favicon
 from pprint import pprint
 from unscroll import UnscrollClient
 from dateparser import parse
+import datefinder
 from random import random
+import re
 
 APPLE_URL = 'https://www.apple.com'
 APPLE_PR_URL = 'https://www.apple.com/pr/library'
 
-c = UnscrollClient(api='http://unscroll.com',
+c = UnscrollClient(api='http://127.0.0.1',
                    username='admin',
                    password='password')
 
@@ -22,39 +24,47 @@ c.create_or_retrieve_scroll('Apple Press Releases, 2000-2017',
                             thumbnail=favthumb['url'])
 
 
-for i in range(1,65):
+for i in range(1,66):
     pr_url = 'https://www.apple.com/newsroom/archive/?page={}'.format(i,)
     print(pr_url)
     r = requests.get(pr_url)
     parsed = BeautifulSoup(r.content, 'html.parser')
-    dts = parsed.find_all('a.result__item')
+    dts = parsed.find_all('a', class_='result__item')
+    events = []
     for dt in dts:
-        _date = dt.text
-        date = parse(_date)
-        inside = dt.find_next_sibling('dd')
-        links = inside.find_all('a')
-        for link in links:
-            href = '{}/{}'.format(APPLE_URL, link['href'])
-
-            r2 = requests.get(href)
-            parsed2 = BeautifulSoup(r2.content, 'html.parser')
-            content = parsed2.find(id='content')
-            text = ''
-            if content is not None:
-                rough = content.find_all('p')
-                text = " ".join([str(x) for x in rough[0:1]])
+        title = dt.find('h3').text
+        text = dt.find('p').text
+        dateText = dt.find('span').text
+        dates = list(datefinder.find_dates(dateText))
+        date = dates[0].isoformat()
+        thumbnail_url = None
+        imgSrc = dt.find('style')
+        if imgSrc is not None:
+            found = re.search(r'url\(([^\)]+)\)', imgSrc.text)
+            if found:
+                image_url = "{}{}".format(APPLE_URL, found.group(1))
+                thumbnail_d = c.cache_thumbnail(image_url)
+                if (thumbnail_d is not None):
+                    thumbnail_url = thumbnail_d.get('url')
+        event = {
+            'media_type': 'text/html',
+            'content_type': 'press release',
+            'title': title,
+            'text': text,
+            'ranking': random()/3,
+            'datetime': date,
+            'resolution': '10',
+            'source_name': 'Apple PR',
+            'source_url': 'https://www.apple.com/newsroom/archive/',
+            'content_url': APPLE_URL + dt.attrs['href'],
+            'thumbnail': None
+        }
+        pprint(event)
+        events.append(event)
     
-            title = "".join([x for x in link.stripped_strings])
-            event = {
-                'media_type': 'text/html',
-                'content_type': 'press release',
-                'title': title,
-                'text': text,
-                'ranking': random(),
-                'datetime': date,
-                'resolution': '10',
-                'content_url': href,
-                'thumbnail': None
-                }
-            res = c.create_event(event)
-            pprint(event)
+    c.create_event_batch(events)
+    print('Saved {} events.'.format(len(events)))
+
+print('Done')
+
+

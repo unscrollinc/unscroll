@@ -41,6 +41,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
+    'silk'
 )
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS':
@@ -58,6 +59,7 @@ REST_FRAMEWORK = {
 
 
 MIDDLEWARE_CLASSES = (
+    'silk.middleware.SilkyMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',

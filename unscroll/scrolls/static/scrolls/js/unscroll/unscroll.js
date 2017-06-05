@@ -942,7 +942,7 @@
 	    return datetime.month();
 	};
 	this.getEventWidth = function(width) {
-	    return 2;
+	    return 1;
 	};	    
 	this.getTarget = function(start, pointerInteger, pointerMantissa) {
 	    var pointerFocus = start.clone().add(pointerInteger, 'years');
@@ -996,7 +996,7 @@
 	    return datetime.year() - 10 * Math.floor(datetime.year()/10);
 	};
 	this.getEventWidth = function(width) {
-            return 2;
+            return 1;
 	};	    	    
 	this.getTarget = function(start, pointerInteger, pointerMantissa) {
 	    var pointerFocus = start.clone().add(10 * pointerInteger, 'years');
@@ -1279,8 +1279,15 @@
 						  style:'height:'+e.thumb_height+';width:'+e.thumb_width,
 						  src:e.thumb_image})
 		    }
+		    var clicker = s('button')
+			.html('+Note')
+			.on('click', function(ev) {
+			    var notebook = _panel.timeline.user.currentNotebook;
+			    notebook.makeItem('default', e, undefined);		
+			})
+
 		    var el = tr('panel-list',
-				[   td('panel-datetime').html(moment(e.datetime).format('M/D/YY')),
+				[   td('panel-datetime').html(moment(e.datetime).format('M/D/YY')).append(clicker),
 				    td('panel-title').html(a(e.content_url, 'panel-title').html(e.title)),
 				    td('panel-text').html(e.text),
 				    td('panel-creator').html(e.username),
@@ -1390,6 +1397,7 @@
 		e.height = Math.ceil(el.height()/window_height * GRIDHEIGHT)
 	        var reservation = _panel.makeReservation(e.offset, 0, e.width, e.height);
 	        if (reservation.success) {
+		    console.log({reservation:reservation.success, width: e.width, height:e.height,  offset:e.offset});
 		    e.el.hide();
 		    e.el.css({
 		        marginLeft:(reservation.x * _panel.cellWidth) + '%',
@@ -1456,11 +1464,11 @@
 	this.formatByResolution = function() {
 	    var getRes = function() {
 		switch (_event.data.resolution) {
-		case 'years':
+		case '4':
 		    return 'YYYY';
-		case 'months':
+		case '7':
 		    return 'MMM \'YY'
-		case 'days':
+		case '10':
 		    return 'ddd MMM D, YYYY';
 		}
 	    }
@@ -1474,13 +1482,13 @@
 	    var noteButton = undefined;
 	    if (_event.user.username == _d.username) {
                 editButton = a('', 'button')
-                    .html('+[Edit]')
+                    .html('+Edit')
                     .on('click', _event.editor);
                 deleteButton = a('', 'button')
-                    .html('-[Delete]')
+                    .html('-Delete')
                     .on('click', _event.delete);
 		noteButton = a('', 'button')
-		    .html('+[Note]')
+		    .html('+Note')
 		    .on('click', _event.makeNote)
             }
 	    
@@ -1501,11 +1509,12 @@
 	    
             _event.el.append(
 	        d('inner').append(
-                    d('scroll-title').html(_d.scroll_title),
+                    
                     d('datetime').html(_event.formatByResolution()),
 		    a(_event.data.content_url, 'title').append(thumb),
 		    title,
                     // d('text').html(_d.text),
+		    d('scroll-title').html(_d.scroll_title),
 		    noteButton,
                     editButton,
                     deleteButton
@@ -2300,8 +2309,12 @@
                     d('event-text').html(_d.text),
                 ]);
             }            
-                
-	    formField.append(buttons, d('field-title').html(fieldTitle), eventEl, el);
+
+	    var fieldTitle = d('field-title').html(fieldTitle)
+	    fieldTitle.append(buttons, eventEl);
+	    formField.append(
+		fieldTitle,
+		el);
             
 	    return {
 		formView: formField,
@@ -2422,7 +2435,7 @@
 		});
 	    
 	    var deleteButton = s('button delete');
-	    deleteButton.html('Delete scroll')
+	    deleteButton.html('Delete Scroll')
 		.on('click', function(ev) {
 		    var warning = d('modal warning').append(
 			d('header').html('Really delete?'),
@@ -2449,7 +2462,7 @@
 
 	    var title = editize({
 		fieldName:'title',
-		fieldTitle:'Notebook title',
+		fieldTitle:'Scroll title',
 		isRichText:true,
 		caller:_notebook
 	    });
@@ -2470,11 +2483,10 @@
 
             $('#notebook-items').empty();
 	    $('#notebook-essay').empty();            
-
+	    var controls = d('notebook-controls').append(saveButton, deleteButton);
 	    $('#scroll-header')
                 .empty()
-                .append(saveButton,
-			deleteButton,
+                .append(controls,
 			title.formView,
 			subtitle.formView,
 			description.formView);

@@ -1,7 +1,7 @@
 body {
     margin:0 0 0 0;
     padding:0;
-    font:12pt Roboto;
+    font:12pt 'Merriweather Sans';
 }
 
 body, input {
@@ -13,7 +13,7 @@ a {
 }
 
 .nav {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Merriweather Sans', sans-serif;
 }
 
 div#login span {
@@ -35,7 +35,7 @@ div.column {
     top:-25px;
     text-align:center;
     z-index:-1;
-}
+o}
 
 div.first {
     border-left:3px solid lightblue;
@@ -60,7 +60,7 @@ div.first {
 
 span.period {
     position:absolute;
-    left:0.5%;
+    left:1em;
     font-size:20px;
     top:-65px;
     display:block;
@@ -170,13 +170,13 @@ div#login {
 
 
 .event .inner a.title {
-    font-family:Roboto;
+    font-family:'Merriweather Sans';
     font-size:10pt;
     color:#2F9ECA;
 }
 
 .event .inner .title {
-    font-family:Roboto;
+    font-family:'Merriweather Sans';
     font-size:10pt;
 }
 
@@ -193,7 +193,7 @@ img.thumb {
 }
 
 .event .inner .text {
-    font-family:Roboto;
+    font-family:'Merriweather Sans';
     color:#888;
     font-size:10pt;
     max-height:100px;
@@ -202,14 +202,18 @@ img.thumb {
 .event .inner .datetime {
     font-weight:bold;
     display:inline-block;
-    font:10pt Roboto;
+    font:10pt 'Merriweather Sans';
     color:#888;
 }
 
-.event .inner .scroll-title {
-    font:10pt Roboto;
+div.event div.inner div.scroll-title {
+    font:10pt 'Merriweather Sans';
     color:#666;
     margin-bottom:0em;
+    margin-top:0.25em;
+    padding-top:0.25em;    
+    border-top:1px solid #ccc;
+    text-align:right;
 }
 
 .noselect {
@@ -237,8 +241,8 @@ div#player {
     background:white;
     font-weight:bold;
     cursor:hand;
-    font:10pt Roboto;
-    padding:0 1em 0 0;
+    font:10pt 'Merriweather Sans';
+    padding:0 0 0 0.5em;
 }
 
 .button.active, .button:hover {
@@ -311,11 +315,14 @@ div#notebook-head {
     position:relative;
 }
 
+div.notebook-controls {
+    padding-bottom:2em;
+}
 div#notebook-controls {
     background:#2F9ECA;
     font-size:20px;
     color:white;
-    font-family:Roboto;
+    font-family:'Merriweather Sans';
 }
 
 div#notebook-controls span.shim {
@@ -365,12 +372,16 @@ div.nb-item {
     color:#333;
 }
 
-div.notebook-event-text {
-    max-height:15%;
+div.note-event div.event-title {
+    font-weight:bold;
+    line-height:1.5em;
+}
+div.note-event div.event-text {
+    max-height:35%;
     overflow:auto;
     line-height:1.5em;
-    font-size:85%;
-    color:#444;
+    color:#666;
+    margin-bottom:1em;
 }
 
 div.nb-item .top {
@@ -395,7 +406,6 @@ div.nb-item.closer {
     margin-bottom:150px;
 }
 div.buttons {
-    padding-top:2px;
     padding-right:-2px;
     float:right;
     font-size:75%;
@@ -408,7 +418,7 @@ div.editable {
     background:white;
     padding:1em 0.25em 1em 0.25em;
     border:1px solid black;
-    font:12pt Roboto;
+    font:12pt 'Merriweather Sans';
 }
 
 div.save-state {
@@ -443,7 +453,7 @@ th {
     text-align:left;
 }
 td, th {
-    font-family:Roboto;
+    font-family:'Merriweather Sans';
     text-align:middle;
     font-size:80%;
     padding:1em;
@@ -452,14 +462,14 @@ tr.alt {
     background:#e8e8e8;
 }
 td.description {
-    font-family:Roboto;
+    font-family:'Merriweather Sans';
     text-align:right;
     padding:0.5em 0 0.5em 0;
     vertical-align:top;
 }
 
 div#new-event {
-    font-family:Roboto;
+    font-family:'Merriweather Sans';
 }
 
 #notebook-event {
@@ -497,13 +507,6 @@ div#new-event {
     width:88%;
     line-height:149%;
 }
-div.notebook-title-editor {
-    font-size:20px;
-    background:white;
-    border-top:1px solid black;
-    border-bottom:1px dotted black;
-    padding:0.5em;
-}
 
 #user-logout {
     cursor:hand;    
@@ -531,26 +534,27 @@ tr.notebook-list-item {
     cursor:hand;
 }
 .field {
-    padding:0.5em;
+    padding:0.5em 0.5em 0.5em 0.5em;
+    margin:0 0 1em 0;
 }
 .field-title {
-    font:10pt Roboto;
-    color:#666;
-    margin-bottom:1em;
+    font:10pt 'Merriweather Sans';
+    color:#888;
+    text-align:left;
+    margin-bottom:0.25em;
+    border-top:1px solid #CCC;
+    border-bottom:1px solid #CCC;
 }
 
 .field-input {
     line-height:1.85em;
-    border-bottom:1px solid #666;
-    font-family:Roboto;
+    font-family:'Merriweather Sans';
 }
 
 .scroll-title {
     font-size:120%;
     line-height:150%;
 }
-
-
 
 .essay.title {
     font-size:200%;
@@ -590,8 +594,13 @@ span.button.delete {}
     background:pink;
 }
 .note-event {
-    font-family:Roboto;
+    font-family:'Merriweather Sans';
     font-size:10pt;
+    margin-top:0.5em;
+    padding-top:0.5em;
+    border:1px solid #444;
+    background:#eee;
+    padding:0.5em;
 }
 
 #search-alert {
@@ -659,7 +668,7 @@ div#uxbox {
     right:0;
     top:50px;
     display:none;
-    font-family:Roboto;
+    font-family:'Merriweather Sans';
 }
 
 div#uxbox .user-form-help {
@@ -671,7 +680,7 @@ div#uxbox .user-form-help {
 
 
 div#uxbox input {
-    font-family:Roboto;    
+    font-family:'Merriweather Sans';    
     color:#666;
     font-size:14pt;
     background:#eee;
@@ -731,7 +740,7 @@ div#uxbox .submit {
     padding:1em;
     border:1em solid red;
     z-index:100000;
-    font-family:Roboto;
+    font-family:'Merriweather Sans';
 }
 
 .modal-button {
@@ -771,3 +780,10 @@ div#uxbox .submit {
     color:#666;
 }
 
+.save {
+    color:red;
+    font-weight:bold;
+}
+.saved {
+    color:#ccc;
+}
