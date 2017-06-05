@@ -6,6 +6,41 @@
 DELETE FROM event WHERE id IN (SELECT id FROM (SELECT id, ROW_NUMBER() OVER (partition BY title, scroll_id ORDER BY id) AS rnum FROM event) t WHERE t.rnum > 1);
               
 * Presentation: When a Side Project Wants to Kill You
+Or; Building an Inspiration Machine
+
+Joy Carol Oates tweet
+
+- anecdote about email
+- what the hell did i actually learn
+well i learned a lot of stuff, facts
+and i learned how to get along in the world
+
+inspiration is not about motivation as much as reducing that sense of fraudulence
+when new tools come along we actually fight them pretty hard
+these are images I keep around
+there are so many people out there ready to tell you
+and there are always a great number of peopl
+but let's position it differently
+
+that is inspiration is not about getting inspired
+there's no magic inspirational liquid
+just about reducing friction
+getting rid of the sense that one is a fraud
+and I think there's a general inspirational industry
+that makes those little rectangles
+but that if you find yourself at need for inspiration
+you might want to be suspicious of them
+and look at your own fraudulence not as some grave affliction
+but ask yourself what tools will work 
+it's about decreasing the risk that you'll be frozen in place by your own fraudulence
+
+and I am appreciative of that
+the irony is that they come to me and say, hey do you want to talk to a big room of strangers
+
+i wanted to prove to you all that I am not a fraud
+as to whether I am or not, I have my on opinions, and you are totally free to make up your own mind. thank you.
+
+
 
 - Write four or five essays
   - Looking at books
