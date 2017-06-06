@@ -19,7 +19,9 @@ import hashlib
 import pprint
 from baseconv import base36
 from os import makedirs
+from urllib.request import unquote
 from rest_framework_bulk.routes import BulkRouter
+import re
 from rest_framework_bulk import (
     BulkListSerializer,
     BulkModelViewSet,
@@ -113,8 +115,12 @@ class EventFilter(django_filters.rest_framework.FilterSet):
 
     q = django_filters.CharFilter(method='filter_by_q', distinct=True)
 
+    # TODO THIS THING IS FRANKLY REAL DODGY
     def filter_by_q(self, queryset, what_is_this_arg_i_do_not_know, value):
-        return queryset.full_text_search(value)
+        uq = unquote(value)
+        apos = re.sub("'", "''", uq)
+        filtered_val = "'{}'".format(apos,)
+        return queryset.full_text_search(filtered_val)
 
     class Meta:
         model = Event
