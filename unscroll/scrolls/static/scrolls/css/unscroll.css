@@ -165,6 +165,8 @@ div#login {
     border:1px solid #2F9ECA;;
     border-radius:0.5em; 
     overflow:hidden;
+    font-size:8pt;
+    
 }
 
 
@@ -177,7 +179,6 @@ div#login {
 
 .event .inner .title {
     font-family:'Merriweather Sans';
-    font-size:10pt;
 }
 
 div.thumb {
