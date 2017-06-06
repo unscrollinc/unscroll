@@ -349,6 +349,10 @@ div#notebook-items-wrapper {
     border-right:1px solid #888;
 }
 
+div#notebook-items {
+    margin-bottom:500px;
+}
+
 div#notebook-essay h2 {
     line-height:139%;
 }
@@ -541,7 +545,7 @@ tr.notebook-list-item {
     color:#888;
     text-align:left;
     margin-bottom:0.25em;
-    border-top:1px solid #CCC;
+    padding-bottom:0.25em;
     border-bottom:1px solid #CCC;
 }
 

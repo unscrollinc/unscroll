@@ -59,6 +59,23 @@
         }
     }    
 
+    var formatByResolution = function(res, dt) {
+	var getRes = function() {
+	    switch (res) {
+	    case '4':
+		return 'YYYY';
+	    case '7':
+		return 'MMM \'YY'
+	    case '10':
+		return 'ddd MMM D, YYYY';
+	    default:
+		return 'ddd MMM D, YYYY';
+	    }
+	}
+	return moment(dt).format(getRes());
+    }
+
+
     /*
       ╻ ╻┏━┓┏━╸┏━┓┏┓ ╻┏┓╻╺┳┓╻┏┓╻┏━╸┏━┓
       ┃ ┃┗━┓┣╸ ┣┳┛┣┻┓┃┃┗┫ ┃┃┃┃┗┫┃╺┓┗━┓
@@ -1464,22 +1481,6 @@
             }
         }
 
-	this.formatByResolution = function() {
-	    var getRes = function() {
-		switch (_event.data.resolution) {
-		case '4':
-		    return 'YYYY';
-		case '7':
-		    return 'MMM \'YY'
-		case '10':
-		    return 'ddd MMM D, YYYY';
-		default:
-		    return 'ddd MMM D, YYYY';
-		}
-	    }
-	    return _event.datetime.format(getRes());
-	}
-
         this.render = function() {
             var _d = _event.data;
             var editButton = undefined;
@@ -1514,7 +1515,7 @@
 	    
             _event.el.append(
 	        d('inner').append(
-                    d('datetime').html(_event.formatByResolution()),
+                    d('datetime').html(formatByResolution(_d.resolution, _d.datetime)),
 		    a(_event.data.content_url, 'title').append(thumb),
 		    title,
                     // d('text').html(_d.text),
@@ -2198,7 +2199,7 @@
 	    
 	    var el = undefined;
 	    var essayChild = undefined;
-	    
+
 	    if (isNote) {
 		essayChild = s('note essay ' + fieldName);
 	    }
@@ -2306,7 +2307,7 @@
                                               src:_d.thumb_image});
                 }
                 eventEl = d('note-event', [
-                    d('event-datetime').html(moment(_d.datetime).format()),
+                    d('datetime').html(formatByResolution(_d.resolution, _d.datetime)),		    
                     thumb,                    
                     a(_d.content_url, 'event-link').append(
                         d('event-title').html(_d.title),
