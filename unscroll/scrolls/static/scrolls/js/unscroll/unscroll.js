@@ -11,7 +11,7 @@
 
     const API = '';
     const AUTH = API + '/auth';
-    const GRIDHEIGHT = 8;
+    const GRIDHEIGHT = 10;
     const ACTIVEHEIGHT = 0.95;          
     const REFRESH_INTERVAL = 15000; // milliseconds
     const timeBeforeRefresh = 10; // milliseconds
@@ -397,7 +397,6 @@
 	};
 
 	this.getProfile = function() {
-	    console.log(_bindings);
             $.get({
 		url:AUTH+ '/me/',
 		headers: {
@@ -634,14 +633,20 @@
         }
         this.timeline = timeline;
         this.makePeriod = function(text, start, end) {
+            var href = '/?start='
+		+ start.format()
+		+ '&before='
+		+ end.format();
 	    var link = $('<a></a>', {class:'period nav',
-			             href:'/?start='
-			             + start.format()
-			             + '&before='
-			             + end.format()})
+			             href:href})
 		.html(text)
 		.click(function(e) {
 		    e.preventDefault();
+	            window.history.replaceState(
+		        {},
+		        'Unscroll: From X to Y',
+		        href);
+                   
                     _timeframe.timeline.initialize(start, end, _timeframe.timeline.user);
 	        });
 	    
@@ -1154,12 +1159,9 @@
             // kick off server calls
             _panel.load();
             _panel.columns = _panel.timeline.timeframe.getColumns(_panel.start);
-	    // _panel.columnWidth = _panel.timeline.window.width/_panel.columns;
-	    // _panel.cellWidth = _panel.timeline.window.width/_panel.columns;
-	    // _panel.cellHeight = _panel.timeline.window.height/(GRIDHEIGHT * ACTIVEHEIGHT);	    
 	    _panel.columnWidth = 100/_panel.columns;
 	    _panel.cellWidth = 100/_panel.columns;
-	    _panel.cellHeight = 100/GRIDHEIGHT;
+	    _panel.cellHeight = 100/GRIDHEIGHT * ACTIVEHEIGHT;
             _panel.grid = _panel.makeGrid();
             _panel.initializeDOM();
         }
@@ -1169,23 +1171,24 @@
             for (var i=0;i<_panel.columns;i++) {
                 var first = i==0 ? ' first' : '';
 	        var columnData = _panel.timeline.timeframe.columnStepper(i, _panel.start);
+
+                var f = function(ev) {
+		    ev.preventDefault();
+                    _panel.timeline.initialize(this.start, this.end, _panel.timeline.user);  
+                }
+                
 	        var column = d('column nav'  + first)
 	            .css({width:_panel.columnWidth + '%',
 		          left:_panel.columnWidth * i + '%'})
 	            .append(
-		        $('<a></a>', {class:'head',
+		        $('<span></span>', {class:'head',
 			              href:'/?start='
 			              + columnData.start.format()
 			              + '&before='
 			              + columnData.end.format()
 			             })
 		            .html(columnData.text)
-		            .on('click', function(e) {
-			        e.preventDefault();
-			        _panel.timeline = new Timeline(columnData.start,
-                                                               columnData.end,
-                                                               _panel.timeline.user);
-		            }));
+		            .on('click', f.bind(columnData)));
                 columns.push(column);
             }
             return columns;
@@ -1236,11 +1239,11 @@
                     + _panel.timeline.user.currentScroll.uuid;
 	    }
 
-/*	    window.history.replaceState(
+	    window.history.replaceState(
 		{},
 		'Unscroll: From X to Y',
 		url);
-*/
+
 
 	}
 	
@@ -1397,7 +1400,7 @@
 		e.height = Math.ceil(el.height()/window_height * GRIDHEIGHT)
 	        var reservation = _panel.makeReservation(e.offset, 0, e.width, e.height);
 	        if (reservation.success) {
-		    console.log({reservation:reservation.success, width: e.width, height:e.height,  offset:e.offset});
+		    //console.log({reservation:reservation.success, width: e.width, height:e.height,  offset:e.offset});
 		    e.el.hide();
 		    e.el.css({
 		        marginLeft:(reservation.x * _panel.cellWidth) + '%',
@@ -1546,7 +1549,6 @@
 	
         this.makeEditor = function(exists) {
             var registerChange = function() {
-		_event.notebook.saveButton.removeClass('saved');		
                 if (exists) {
                     _event.needsUpdated = true;
                 }
@@ -1804,7 +1806,7 @@
         this.initialize = function(start, end) {
             var _start = start;
             var _end = end;
-
+            console.log('Start, end', start.format(), end.format())
             if (!_start || !_end) {
 	        _end = moment();
 	        _start = _end.clone().subtract(1, 'month');
@@ -1820,8 +1822,10 @@
 		tf = new MonthsTimeFrame(_timeline);
 	    }
 	    _timeline.timeframe = tf;	    
+            console.log('Preadjust', _timeline.timeframe, _timeline.start.format(), _timeline.end.format());
 	    _timeline.start = _timeline.timeframe.adjust(_start);
 	    _timeline.end = _timeline.timeframe.add(moment(_timeline.start), 1);
+            console.log('Postadjust', _timeline.timeframe, _timeline.start.format(), _timeline.end.format());            
             _timeline.panels = new Array();
             _timeline.initializeDOM();
 
