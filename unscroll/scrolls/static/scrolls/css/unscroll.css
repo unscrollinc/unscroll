@@ -158,6 +158,7 @@ div#login {
 }
 
 .event .inner {
+    font-family:'Merriweather Sans';    
     line-height:100%;
     margin:0.25em;
     padding:0.5em;
@@ -165,20 +166,14 @@ div#login {
     border:1px solid #2F9ECA;;
     border-radius:0.5em; 
     overflow:hidden;
-    font-size:8pt;
+    font-size:10pt;
     
 }
 
 
 
 .event .inner a.title {
-    font-family:'Merriweather Sans';
-    font-size:10pt;
     color:#2F9ECA;
-}
-
-.event .inner .title {
-    font-family:'Merriweather Sans';
 }
 
 div.thumb {
@@ -198,14 +193,12 @@ img.thumb {
 }
 .event .inner .text {
     color:#888;
-    font-size:10pt;
     max-height:100px;
     overflow:auto;
 }
 .event .inner .datetime {
     font-weight:bold;
     display:inline-block;
-    font:10pt 'Merriweather Sans';
     color:#888;
 }
 
