@@ -1806,11 +1806,11 @@
         this.initialize = function(start, end) {
             var _start = start;
             var _end = end;
-            console.log('Start, end', start.format(), end.format())
             if (!_start || !_end) {
 	        _end = moment();
 	        _start = _end.clone().subtract(1, 'month');
             }                                
+            console.log('Start, end', _start.format(), _end.format())
             
             _timeline.pos = {
                 lastOffset:0,
