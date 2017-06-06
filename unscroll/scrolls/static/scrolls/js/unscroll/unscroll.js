@@ -1115,7 +1115,7 @@
 	    return Math.floor((datetime.year() - (1000 * Math.floor(datetime.year()/1000)))/100);            
 	};
 	this.getEventWidth = function(width) {
-	    return 4;
+	    return 1;
 	};
 	this.getTarget = function(start, pointerInteger, pointerMantissa) {
 	    var pointerFocus = start.clone().add(1000 * pointerInteger, 'years');
@@ -1181,7 +1181,7 @@
 	            .css({width:_panel.columnWidth + '%',
 		          left:_panel.columnWidth * i + '%'})
 	            .append(
-		        $('<span></span>', {class:'head',
+		        $('<a></a>', {class:'head',
 			              href:'/?start='
 			              + columnData.start.format()
 			              + '&before='
