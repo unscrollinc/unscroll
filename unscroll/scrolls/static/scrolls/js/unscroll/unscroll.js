@@ -1473,6 +1473,8 @@
 		    return 'MMM \'YY'
 		case '10':
 		    return 'ddd MMM D, YYYY';
+		default:
+		    return 'ddd MMM D, YYYY';
 		}
 	    }
 	    return _event.datetime.format(getRes());
@@ -2598,7 +2600,7 @@
 		    for (var i=o.length - 1;i>=0;i--) {
                         var nbItem = o[i];
 			var order = nbItem.order;
-			console.log('Order', order, 'last', lastOrder, nbItem.text);
+//			console.log('Order', order, 'last', lastOrder, nbItem.text);
 			if (order <= lastOrder) {
 			    nbItem.order = lastOrder - 100;
 			}
