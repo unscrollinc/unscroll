@@ -1292,7 +1292,7 @@
 		es.sort(function(a,b) {return moment(a.datetime) - moment(b.datetime);})
 		var trs = new Array();
 		for (var i = 0; i<es.length;i++) {
-		    var e = es[i];
+		    let e = es[i];
 		    var thumb = undefined;
 		    if (e.thumb_image) {
 			thumb = $('<img></img>', {class:'thumb',
