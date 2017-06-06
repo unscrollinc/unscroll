@@ -1058,7 +1058,7 @@
 	};
 
         this.getEventWidth = function(width) {
-	    return Math.ceil(1 + Math.random() * 2);
+	    return Math.round(1, Math.random());
 	};
 
 	this.getTarget = function(start, pointerInteger, pointerMantissa) {
