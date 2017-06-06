@@ -551,7 +551,7 @@
         
 	this.parseQuery = function(qs) {
 	    console.log('query is', qs)
-	    _search.query.term = qs;
+	    _search.query.term = encodeURIComponent(qs);
 	};
 
         this.preSearch = function() {
