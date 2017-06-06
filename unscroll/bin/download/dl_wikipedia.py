@@ -106,7 +106,7 @@ class WikipediaText():
         event = {
             'title': trimmed,
             'text': None,
-            'resolution': 'days',
+            'resolution': 10,
             'ranking': ranking,
             'datetime': datetime.combine(
                 date,
