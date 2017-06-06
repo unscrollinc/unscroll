@@ -171,11 +171,12 @@ div#login {
 }
 
 
-
-.event .inner a.title {
-    color:#2F9ECA;
+.event .inner .title {
     line-height:1.5em;
 }
+.event .inner a.title {
+    color:#2F9ECA;
+ }
 
 div.thumb {
     float:right;
