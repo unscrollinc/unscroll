@@ -309,6 +309,10 @@ div#notebook-essay {
     padding-bottom:250px;
 }
 
+div#notebook-essay img {
+    max-width:100%;
+}
+
 div#notebook-head {
     background:#2F9ECA;
     padding-top:15px;
