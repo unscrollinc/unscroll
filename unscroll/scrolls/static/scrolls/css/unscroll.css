@@ -744,7 +744,7 @@ div#uxbox .submit {
 .editable-event {
     padding-bottom:250px;    
 }
-.field input, .field .medium-editor-element {
+.field input, #event-editor-wrapper .field .medium-editor-element {
     font-size:10pt;
     padding:1%;
     width:72%;
