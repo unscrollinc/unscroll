@@ -305,7 +305,7 @@ div#notebook-essay {
     font-family:Merriweather;
     line-height:149%;
     font-size:12pt;
-    padding-bottom:250px;
+    margin-bottom:75%;
 }
 
 div#notebook-essay img {
