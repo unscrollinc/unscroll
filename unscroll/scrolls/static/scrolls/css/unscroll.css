@@ -303,7 +303,6 @@ div#notebook {
 div#notebook-essay {
     height:100%;
     font-family:Merriweather;
-    overflow:auto;
     line-height:149%;
     font-size:12pt;
     padding-bottom:250px;
