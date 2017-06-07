@@ -373,6 +373,7 @@ class ScrollSerializer(serializers.HyperlinkedModelSerializer):
             'first_event',
             'last_event',
             'created',
+            'last_modified',            
             'title',
             'public',
             'subtitle',

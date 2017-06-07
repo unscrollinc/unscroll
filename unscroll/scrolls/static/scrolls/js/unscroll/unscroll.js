@@ -2841,6 +2841,7 @@
                                         tr('notebook-list-item header')
                                             .append(
                                                 th('when').text('Created'),
+                                                th('when').text('Changed'),						
                                                 th('title').text('Title'),
                                                 th('username').text('Creator'),
                                                 th('public').text('Public?')),
@@ -2886,6 +2887,7 @@
 		tr('notebook-list-item')
 		.append(
 		    td('notebook-list-date').text(moment(_notebooklistitem.data.created).fromNow()),
+		    td('notebook-list-modified').text(moment(_notebooklistitem.data.last_modified).fromNow()),		    
 		    td('notebook-list-title').html(_notebooklistitem.data.title),
 		    td('notebook-list-username').html(_notebooklistitem.user.data.username),                    
 		    td('notebook-list-public').text(_notebooklistitem.data.public ? 'Public' : 'Private'));

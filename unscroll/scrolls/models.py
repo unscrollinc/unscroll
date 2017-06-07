@@ -85,7 +85,7 @@ class Scroll(models.Model):
     class Meta:
         db_table = 'scroll'
         unique_together = (("title", "user"),)
-        ordering = ['-created']
+        ordering = ['-last_modified']
 
     def full_notes(self):
         return Note.objects\
