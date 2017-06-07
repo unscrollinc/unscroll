@@ -558,7 +558,7 @@ tr.notebook-list-item {
     font-family:'Merriweather Sans';
 }
  
-.field-input .medium-editor-element {
+div.editable-event .medium-editor-element {
     background:#fff;
     padding:0.25em 0.25em 0.25em 0.5em;
     border:1px solid #ccc;
