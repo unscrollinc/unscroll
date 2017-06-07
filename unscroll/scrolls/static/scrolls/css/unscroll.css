@@ -314,6 +314,7 @@ div#notebook-essay img {
     margin-top:1em;
     margin-bottom:1em;
     clear:both;
+    display:block;
     text-align:center;
 }
 
