@@ -397,10 +397,8 @@ div.nb-item .top {
 div.nb-item, div.nb-final {
 }
 
-div.nb-item.spacer {
-    width:100%;
-    height:25px;
-    background:#ccc;
+div.field div.text.spacer {
+    display:none;
 }
 
 div.nb-item.spacer div.editable {

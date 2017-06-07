@@ -2200,7 +2200,7 @@
 
 	// Utility function for producing interactive text els
 	var editize = function(o) {
-
+            var noteType = o.noteType;
 	    var fieldName = o.fieldName;
             var fieldTitle = o.fieldTitle;
             var isRichText = o.isRichText;
@@ -2213,19 +2213,24 @@
 	    
 	    var el = undefined;
 	    var essayChild = undefined;
-
+            
 	    if (isNote) {
 		essayChild = s('note essay ' + fieldName);
 	    }
 	    else {
 		essayChild = d('header essay ' + fieldName);
 	    }
-
+            if (data[fieldName] == undefined && noteType == 'spacer') {
+                data[fieldName] = '<br/><br/>';
+            }
+            
             if (isRichText) {
                 el = d('field-input scroll-'
                        + fieldName
                        + ' '
-                       + fieldName)
+                       + fieldName
+                       + ' '
+                       + noteType)
                     .html(data[fieldName]);
 
 		var display = data[fieldName];
@@ -2362,20 +2367,32 @@
 	    }
 	    
 	    var text = note ? note.text : '';
-            
-            if (item.event) {
-	        item.editized = editize({fieldName:'text',
-				         fieldTitle:'Event',
-				         isRichText:true,
-				         isNote:true,
-				         caller:item});
+            if (kind=='spacer') {
+	        item.editized = editize({
+                    noteType:kind,
+                    fieldName:'text',
+		    fieldTitle:'Vertical space',
+		    isRichText:true,
+		    isNote:true,
+		    caller:item});
+            }            
+            else if (item.event) {
+	        item.editized = editize({
+                    noteType:kind,
+                    fieldName:'text',
+		    fieldTitle:'Event',
+		    isRichText:true,
+		    isNote:true,
+		    caller:item});
             }
             else {
-	        item.editized = editize({fieldName:'text',
-				         fieldTitle:'Note',
-				         isRichText:true,
-				         isNote:true,
-				         caller:item});                
+	        item.editized = editize(
+                    {noteType:kind,
+                     fieldName:'text',
+		     fieldTitle:'Note',
+		     isRichText:true,
+		     isNote:true,
+		     caller:item});                
             }
 
 
@@ -2399,10 +2416,10 @@
 		// Add to actual array
 		_notebook.items.unshift(item);
 
-		// Add to left notebook
+		// Add to edit notebook
 		_notebook.itemsEl.prepend(item.editized.formView);
 		
-		// Add to right notebook
+		// Add to essay notebook
 		_notebook.essayEl.prepend(item.editized.essayView);
 	    }
             
@@ -2414,6 +2431,15 @@
 	    _notebook.itemsEl = $('#notebook-items');
 	    _notebook.essayEl = $('#notebook-essay');
             
+
+            $('#note-space-create-button')
+                .off()
+		.on('click', function(ev) {
+                    ev.preventDefault();
+		    console.log('Clicked on spacer button');
+                    _notebook.makeItem('spacer');
+		});
+
             $('#note-default-create-button')
                 .off()
 		.on('click', function(ev) {
@@ -2421,17 +2447,9 @@
 		    console.log('Clicked on default create button');
                     _notebook.makeItem('default', undefined, undefined);
 		});
-
-
-            
-            $('#insert-space')
-                .off()
-		.on('click', function(ev) {
-                    ev.preventDefault();
-                    _notebook.makeItem('spacer');
-		});
+    
 	
-            $('#insert-image')
+            $('#note-media-create-button')
                 .off()
 		.on('click', function(ev) {
                     ev.preventDefault();                    
@@ -2732,6 +2750,7 @@
 		var posts = $.map(toCreate, function(e) {
 		    return $.extend(e.data, {scroll:_notebook.data.url});
 		});
+                console.log(toCreate);
                 _notebook.notesPost(posts, toCreate);
 	    }
 
@@ -2775,6 +2794,9 @@
 	var _notebookitem = this;
 	this.notebook = notebook;
         this.kind = kind ? kind : 'default';
+        if (note && note.kind) {
+            this.kind = note.kind;
+        }
         this.event = event;
         var event_url = this.event ? this.event.url : undefined;
         this.data = $.extend(note, {kind:kind, event:event_url});
