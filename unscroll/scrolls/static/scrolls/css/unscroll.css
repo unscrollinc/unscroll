@@ -310,9 +310,11 @@ div#notebook-essay {
 }
 
 div#notebook-essay img {
-    max-width:100%;
+    max-width:90%;
     margin-top:1em;
     margin-bottom:1em;
+    clear:both;
+    text-align:center;
 }
 
 div#notebook-head {
