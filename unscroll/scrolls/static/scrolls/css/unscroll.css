@@ -301,11 +301,11 @@ div#notebook {
 
 
 div#notebook-essay {
-    height:100%;
     font-family:Merriweather;
-    line-height:149%;
+    line-height:175%;
     font-size:12pt;
-    margin-bottom:75%;
+    overflow:auto;
+    margin-bottom:500px;
 }
 
 div#notebook-essay img {
