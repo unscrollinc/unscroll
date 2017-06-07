@@ -421,7 +421,7 @@
 		},
 		error:function(e) {
                     console.log('Error: ' + e);
-                    _bindings.teardown();                    
+                    _bindings.teardown();
                 },
 		failure:function(e) {
                     console.log('Failure: ' + e);
@@ -1595,7 +1595,7 @@
 	            });                    
 		}
                 
-		return d('field')
+		return d('field ' + name)
 		    .append(
                         d('field-title').append(title),
 			d('field-input').append(editor));
@@ -1611,13 +1611,25 @@
             else {
                 if (_event.panel.timeline.user.currentScroll) {
                     scrollUrl = _event.panel.timeline.user.currentScroll.url;
-                    scrollTitle = _event.panel.timeline.user.currentScroll.scroll_title;
+                    scrollTitle = _event.panel.timeline.user.currentScroll.title;
                 }
             }
-            console.log(_event);
             var newEvent = undefined;
 	    if (scrollUrl) {
-		_event.patch['scroll'] = scrollUrl 
+		_event.patch['scroll'] = scrollUrl
+
+                var saveTop = s('event-save')
+                    .html('Save')
+                    .on('click', saveFunction);
+                var saveBottom = s('event-save')
+                    .html('Save')
+                    .on('click', saveFunction);                
+                var cancel = s('event-cancel')
+                    .html('Cancel')
+                    .on('click', function(ev) {
+                        $('#event-editor-wrapper').empty().hide();
+                    });
+                
 	        newEvent =
 		    $('#event-editor-wrapper')
                     .empty()
@@ -1625,22 +1637,22 @@
                     .append(
 		        d('editable-event').append(
 			    $('<div></div>').append(
-                                d('scroll-title').html('Create a new event in: ' + scrollTitle),
-			        makeInput('datetime', 'Date/time', false, _event.panel.timeline.pos.target.format()),
-			        makeInput('title', 'Event title', true),
+                                d('scroll-title').html('Create a new event in: <br/><i>' + scrollTitle + '</i>')
+                                    .append(d('event-buttons')
+                                            .append(saveTop, cancel)),
+			        makeInput('datetime', 'Date/time (required)',
+                                          false, _event.panel.timeline.pos.target.format()),
+			        makeInput('title', 'Event title (required)', true),
 			        makeInput('text', 'Event description', true),
-			        makeInput('resolution', 'Resolution', false, _event.panel.timeline.timeframe.resolution),
 			        makeInput('content_url', 'Link', false, ''),
-
-			        makeInput('media_type', 'Link', false, 'text/html'),
-
-			        makeInput('source_date', 'Source Name (optional)'),
-			        makeInput('source_url', 'Source Link (optional)'),
-			        $('<input></input>', {class:'submit',
-					              type:'submit',
-					              value:'save',
-					              name:'save'})
-				    .on('click', saveFunction))));
+                                d('formset').append(
+			            makeInput('resolution', 'Resolution', false,
+                                              _event.panel.timeline.timeframe.resolution),
+			            makeInput('media_type', 'Media Type', false, 'text/html'),
+			            makeInput('content_type', 'Content Type', false, 'event')),
+			        makeInput('source_date', 'Source Name'),
+			        makeInput('source_url', 'Source Link'),
+                                saveBottom)));
             }
             else {
 		var warning = d('modal warning').append(

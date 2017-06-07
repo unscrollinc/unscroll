@@ -4,8 +4,12 @@ body {
     font:12pt 'Merriweather Sans';
 }
 
-body, input {
+body {
     font-family: 'Merriweather', serif;
+}
+
+input {
+    font-family:'Merriweather Sans';
 }
 a {
     color:#2F9ECA;
@@ -549,14 +553,31 @@ tr.notebook-list-item {
     border-bottom:1px solid #CCC;
 }
 
-.field-input {
+.field-input, .field-input input {
     line-height:1.85em;
     font-family:'Merriweather Sans';
 }
+ 
+.field-input .medium-editor-element {
+    background:#fff;
+    padding:0.25em 0.25em 0.25em 0.5em;
+    border:1px solid #ccc;
+}
+
+div.editable-event .scroll-title {
+    font-family:'Merriweather Sans';    
+}
+
 
 .scroll-title {
+    line-height:180%;
+}
+
+div.editable-event .scroll-title {
     font-size:120%;
-    line-height:150%;
+    margin-left:0.25em;
+    border-bottom:1px solid #ccc;
+    margin-bottom:1em;
 }
 
 .essay.title {
@@ -715,16 +736,56 @@ div#uxbox .submit {
     height:100%;
     display:none;
     z-index:20000;
+    overflow:auto;
+    padding:1em 1em 1em 1em;
+    border-top:1px solid black;
+    padding-bottom:250px;
 }
 .editable-event {
-    padding:1em;
+    padding-bottom:250px;    
 }
-#event-editor-wrapper input {
+.field input, .field .medium-editor-element {
     font-size:10pt;
-    padding:0.25em;
-    width:75%;
+    padding:1%;
+    width:72%;
     margin-bottom:0.5em;
+    background:white;
 }
+
+div.content_url {
+    clear:both;
+}
+.field.media_type,
+.field.resolution,
+.field.content_type {
+    width:23%;
+    float:left;
+}
+
+input.media_type,
+input.resolution,
+input.content_type {
+    width:100%;
+}
+
+
+div.editable-event .event-save {
+    color:red;
+    padding-left:0em;
+    cursor:hand;    
+}
+
+.event-cancel {
+    padding-left:0.5em;
+    color:#2F9ECA;
+    cursor:hand;
+}
+
+
+div.editable-event .bottom-save {
+    font-size:150%;
+}
+
 
 .active {
     color:#2F9ECA;
