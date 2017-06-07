@@ -267,12 +267,13 @@
 		    .append(
 			$('<h3></h3>').html('Register'),        
 			$('<div></div>').append(
-			    _bindings.getField({name:'username', ruby:'Your username', type:'text', data:_bindings.data}),
-			    _bindings.getField({name:'email', ruby:'Your email', type:'text', data:_bindings.data}),
-			    _bindings.getField({name:'password', ruby:'Your password', type:'password', data:_bindings.data}),
-			    _bindings.getField({name:'register', type:'submit', data:_bindings.data})            
+			    d('hello').html('Soon! Not now! But soon.')
+			    //_bindings.getField({name:'username', ruby:'Your username', type:'text', data:_bindings.data}),
+			    //_bindings.getField({name:'email', ruby:'Your email', type:'text', data:_bindings.data}),
+			    //_bindings.getField({name:'password', ruby:'Your password', type:'password', data:_bindings.data}),
+			    //_bindings.getField({name:'register', type:'submit', data:_bindings.data})            
 				.on('click', function() {
-				    _bindings['Register'].endpoint();
+				    //_bindings['Register'].endpoint();
 				})))
 	    },
 	    endpoint:function(ev) {
@@ -2086,6 +2087,7 @@
 	this.moveStatus = this.newMoveStatus();
 
 	this.convertMoveStatus = function() {
+	    console.log('MOVESTATS', _notebook.moveStatus);
 	    var from = _notebook.moveStatus.fromNote.pos;
 	    var to = _notebook.moveStatus.throughNote.pos;
 	    var target = _notebook.moveStatus.toBeforeNote.pos;
@@ -2100,6 +2102,7 @@
 		to = _to;
 		from = _from;
 	    }
+	    
 	    return {from:from, to:to, target:target};
 	}
 	
@@ -2119,6 +2122,7 @@
 	    
 	    console.log('from', from, 'to', to, 'target', target);
 	    if (from > -1 && to > -1 && target > -1) {
+
 		$.each(_notebook.items, function(i, e) {
 		    if (i >=from && i <= to) {
 			splice.push(e);
@@ -2135,8 +2139,8 @@
 		    reorderBegin = _notebook.items[target - 1].data.order;
 		}
 
-		var multiplier = (reorderEnd - reorderBegin)/(splice.length + 1)
-		
+		var multiplier = (reorderEnd - reorderBegin)/(splice.length + 1);
+
 		$.each(_notebook.items, function(i, e) {
 		    if (i >=from && i <= to) {
 			//do nothing; this is the splice
@@ -2159,6 +2163,15 @@
 		    }
 		});
 	    }
+	    $.each(newItems, function(i, e) {
+		console.log(e.data.order);
+		if (i==0) {
+		    console.log(e.data.text, e.data.order - 0);		    
+		} else
+		{
+		    console.log(e.data.order - newItems[i - 1].data.order);
+		}
+	    });
 	    _notebook.items = newItems;
 	    _notebook.moveStatus = _notebook.newMoveStatus();
 
@@ -2171,6 +2184,8 @@
 	
 	this.tagRanges = function() {
 	    $.each(_notebook.items, function(i, e) {
+		console.log('XXXXX', e, _notebook.moveStatus.fromNote);
+		
 		if (e == _notebook.moveStatus.fromNote.el) {
 		    _notebook.moveStatus.fromNote.pos = i;					    
 		}
@@ -2367,10 +2382,6 @@
         this.makeItem = function(kind, event, note, insertAfterItem) {
             var item = new NotebookItem(kind, event, note, _notebook);
 
-	    if (!item.data.order) {
-		item.data.order = this.decmin();
-	    }
-	    
 	    var text = note ? note.text : '';
             if (kind=='spacer') {
 	        item.editized = editize({
@@ -2400,7 +2411,6 @@
 		     caller:item});                
             }
 
-
 	    if (insertAfterItem) {
 		var reorder = new Array();
 		var lastOrder = undefined;
@@ -2414,10 +2424,9 @@
 		    var lastOrder = item.data.order;
 		}
 		_notebook.items = reorder;
-
-		
 	    }
-	    else {
+	    else if (!item.data.order) {
+		item.data.order = this.decmin();
 		// Add to actual array
 		_notebook.items.unshift(item);
 
@@ -2425,9 +2434,19 @@
 		_notebook.itemsEl.prepend(item.editized.formView);
 		
 		// Add to essay notebook
-		_notebook.essayEl.prepend(item.editized.essayView);
+		_notebook.essayEl.prepend(item.editized.essayView);	    
 	    }
-            
+	    else {
+		// We're loading itmes. add them.
+		// Add to actual array
+		_notebook.items.push(item);
+
+		// Add to edit notebook
+		_notebook.itemsEl.append(item.editized.formView);
+		
+		// Add to essay notebook
+		_notebook.essayEl.append(item.editized.essayView);
+	    }
 	    return item;
 	}
 	
@@ -2634,6 +2653,9 @@
                 },
                 success:function(o) {
 		    $.each(o, function(i, item) {
+			if (i==0) {
+			    ctr = item.order;
+			}
 			// console.log(item, item.order);
 			_notebook.makeItem(item.kind, item.event_full, item);
 		    });
@@ -2780,15 +2802,18 @@
         setInterval(this.notebookScanner, REFRESH_INTERVAL);	
 
 	this.noteScanner = function() {
-	    var lastOrder = undefined;
+	    var lastOrder = undefined;	    
 	    for (var i=0; i<_notebook.items.length; i++) {
-		if (lastOrder >= _notebook.items[i].data.order) {
+		if (lastOrder && lastOrder >= _notebook.items[i].data.order) {
 		    console.log(lastOrder, _notebook.items[i].data.order);
 		    _notebook.items[i].data.order = lastOrder + 100;
 		    _notebook.items[i].patch['order'] = _notebook.items[i].data.order;
 		    _notebook.items[i].needsUpdated = true;
 		}
+		lastOrder = _notebook.items[i].data.order;		
 	    }
+	    
+
 	    
 	    var toCreate = $.grep(_notebook.items, function(e) {return e.needsCreated;});
 	    if (toCreate.length > 0) {
