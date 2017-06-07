@@ -1027,9 +1027,9 @@
             return 1;
 	};	    	    
 	this.getTarget = function(start, pointerInteger, pointerMantissa) {
-	    var pointerFocus = start.clone().add(10 * pointerInteger, 'years');
+	    var pointerFocus = start.clone().add(1 * pointerInteger, 'years');
 	    var columns = 10;
-	    var target = pointerFocus.clone().add(10 * Math.floor( pointerMantissa * columns ), 'years');
+	    var target = pointerFocus.clone().add(1 * Math.floor( pointerMantissa * columns ), 'years');
 	    return {
 		columns:columns,
 		target:target
@@ -1085,9 +1085,9 @@
 	};
 
 	this.getTarget = function(start, pointerInteger, pointerMantissa) {
-	    var pointerFocus = start.clone().add(100 * pointerInteger, 'years');
+	    var pointerFocus = start.clone().add(10 * pointerInteger, 'years');
 	    var columns = 10;
-	    var target = pointerFocus.clone().add(100 * Math.floor( pointerMantissa * columns ), 'years');
+	    var target = pointerFocus.clone().add(10 * Math.floor( pointerMantissa * columns ), 'years');
 	    return {
 		columns:columns,
 		target:target
@@ -1141,9 +1141,9 @@
 	    return 1;
 	};
 	this.getTarget = function(start, pointerInteger, pointerMantissa) {
-	    var pointerFocus = start.clone().add(1000 * pointerInteger, 'years');
+	    var pointerFocus = start.clone().add(100 * pointerInteger, 'years');
 	    var columns = 100;
-	    var target = pointerFocus.clone().add(1000 * Math.floor( pointerMantissa * columns ), 'years');
+	    var target = pointerFocus.clone().add(100 * Math.floor( pointerMantissa * columns ), 'years');
 	    return {
 		columns:columns,
 		target:target
@@ -1217,8 +1217,9 @@
             return columns;
         }
 
-        this.newEvent = function() {
+        this.newEvent = function(ev) {
             var e = new Event({}, _panel);
+	    $('#editor-event-wrapper').empty();
             e.editor();
         }
         
