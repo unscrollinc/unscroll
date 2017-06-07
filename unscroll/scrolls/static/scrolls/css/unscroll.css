@@ -286,10 +286,10 @@ div#notebook-wrapper {
 #notebook-essay-wrapper {
     position:absolute;
     height:100%;
-    width:50%;
+    width:45%;
     left:50%;
     padding-top:2.5%;
-    padding:2.5% 2% 500px 2%;
+    padding:2.5% 3% 500px 2%;
     overflow:auto;
 }
 
