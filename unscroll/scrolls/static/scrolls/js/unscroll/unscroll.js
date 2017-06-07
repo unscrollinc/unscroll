@@ -792,11 +792,11 @@
 	    return Math.floor(2 + Math.random() * _timeframe.getColumns()/5);
 	};
 	this.getTarget = function(start, pointerInteger, pointerMantissa) {
-	    var pointerFocus = start.clone().add(pointerInteger, 'minutes');
+	    var pointerFocus = start.clone().add(pointerInteger, 'hours');
 	    var columns = 6;
 	    var target = pointerFocus.clone().add(
 		Math.floor( pointerMantissa * columns ),
-		'hours');
+		'minutes');
 	    return {
 		columns:columns,
 		target:target
@@ -850,11 +850,11 @@
 	    return Math.floor(4 + Math.random() * _timeframe.getColumns()/5);
 	};
 	this.getTarget = function(start, pointerInteger, pointerMantissa) {
-	    var pointerFocus = start.clone().add(pointerInteger, 'months');
-	    var columns = pointerFocus.daysInMonth();
+	    var pointerFocus = start.clone().add(pointerInteger, 'days');
+	    var columns = 24;
 	    var target = pointerFocus.clone().add(
 		Math.floor( pointerMantissa * columns ),
-		'days');
+		'hours');
 	    return {
 		columns:columns,
 		target:target
@@ -1027,9 +1027,10 @@
             return 1;
 	};	    	    
 	this.getTarget = function(start, pointerInteger, pointerMantissa) {
-	    var pointerFocus = start.clone().add(1 * pointerInteger, 'years');
 	    var columns = 10;
-	    var target = pointerFocus.clone().add(1 * Math.floor( pointerMantissa * columns ), 'years');
+	    var years = 10;
+	    var target = moment(start).add((years * pointerInteger) + Math.floor( pointerMantissa * years ), 'years');
+	    
 	    return {
 		columns:columns,
 		target:target
@@ -1085,9 +1086,10 @@
 	};
 
 	this.getTarget = function(start, pointerInteger, pointerMantissa) {
-	    var pointerFocus = start.clone().add(10 * pointerInteger, 'years');
 	    var columns = 10;
-	    var target = pointerFocus.clone().add(10 * Math.floor( pointerMantissa * columns ), 'years');
+	    var years = 100;
+	    var target = moment(start).add((years * pointerInteger) + (10 * Math.floor(pointerMantissa * years / 10)), 'years');
+		// 
 	    return {
 		columns:columns,
 		target:target
@@ -1141,9 +1143,9 @@
 	    return 1;
 	};
 	this.getTarget = function(start, pointerInteger, pointerMantissa) {
-	    var pointerFocus = start.clone().add(100 * pointerInteger, 'years');
-	    var columns = 100;
-	    var target = pointerFocus.clone().add(100 * Math.floor( pointerMantissa * columns ), 'years');
+	    var columns = 10;
+	    var years = 1000;
+	    var target = moment(start).add((years * pointerInteger) + (100 * Math.floor(pointerMantissa * years / 100)), 'years');
 	    return {
 		columns:columns,
 		target:target
@@ -1935,8 +1937,9 @@
 	        _timeline.pos.pointerMantissa = tmpMantissa < 0 ? 1 + tmpMantissa : tmpMantissa ;
 	        _timeline.pos.x =_timeline.pos.pageX/_timeline.window.width * 100;
                 _timeline.pos.y =_timeline.pos.pageY/_timeline.window.height * 100;
-                
+                // *** 
 	        var gt = _timeline.timeframe.getTarget(_timeline.start,_timeline.pos.pointerInteger,_timeline.pos.pointerMantissa);
+
 	        _timeline.pos = $.extend({}, _timeline.pos, gt);
                 	      
 	        // Are we heading left, into the past?
@@ -2142,7 +2145,8 @@
 			$.each(splice, function(j, f) {
 			    f.needsUpdated = true;
 			    f.data.order = reorderBegin + ((j + 1) * multiplier);
-			    console.log('----------------------------------------', f.data.order);
+			    f.patch['order'] = f.data.order;
+//			    console.log('----------------------------------------', f.data, f.data.order);
 			    newItems.push(f);
 			    f.editized.formView.insertBefore(itemsKids[i]);
 			    f.editized.essayView.insertBefore(essayKids[i]);			    
@@ -2150,7 +2154,7 @@
 			newItems.push(e);			
 		    }
 		    else {
-			console.log(e.data.order);			
+//			console.log(e.data, e.data.order);			
 			newItems.push(e);
 		    }
 		});
@@ -2629,6 +2633,11 @@
 		    console.log('Failure: ' + e);
                 },
                 success:function(o) {
+		    $.each(o, function(i, item) {
+			// console.log(item, item.order);
+			_notebook.makeItem(item.kind, item.event_full, item);
+		    });
+		    /*
 		    // TODO right now I'm checking re-ordering here. There has to be a better way.
 		    var lastOrder = undefined;
 		    for (var i=o.length - 1;i>=0;i--) {
@@ -2644,6 +2653,7 @@
 			}
 			var lastOrder = nbItem.order;			
 		    }
+		    */
                 }
 	    });
         };
@@ -2760,13 +2770,26 @@
         this.notebookScanner = function() {
             if (!_notebook.networkOperationInProgress && _notebook.needsUpdated) {
                 _notebook.update();
-		//TODO THIS COULD LEAD TO TOP HALF OF DOC GETTING SAVED WHILE NOTES NOTE GETTING SAVED
+
+		//TODO THIS COULD LEAD TO TOP HALF OF DOC GETTING
+		//SAVED WHILE NOTES NOTE GETTING SAVED
+		
 		_notebook.saveButton.addClass('saved');
             }  
 	};
         setInterval(this.notebookScanner, REFRESH_INTERVAL);	
 
 	this.noteScanner = function() {
+	    var lastOrder = undefined;
+	    for (var i=0; i<_notebook.items.length; i++) {
+		if (lastOrder >= _notebook.items[i].data.order) {
+		    console.log(lastOrder, _notebook.items[i].data.order);
+		    _notebook.items[i].data.order = lastOrder + 100;
+		    _notebook.items[i].patch['order'] = _notebook.items[i].data.order;
+		    _notebook.items[i].needsUpdated = true;
+		}
+	    }
+	    
 	    var toCreate = $.grep(_notebook.items, function(e) {return e.needsCreated;});
 	    if (toCreate.length > 0) {
 		var posts = $.map(toCreate, function(e) {
