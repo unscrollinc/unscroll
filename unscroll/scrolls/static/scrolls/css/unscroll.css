@@ -281,6 +281,7 @@ div#notebook-wrapper {
     height:100%;
     margin-left:auto;
     display:none;
+    overflow:hidden;
 }
 
 #notebook-essay-wrapper {
