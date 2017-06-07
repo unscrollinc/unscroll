@@ -2257,13 +2257,13 @@
 		var medium = new MediumEditor(el, {disableReturn: true});
 		
 		medium.subscribe('editableInput', function (event, editor) {
-
 		    // this is balky but figure out if it's a notebook
 		    // or a notebookitem
 		    var nb = caller.notebook ? caller.notebook : caller;
 		    nb.saveButton.removeClass('saved');
                     caller.needsUpdated = true;
 		    data[fieldName] = medium.getContent();
+		    patch[fieldName] = medium.getContent();		    
                     essayChild.html(medium.getContent() + ' ');
 		});
             }
@@ -2519,7 +2519,7 @@
 		isRichText:true,
 		caller:_notebook				
 	    });
-
+	    var author = d('essay-author').html('By ' + _notebook.user.data.username);
             $('#notebook-items').empty();
 	    $('#notebook-essay').empty();            
 	    var controls = d('notebook-controls').append(saveButton, deleteButton);
@@ -2532,7 +2532,7 @@
 	    
 	    $('#scroll-header-essay')
                 .empty()
-                .append(title.essayView, subtitle.essayView, description.essayView);
+                .append(title.essayView, subtitle.essayView, description.essayView, author);
 
 	}
 
@@ -2671,6 +2671,27 @@
 	    });
 	};
         
+	this.notesPatch = function(data, items) {
+	    $.ajax({
+                url:API + '/notes/',
+                type: 'PATCH',
+                contentType: 'application/json',
+                dataType: 'json',
+		data:JSON.stringify(data),
+                context:items,
+                headers: {
+		    'Authorization': 'Token ' + _notebook.user.data.auth_token
+                },
+                failure:function(e) {
+		    console.log('Failure: ' + e);
+                },
+                success:function(o) {
+		    for (var i=0;i<o.length; i++) {
+                        items[i].needsUpdated = false;                            
+		    }
+                }
+	    });
+	};
 	this.notesPut = function(data, items) {
 	    $.ajax({
                 url:API + '/notes/',
@@ -2755,15 +2776,30 @@
                 _notebook.notesPost(posts, toCreate);
 	    }
 
+/*
 	    var toPut = $.grep(_notebook.items, function(e) {
 		return (e.needsUpdated && !e.needsCreated);
 	    });
+	    
 	    if (toPut.length > 0) {
 		var puts = $.map(toPut, function(e) {
 		    return $.extend(e.data, {scroll:_notebook.data.url});		    
 		});
                 _notebook.notesPut(puts, toPut);
 	    }
+*/
+	    var toPatch = $.grep(_notebook.items, function(e) {
+		return (e.needsUpdated && !e.needsCreated);
+	    });
+	    
+	    if (toPatch.length > 0) {
+		var patches = $.map(toPatch, function(e) {
+		    return $.extend(e.patch,
+				    {id:e.data.id,
+				     scroll:_notebook.data.url});		    
+		});
+                _notebook.notesPatch(patches, toPatch);
+	    }	    
 	    
 	    var toDelete = $.grep(_notebook.items, function(e) {
 		return (e.needsDeleted && !e.needsCreated && !e.Updated);		
@@ -2801,6 +2837,7 @@
         this.event = event;
         var event_url = this.event ? this.event.url : undefined;
         this.data = $.extend(note, {kind:kind, event:event_url});
+	this.patch = {};
         this.needsCreated = note ? false : true;
         this.needsUpdated = false;
         this.needsDeleted = false;
