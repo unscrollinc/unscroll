@@ -419,8 +419,14 @@
 		headers: {
                     'Authorization': 'Token ' + _bindings.user.data.auth_token
 		},
+		error:function(e) {
+                    console.log('Error: ' + e);
+                    _bindings.teardown();                    
+                },
 		failure:function(e) {
                     console.log('Failure: ' + e);
+                    _bindings.teardown();
+                    
 		},
 		success:function(o) {
 		    _bindings.buildout(o);
@@ -1813,8 +1819,6 @@
 	        _end = moment();
 	        _start = _end.clone().subtract(1, 'month');
             }                                
-            console.log('Start, end', _start.format(), _end.format())
-            
             _timeline.pos = {
                 lastOffset:0,
                 offset:0
@@ -1825,10 +1829,8 @@
 		tf = new MonthsTimeFrame(_timeline);
 	    }
 	    _timeline.timeframe = tf;	    
-            console.log('Preadjust', _timeline.timeframe, _timeline.start.format(), _timeline.end.format());
 	    _timeline.start = _timeline.timeframe.adjust(_start);
 	    _timeline.end = _timeline.timeframe.add(moment(_timeline.start), 1);
-            console.log('Postadjust', _timeline.timeframe, _timeline.start.format(), _timeline.end.format());            
             _timeline.panels = new Array();
             _timeline.initializeDOM();
 
