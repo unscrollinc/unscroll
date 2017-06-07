@@ -289,7 +289,7 @@ div#notebook-wrapper {
     width:50%;
     left:50%;
     padding-top:2.5%;
-    padding:2.5% 2% 2% 500px;
+    padding:2.5% 2% 500px 2%;
     overflow:auto;
 }
 
