@@ -2272,6 +2272,12 @@
 		    essayChild.removeClass('active');
 		});
 		el.on('focus', function() {
+		    $('#notebook-essay-wrapper')
+			.animate({
+			    scrollTop: essayChild.position().top
+			}, 250);
+
+
 		    essayChild.addClass('active');
 		})		
 		var medium = new MediumEditor(el, {disableReturn: false});
