@@ -1710,6 +1710,7 @@
             var old = _event.panel.response.results;
             console.log(old, _event.data);
             for (var i=0;i<old.length;i++) {
+		console.log(old[i].data.url, _event.data.url);
                 if (old[i].data.url !== _event.data.url) {
                     results.push(old[i]);
                 }
