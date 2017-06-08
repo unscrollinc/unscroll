@@ -2184,8 +2184,7 @@
 	
 	this.tagRanges = function() {
 	    $.each(_notebook.items, function(i, e) {
-		console.log('XXXXX', e, _notebook.moveStatus.fromNote);
-		
+
 		if (e == _notebook.moveStatus.fromNote.el) {
 		    _notebook.moveStatus.fromNote.pos = i;					    
 		}
@@ -2766,7 +2765,8 @@
 			console.log('Failure: ' + e);
 		    },
 		    success:function(o) {
-                        this.needsDeleted = false;                            
+                        this.needsDeleted = false;
+			this.needsRemoved = true;
 		    }
                 });
 	    }
@@ -2798,6 +2798,7 @@
 	
         this.notebookScanner = function() {
             if (!_notebook.networkOperationInProgress && _notebook.needsUpdated) {
+
                 _notebook.update();
 
 		//TODO THIS COULD LEAD TO TOP HALF OF DOC GETTING
@@ -2809,6 +2810,12 @@
         setInterval(this.notebookScanner, REFRESH_INTERVAL);	
 
 	this.noteScanner = function() {
+	    console.log(_notebook.items);
+	    _notebook.items = $.grep(_notebook.items, function(i,e) {
+		return !e.needsRemoved;
+	    });
+		
+	    
 	    var lastOrder = undefined;	    
 	    for (var i=0; i<_notebook.items.length; i++) {
 		if (lastOrder && lastOrder >= _notebook.items[i].data.order) {
@@ -2818,9 +2825,7 @@
 		    _notebook.items[i].needsUpdated = true;
 		}
 		lastOrder = _notebook.items[i].data.order;		
-	    }
-	    
-
+	    }	    
 	    
 	    var toCreate = $.grep(_notebook.items, function(e) {return e.needsCreated;});
 	    if (toCreate.length > 0) {
@@ -2831,18 +2836,6 @@
                 _notebook.notesPost(posts, toCreate);
 	    }
 
-/*
-	    var toPut = $.grep(_notebook.items, function(e) {
-		return (e.needsUpdated && !e.needsCreated);
-	    });
-	    
-	    if (toPut.length > 0) {
-		var puts = $.map(toPut, function(e) {
-		    return $.extend(e.data, {scroll:_notebook.data.url});		    
-		});
-                _notebook.notesPut(puts, toPut);
-	    }
-*/
 	    var toPatch = $.grep(_notebook.items, function(e) {
 		return (e.needsUpdated && !e.needsCreated);
 	    });
@@ -2896,6 +2889,8 @@
         this.needsCreated = note ? false : true;
         this.needsUpdated = false;
         this.needsDeleted = false;
+	this.needsRemoved = false;
+	
 	this.editized = undefined;
     };   
     
