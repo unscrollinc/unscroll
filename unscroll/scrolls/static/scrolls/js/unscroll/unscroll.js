@@ -624,11 +624,13 @@
             });
             
 	    _search.input.keypress(function (ev) {
+/*
 		if (ev.which == 13) {
                     ev.preventDefault();
                     _search.preSearch();
 		    return false; 
 		}
+*/
 	    });
 	}	
 	this.initialize();
@@ -2273,7 +2275,7 @@
 		el.on('focus', function() {
 		    essayChild.addClass('active');
 		})		
-		var medium = new MediumEditor(el, {disableReturn: true});
+		var medium = new MediumEditor(el, {disableReturn: false});
 		
 		medium.subscribe('editableInput', function (event, editor) {
 		    // this is balky but figure out if it's a notebook
