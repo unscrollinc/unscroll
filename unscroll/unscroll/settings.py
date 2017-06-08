@@ -16,7 +16,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'dw$b#f!l@s8r&)^yf1@69rfb7)atm@2aqv2zjj5)k!)kzf1ghj)'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['localhost',
                  '127.0.0.1',
@@ -41,7 +41,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
-    'silk'
+#    'silk'
 )
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS':
@@ -59,7 +59,7 @@ REST_FRAMEWORK = {
 
 
 MIDDLEWARE_CLASSES = (
-    'silk.middleware.SilkyMiddleware',
+#    'silk.middleware.SilkyMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',

@@ -864,3 +864,7 @@ div.essay-author {
     font-style:Italic;
     margin-bottom:1em;
 }
+
+div.hello {
+    width:300px;
+}

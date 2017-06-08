@@ -267,7 +267,7 @@
 		    .append(
 			$('<h3></h3>').html('Register'),        
 			$('<div></div>').append(
-			    d('hello').html('Soon! Not now! But soon.')
+			    d('hello').html('Soon! Not now! But soon. If you want to know when it is ready, please put your email address <a href="https://docs.google.com/a/postlight.com/forms/d/e/1FAIpQLSdpy9gabej7caSfUR16rZigsgcMMBE73Zgykh_-LFhzGIE_QA/viewform">into this sign-up form.</a>')
 			    //_bindings.getField({name:'username', ruby:'Your username', type:'text', data:_bindings.data}),
 			    //_bindings.getField({name:'email', ruby:'Your email', type:'text', data:_bindings.data}),
 			    //_bindings.getField({name:'password', ruby:'Your password', type:'password', data:_bindings.data}),
