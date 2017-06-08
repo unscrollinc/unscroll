@@ -267,12 +267,13 @@
 		    .append(
 			$('<h3></h3>').html('Register'),        
 			$('<div></div>').append(
-			    _bindings.getField({name:'username', ruby:'Your username', type:'text', data:_bindings.data}),
-			    _bindings.getField({name:'email', ruby:'Your email', type:'text', data:_bindings.data}),
-			    _bindings.getField({name:'password', ruby:'Your password', type:'password', data:_bindings.data}),
-			    _bindings.getField({name:'register', type:'submit', data:_bindings.data})            
+			    d('hello').html('Soon! Not now! But soon.')
+			    //_bindings.getField({name:'username', ruby:'Your username', type:'text', data:_bindings.data}),
+			    //_bindings.getField({name:'email', ruby:'Your email', type:'text', data:_bindings.data}),
+			    //_bindings.getField({name:'password', ruby:'Your password', type:'password', data:_bindings.data}),
+			    //_bindings.getField({name:'register', type:'submit', data:_bindings.data})            
 				.on('click', function() {
-				    _bindings['Register'].endpoint();
+				    //_bindings['Register'].endpoint();
 				})))
 	    },
 	    endpoint:function(ev) {
@@ -792,11 +793,11 @@
 	    return Math.floor(2 + Math.random() * _timeframe.getColumns()/5);
 	};
 	this.getTarget = function(start, pointerInteger, pointerMantissa) {
-	    var pointerFocus = start.clone().add(pointerInteger, 'minutes');
+	    var pointerFocus = start.clone().add(pointerInteger, 'hours');
 	    var columns = 6;
 	    var target = pointerFocus.clone().add(
 		Math.floor( pointerMantissa * columns ),
-		'hours');
+		'minutes');
 	    return {
 		columns:columns,
 		target:target
@@ -850,11 +851,11 @@
 	    return Math.floor(4 + Math.random() * _timeframe.getColumns()/5);
 	};
 	this.getTarget = function(start, pointerInteger, pointerMantissa) {
-	    var pointerFocus = start.clone().add(pointerInteger, 'months');
-	    var columns = pointerFocus.daysInMonth();
+	    var pointerFocus = start.clone().add(pointerInteger, 'days');
+	    var columns = 24;
 	    var target = pointerFocus.clone().add(
 		Math.floor( pointerMantissa * columns ),
-		'days');
+		'hours');
 	    return {
 		columns:columns,
 		target:target
@@ -1027,9 +1028,10 @@
             return 1;
 	};	    	    
 	this.getTarget = function(start, pointerInteger, pointerMantissa) {
-	    var pointerFocus = start.clone().add(1 * pointerInteger, 'years');
 	    var columns = 10;
-	    var target = pointerFocus.clone().add(1 * Math.floor( pointerMantissa * columns ), 'years');
+	    var years = 10;
+	    var target = moment(start).add((years * pointerInteger) + Math.floor( pointerMantissa * years ), 'years');
+	    
 	    return {
 		columns:columns,
 		target:target
@@ -1085,9 +1087,10 @@
 	};
 
 	this.getTarget = function(start, pointerInteger, pointerMantissa) {
-	    var pointerFocus = start.clone().add(10 * pointerInteger, 'years');
 	    var columns = 10;
-	    var target = pointerFocus.clone().add(10 * Math.floor( pointerMantissa * columns ), 'years');
+	    var years = 100;
+	    var target = moment(start).add((years * pointerInteger) + (10 * Math.floor(pointerMantissa * years / 10)), 'years');
+		// 
 	    return {
 		columns:columns,
 		target:target
@@ -1141,9 +1144,9 @@
 	    return 1;
 	};
 	this.getTarget = function(start, pointerInteger, pointerMantissa) {
-	    var pointerFocus = start.clone().add(100 * pointerInteger, 'years');
-	    var columns = 100;
-	    var target = pointerFocus.clone().add(100 * Math.floor( pointerMantissa * columns ), 'years');
+	    var columns = 10;
+	    var years = 1000;
+	    var target = moment(start).add((years * pointerInteger) + (100 * Math.floor(pointerMantissa * years / 100)), 'years');
 	    return {
 		columns:columns,
 		target:target
@@ -1936,8 +1939,9 @@
 	        _timeline.pos.pointerMantissa = tmpMantissa < 0 ? 1 + tmpMantissa : tmpMantissa ;
 	        _timeline.pos.x =_timeline.pos.pageX/_timeline.window.width * 100;
                 _timeline.pos.y =_timeline.pos.pageY/_timeline.window.height * 100;
-                
+                // *** 
 	        var gt = _timeline.timeframe.getTarget(_timeline.start,_timeline.pos.pointerInteger,_timeline.pos.pointerMantissa);
+
 	        _timeline.pos = $.extend({}, _timeline.pos, gt);
                 	      
 	        // Are we heading left, into the past?
@@ -2084,6 +2088,7 @@
 	this.moveStatus = this.newMoveStatus();
 
 	this.convertMoveStatus = function() {
+	    console.log('MOVESTATS', _notebook.moveStatus);
 	    var from = _notebook.moveStatus.fromNote.pos;
 	    var to = _notebook.moveStatus.throughNote.pos;
 	    var target = _notebook.moveStatus.toBeforeNote.pos;
@@ -2098,6 +2103,7 @@
 		to = _to;
 		from = _from;
 	    }
+	    
 	    return {from:from, to:to, target:target};
 	}
 	
@@ -2117,6 +2123,7 @@
 	    
 	    console.log('from', from, 'to', to, 'target', target);
 	    if (from > -1 && to > -1 && target > -1) {
+
 		$.each(_notebook.items, function(i, e) {
 		    if (i >=from && i <= to) {
 			splice.push(e);
@@ -2133,8 +2140,8 @@
 		    reorderBegin = _notebook.items[target - 1].data.order;
 		}
 
-		var multiplier = (reorderEnd - reorderBegin)/(splice.length + 1)
-		
+		var multiplier = (reorderEnd - reorderBegin)/(splice.length + 1);
+
 		$.each(_notebook.items, function(i, e) {
 		    if (i >=from && i <= to) {
 			//do nothing; this is the splice
@@ -2143,7 +2150,8 @@
 			$.each(splice, function(j, f) {
 			    f.needsUpdated = true;
 			    f.data.order = reorderBegin + ((j + 1) * multiplier);
-			    console.log('----------------------------------------', f.data.order);
+			    f.patch['order'] = f.data.order;
+//			    console.log('----------------------------------------', f.data, f.data.order);
 			    newItems.push(f);
 			    f.editized.formView.insertBefore(itemsKids[i]);
 			    f.editized.essayView.insertBefore(essayKids[i]);			    
@@ -2151,11 +2159,20 @@
 			newItems.push(e);			
 		    }
 		    else {
-			console.log(e.data.order);			
+//			console.log(e.data, e.data.order);			
 			newItems.push(e);
 		    }
 		});
 	    }
+	    $.each(newItems, function(i, e) {
+		console.log(e.data.order);
+		if (i==0) {
+		    console.log(e.data.text, e.data.order - 0);		    
+		} else
+		{
+		    console.log(e.data.order - newItems[i - 1].data.order);
+		}
+	    });
 	    _notebook.items = newItems;
 	    _notebook.moveStatus = _notebook.newMoveStatus();
 
@@ -2168,6 +2185,7 @@
 	
 	this.tagRanges = function() {
 	    $.each(_notebook.items, function(i, e) {
+
 		if (e == _notebook.moveStatus.fromNote.el) {
 		    _notebook.moveStatus.fromNote.pos = i;					    
 		}
@@ -2245,7 +2263,8 @@
 		el.on('keyup',function(ev) {
 		    if (ev.keyCode==13) {
 			if (caller.notebook) {
-			    caller.notebook.makeItem('default', undefined, undefined, caller);
+			    // Not now!!!!!!
+			    // caller.notebook.makeItem('default', undefined, undefined, caller);
 			}
 		    };
 		});
@@ -2253,9 +2272,15 @@
 		    essayChild.removeClass('active');
 		});
 		el.on('focus', function() {
+		    $('#notebook-essay-wrapper')
+			.animate({
+			    scrollTop: essayChild.position().top
+			}, 250);
+
+
 		    essayChild.addClass('active');
 		})		
-		var medium = new MediumEditor(el, {disableReturn: true});
+		var medium = new MediumEditor(el, {disableReturn: false});
 		
 		medium.subscribe('editableInput', function (event, editor) {
 		    // this is balky but figure out if it's a notebook
@@ -2364,10 +2389,6 @@
         this.makeItem = function(kind, event, note, insertAfterItem) {
             var item = new NotebookItem(kind, event, note, _notebook);
 
-	    if (!item.data.order) {
-		item.data.order = this.decmin();
-	    }
-	    
 	    var text = note ? note.text : '';
             if (kind=='spacer') {
 	        item.editized = editize({
@@ -2397,7 +2418,6 @@
 		     caller:item});                
             }
 
-
 	    if (insertAfterItem) {
 		var reorder = new Array();
 		var lastOrder = undefined;
@@ -2411,10 +2431,9 @@
 		    var lastOrder = item.data.order;
 		}
 		_notebook.items = reorder;
-
-		
 	    }
-	    else {
+	    else if (!item.data.order) {
+		item.data.order = this.decmin();
 		// Add to actual array
 		_notebook.items.unshift(item);
 
@@ -2422,9 +2441,19 @@
 		_notebook.itemsEl.prepend(item.editized.formView);
 		
 		// Add to essay notebook
-		_notebook.essayEl.prepend(item.editized.essayView);
+		_notebook.essayEl.prepend(item.editized.essayView);	    
 	    }
-            
+	    else {
+		// We're loading itmes. add them.
+		// Add to actual array
+		_notebook.items.push(item);
+
+		// Add to edit notebook
+		_notebook.itemsEl.append(item.editized.formView);
+		
+		// Add to essay notebook
+		_notebook.essayEl.append(item.editized.essayView);
+	    }
 	    return item;
 	}
 	
@@ -2630,6 +2659,14 @@
 		    console.log('Failure: ' + e);
                 },
                 success:function(o) {
+		    $.each(o, function(i, item) {
+			if (i==0) {
+			    ctr = item.order;
+			}
+			// console.log(item, item.order);
+			_notebook.makeItem(item.kind, item.event_full, item);
+		    });
+		    /*
 		    // TODO right now I'm checking re-ordering here. There has to be a better way.
 		    var lastOrder = undefined;
 		    for (var i=o.length - 1;i>=0;i--) {
@@ -2645,6 +2682,7 @@
 			}
 			var lastOrder = nbItem.order;			
 		    }
+		    */
                 }
 	    });
         };
@@ -2728,7 +2766,8 @@
 			console.log('Failure: ' + e);
 		    },
 		    success:function(o) {
-                        this.needsDeleted = false;                            
+                        this.needsDeleted = false;
+			this.needsRemoved = true;
 		    }
                 });
 	    }
@@ -2760,14 +2799,35 @@
 	
         this.notebookScanner = function() {
             if (!_notebook.networkOperationInProgress && _notebook.needsUpdated) {
+
                 _notebook.update();
-		//TODO THIS COULD LEAD TO TOP HALF OF DOC GETTING SAVED WHILE NOTES NOTE GETTING SAVED
+
+		//TODO THIS COULD LEAD TO TOP HALF OF DOC GETTING
+		//SAVED WHILE NOTES NOTE GETTING SAVED
+		
 		_notebook.saveButton.addClass('saved');
             }  
 	};
         setInterval(this.notebookScanner, REFRESH_INTERVAL);	
 
 	this.noteScanner = function() {
+	    console.log(_notebook.items);
+	    _notebook.items = $.grep(_notebook.items, function(i,e) {
+		return !e.needsRemoved;
+	    });
+		
+	    
+	    var lastOrder = undefined;	    
+	    for (var i=0; i<_notebook.items.length; i++) {
+		if (lastOrder && lastOrder >= _notebook.items[i].data.order) {
+		    console.log(lastOrder, _notebook.items[i].data.order);
+		    _notebook.items[i].data.order = lastOrder + 100;
+		    _notebook.items[i].patch['order'] = _notebook.items[i].data.order;
+		    _notebook.items[i].needsUpdated = true;
+		}
+		lastOrder = _notebook.items[i].data.order;		
+	    }	    
+	    
 	    var toCreate = $.grep(_notebook.items, function(e) {return e.needsCreated;});
 	    if (toCreate.length > 0) {
 		var posts = $.map(toCreate, function(e) {
@@ -2777,18 +2837,6 @@
                 _notebook.notesPost(posts, toCreate);
 	    }
 
-/*
-	    var toPut = $.grep(_notebook.items, function(e) {
-		return (e.needsUpdated && !e.needsCreated);
-	    });
-	    
-	    if (toPut.length > 0) {
-		var puts = $.map(toPut, function(e) {
-		    return $.extend(e.data, {scroll:_notebook.data.url});		    
-		});
-                _notebook.notesPut(puts, toPut);
-	    }
-*/
 	    var toPatch = $.grep(_notebook.items, function(e) {
 		return (e.needsUpdated && !e.needsCreated);
 	    });
@@ -2842,6 +2890,8 @@
         this.needsCreated = note ? false : true;
         this.needsUpdated = false;
         this.needsDeleted = false;
+	this.needsRemoved = false;
+	
 	this.editized = undefined;
     };   
     
