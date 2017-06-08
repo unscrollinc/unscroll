@@ -2811,7 +2811,6 @@
         setInterval(this.notebookScanner, REFRESH_INTERVAL);	
 
 	this.noteScanner = function() {
-	    console.log(_notebook.items);
 	    _notebook.items = $.grep(_notebook.items, function(i,e) {
 		return !e.needsRemoved;
 	    });
