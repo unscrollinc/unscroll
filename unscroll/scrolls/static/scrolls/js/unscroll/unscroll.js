@@ -624,13 +624,11 @@
             });
             
 	    _search.input.keypress(function (ev) {
-/*
 		if (ev.which == 13) {
                     ev.preventDefault();
                     _search.preSearch();
 		    return false; 
 		}
-*/
 	    });
 	}	
 	this.initialize();
@@ -2265,7 +2263,8 @@
 		el.on('keyup',function(ev) {
 		    if (ev.keyCode==13) {
 			if (caller.notebook) {
-			    caller.notebook.makeItem('default', undefined, undefined, caller);
+			    Not now.
+			    // caller.notebook.makeItem('default', undefined, undefined, caller);
 			}
 		    };
 		});
