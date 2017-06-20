@@ -281,15 +281,16 @@ div#notebook-wrapper {
     height:100%;
     margin-left:auto;
     display:none;
+    overflow:hidden;
 }
 
 #notebook-essay-wrapper {
     position:absolute;
     height:100%;
-    width:46%;
-    left:54%;
+    width:45%;
+    left:50%;
     padding-top:2.5%;
-    padding-bottom:250px;
+    padding:2.5% 3% 500px 2%;
     overflow:auto;
 }
 
@@ -301,12 +302,20 @@ div#notebook {
 
 
 div#notebook-essay {
-    height:100%;
     font-family:Merriweather;
-    overflow:auto;
-    line-height:149%;
+    line-height:175%;
     font-size:12pt;
-    padding-bottom:250px;
+    overflow:auto;
+    margin-bottom:500px;
+}
+
+div#notebook-essay img {
+    max-width:90%;
+    margin-top:1em;
+    margin-bottom:1em;
+    clear:both;
+    display:block;
+    text-align:center;
 }
 
 div#notebook-head {
@@ -849,4 +858,13 @@ div.editable-event .bottom-save {
 }
 .saved {
     color:#ccc;
+}
+
+div.essay-author {
+    font-style:Italic;
+    margin-bottom:1em;
+}
+
+div.hello {
+    width:300px;
 }
