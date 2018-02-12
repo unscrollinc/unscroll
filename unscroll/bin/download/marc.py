@@ -36,7 +36,8 @@ def authorparser(s):
         else:
             return '{}'.format(s)
 
-with open('/Users/ford/Dropbox/BooksAll.2014.part01.utf8', 'rb') as fh:
+
+with open('/Users/ford/Dropbox/MARC/BooksAll.2014.part01.utf8', 'rb') as fh:
     reader = MARCReader(fh)
     for record in reader:
         pubyear = dateparser(record.pubyear())
