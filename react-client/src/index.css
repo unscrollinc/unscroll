@@ -1,6 +1,8 @@
 body {
     margin:0;
     padding:0;
+    font-family:'Helvetica Neue';
+    position:fixed;
 }
 .App {
     width:100%;
@@ -12,6 +14,7 @@ body {
     width:100%;
     height:5%;
     position:fixed;
+    background:yellow;
 }
 
 .Timeline, .Editor {
@@ -29,6 +32,7 @@ body {
 #Panels {
     height:100%;
 }
+
 .Panel {
     height:100%;
 }
@@ -41,16 +45,67 @@ body {
     opacity:0.8;
 }
 
+h1, h2, h3, h4, h5, h6, h7 {
+    text-align:left;
+    margin:0;
+    padding:0;
+    font-weight:normal;
+}
+h1 {
+    letter-spacing:0.5em;
+    font-size:200%;
+}
+
+h1 a:hover {
+    background:black;
+    color:white;
+}
+
+h1 a {
+    text-decoration:none;
+    color:black;
+    width:100%;
+    display:block;
+}
+
 .show {
     display:none;
 }
+
 .hide {
     display:block;
 }
 
 .column {
     box-sizing:border-box;
-    border-left:1px dotted gray;
-    text-align:center;
+    border-left:1px solid black;
+    min-height:100%;
+    
+}
 
+.column a {
+    text-decoration:none;
+    width:100%;
+    display:block;    
+    color:black;
+}
+.column a:hover {
+    background:black;
+    color:white;
+}
+
+.event {
+    box-sizing:border-box;
+    border-left:1px solid red;
+    border-bottom:1px solid red;    
+    position:absolute;
+    background:white;
+    font-size:9pt;
+}
+
+#buffer {
+    position:fixed;
+    top:200%;
+    width:100%;
+    height:90%;
 }
