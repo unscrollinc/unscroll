@@ -7,9 +7,8 @@ class Panel extends React.Component {
 
     constructor(props, context) {
         super(props, context);
-
         this.buffer = document.getElementById('buffer');        
-
+        
         this.state = {
             center:props.center,
             span:props.span,
@@ -20,13 +19,14 @@ class Panel extends React.Component {
             },
             events:[]
         };
-
+        
         this.bitsGrid = this.makeGrid(this.state.grid.height);
 
         this.state.cell = {
             width:100/this.state.grid.width,
             height:100/this.state.grid.height
         };
+
     }
     
     renderColumn(parent, i) {
@@ -112,8 +112,10 @@ class Panel extends React.Component {
 
         let d = document.createElement('div');
         d.className='event';
-        d.innerHTML = `<h3>${props.month}/${this.props.title}</h3>
-                       <p>${props.numbers}</p>`;
+        d.innerHTML = `<button>Note</button>
+                       <h3>${props.month}/${this.props.title}</h3>
+                       <p>${props.numbers}</p>
+                       `;
                          
         d.style.width = (props.width * this.state.cell.width) + '%';        
         this.buffer.append(d);
@@ -169,6 +171,8 @@ class Panel extends React.Component {
                       height={res.h * this.state.cell.height + '%'}
                       top={10 + res.y * this.state.cell.height + '%'}
 
+                      addNote={this.props.addNote}
+                      
                       month={month + 1}
                       color={color}
                       text={`${buffered.height}::${res.h} 

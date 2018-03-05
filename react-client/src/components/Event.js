@@ -1,13 +1,17 @@
 import React from 'react';
-import NoteButton from './Add.js';
+import EventNoteButton from './EventNoteButton.js';
 
 class Event extends React.Component {
+
     constructor(props, context) {
         super(props, context);
         this.state = {
             month:props.month
         };
+        
+        this.event = {id:1000000000, 'bacon':{'waffle':{'iron':'x'}}};
     }
+    
     render() {
         return(
             <div style={{width:this.props.width,
@@ -16,11 +20,12 @@ class Event extends React.Component {
                          top:this.props.top
                  }}
                  className='event'>
+              <EventNoteButton
+                addNote={this.props.addNote}
+                event={this.event}
+                {...this.props}/>
               <h3>{this.state.month}/{this.props.title}</h3>
               <p>{this.props.text}</p>
-              
-              <NoteButton/>
-              
             </div>
         );
     }

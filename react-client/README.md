@@ -1,5 +1,7 @@
 # Unscroll Client
 
+I've been looking for years for a maximalist writing environment.
+
 Unscroll is a timeline that lets you
 zoom in and out using your scroll wheel
 and look at different *Events*.

@@ -1,39 +1,99 @@
 import React from 'react';
 import { DateTime, Interval } from 'luxon';
-import WheelReact from '../wheel-react.js';
+import WheelReact from '../ext/wheel-react.js';
 import Panel from './Panel.js';
-// import { Interval } from 'luxon';
 
 class Timeline extends React.Component {
     constructor(props, context) {
         super(props, context);
+        
         let span = this.asYear(DateTime.local());
-        this.frames = {
-            millennium:{
-                dur:1000,
+
+
+        this.timeFrames = [
+            {
+                frame: 'millennium',
+                getTitle:()=>{
+                    return 'MILLENNIUM';
+                },
+                getDuration:()=> {
+                    return 1000;
+                },
+                getAdjusted:(dt) => {
+                    let beginYear = 1000*Math.floor(dt.year()/1000, 10);
+                    let endYear = beginYear + 1000 - 1;
+                    let span = `${beginYear}-01-01T00:00:00/${endYear}-12-31T23:59:59`;
+                },
+                getColumnCount:()=>{
+                    return 10;
+                },
+                getColumnSpan:(begin, ct)=>{
+                    let beginYear = begin + (ct * 100); // years;
+                    let endYear = beginYear + 99;
+                    let span = `${beginYear}-01-01T00:00:00/${endYear}-12-31T23:59:59`;
+                },
                 getInterval:(dt) => {
-                    return Interval.fromDateTimes(dt.startOf('year'), dt.endOf('year')).toISO();
+                    return Interval.fromDateTimes(
+                        dt.startOf('year'),
+                        dt.endOf('year')
+                    ).toISO();
                 }
             },
-            century:100,
-            decade:10,
-            year:{
-                dur:1000,
+
+            {
+                frame:'century',
+                getDuration:()=> {return 100;},
+            },
+
+            {
+                frame:'decade',
+                getDuration:()=> {return 10;},
+            },
+
+            {
+                frame:'year',
+                getDuration:()=>{
+                    return 1;
+                },
                 getInterval:(dt) => {
-                    return Interval.fromDateTimes(dt.startOf('year'), dt.endOf('year')).toISO();
+                    return Interval.fromDateTimes(
+                        dt.startOf('year'), dt.endOf('year')
+                    ).toISO();
                 },
                 getTitle:(dt) => {
                     return dt.year;
                 }
             },
-            month:1/12,
-            day:1/365,
-            hour:1/(365*24),
-            minute:1/(365*24*60)
-        };
-      
+
+            {
+                frame:'month'
+            },
+
+            {
+                frame:'day'
+            },
+
+            {
+                frame:'hour'
+            },
+
+            {
+                frame:'minute'
+            }
+        ];
+
+        // The above but `key`ed by `frame`.
+        this.frames = this.timeFrames.reduce(function(allFrames, frame) {
+            allFrames[frame.frame]=frame;
+            return allFrames;
+        },{});
+
+
+        var frame = 'year';
+        var dt = DateTime.local();
+
         this.state = {
-            title:'X',
+            title:this.frames[frame].getTitle(dt),
             frame:'year',
             span:span,
             offset:0,
@@ -44,7 +104,10 @@ class Timeline extends React.Component {
     }
 
     asYear(dt) {
-        return Interval.fromDateTimes(dt.startOf('year'), dt.endOf('year')).toISO();
+        return Interval.fromDateTimes(
+            dt.startOf('year'),
+            dt.endOf('year')
+        ).toISO();
     }
     
     adjust(toAdd) {
@@ -89,15 +152,16 @@ class Timeline extends React.Component {
     }
 
     widen() {
-        console.log('widening');
+        console.log('-1 timeframe');
     }
 
     narrow() {
-        console.log('narrowing');        
+        console.log('+1 timeframe');        
     }
 
     toProps(num) {
         let [title, span] = this.adjust(num);
+        
         return {
             center:this.state.center + num,
             frame:this.state.context,
@@ -122,7 +186,6 @@ class Timeline extends React.Component {
                 this.narrow();
             }
         });
-
         return (
             <div className="Timeline"
                  style={{position:'fixed'}}
@@ -132,9 +195,12 @@ class Timeline extends React.Component {
                  onMouseMove={this.handleMouseMove.bind(this)}
                  >            
               <div id="Panels">
-                <Panel {...this.toProps(-1)} />
-                <Panel {...this.toProps(0)} />
-                <Panel {...this.toProps(1)} />                
+                <Panel addNote={this.props.addNote}
+                       {...this.toProps(-1)} />
+                <Panel addNote={this.props.addNote}
+                       {...this.toProps(0)} />
+                <Panel addNote={this.props.addNote}
+                       {...this.toProps(1)} />                
               </div>
             </div>
         );

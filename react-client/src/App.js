@@ -5,13 +5,19 @@ import Editor from './components/Editor.js';
 import './index.css';
 
 class App extends React.Component {
+    
     constructor(props) {
         super(props);
         this.state = {
-            editorOn:false
+            editorOn:true,
+            notes:[]
         };
     }
 
+    addNote = (e) => {
+        console.log(e);
+    }
+    
     handleEditButtonClick = () => {
         this.setState(prevState => ({
             editorOn: !prevState.editorOn
@@ -33,7 +39,7 @@ class App extends React.Component {
                 {this.renderEditButton()}
               </div>
               <ReactCursorPosition>
-                <Timeline/>
+                <Timeline addNote={this.addNote}/>
               </ReactCursorPosition>
               <Editor status={this.state.editorOn}/>
             </div>
