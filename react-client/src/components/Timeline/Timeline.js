@@ -1,7 +1,7 @@
 import React from 'react';
 import { DateTime, Interval } from 'luxon';
-import WheelReact from '../ext/wheel-react.js';
-import Panel from './Panel.js';
+import WheelReact from '../../ext/wheel-react.js';
+import Panel from './TimelinePanel.js';
 
 class Timeline extends React.Component {
     constructor(props, context) {

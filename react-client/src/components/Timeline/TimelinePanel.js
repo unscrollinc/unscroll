@@ -1,6 +1,6 @@
 import React from 'react';
-import Column from './Column.js';
-import Event from './Event.js';
+import Column from './TimelinePanelColumn.js';
+import Event from './TimelinePanelEvent.js';
 // import { Interval } from 'luxon';
 
 class Panel extends React.Component {

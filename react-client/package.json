@@ -8,8 +8,10 @@
     "react": "^16.2.0",
     "react-cursor-position": "^2.4.0",
     "react-dom": "^16.2.0",
+    "react-redux": "^5.0.7",
     "react-scripts": "1.1.0",
-    "react-sizeme": "^2.3.6"
+    "react-sizeme": "^2.3.6",
+    "redux": "^3.7.2"
   },
   "scripts": {
     "start": "react-scripts start",
