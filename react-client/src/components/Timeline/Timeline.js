@@ -1,5 +1,5 @@
 import React from 'react';
-import { DateTime, Interval } from 'luxon';
+import {DateTime, Interval} from 'luxon';
 import WheelReact from '../../ext/wheel-react.js';
 import Panel from './TimelinePanel.js';
 
@@ -195,12 +195,9 @@ class Timeline extends React.Component {
                  onMouseMove={this.handleMouseMove.bind(this)}
                  >            
               <div id="Panels">
-                <Panel addNote={this.props.addNote}
-                       {...this.toProps(-1)} />
-                <Panel addNote={this.props.addNote}
-                       {...this.toProps(0)} />
-                <Panel addNote={this.props.addNote}
-                       {...this.toProps(1)} />                
+                  <Panel {...this.toProps(-1)} />
+                  <Panel {...this.toProps(0)} />
+                  <Panel {...this.toProps(1)} />
               </div>
             </div>
         );

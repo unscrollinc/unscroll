@@ -1,6 +1,7 @@
 import React from 'react';
 import Column from './TimelinePanelColumn.js';
 import Event from './TimelinePanelEvent.js';
+
 // import { Interval } from 'luxon';
 
 class Panel extends React.Component {
@@ -171,8 +172,6 @@ class Panel extends React.Component {
                       height={res.h * this.state.cell.height + '%'}
                       top={10 + res.y * this.state.cell.height + '%'}
 
-                      addNote={this.props.addNote}
-                      
                       month={month + 1}
                       color={color}
                       text={`${buffered.height}::${res.h} 
