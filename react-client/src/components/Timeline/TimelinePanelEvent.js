@@ -20,8 +20,7 @@ class Event extends React.Component {
                          top:this.props.top
                  }}
                  className='event'>
-              <EventNoteButton
-                event={this.event}
+              <EventNoteButton event={this.event}
                 {...this.props}/>
               <h3>{this.state.month}/{this.props.title}</h3>
               <p>{this.props.text}</p>

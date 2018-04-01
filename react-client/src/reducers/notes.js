@@ -1,8 +1,8 @@
-import {NOTE_MAKE, NOTE_MAKE_FROM_EVENT} from '../constants/actionTypes'
+import { NOTE_MAKE, NOTE_MAKE_FROM_EVENT } from '../constants/actionTypes'
 
 const initialState = [{waffles: 'waffles'}];
 
-export default function notes(state = initialState, action) {
+const notes = (state = initialState, action) => {
     console.log(initialState, action);
     switch (action.type) {
         case NOTE_MAKE:
@@ -14,3 +14,5 @@ export default function notes(state = initialState, action) {
             return state;
     }
 }
+
+export default notes;

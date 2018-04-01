@@ -17,7 +17,8 @@ class EventNoteButton extends React.Component {
     render() {
         return (
             <button
-                onClick={() => makeNoteFromEvent(this.props.event)}>
+                onClick={() => {
+                    return makeNoteFromEvent(this.props.event)} }>
                 Note
             </button>
         );

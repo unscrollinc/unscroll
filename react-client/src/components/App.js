@@ -3,7 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import ReactCursorPosition from 'react-cursor-position';
-import {bindActionCreators} from 'redux';
+import { bindActionCreators } from 'redux';
 import {connect} from 'react-redux';
 
 import * as UnscrollActions from '../actions/index';
@@ -29,7 +29,7 @@ App.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    todos: state.data
+    data: state.data
 });
 
 const mapDispatchToProps = dispatch => ({
