@@ -1,5 +1,5 @@
 import React from 'react';
-import EventNoteButton from '../../containers/TimelinePanelEventNotebutton.js';
+import EventNoteButton from './TimelinePanelEventNotebutton.js';
 
 class Event extends React.Component {
 

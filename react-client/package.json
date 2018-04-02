@@ -3,17 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "immutability-helper": "^2.6.6",
     "lodash": "^4.17.5",
-    "luxon": "^0.4.0",
+    "luxon": "^1.0.0",
     "npm": "^5.7.1",
-    "react": "^16.2.0",
-    "react-cursor-position": "^2.4.0",
-    "react-dom": "^16.2.0",
-    "react-redux": "^5.0.7",
-    "react-scripts": "1.1.0",
-    "react-sizeme": "^2.3.6",
-    "redux": "^3.7.2",
-    "redux-thunk": "^2.2.0"
+    "react": "^16.3.0",
+    "react-cursor-position": "^2.4.1",
+    "react-dom": "^16.3.0",
+    "react-scripts": "1.1.0"
   },
   "scripts": {
     "start": "react-scripts start",
