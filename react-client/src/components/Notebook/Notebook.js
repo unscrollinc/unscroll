@@ -14,7 +14,7 @@ class Notebook extends React.Component {
     makeNote(note, i) {
         console.log(note);
         return (
-            <NotebookEvent key={i} props={note}/>
+            <NotebookEvent key={i} note={note}/>
         );
     }
 
@@ -26,12 +26,9 @@ class Notebook extends React.Component {
                 <button onClick={this.addNote}>new</button>
                 <AppContext.Consumer>
                     {(context) => {
-                        console.log(context.state);
                         return context.state.notebook.notes.map(this.makeNote)
                     }}
                 </AppContext.Consumer>
-
-
             </div>
         );
     }

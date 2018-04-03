@@ -4,12 +4,10 @@ class NotebookEvent extends React.Component {
 
     constructor(props, context) {
         super(props, context);
-        console.log(this);
         // this.event = {id:1000000000, 'bacon':{'waffle':{'iron':'x'}}};
     }
     
-    render() {
-        
+    render() {        
         return(
             <div className='notebook-event'>
               <h3>Waffle</h3>
