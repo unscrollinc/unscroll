@@ -35,6 +35,7 @@ export class AppProvider extends React.Component {
                             this.state.notebook, 
                             {$merge: { notes: _notes }})
                     });
+                    console.log(this.state.notebook);
                 }
             }}>
             {this.props.children}

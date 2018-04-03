@@ -9,7 +9,10 @@ class Event extends React.Component {
             month:props.month
         };
         
-        this.event = {id:1000000000, 'bacon':{'waffle':{'iron':'x'}}};
+        this.event = {id:1000000000, 
+            'title':'The way you make me move', 
+            'body':'it really turns me on',
+            'bacon':{'waffle':{'iron':'x'}}};
     }
     
     render() {
