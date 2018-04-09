@@ -41,7 +41,7 @@ body {
     background:lightblue;
     left:50%;
     border-left:1px solid black;
-    opacity:0.8;
+    opacity:1;
 }
 
 h1, h2, h3, h4, h5, h6, h7 {
@@ -109,4 +109,27 @@ h1 a {
     top:100%;
     width:100%;
     height:90%;
+}
+
+.notebook-event-list {
+    overflow:auto;
+    height:95%;
+    width:50%;
+}
+.notebook-event {
+    width:100%;
+    font-size:8pt;
+    font-family:Arial;
+    background:white;
+    border-bottom:1px solid #ccc;
+}
+
+.Manuscript {
+    width:49%;
+    margin-left:50%;
+    background:#dff;
+    height:100%;
+    top:0;
+    position:absolute;
+
 }

@@ -1,30 +1,35 @@
 import React from 'react';
-import EventNoteButton from './TimelinePanelEventNotebutton.js';
+import TimelinePanelEventNoteButton from './TimelinePanelEventNoteButton.js';
 
 class Event extends React.Component {
 
     constructor(props, context) {
         super(props, context);
-        this.state = {
-            month:props.month
-        };
-        
-        this.event = {id:1000000000, 
-            'title':'The way you make me move', 
-            'body':'it really turns me on',
-            'bacon':{'waffle':{'iron':'x'}}};
+        this.state = {event:this.makeEvent()};
     }
+    
+    makeEvent() {
+        let e = {
+            'id':parseInt(Math.random() * 10000000000),
+            'order':1000 * (Math.random() - 0.5),
+            'title':'TITLE', 
+            'body':'body',
+            'text':''
+        };
+        return e;
+    };
     
     render() {
         return(
-            <div style={{width:this.props.width,
-                         height:this.props.height,
-                         left:this.props.left,
-                         top:this.props.top
+            <div style={{
+                     width:this.props.width,
+                     height:this.props.height,
+                     left:this.props.left,
+                     top:this.props.top
                  }}
                  className='event'>
-              <EventNoteButton event={this.event}
-                {...this.props}/>
+              <TimelinePanelEventNoteButton
+                event={this.state.event}/>
               <h3>{this.state.month}/{this.props.title}</h3>
               <p>{this.props.text}</p>
             </div>

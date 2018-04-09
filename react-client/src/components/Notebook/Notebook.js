@@ -1,34 +1,50 @@
 import React from 'react';
 import NotebookEvent from './NotebookEvent';
-import AppContext from '../AppContext.js'
+import NotebookManuscriptText from './NotebookManuscriptText';
+import AppContext from '../AppContext.js';
+import uuidv4 from 'uuid/v4';
+
+
 class Notebook extends React.Component {
 
     constructor(props, context) {
         super(props, context);
-        this.state = {
-            notes: ['one', 'two', 'three'],
-            editorOn: true
-        };
     }
 
-    makeNote(note, i) {
-        console.log(note);
+    makeNote(note, i) {        
         return (
-            <NotebookEvent key={i} note={note}/>
+            <div>makeNote()
+              <NotebookEvent key={'notebook__'+note[0]} note={note}/>
+            </div>
         );
     }
 
+    makeManuscriptText(note, i) {
+        return (
+            <NotebookManuscriptText key={'manuscript__'+note[0]} note={note}/>
+        );
+    }
 
     render() {
         return (
             <div style={{ display: this.props.status ? 'block' : 'none' }}
-                className="Editor">
-                <button onClick={this.addNote}>new</button>
-                <AppContext.Consumer>
+                 className="Editor">
+              <button onClick={this.makeNote}>New</button>
+                <div class="notebook-event-list">
+                  <AppContext.Consumer>
                     {(context) => {
-                        return context.state.notebook.notes.map(this.makeNote)
+                        return Array.from(context.state.notebook.notes).map(this.makeNote);
                     }}
-                </AppContext.Consumer>
+                  </AppContext.Consumer>
+                </div>
+
+                <div className="Manuscript">
+                  <AppContext.Consumer>
+                    {(context) => {
+                        return Array.from(context.state.notebook.notes).map(this.makeManuscriptText);
+                    }}
+                  </AppContext.Consumer>                  
+                </div>
             </div>
         );
     }

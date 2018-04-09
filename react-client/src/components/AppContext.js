@@ -1,7 +1,6 @@
 import React from 'react';
 import update from 'immutability-helper';
-
-// https://github.com/wesbos/React-Context/blob/master/src/App.js
+import uuidv4 from 'uuid/v4';
 
 export const AppContext = React.createContext();
 
@@ -15,7 +14,7 @@ export class AppProvider extends React.Component {
         },
         notebook: {
             on:false,
-            notes:[]
+            notes:new Map()
         },
         timeline: {
             frame:undefined,
@@ -29,13 +28,23 @@ export class AppProvider extends React.Component {
             <AppContext.Provider value={{
                 state:this.state,
                 addNote:(e) => {
-                    let _notes = update(this.state.notebook.notes, {$unshift:[e]});
+                    let _notes = update(this.state.notebook.notes, {$add:[[uuidv4(), e]]});
+                    // let _sorted = new Map([...this.state.notebook.notes.entries()].sort());
                     this.setState({
-                        notebook:update(
-                            this.state.notebook, 
-                            {$merge: { notes: _notes }})
+                        notebook:update(this.state.notebook, {$merge: { notes: _notes }})
                     });
-                    console.log(this.state.notebook);
+                },
+
+                updateText:(newState) => {
+                    let _notes = this.state.notebook.notes;
+                    _notes.set(newState.uuid, newState);
+                    this.setState({
+                        notebook:update(this.state.notebook, {$merge: { notes: _notes }})
+                    });
+                },
+                
+                deleteNote:(e) => {
+                    console.log('would delete');
                 }
             }}>
             {this.props.children}
