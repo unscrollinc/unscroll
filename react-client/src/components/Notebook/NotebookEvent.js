@@ -1,5 +1,7 @@
 import React from 'react';
 import NotebookEventDeleteButton from './NotebookEventDeleteButton';
+//import NotebookEventMoveButton from './NotebookEventMoveButton';
+//import NotebookEventRangeButton from './NotebookEventRangeButton';
 import AppContext from '../AppContext.js';
 
 class NotebookEvent extends React.Component {
@@ -14,9 +16,13 @@ class NotebookEvent extends React.Component {
     makeNotebookEvent(context) {
         return (
            <div className='notebook-event'>
-              <NotebookEventDeleteButton/>
-              <h3>Title: {this.state.title}</h3>
-              <p>{this.state.id}</p>
+		<button>Move</button>
+		<button>Set range</button>
+		<button>Move here</button>		
+		<NotebookEventDeleteButton/>
+		<h3>{this.state.title}</h3>
+		<p>{this.state.id}</p>
+		<p>{this.state.text}</p>		
               <textarea defaultValue={this.state.text}
                         onChange={
                             (event)=>{
