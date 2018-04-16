@@ -81,12 +81,6 @@ h1 a {
     
 }
 
-.column a {
-    text-decoration:none;
-    width:100%;
-    display:block;    
-    color:black;
-}
 .column a:hover {
     background:black;
     color:white;
@@ -94,7 +88,7 @@ h1 a {
 
 .event {
     box-sizing:border-box;
-    border:1px solid red;
+    border:1px solid black;
     position:absolute;
     background:white;
     font-size:9pt;
@@ -132,4 +126,38 @@ h1 a {
     top:0;
     position:absolute;
 
+}
+
+.active-true {
+    background:black;
+    color:white;
+}
+
+.Timelist {
+    position:fixed;
+    top:10%;
+    height:90%;
+    overflow:auto;
+    width:50%;
+    left:0;
+             
+}
+
+textarea {
+    width:95%;
+}
+
+button.new {
+    display:block;
+    float:right;
+}
+
+.EventEditor {
+    position:fixed;
+    width:50%;
+    left:25%;
+    height:50%;
+    top:25%;
+    background:yellow;
+    opacity:80%;
 }

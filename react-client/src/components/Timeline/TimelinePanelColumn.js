@@ -1,6 +1,11 @@
 import React from 'react';
 
+
 class Column extends React.Component {
+
+    makeNewEvent() {
+    }
+    
     render() {
         return (
             <div className="column"
@@ -9,7 +14,8 @@ class Column extends React.Component {
                          width:100/12 + '%'
                  }}
                  >
-              <a href={'whatever-' + (this.props.count)}>{this.props.count}</a>
+                <a href={'/whatever-' + (this.props.count)}>{this.props.count}</a>
+                <button onClick={this.makeNewEvent} className='new'>+New</button>
             </div>
         );
     }

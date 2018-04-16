@@ -14,11 +14,11 @@ class Notebook extends React.Component {
     }
 
     makeNote(note, i) {        
-        return (
-            <div>
-              <NotebookEvent key={'notebook__'+note[0]} note={note}/>
-            </div>
-        );
+        return (<NotebookEvent key={'notebook__'+note[0]} note={note}/>);
+    }
+
+    makeNotebook() {        
+        return (<div/>);
     }
 
     makeManuscriptText(note, i) {
@@ -29,29 +29,31 @@ class Notebook extends React.Component {
 
     render() {
         return (
-            <div style={{ display: this.props.status ? 'block' : 'none' }}
-                 className="Editor">
-		<button onClick={this.makeNote}>New</button>
-		<select>
+            <div style={{ display: this.props.status ? 'block' : 'none' }} className="Editor">
+	      <button onClick={this.makeNoteBook}>+ Notebook</button>
+	      <button onClick={this.makeNote}>+ Note</button>
+
+              <br/>Load notebook:
+              <input list="articles" id="myArticles" name="myArticles" />
+              
+	      <datalist id="articles">
 		<option>Article 1</option>
 		<option>Article 2</option>
-		</select>
-		<section>
+	      </datalist>
+	      <section>
 		<TitleEditor/>
-		
-		<h1>Title</h1>
+		<h1>[Untitled Notebook]</h1>
 		<h2>Subhed</h2>
 		<div className="summary">The summary is here,</div>
-	  
-	    
+                
                 <div className="notebook-event-list">
                   <AppContext.Consumer>
                     {(context) => {
                         return Array.from(context.state.notebook.notes).map(this.makeNote);
-                    }}
+                        }}
                   </AppContext.Consumer>
                 </div>
-
+                    
                 <div className="Manuscript">
                   <AppContext.Consumer>
                     {(context) => {
@@ -59,7 +61,7 @@ class Notebook extends React.Component {
                     }}
                   </AppContext.Consumer>                  
                 </div>
-		</section>
+	      </section>
             </div>
         );
     }

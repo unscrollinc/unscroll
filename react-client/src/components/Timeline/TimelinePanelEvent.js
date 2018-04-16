@@ -10,7 +10,7 @@ class Event extends React.Component {
     
     makeEvent() {
         let e = {
-            'id':parseInt(Math.random() * 10000000000),
+            'id':parseInt(Math.random() * 10000000000, 10),
             'order':1000 * (Math.random() - 0.5),
             'title':'TITLE', 
             'body':'body',

@@ -16,22 +16,27 @@ class Timeline extends React.Component {
                 getTitle:()=>{
                     return 'MILLENNIUM';
                 },
+
                 getDuration:()=> {
                     return 1000;
                 },
+
                 getAdjusted:(dt) => {
                     let beginYear = 1000*Math.floor(dt.year()/1000, 10);
                     let endYear = beginYear + 1000 - 1;
                     let span = `${beginYear}-01-01T00:00:00/${endYear}-12-31T23:59:59`;
                 },
+
                 getColumnCount:()=>{
                     return 10;
                 },
+
                 getColumnSpan:(begin, ct)=>{
                     let beginYear = begin + (ct * 100); // years;
                     let endYear = beginYear + 99;
                     let span = `${beginYear}-01-01T00:00:00/${endYear}-12-31T23:59:59`;
                 },
+
                 getInterval:(dt) => {
                     return Interval.fromDateTimes(
                         dt.startOf('year'),
