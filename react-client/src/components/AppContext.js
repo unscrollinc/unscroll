@@ -17,7 +17,8 @@ export class AppProvider extends React.Component {
             notes:new Map()
         },
         eventEditor: {
-            on:false
+            on:false,
+            currentEvent:{}
         },
         timeline: {
             frame:undefined,
@@ -33,8 +34,9 @@ export class AppProvider extends React.Component {
                 state:this.state,
                 
                 addNote:(event) => {
-                    let _notes = update(this.state.notebook.notes, {$add:[[uuidv4(),
-                                                                           {event: event}]]});
+                    let _notes = update(this.state.notebook.notes,
+                                        {$add:[[uuidv4(),
+                                                {event: event}]]});
                     let _sorted = new Map([..._notes.entries()]
                                           .sort((a,b) => a.order > b.order ? 1 : a.order < b.order ? -1 : 0));
                     console.log(_sorted);
@@ -72,7 +74,29 @@ export class AppProvider extends React.Component {
                     _notes.set(newState.uuid, newState);
                     this.setState({
                         notebook:update(this.state.notebook, {$merge: { notes: _notes }})
+                    });                    
+                },
+                
+                editNote:(e) => {
+                    this.setState({
+                        eventEditor:{on:true, event:e}
                     });
+                },
+                
+                editEvent:(e) => {
+                    this.setState({
+                        eventEditor:{on:true, event:e}
+                    });
+                },
+
+                newEvent:(time) => {
+                    this.setState({
+                        eventEditor:{on:true, event:{id:uuidv4(), time:time}}
+                    });
+                },                                
+
+                eventWindowClose:() => {
+                    this.setState({eventEditor:{on:false, event:undefined}});
                 },
                 
                 deleteNote:(e) => {

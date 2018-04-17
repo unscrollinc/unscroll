@@ -88,9 +88,10 @@ h1 a {
 
 .event {
     box-sizing:border-box;
-    border:1px solid black;
+    border-top:1px solid #00F;
+    border-left:1px solid #00F;    
     position:absolute;
-    background:white;
+    background:#ccf;
     font-size:9pt;
 }
 
@@ -156,7 +157,6 @@ button.new {
     position:fixed;
     width:50%;
     left:25%;
-    height:50%;
     top:25%;
     background:yellow;
     opacity:80%;

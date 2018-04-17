@@ -55,6 +55,7 @@ class App extends React.Component {
         return(
             <span>
               <input type="text" value="email"/>
+              <input type="text" value="password"/>              
               <input type="submit" value="login"/>
             </span>
         );

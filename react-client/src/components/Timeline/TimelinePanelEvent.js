@@ -1,5 +1,6 @@
 import React from 'react';
-import TimelinePanelEventNoteButton from './TimelinePanelEventNoteButton.js';
+import TimelinePanelEventNoteButton from './TimelinePanelEventNoteButton';
+import TimelinePanelEventEditButton from './TimelinePanelEventEditButton';
 
 class Event extends React.Component {
 
@@ -28,6 +29,8 @@ class Event extends React.Component {
                      top:this.props.top
                  }}
                  className='event'>
+              <TimelinePanelEventEditButton
+                event={this.state.event}/>            
               <TimelinePanelEventNoteButton
                 event={this.state.event}/>
               <h3>{this.state.month}/{this.props.title}</h3>

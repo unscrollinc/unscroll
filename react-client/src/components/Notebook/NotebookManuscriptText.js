@@ -6,7 +6,6 @@ class NotebookManuscriptText extends React.Component {
         super(props, context);
         this.state = this.props.note[1];
         this.state['uuid'] = this.props.note[0];
-        console.log("PCPCPC",this.state);
     }
 
     getText(text) {
