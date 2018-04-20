@@ -15,7 +15,7 @@ class TimelinePanelEventNoteButton extends React.Component {
                                 context.addNote(this.props.event);
                             }
                         }>
-                        Note
+                        + Note
                       </button>)}
             </AppContext.Consumer>);
     }

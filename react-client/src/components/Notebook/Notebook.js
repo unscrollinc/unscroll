@@ -3,9 +3,6 @@ import NotebookEvent from './NotebookEvent';
 import NotebookManuscriptText from './NotebookManuscriptText';
 import AppContext from '../AppContext.js';
 import TitleEditor from './TitleEditor.js';
-import {Editor, EditorState} from 'draft-js';
-import uuidv4 from 'uuid/v4';
-
 
 class Notebook extends React.Component {
 
@@ -27,42 +24,44 @@ class Notebook extends React.Component {
         );
     }
 
+
     render() {
         return (
-            <div style={{ display: this.props.status ? 'block' : 'none' }} className="Editor">
-	      <button onClick={this.makeNoteBook}>+ Notebook</button>
-	      <button onClick={this.makeNote}>+ Note</button>
 
-              <br/>Load notebook:
-              <input list="articles" id="myArticles" name="myArticles" />
-              
-	      <datalist id="articles">
-		<option>Article 1</option>
-		<option>Article 2</option>
-	      </datalist>
-	      <section>
-		<TitleEditor/>
-		<h1>[Untitled Notebook]</h1>
-		<h2>Subhed</h2>
-		<div className="summary">The summary is here,</div>
+              <AppContext.Consumer>
                 
-                <div className="notebook-event-list">
-                  <AppContext.Consumer>
-                    {(context) => {
-                        return Array.from(context.state.notebook.notes).map(this.makeNote);
-                        }}
-                  </AppContext.Consumer>
-                </div>
-                    
-                <div className="Manuscript">
-                  <AppContext.Consumer>
-                    {(context) => {
-                        return Array.from(context.state.notebook.notes).map(this.makeManuscriptText);
-                    }}
-                  </AppContext.Consumer>                  
-                </div>
-	      </section>
-            </div>
+                {(context) => {
+                    return (
+                        <div style={{ display: this.props.status ? 'block' : 'none' }} className="Editor">
+                          <span>
+	                    <button onClick={context.addNotebook}>+ Notebook</button>                          
+                            <button onClick={context.addNote}>+ Note</button>
+                          </span>
+                          <br/>Load notebook:
+                          <input list="articles" id="myArticles" name="myArticles" />
+                          
+	                  <datalist id="articles">
+		            <option>Article 1</option>
+		            <option>Article 2</option>
+	                  </datalist>
+                          
+		          <TitleEditor/>
+                          
+		          <h1>{context.state.notebook.title}</h1>
+		          <h2>{context.state.notebook.subhed}</h2>
+
+                          <div className="summary">{context.state.notebook.summary}</div>
+
+                          <div className="notebook-event-list">
+                            {Array.from(context.state.notebook.notes).map(this.makeNote)}
+                          </div>
+                          
+                          <div className="Manuscript">
+                            {Array.from(context.state.notebook.notes).map(this.makeManuscriptText)}
+                          </div>
+                        </div>);}}
+
+              </AppContext.Consumer>                  
         );
     }
 }

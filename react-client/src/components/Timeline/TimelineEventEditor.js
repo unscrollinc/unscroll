@@ -10,7 +10,6 @@ class TimelineEventEditor extends React.Component {
     }
     
     makeEditor(context) {
-        console.log('WEEENUS', context.state.eventEditor);
         let e = context.state.eventEditor.event;
         
         return context.state.eventEditor.on ? (

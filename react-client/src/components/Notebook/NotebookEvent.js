@@ -6,14 +6,16 @@ class NotebookEvent extends React.Component {
     
     constructor(props, context) {
         super(props, context);
-        this.state = props.note[1];
-        this.state.uuid = props.note[0];
-        this.state.text = '';
-        this.state.statusIsMoving = false;
-        this.state.statusIsRangeTarget = false;
-        this.state.statusIsMoveTarget = false;
-        this.state.statusIsSaved = false;
-        this.state.statusIsToBeDeleted = false;
+        this.state = {
+            ...props.note[1],
+            uuid:props.note[0],
+            text:'',
+            statusIsMoving:false,
+            statusIsRangeTarget:false,
+            statusIsMoveTarget:false,
+            statusIsSaved:false,
+            statusIsToBeDeleted:false
+        };
 
         this.onMoveClick = (context) => {
             this.setState({statusIsMoving:!this.state.statusIsMoving}, function() {
@@ -38,9 +40,13 @@ class NotebookEvent extends React.Component {
                 context.updateNote(this.state);
             });
         };
+
+        this.onDeleteClick = (context) => {
+            console.log(context, this);
+            context.deleteNote(this.state.uuid);
+        };
     }
 
-    // https://github.com/clauderic/react-sortable-hoc
 
     
     makeNotebookEvent(context) {
@@ -64,7 +70,7 @@ class NotebookEvent extends React.Component {
                           onClick={()=>this.onMoveTargetClick(context)}>Move above here</button>
                   
 	          <button className={'active-'+this.state.statusIsToBeDeleted}
-                          onClick={()=>this.onMoveTargetClick(context)}>Delete</button>                            
+                          onClick={()=>this.onDeleteClick(context)}>Delete</button>                            
                   
                   <h3><a href={'/span/{span}/' + this.state.event.id}>{this.state.event.title}</a></h3>
 	          <p>{this.state.event.text}</p>		

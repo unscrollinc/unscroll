@@ -5,6 +5,7 @@ import uuidv4 from 'uuid/v4';
 export const AppContext = React.createContext();
 
 export class AppProvider extends React.Component {
+
     state = {        
         user: {
             id:undefined,
@@ -14,6 +15,10 @@ export class AppProvider extends React.Component {
         },
         notebook: {
             on:false,
+            id:undefined,
+            title:undefined,
+            subtitle:undefined,
+            summary:undefined,
             notes:new Map()
         },
         eventEditor: {
@@ -33,13 +38,23 @@ export class AppProvider extends React.Component {
 
                 state:this.state,
                 
+                addNotebook:() => {
+                    this.setState({notebook: {
+                        on:true,
+                        id:uuidv4(),
+                        title:'Untitled',
+                        subtitle:'Un-subtitled',
+                        summary:'Un-summarized',
+                        notes:new Map()
+                    }});
+                },
+                
                 addNote:(event) => {
                     let _notes = update(this.state.notebook.notes,
                                         {$add:[[uuidv4(),
                                                 {event: event}]]});
                     let _sorted = new Map([..._notes.entries()]
                                           .sort((a,b) => a.order > b.order ? 1 : a.order < b.order ? -1 : 0));
-                    console.log(_sorted);
                     this.setState({
                         notebook:update(this.state.notebook, {$merge: { notes: _sorted }})
                     });
@@ -99,8 +114,14 @@ export class AppProvider extends React.Component {
                     this.setState({eventEditor:{on:false, event:undefined}});
                 },
                 
-                deleteNote:(e) => {
-                    console.log('would delete');
+                deleteNote:(uuid) => {
+                    console.log('deleting note', uuid);
+                    let _notes = this.state.notebook.notes;
+                    _notes.delete(uuid);
+                    console.log(_notes);
+                    this.setState({
+                        notebook:update(this.state.notebook, {$merge: { notes:  _notes}})
+                    });
                 }
             }}>
             {this.props.children}
