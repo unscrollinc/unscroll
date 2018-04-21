@@ -20,7 +20,7 @@ class User(User):
 
 class Thumbnail(models.Model):
     """Thumbnail images."""
-    user = models.ForeignKey(
+    by_user = models.ForeignKey(
         User,
         null=True,
         related_name='thumbnails')
@@ -50,7 +50,7 @@ class Thumbnail(models.Model):
 
 class Scroll(models.Model):
     """A scroll is a bag of Events and Notes controlled by a single user."""
-    user = models.ForeignKey(
+    by_user = models.ForeignKey(
         User,
         null=True,
         related_name='scrolls')
@@ -58,14 +58,6 @@ class Scroll(models.Model):
         default=uuid.uuid4,
         editable=False,
         unique=True)
-    publish_datetime = models.DateTimeField(
-        null=True)
-    public = models.BooleanField(
-        default=False)
-    created = models.DateTimeField(
-        auto_now_add=True)
-    last_modified = models.DateTimeField(
-        auto_now=True)
     title = models.TextField()
     subtitle = models.TextField(
         blank=True, null=True)
@@ -73,19 +65,27 @@ class Scroll(models.Model):
         null=True)
     citation = models.TextField(
         null=True)
-    thumbnail = models.ForeignKey(
+    with_thumbnail = models.ForeignKey(
         Thumbnail,
         related_name='scrolls',
         null=True)
-    fiction = models.BooleanField(
+    when_published = models.DateTimeField(
+        null=True)
+    when_created = models.DateTimeField(
+        auto_now_add=True)
+    when_modified = models.DateTimeField(
+        auto_now=True)
+    is_public = models.BooleanField(
         default=False)
-    deleted = models.BooleanField(
+    is_fiction = models.BooleanField(
+        default=False)
+    is_deleted = models.BooleanField(
         default=False)
 
     class Meta:
         db_table = 'scroll'
-        unique_together = (("title", "user"),)
-        ordering = ['-last_modified']
+        unique_together = (("title", "by_user"),)
+        ordering = ['-when_modified']
 
     def full_notes(self):
         return Note.objects\
@@ -118,7 +118,15 @@ class Event(models.Model):
     An event is something that happened approximately at a moment in
     time.
     """
-    user = models.ForeignKey(
+    in_scroll = models.ForeignKey(
+        Scroll,
+        related_name='events',
+        on_delete=models.CASCADE)
+    with_thumbnail = models.ForeignKey(
+        Thumbnail,
+        related_name='events',
+        null=True)
+    with_user = models.ForeignKey(
         User,
         null=True,
         related_name='events')
@@ -126,12 +134,6 @@ class Event(models.Model):
         default=uuid.uuid4,
         editable=False,
         unique=True)
-    scroll = models.ForeignKey(
-        Scroll,
-        related_name='events',
-        on_delete=models.CASCADE)
-    created = models.DateTimeField(
-        auto_now_add=True)
     media_type = models.CharField(
         max_length=128,
         default="text/html")
@@ -146,8 +148,6 @@ class Event(models.Model):
     ranking = models.FloatField(
         db_index=True,
         default=0)
-    datetime = models.DateTimeField(
-        db_index=True)
     resolution = models.CharField(
         max_length=32,
         default='days')
@@ -163,11 +163,11 @@ class Event(models.Model):
     source_url = models.URLField(
         max_length=512,
         null=True)
-    thumbnail = models.ForeignKey(
-        Thumbnail,
-        related_name='events',
-        null=True)
-    deleted = models.BooleanField(
+    when_created = models.DateTimeField(
+        auto_now_add=True)
+    when_happened = models.DateTimeField(
+        db_index=True)
+    is_deleted = models.BooleanField(
         default=False)
 
     objects = EventQueryset.as_manager()
@@ -175,7 +175,7 @@ class Event(models.Model):
     class Meta:
         # unique_together = (("user", "title", "text"),)
         db_table = 'event'
-        ordering = ['-ranking', 'datetime']
+        ordering = ['-ranking', 'when_happened']
 
     def __unicode__(self):
         return '{}'.format(self.title,)
@@ -188,7 +188,7 @@ class Note(models.Model):
     their order field, you can see that as an essay or article, if you
     want.
     """
-    user = models.ForeignKey(
+    by_user = models.ForeignKey(
         User,
         null=True,
         related_name="notes")
@@ -196,32 +196,29 @@ class Note(models.Model):
         default=uuid.uuid4,
         editable=False,
         unique=True)
-    scroll = models.ForeignKey(
+    in_scroll = models.ForeignKey(
         Scroll,
         null=True,
         related_name="notes",
         on_delete=models.CASCADE)
-    event = models.ForeignKey(
+    in_event = models.ForeignKey(
         Event,
         null=True,
         related_name="notes")
     order = models.FloatField(
         blank=False)
-    point = models.TextField(
-        blank=True,
-        null=True)
     text = models.TextField(
         blank=True,
         null=True)
     kind = models.CharField(
         max_length=128,
         default='default')
-    created = models.DateTimeField(
+    when_created = models.DateTimeField(
         auto_now_add=True)
-    deleted = models.BooleanField(
+    when_modified = models.DateTimeField(
+        auto_now_add=True)
+    is_deleted = models.BooleanField(
         default=False)
-    last_updated = models.DateTimeField(
-        auto_now_add=True)
 
     class Meta:
         db_table = 'note'
@@ -235,7 +232,7 @@ class Media(models.Model):
     """
     We upload things and always hang them off of a Note instance.
     """
-    note = models.ForeignKey(
+    in_note = models.ForeignKey(
         Note,
         related_name="media")
     media_type = models.CharField(

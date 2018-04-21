@@ -105,10 +105,10 @@ class ThumbnailViewSet(viewsets.ModelViewSet):
 
 class EventFilter(django_filters.rest_framework.FilterSet):
     start = django_filters.IsoDateTimeFilter(
-        name='datetime',
+        name='when_happened',
         lookup_expr='gte')
     before = django_filters.IsoDateTimeFilter(
-        name='datetime',
+        name='when_happened',
         lookup_expr='lt')
     scroll = django_filters.UUIDFilter(
         name="scroll__uuid")
@@ -138,9 +138,9 @@ class BulkEventSerializer(BulkSerializerMixin,
     username = serializers.CharField(
         read_only=True,
         source="user.username")
-    public = serializers.BooleanField(
+    is_public = serializers.BooleanField(
         read_only=True,
-        source="scroll.public")
+        source="scroll.is_public")
     scroll_thumb_image = serializers.CharField(
         read_only=True,
         source="scroll.thumbnail.image_location")
@@ -164,7 +164,7 @@ class BulkEventSerializer(BulkSerializerMixin,
             'scroll',
             'scroll_uuid',
             'scroll_title',
-            'public',
+            'is_public',
             'scroll_thumb_image',
             'thumbnail',
             'thumb_height',
@@ -177,7 +177,7 @@ class BulkEventSerializer(BulkSerializerMixin,
             'media_type',
             'content_type',
             'resolution',
-            'datetime',
+            'when_happened',
             'content_url',
             'source_name',
             'source_url')
@@ -194,7 +194,7 @@ class BulkEventSerializer(BulkSerializerMixin,
 class BulkEventViewSet(BulkModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Event.objects.select_related('scroll', 'user')\
-                            .filter(scroll__public=True)
+                            .filter(in_scroll__is_public=True)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     filter_class = EventFilter
     serializer_class = BulkEventSerializer
@@ -207,8 +207,8 @@ class BulkEventViewSet(BulkModelViewSet):
                      .filter(scroll__public=True)\
                      .aggregate(
                          count=Count('*'),
-                         last_event=Max('datetime'),
-                         first_event=Min('datetime'))
+                         last_event=Max('when_happened'),
+                         first_event=Min('when_happened'))
         return Response(qs)
 
     @list_route()
@@ -348,7 +348,7 @@ class BulkNoteViewSet(BulkModelViewSet):
 class ScrollFilter(django_filters.rest_framework.FilterSet):
     class Meta:
         model = Scroll
-        fields = ['uuid', 'title', 'user__username']
+        fields = ['uuid', 'title', 'by_user__username']
 
 
 class ScrollSerializer(serializers.HyperlinkedModelSerializer):
@@ -375,7 +375,7 @@ class ScrollSerializer(serializers.HyperlinkedModelSerializer):
             'created',
             'last_modified',            
             'title',
-            'public',
+            'is_public',
             'subtitle',
             'description',
             'thumbnail',)
@@ -400,11 +400,11 @@ class ScrollViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = ScrollSerializer
     queryset = Scroll.objects.select_related('user')\
-                             .filter(public=True)\
+                             .filter(is_public=True)\
                              .annotate(
                                  event_count=Count('events'),
-                                 first_event=Min('events__datetime'),
-                                 last_event=Max('events__datetime'))
+                                 first_event=Min('events__when_happened'),
+                                 last_event=Max('events__when_happened'))
     filter_class = ScrollFilter
 
     @detail_route(methods=['get'])
@@ -443,7 +443,7 @@ class UserViewSet(viewsets.ModelViewSet):
         user = self.request.user
         scrolls = Scroll.objects\
                         .select_related('user')\
-                        .filter(user__id=user.id, public=True)\
+                        .filter(user__id=user.id, is_public=True)\
                         .annotate(
                             event_count=Count('events'),
                             first_event=Min('events__datetime'),
