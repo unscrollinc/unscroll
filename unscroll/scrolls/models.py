@@ -23,7 +23,8 @@ class Thumbnail(models.Model):
     by_user = models.ForeignKey(
         User,
         null=True,
-        related_name='thumbnails')
+        related_name='thumbnails',
+        on_delete=models.CASCADE)
     sha1 = models.CharField(
         max_length=64,
         unique=True,
@@ -53,7 +54,8 @@ class Scroll(models.Model):
     by_user = models.ForeignKey(
         User,
         null=True,
-        related_name='scrolls')
+        related_name='scrolls',
+        on_delete=models.CASCADE)
     uuid = models.UUIDField(
         default=uuid.uuid4,
         editable=False,
@@ -64,10 +66,16 @@ class Scroll(models.Model):
     description = models.TextField(
         null=True)
     citation = models.TextField(
+        blank=True,
         null=True)
+    link = models.URLField(
+        blank=True,
+        null=True)    
     with_thumbnail = models.ForeignKey(
         Thumbnail,
         related_name='scrolls',
+        on_delete=models.CASCADE,
+        blank=True,
         null=True)
     when_published = models.DateTimeField(
         null=True)
@@ -125,11 +133,13 @@ class Event(models.Model):
     with_thumbnail = models.ForeignKey(
         Thumbnail,
         related_name='events',
+        on_delete=models.CASCADE,                
         null=True)
     with_user = models.ForeignKey(
         User,
         null=True,
-        related_name='events')
+        related_name='events',
+        on_delete=models.CASCADE)
     uuid = models.UUIDField(
         default=uuid.uuid4,
         editable=False,
@@ -191,7 +201,8 @@ class Note(models.Model):
     by_user = models.ForeignKey(
         User,
         null=True,
-        related_name="notes")
+        related_name="notes",
+        on_delete=models.CASCADE)
     uuid = models.UUIDField(
         default=uuid.uuid4,
         editable=False,
@@ -204,7 +215,8 @@ class Note(models.Model):
     in_event = models.ForeignKey(
         Event,
         null=True,
-        related_name="notes")
+        related_name="notes",
+        on_delete=models.CASCADE)
     order = models.FloatField(
         blank=False)
     text = models.TextField(
@@ -234,6 +246,7 @@ class Media(models.Model):
     """
     in_note = models.ForeignKey(
         Note,
+        on_delete=models.CASCADE,        
         related_name="media")
     media_type = models.CharField(
         max_length=128,

@@ -1,0 +1,870 @@
+body {
+    margin:0 0 0 0;
+    padding:0;
+    font:12pt 'Merriweather Sans';
+}
+
+body {
+    font-family: 'Merriweather', serif;
+}
+
+input {
+    font-family:'Merriweather Sans';
+}
+a {
+    color:#2F9ECA;
+    text-decoration:none;
+}
+
+.nav {
+    font-family: 'Merriweather Sans', sans-serif;
+}
+
+div#login span {
+    padding-right:0.5em;
+    cursor:hand;
+}
+#timeline {
+    width:300%;
+    position:fixed;
+    margin:125px 0 0 -100%;
+    -webkit-overflow-scrolling: touch;
+}
+
+div.column {
+    display:block;
+    height:100%;
+    border-right:1px solid #4FBEEA;
+    position:absolute;
+    top:-25px;
+    text-align:center;
+    z-index:-1;
+o}
+
+div.first {
+    border-left:3px solid lightblue;
+    margin-left:-2px;
+}
+.column:hover {
+}
+
+.column .head {
+    font-weight:normal;
+    display:block;
+    background:#2F9ECA;
+    color:white;
+    width:100%;
+}
+
+.column .head:hover {
+    color:#2F9ECA;
+    background:white;
+    cursor:hand;
+}
+
+span.period {
+    position:absolute;
+    left:1em;
+    font-size:20px;
+    top:-65px;
+    display:block;
+    padding:.25em;
+    cursor:hand;
+}
+
+span.period:hover {
+    background:#2F9ECA;
+    color:white;
+    cursor:hand;
+}
+span.period a:hover {
+    color:white;
+}
+div#main-links {
+}
+div#statusbar {
+    width:100%;
+    height:20px;
+    background:white;
+    padding:15px;
+    position:fixed;
+    border-bottom:1px solid black;
+    font-size:20px;
+    z-index:20000;
+}
+
+/* Form */
+form#search-form {
+    width:33%;
+    background:white;
+    height:20px;
+    display:inline;
+    top:15px;
+    position:absolute;
+    margin-left:5px;
+}
+
+#search-form input {
+    width:80%;
+    margin:0px;
+    padding:0 0 0 20px;
+    font-size:20px;
+    color:#888;
+    border:none;
+}
+#search-form input:focus {
+    color:#2F9ECA;
+}
+
+input#search-input {
+    border-bottom:1px solid black;
+    padding-left:0px;
+}
+
+input#search-input:focus, input#search-input:hover {
+    outline:none;
+    color:black;
+}
+
+/* Login */
+div#login {
+    width:48%;
+    left:50%;    
+    top:15px;
+    position:fixed;
+    text-align:right;
+    z-index:2000000;
+}
+
+/* Grid */
+.cell {
+    position:absolute;
+    border-right:1px solid #eee;
+    border-bottom:1px solid #eee;
+}
+.panel {
+    width:100%;
+    height:100%;
+    position:fixed;
+    text-align:center;
+    border-right:1px solid black;
+}
+#buffer {
+    width:100%;
+    height:1000px;
+    margin-top:10000px;
+    position:fixed;
+}
+
+.event {
+    position:absolute;
+    text-align:left;
+}
+
+.event .inner {
+    font-family:'Merriweather Sans';    
+    line-height:100%;
+    margin:0.25em;
+    padding:0.5em;
+    background:white;
+    border:1px solid #2F9ECA;;
+    border-radius:0.5em; 
+    overflow:hidden;
+    font-size:10pt;
+    
+}
+
+
+.event .inner .title {
+    line-height:1.5em;
+}
+.event .inner a.title {
+    color:#2F9ECA;
+ }
+
+div.thumb {
+    float:right;
+}
+
+img.thumb {
+    max-width:64px;
+    max-height:64px;    
+    float:right;
+    border:1px solid #2F9ECA;
+    margin:0 0 0 8px;
+}
+
+.event {
+    font-family:'Merriweather Sans';    
+}
+.event .inner .text {
+    color:#888;
+    max-height:100px;
+    overflow:auto;
+}
+.event .inner .datetime {
+    font-weight:bold;
+    display:inline-block;
+    color:#888;
+}
+
+div.event div.inner div.scroll-title {
+    color:#666;
+    font-size:10pt;
+    font-style:Italic;
+    margin-bottom:0em;
+    margin-top:0.25em;
+    padding-top:0.25em;    
+    border-top:1px solid #ccc;
+    text-align:right;
+}
+
+.noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Chrome/Safari/Opera */
+    -khtml-user-select: none; /* Konqueror */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently not supported by any browser */
+}     
+
+div#player {
+    left:100%;
+    float:right;
+    margin-top:20%;
+    margin-right:0.5em;
+    z-index:10000;
+}
+
+
+/* Notebook */
+
+.button {
+    color:#2F9ECA;
+    background:white;
+    font-weight:bold;
+    cursor:hand;
+    font:10pt 'Merriweather Sans';
+    padding:0 0 0 0.5em;
+}
+
+.button.active, .button:hover {
+    background:white;
+    color:#2F9ECA;    
+    background:white;
+}
+
+div.ranger {
+    border:1px solid black;
+    cursor:hand;    
+    width:50%;
+    margin-left:25%;
+}
+
+div.prepend {
+    opacity:0.6;
+    width:100%;
+    height:100%;
+    cursor:hand;
+}
+
+div.selected {
+    opacity:0.1;
+}
+
+div#notebook-wrapper {
+    z-index:1;
+    left:50%;
+    width:50%;
+    position:fixed;
+    margin-top:0px;
+    height:100%;
+    margin-left:auto;
+    display:none;
+    overflow:hidden;
+}
+
+#notebook-essay-wrapper {
+    position:absolute;
+    height:100%;
+    width:45%;
+    left:50%;
+    padding-top:2.5%;
+    padding:2.5% 3% 500px 2%;
+    overflow:auto;
+}
+
+div#notebook {
+    margin-top:51px;
+    border-left:1px solid black;
+    background:white;
+}
+
+
+div#notebook-essay {
+    font-family:Merriweather;
+    line-height:175%;
+    font-size:12pt;
+    overflow:auto;
+    margin-bottom:500px;
+}
+
+div#notebook-essay img {
+    max-width:90%;
+    margin-top:1em;
+    margin-bottom:1em;
+    clear:both;
+    display:block;
+    text-align:center;
+}
+
+div#notebook-head {
+    background:#2F9ECA;
+    padding-top:15px;
+    height:35px;
+    color:black;
+    padding-left:0.5em;
+    position:relative;
+}
+
+div.notebook-controls {
+    padding-bottom:2em;
+}
+div#notebook-controls {
+    background:#2F9ECA;
+    font-size:20px;
+    color:white;
+    font-family:'Merriweather Sans';
+}
+
+div#notebook-controls span.shim {
+    color:#6FCEFA;
+}
+div#notebook-controls span {
+    cursor:hand;
+}
+div#notebook-controls span:hover {
+    background:white;
+    color:#2F9ECA;
+}
+
+div#notebook-body {
+    width:100%;
+    margin-left:auto;
+    overflow:hidden;
+}
+div#notebook-items-wrapper {
+    height:100%;    
+    overflow:auto;
+    width:49%;
+    float:left;
+    padding:0.5em;
+    border-right:1px solid #888;
+}
+
+div#notebook-items {
+    margin-bottom:500px;
+}
+
+div#notebook-essay h2 {
+    line-height:139%;
+}
+div#notebook-essay h3 {
+    font-style:italic;
+    font-weight:normal;
+    line-height:139%;
+    color:#884444;
+}
+
+span.focused {
+    background:#eeeeff;
+}
+
+div.nb-item {
+    background:white;
+    padding:.25em;
+    margin:1.5em 0.5em 0 0.5em;
+    border-top:1px dotted #d9eaf3;
+    color:#333;
+}
+
+div.note-event div.event-title {
+    font-weight:bold;
+    line-height:1.5em;
+}
+div.note-event div.event-text {
+    max-height:35%;
+    overflow:auto;
+    line-height:1.5em;
+    color:#666;
+    margin-bottom:1em;
+}
+
+div.nb-item .top {
+    padding:1em 0.25em 1em 0.25em;
+}
+div.nb-item, div.nb-final {
+}
+
+div.field div.text.spacer {
+    display:none;
+}
+
+div.nb-item.spacer div.editable {
+    display:none;    
+}
+
+div.nb-item.closer {
+    text-align:center;
+    font-style:Italic;
+    margin-bottom:150px;
+}
+div.buttons {
+    padding-right:-2px;
+    float:right;
+    font-size:75%;
+}
+div.buttons span.button {
+    margin-left:2px;
+}
+
+div.editable {
+    background:white;
+    padding:1em 0.25em 1em 0.25em;
+    border:1px solid black;
+    font:12pt 'Merriweather Sans';
+}
+
+div.save-state {
+    float:left;
+    width:1em;
+    color:white;
+}
+
+div.save-state.false {
+    background-color:red;
+}
+
+div.save-state.true {
+    background-color:green;
+}
+
+table {
+    border-collapse:collapse;
+}
+tr.notebook-list-item {
+    background:white;
+    border-bottom:1px solid #888;
+    cursor:hand;
+}
+tr.notebook-list-item:hover {
+    background:#d9eaf3;
+}
+
+th {
+    font-weight:bold;
+    background:;#d9eaf3;
+    text-align:left;
+}
+td, th {
+    font-family:'Merriweather Sans';
+    text-align:middle;
+    font-size:80%;
+    padding:1em;
+}
+tr.alt {
+    background:#e8e8e8;
+}
+td.description {
+    font-family:'Merriweather Sans';
+    text-align:right;
+    padding:0.5em 0 0.5em 0;
+    vertical-align:top;
+}
+
+div#new-event {
+    font-family:'Merriweather Sans';
+}
+
+#notebook-event {
+    overflow:auto;
+    position:absolute;
+    top:0;
+    background:white;
+    width:50%;
+    height:90%;
+    padding:1em;
+    border:1px dotted black;
+    display:none;
+}
+
+#notebook-event input {
+    font-size:10pt;
+    padding:0.25em;
+    width:90%;   
+}
+
+#notebook-event .submit {
+    font-size:14pt;
+    padding:0.25em;
+    width:25%;
+    background:red;
+    color:white;
+    border:none;
+    padding:none;
+}
+
+#notebook-event .rte {
+    padding:1%;
+    background:white;
+    border:1px solid gray;
+    width:88%;
+    line-height:149%;
+}
+
+#user-logout {
+    cursor:hand;    
+    display:none;
+}
+
+#notebook-listing {
+    overflow:auto;
+    position:absolute;
+    background:white;
+    height:100%;
+    max-height:100%;
+    width:100%;
+    display:none;
+    z-index:100;
+}
+
+#notebook-listing table {
+    width:100%;
+    margin-bottom:55px;
+}
+
+tr.notebook-list-item {
+    border-bottom:1px solid #ccc;
+    cursor:hand;
+}
+.field {
+    padding:0.5em 0.5em 0.5em 0.5em;
+    margin:0 0 1em 0;
+}
+.field-title {
+    font:10pt 'Merriweather Sans';
+    color:#888;
+    text-align:left;
+    margin-bottom:0.25em;
+    padding-bottom:0.25em;
+    border-bottom:1px solid #CCC;
+}
+
+.field-input, .field-input input {
+    line-height:1.85em;
+    font-family:'Merriweather Sans';
+}
+ 
+div.editable-event .medium-editor-element {
+    background:#fff;
+    padding:0.25em 0.25em 0.25em 0.5em;
+    border:1px solid #ccc;
+}
+
+div.editable-event .scroll-title {
+    font-family:'Merriweather Sans';    
+}
+
+
+.scroll-title {
+    line-height:180%;
+}
+
+div.editable-event .scroll-title {
+    font-size:120%;
+    margin-left:0.25em;
+    border-bottom:1px solid #ccc;
+    margin-bottom:1em;
+}
+
+.essay.title {
+    font-size:200%;
+    color:#444;
+    width:80%;
+}
+
+.essay.subtitle {
+    padding-top:0.5em;
+    font-size:150%;
+    color:#444;
+    width:80%;
+}
+
+.essay.description {
+    padding-top:1em;
+    line-height:1.85em;
+    font-size:12pt
+    font-style:Italic;
+    color:#888;
+    border-bottom:1px dotted #ccc;
+    padding-bottom:1em;
+    margin-bottom:1em;
+}
+
+
+span.button.move {
+}
+span.button.range {
+    display:none;
+}
+span.button.drop {
+    display:none;
+}
+span.button.delete {}
+
+.in-range {
+    background:pink;
+}
+.note-event {
+    font-family:'Merriweather Sans';
+    font-size:10pt;
+    margin-top:0.5em;
+    padding-top:0.5em;
+    border:1px solid #444;
+    background:#eee;
+    padding:0.5em;
+}
+
+#search-alert {
+    background:red;
+    color:white;
+    left:35%;
+    top:0;
+    position:fixed;
+    display:block;
+    padding:0.5em;
+    z-index:2000;
+    display:none;
+}
+
+div.as-list {
+    position:relative;
+    left:0;
+    text-align:left;
+    width:10%;
+    font-size:20px;
+    top:-65px;
+    display:block;
+    padding:.25em;
+    cursor:hand;
+}
+
+tr.panel-list {
+    border-bottom:1px solid #2F9ECA;
+}
+tr.panel-list td {
+    vertical-align:top;
+    font-size:12pt;
+}
+
+tr.panel-list td.panel-datetime {
+    text-align:right;
+    font-weight:bold;
+}
+
+tr.panel-list td.panel-thumb img {
+    max-width:128px;
+    max-height:128px;
+    float:none;
+}
+
+div.panel-list {
+    padding-left:1%;
+    position:fixed;
+    top:100px;
+    height:100%;
+    width:50%;
+    background:white;
+    overflow:auto;
+    z-index:10;
+    border:1px solid #2F9ECA;    
+}
+
+div#uxbox {
+    text-align:right;
+    position:fixed;
+    border:1px solid black;
+    background:white;
+    font-size:120%;
+    padding:1em;
+    right:0;
+    top:50px;
+    display:none;
+    font-family:'Merriweather Sans';
+}
+
+div#uxbox .user-form-help {
+    color:#666;
+    font-size:10pt;
+    margin-bottom:1em;
+}
+
+
+
+div#uxbox input {
+    font-family:'Merriweather Sans';    
+    color:#666;
+    font-size:14pt;
+    background:#eee;
+    border:1px solid black;
+    margin-bottom:1em;
+    line-height:1.85em;
+    border-bottom:1px solid #666;
+}
+
+div#uxbox input:active {
+    background:white;
+}
+
+div#uxbox .submit {
+    background:#2F9ECA;
+    color:white;
+    
+}
+
+
+#event-editor-wrapper {
+    position:fixed;
+    width:50%;
+    left:50%;
+    top:100px;
+    background:#fff;
+    border-left:1px solid black;
+    height:100%;
+    display:none;
+    z-index:20000;
+    overflow:auto;
+    padding:1em 1em 1em 1em;
+    border-top:1px solid black;
+    padding-bottom:250px;
+}
+.editable-event {
+    padding-bottom:250px;    
+}
+.field input, #event-editor-wrapper .field .medium-editor-element {
+    font-size:10pt;
+    padding:1%;
+    width:72%;
+    margin-bottom:0.5em;
+    background:white;
+}
+
+div.content_url {
+    clear:both;
+}
+.field.media_type,
+.field.resolution,
+.field.content_type {
+    width:23%;
+    float:left;
+}
+
+input.media_type,
+input.resolution,
+input.content_type {
+    width:100%;
+}
+
+
+div.editable-event .event-save {
+    color:red;
+    padding-left:0em;
+    cursor:hand;    
+}
+
+.event-cancel {
+    padding-left:0.5em;
+    color:#2F9ECA;
+    cursor:hand;
+}
+
+
+div.editable-event .bottom-save {
+    font-size:150%;
+}
+
+
+.active {
+    color:#2F9ECA;
+}
+#notebook-list-button.active {
+    color:#6FCEFA;
+}
+
+.modal {
+    position:fixed;
+    width:33%;
+    left:33%;
+    background:white;
+    color:black;
+    font-size:120x;
+    top:33%;
+    padding:1em;
+    border:1em solid red;
+    z-index:100000;
+    font-family:'Merriweather Sans';
+}
+
+.modal-button {
+    width:33%;
+    font-size:120%;
+    float:left;
+    border:3px solid red;
+    padding:0.25em;
+}
+
+.modal .header {
+    font-size:150%;
+    border-bottom:1px solid red;
+}
+
+.modal .explanation {
+    margin-top:1em;
+    margin-bottom:1em;
+}
+.modal-button.nodelete {
+    background:white;
+    margin-right:3em;
+    cursor:hand;
+}
+.modal-button.delete {
+    background:red;
+    color:white;
+    cursor:hand;    
+}
+
+
+.delete,.button {
+    float:right;
+}
+
+.shim {
+    color:#666;
+}
+
+.save {
+    color:red;
+    font-weight:bold;
+}
+.saved {
+    color:#ccc;
+}
+
+div.essay-author {
+    font-style:Italic;
+    margin-bottom:1em;
+}
+
+div.hello {
+    width:300px;
+}

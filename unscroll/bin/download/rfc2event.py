@@ -2,6 +2,7 @@ import xmltodict
 import dateparser
 from datetime import datetime
 from unscroll import UnscrollClient
+#from scroll.models import Scroll, Event
 import re
 import random
 import pprint
@@ -57,24 +58,24 @@ def rfc_to_event(rfc):
         'resolution': '7',
         'ranking': random.random()/2,
         'content_url': normalize_rfc_id_to_url(rfc['doc-id']),
-        'datetime': date(rfc['date'])
+        'when_happened': date(rfc['date'])
     }
     return event
 
 
 def __main__():
     read = ''
-    with open('cache/rfc/rfc-index.xml', 'r') as f:
-        read = f.read()
-    parsed = xmltodict.parse(read)
-    docs = parsed['rfc-index']['rfc-entry']
-    events = [rfc_to_event(x) for x in docs]
+    # with open('cache/rfc/rfc-index.xml', 'r') as f:
+    #     read = f.read()
+    # parsed = xmltodict.parse(read)
+    # docs = parsed['rfc-index']['rfc-entry']
+    # events = [rfc_to_event(x) for x in docs]
     c = UnscrollClient()
     pprint.pprint(c)
     c.__batch__(
         api='http://127.0.0.1:8000',
-        username='admin',
-        password='password',
+        username='ford',
+        password='***REMOVED***',
         scroll_title='IETF RFCs',
         events=events
     )
