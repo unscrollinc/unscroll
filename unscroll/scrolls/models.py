@@ -135,7 +135,7 @@ class Event(models.Model):
         related_name='events',
         on_delete=models.CASCADE,                
         null=True)
-    with_user = models.ForeignKey(
+    by_user = models.ForeignKey(
         User,
         null=True,
         related_name='events',

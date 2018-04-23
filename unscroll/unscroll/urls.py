@@ -1,6 +1,9 @@
+from django.contrib import admin
+from django.urls import path
+
 from django.conf.urls import url, include
 from django.views.decorators.csrf import csrf_exempt
-# from django.contrib.auth.models import User
+from django.contrib.auth.models import User
 from django.conf import settings
 from django.conf.urls.static import static
 import django_filters
@@ -159,18 +162,18 @@ class BulkEventSerializer(BulkSerializerMixin,
         fields = (
             'url',
             'uuid',
-            'user',
+            'by_user',
             'username',
-            'scroll',
+            'in_scroll',
             'scroll_uuid',
             'scroll_title',
             'is_public',
             'scroll_thumb_image',
-            'thumbnail',
+            'with_thumbnail',
             'thumb_height',
             'thumb_width',
             'thumb_image',
-            'created',
+            'when_created',
             'title',
             'text',
             'ranking',
@@ -181,11 +184,11 @@ class BulkEventSerializer(BulkSerializerMixin,
             'content_url',
             'source_name',
             'source_url')
-        read_only_fields = ('uuid', 'user',)
+        read_only_fields = ('uuid', 'by_user',)
         list_serializer_class = BulkListSerializer
 
     def create(self, validated_data):
-        validated_data['user'] = self.context['request'].user
+        validated_data['by_user'] = self.context['request'].user
         s = Event(**validated_data)
         s.save()
         return s
@@ -193,7 +196,7 @@ class BulkEventSerializer(BulkSerializerMixin,
 
 class BulkEventViewSet(BulkModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
-    queryset = Event.objects.select_related('scroll', 'user')\
+    queryset = Event.objects.select_related('in_scroll', 'by_user')\
                             .filter(in_scroll__is_public=True)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     filter_class = EventFilter
@@ -234,13 +237,13 @@ class NoteSerializer(serializers.HyperlinkedModelSerializer):
             'id',
             'url',
             'uuid',
-            'scroll',
+            'in_scroll',
             'kind',
-            'user',
+            'by_user',
             'event',
             'order',
-            'created',
-            'last_updated',
+            'when_created',
+            'when_modified',
             'text',)
 
     def create(self, validated_data):
@@ -263,12 +266,12 @@ class NoteEventSerializer(serializers.HyperlinkedModelSerializer):
             'url',            
             'uuid',
             'kind',            
-            'scroll',
-            'user',
+            'in_scroll',
+            'by_user',
             'event_full',
             'order',
-            'created',
-            'last_updated',
+            'when_created',
+            'when_modified',
             'text',)
 
 
@@ -303,17 +306,17 @@ class BulkNoteSerializer(BulkSerializerMixin,
         fields = (
             'id',
             'url',
-            'scroll',
+            'in_scroll',
             'scroll_uuid',
             'kind',
             'public',
-            'user',
-            'event',
+            'by_user',
+            'in_event',
             'event_full',
             'point',
             'order',
-            'created',
-            'last_updated',
+            'when_created',
+            'when_modified',
             'text')
         list_serializer_class = BulkListSerializer
 
@@ -367,22 +370,22 @@ class ScrollSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             'uuid',
             'url',
-            'user',
+            'by_user',
             'user_username',
             'event_count',
             'first_event',
             'last_event',
-            'created',
-            'last_modified',            
+            'when_created',
+            'when_modified',            
             'title',
             'is_public',
             'subtitle',
             'description',
-            'thumbnail',)
+            'with_thumbnail',)
         depth = 0
         read_only_fields = (
             'uuid',
-            'user',
+            'by_user',
             'notes',
             'user_username',
             'event_count',
@@ -390,7 +393,7 @@ class ScrollSerializer(serializers.HyperlinkedModelSerializer):
             'last_event',)
 
     def create(self, validated_data):
-        validated_data['user'] = self.context['request'].user
+        validated_data['by_user'] = self.context['request'].user
         s = Scroll(**validated_data)
         s.save()
         return s
@@ -399,7 +402,7 @@ class ScrollSerializer(serializers.HyperlinkedModelSerializer):
 class ScrollViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = ScrollSerializer
-    queryset = Scroll.objects.select_related('user')\
+    queryset = Scroll.objects.select_related('by_user')\
                              .filter(is_public=True)\
                              .annotate(
                                  event_count=Count('events'),
@@ -472,8 +475,10 @@ schema_view = get_swagger_view(title='Unscroll API')
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     url(r'', include(router.urls)),
+    path('admin/', admin.site.urls),
     url(r'^auth/', include('djoser.urls.authtoken')),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+] + static(settings.STATIC_URL,
+           document_root=settings.STATIC_ROOT)
 
 # urlpatterns += [url(r'^silk/', include('silk.urls', namespace='silk'))]
     

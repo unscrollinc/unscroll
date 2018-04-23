@@ -65,11 +65,13 @@ def rfc_to_event(rfc):
 
 def __main__():
     read = ''
-    # with open('cache/rfc/rfc-index.xml', 'r') as f:
-    #     read = f.read()
-    # parsed = xmltodict.parse(read)
-    # docs = parsed['rfc-index']['rfc-entry']
-    # events = [rfc_to_event(x) for x in docs]
+    events = []
+    with open('cache/rfc/rfc-index.xml', 'r') as f:
+        read = f.read()
+    parsed = xmltodict.parse(read)
+    docs = parsed['rfc-index']['rfc-entry']
+    events = [rfc_to_event(x) for x in docs]
+    # events = []
     c = UnscrollClient()
     pprint.pprint(c)
     c.__batch__(

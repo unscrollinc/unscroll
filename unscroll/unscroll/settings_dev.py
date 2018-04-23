@@ -16,3 +16,5 @@ STATIC_URL = '/static/'
 
 THUMBNAIL_SIZE = 256, 256
 THUMBNAIL_DIR = '/Users/ford/dev/unscroll/unscroll/scrolls/static/scrolls/'
+
+DEBUG = True
