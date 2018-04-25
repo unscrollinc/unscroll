@@ -6,20 +6,8 @@ class Event extends React.Component {
 
     constructor(props, context) {
         super(props, context);
-        this.state = {event:this.makeEvent()};
     }
-    
-    makeEvent() {
-        let e = {
-            'id':parseInt(Math.random() * 10000000000, 10),
-            'order':1000 * (Math.random() - 0.5),
-            'title':'TITLE', 
-            'body':'body',
-            'text':''
-        };
-        return e;
-    };
-    
+
     render() {
         return(
             <div style={{
@@ -30,10 +18,10 @@ class Event extends React.Component {
                  }}
                  className='event'>
               <TimelinePanelEventEditButton
-                event={this.state.event}/>            
+            event={this.props.event}/>
               <TimelinePanelEventNoteButton
-                event={this.state.event}/>
-              <h3>{this.state.month}/{this.props.title}</h3>
+                event={this.props.event}/>
+		<h3>{this.props.dt.toISO()}/{this.props.title}</h3>
               <p>{this.props.text}</p>
             </div>
         );

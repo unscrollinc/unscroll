@@ -22,7 +22,7 @@ class Timeline extends React.Component {
                 },
 
                 getAdjusted:(dt) => {
-                    let beginYear = 1000*Math.floor(dt.year()/1000, 10);
+                    let beginYear = 1000 * Math.floor(dt.year()/1000, 10);
                     let endYear = beginYear + 1000 - 1;
                     let span = `${beginYear}-01-01T00:00:00/${endYear}-12-31T23:59:59`;
                 },
@@ -38,10 +38,8 @@ class Timeline extends React.Component {
                 },
 
                 getInterval:(dt) => {
-                    return Interval.fromDateTimes(
-                        dt.startOf('year'),
-                        dt.endOf('year')
-                    ).toISO();
+		    let i = Interval.fromDateTimes(dt.startOf('year'), dt.endOf('year'));
+		    return `start=${i.start.toISO()}&before=${i.end.toISO()}`;
                 }
             },
 
