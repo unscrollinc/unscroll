@@ -1,8 +1,12 @@
 import React from 'react';
 import Column from './TimelinePanelColumn.js';
 import Event from './TimelinePanelEvent.js';
+import axios from 'axios';
+import { DateTime, Interval } from 'luxon';
 
-// import { Interval } from 'luxon';
+axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+axios.defaults.xsrfCookieName = "csrftoken";
+axios.defaults.withCredentials = true;
 
 class Panel extends React.Component {
 
@@ -129,6 +133,8 @@ class Panel extends React.Component {
             height:h
         };
     }
+
+
     
     getFakeEls(nextProps) {
         let color = "#"+((1<<24)*Math.random()|0).toString(16);
@@ -182,31 +188,89 @@ class Panel extends React.Component {
         }
         return els;
     }
+
+    makeEls(data) {
+        let els = [];
+        for (var i=0;i<data.results.length;i++) {
+	    let event = data.results[i];
+	    console.log(event.title);
+	    let dt = DateTime.fromISO(event.when_happened);
+            let month = dt.month;
+
+            let buffered =
+                this.bufferEl(
+                    {ranking:i,
+                     numbers:event.text,
+                     title:event.title,
+                     width:3 + parseInt(Math.random() * 3, 10),
+                     month:month}
+                );
+            
+            let res =
+                this.doReservation(
+                    month,
+                    0,
+                    buffered.width,
+                    buffered.height
+                );
+
+            if (res.success) {
+                let el = (
+                    <Event
+                      key={Math.random()}
+		      
+                      width={res.w * this.state.cell.width + '%'}
+                      left={res.x * this.state.cell.width + '%'}
+		      
+                      height={res.h * this.state.cell.height + '%'}
+                      top={10 + res.y * this.state.cell.height + '%'}
+		      
+                      month={month}
+                      dt={dt}
+		      event={event}
+		      title={event.title}
+		      body={event.body}/>);
+		
+                els.push(el);
+            }
+        }
+        return els;
+    }
     
     componentDidMount() {
-        this.setState(prevState => ({
-            events: this.getFakeEls(this.props)            
-        }));        
+	let _this = this;
 
-        /* 
-           fetch(`http://unscroll.com/events/?start=2017-02-01T00:00:00-05:00&before=2017-03-01T00:00:00-05:00`)
-           .then(function(response){
-           console.log(response);
-           }); 
-        */
+	
+	axios.get(`http://127.0.0.1:8000/events/?span=${this.state.span}`)
+	    .then(resp => {
+            _this.setState(prevState => ({
+		events: _this.makeEls(resp.data)
+            }));        	    
+	}).catch(err => {
+	    console.log('Error', err.response.status)
+	});
+
+	
+
     }
     
     componentWillReceiveProps(nextProps) {
-        this.bitsGrid = this.makeGrid(this.state.grid.height);        
-        if (this.props.center !== nextProps.center) {
-            this.setState({
-                events: this.getFakeEls(nextProps)
-            });
-        }
+	let _this = this;	
+        this.bitsGrid = this.makeGrid(this.state.grid.height);
         this.setState({
-            center: nextProps.center,
-            offset: nextProps.offset
+	    center: nextProps.center,
+	    offset: nextProps.offset
         });
+	
+        if (this.props.center !== nextProps.center) {
+	    axios.get(`http://127.0.0.1:8000/events/?span=${this.state.span}`).then(resp => {
+		_this.setState(prevState => ({
+		    events: _this.makeEls(resp.data)
+		}));        	    
+	    }).catch(err => {
+		console.log('Error', err.response.status)
+	    });
+        }
     }
 
     componentDidUpdate() {
@@ -214,7 +278,6 @@ class Panel extends React.Component {
     }
 
     render() {
-        // let span = Interval.fromISO(this.props.span);
         let title = this.props.title;
         let columns = [];
         for (var i=1;i<13;i++) {
