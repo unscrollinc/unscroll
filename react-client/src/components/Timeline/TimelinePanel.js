@@ -127,73 +127,18 @@ class Panel extends React.Component {
         var b = window.innerHeight;
         var r = d.getBoundingClientRect();
         var h = Math.ceil(((r.height/b) * 90) / this.state.cell.height, 10);
-
+        var w = props.width;
+        this.buffer.removeChild(d);
         return {
-            width:props.width,
+            width:w,
             height:h
         };
     }
-
-
     
-    getFakeEls(nextProps) {
-        let color = "#"+((1<<24)*Math.random()|0).toString(16);
-        let els = [];
-        for (var i=0;i<15;i++) {
-
-            let month = parseInt(Math.random() * 12, 10);
-            
-            let numbers =
-                [...Array(parseInt(Math.random() * 50, 10))
-                 .keys()].map((x)=>{
-                     return `${x} `;
-                 }).join(" ");
-            
-            let buffered =
-                this.bufferEl(
-                    {ranking:i,
-                     numbers:numbers,
-                     title:nextProps.title,
-                     width:3 + parseInt(Math.random() * 3, 10),
-                     month:month,
-                     color:color}
-                );
-            
-            let res =
-                this.doReservation(
-                    month,
-                    0,
-                    buffered.width,
-                    buffered.height
-                );
-
-            if (res.success) {
-                let el = (
-                    <Event
-                      key={Math.random()}
-
-                      width={res.w * this.state.cell.width + '%'}
-                      left={res.x * this.state.cell.width + '%'}
-
-                      height={res.h * this.state.cell.height + '%'}
-                      top={10 + res.y * this.state.cell.height + '%'}
-
-                      month={month + 1}
-                      color={color}
-                      text={`${buffered.height}::${res.h} 
-                      // ${numbers}`}
-                      title={nextProps.title}/>);
-                els.push(el);
-            }
-        }
-        return els;
-    }
-
     makeEls(data) {
         let els = [];
         for (var i=0;i<data.results.length;i++) {
 	    let event = data.results[i];
-	    console.log(event.title);
 	    let dt = DateTime.fromISO(event.when_happened);
             let month = dt.month;
 
@@ -202,7 +147,7 @@ class Panel extends React.Component {
                     {ranking:i,
                      numbers:event.text,
                      title:event.title,
-                     width:3 + parseInt(Math.random() * 3, 10),
+                     width:2,
                      month:month}
                 );
             
@@ -239,19 +184,14 @@ class Panel extends React.Component {
     
     componentDidMount() {
 	let _this = this;
-
-	
-	axios.get(`http://127.0.0.1:8000/events/?span=${this.state.span}`)
+	axios.get(`http://127.0.0.1:8000/events/?${this.state.span}`)
 	    .then(resp => {
-            _this.setState(prevState => ({
-		events: _this.makeEls(resp.data)
-            }));        	    
-	}).catch(err => {
-	    console.log('Error', err.response.status)
-	});
-
-	
-
+                _this.setState(prevState => ({
+		    events: _this.makeEls(resp.data)
+                }));        	    
+	    }).catch(err => {
+	        console.log('Error', err.response.status)
+	    });
     }
     
     componentWillReceiveProps(nextProps) {
@@ -263,13 +203,14 @@ class Panel extends React.Component {
         });
 	
         if (this.props.center !== nextProps.center) {
-	    axios.get(`http://127.0.0.1:8000/events/?span=${this.state.span}`).then(resp => {
-		_this.setState(prevState => ({
-		    events: _this.makeEls(resp.data)
-		}));        	    
-	    }).catch(err => {
-		console.log('Error', err.response.status)
-	    });
+	    axios.get(`http://127.0.0.1:8000/events/?${this.props.span}`)
+                .then(resp => {
+		    _this.setState(prevState => ({
+		        events: _this.makeEls(resp.data)
+		    }));        	    
+	        }).catch(err => {
+		    console.log('Error', err.response.status)
+	        });
         }
     }
 
@@ -293,7 +234,7 @@ class Panel extends React.Component {
                      width:'100%',
                      left:left
                  }}>
-              <h1><a href="{title}">{title}</a></h1>
+                <h1><a href="{title}">{title}</a></h1>
               {columns}
               {this.state.events}
             </div>

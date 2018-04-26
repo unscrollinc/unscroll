@@ -6,7 +6,7 @@ import Panel from './TimelinePanel.js';
 class Timeline extends React.Component {
     constructor(props, context) {
         super(props, context);
-        
+
         let span = this.asYear(DateTime.local());
 
 
@@ -24,7 +24,7 @@ class Timeline extends React.Component {
                 getAdjusted:(dt) => {
                     let beginYear = 1000 * Math.floor(dt.year()/1000, 10);
                     let endYear = beginYear + 1000 - 1;
-                    let span = `${beginYear}-01-01T00:00:00/${endYear}-12-31T23:59:59`;
+                    let span = `start=${beginYear}-01-01T00:00:00&before=${endYear}-12-31T23:59:59`;
                 },
 
                 getColumnCount:()=>{
@@ -34,7 +34,7 @@ class Timeline extends React.Component {
                 getColumnSpan:(begin, ct)=>{
                     let beginYear = begin + (ct * 100); // years;
                     let endYear = beginYear + 99;
-                    let span = `${beginYear}-01-01T00:00:00/${endYear}-12-31T23:59:59`;
+                    let span = `start=${beginYear}-01-01T00:00:00&before=${endYear}-12-31T23:59:59`;
                 },
 
                 getInterval:(dt) => {
@@ -59,9 +59,8 @@ class Timeline extends React.Component {
                     return 1;
                 },
                 getInterval:(dt) => {
-                    return Interval.fromDateTimes(
-                        dt.startOf('year'), dt.endOf('year')
-                    ).toISO();
+		    let i = Interval.fromDateTimes(dt.startOf('year'), dt.endOf('year'));
+		    return `start=${i.start.toISO()}&before=${i.end.toISO()}`;                    
                 },
                 getTitle:(dt) => {
                     return dt.year;
@@ -121,7 +120,7 @@ class Timeline extends React.Component {
             _span.start.plus(o),
             _span.end.plus(o));
         let _title = this.frames[this.state.frame].getTitle(_interval.start);
-        let _interval_iso = _interval.toISO();
+        let _interval_iso = `start=${_interval.start.toISO()}&before=${_interval.end.toISO()}`;
         return [_title, _interval_iso];
     }
 
