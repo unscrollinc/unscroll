@@ -9,6 +9,8 @@ class Event extends React.Component {
         console.log(props);
     }
 
+
+    
     render() {
         return(
             <div style={{
@@ -22,7 +24,7 @@ class Event extends React.Component {
                 event={this.props.event}/>
               <TimelinePanelEventNoteButton
                 event={this.props.event}/>
-	      <h3>{this.props.month}/{this.props.title}</h3>
+	      <h3><a href={this.props.event.content_url} target="_blank">{this.props.month}/{this.props.title}</a></h3>
               <p>{this.props.text}</p>
             </div>
         );

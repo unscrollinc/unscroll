@@ -105,7 +105,7 @@ class Panel extends React.Component {
 	    h:h
         };
     }
-    
+
     bufferEl(event, dt, month) {
 
         // This is an ironic function.
@@ -113,8 +113,10 @@ class Panel extends React.Component {
         // React uses a virtual DOM and so it can't see the real size
         // of things.
         //
-        // This makes a real version and drops it into an invisible
+        // This makes a real version and drops it into an offscreen
         // buffer to get its real sizing.
+        //
+        // Then we make it virtually.
 
         let d = document.createElement('div');
         d.className='event';

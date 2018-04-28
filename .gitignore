@@ -11,8 +11,8 @@ data/
 db.sqlite3
 db.sqlite3-journal
 node_modules/
-unscroll/bin/download/cache/
-unscroll/scrolls/static/scrolls/img/
+server/bin/download/cache/
+server/scrolls/static/scrolls/img/
 gunicorn.sock
 # See https://help.github.com/ignore-files/ for more about ignoring files.o
 

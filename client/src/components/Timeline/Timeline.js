@@ -7,7 +7,7 @@ class Timeline extends React.Component {
     constructor(props, context) {
         super(props, context);
 
-        let span = this.asYear(DateTime.local());
+        let span = this.asYear(DateTime.fromISO('1980-05-25T09:08:34.123'));
 
 
         this.timeFrames = [
