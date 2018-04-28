@@ -6,6 +6,7 @@ class Event extends React.Component {
 
     constructor(props, context) {
         super(props, context);
+        console.log(props);
     }
 
     render() {
@@ -18,10 +19,10 @@ class Event extends React.Component {
                  }}
                  className='event'>
               <TimelinePanelEventEditButton
-            event={this.props.event}/>
+                event={this.props.event}/>
               <TimelinePanelEventNoteButton
                 event={this.props.event}/>
-		<h3>{this.props.dt.toISO()}/{this.props.title}</h3>
+	      <h3>{this.props.month}/{this.props.title}</h3>
               <p>{this.props.text}</p>
             </div>
         );

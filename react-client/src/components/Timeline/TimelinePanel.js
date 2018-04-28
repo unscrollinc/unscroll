@@ -2,6 +2,7 @@ import React from 'react';
 import Column from './TimelinePanelColumn.js';
 import Event from './TimelinePanelEvent.js';
 import axios from 'axios';
+import cachios from 'cachios';
 import { DateTime, Interval } from 'luxon';
 
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
@@ -16,7 +17,7 @@ class Panel extends React.Component {
         
         this.state = {
             center:props.center,
-            span:props.span,
+            timeSpan:props.timeSpan,
             offset:props.offset,
             grid:{
                 width:12,
@@ -25,7 +26,7 @@ class Panel extends React.Component {
             events:[]
         };
         
-        this.bitsGrid = this.makeGrid(this.state.grid.height);
+        this.bitsGrid = this.makeGrid();
 
         this.state.cell = {
             width:100/this.state.grid.width,
@@ -105,7 +106,7 @@ class Panel extends React.Component {
         };
     }
     
-    bufferEl(props) {
+    bufferEl(event, dt, month) {
 
         // This is an ironic function.
         //
@@ -117,17 +118,17 @@ class Panel extends React.Component {
 
         let d = document.createElement('div');
         d.className='event';
-        d.innerHTML = `<button>Note</button>
-                       <h3>${props.month}/${this.props.title}</h3>
-                       <p>${props.numbers}</p>
+        d.innerHTML = `<button>Note</button><button>Edit</button>
+                       <h3>${month}/${event.title}</h3>
+                       <p>${event.text}</p>
                        `;
                          
-        d.style.width = (props.width * this.state.cell.width) + '%';        
+        d.style.width = (3 * this.state.cell.width) + '%';        
         this.buffer.append(d);
         var b = window.innerHeight;
         var r = d.getBoundingClientRect();
-        var h = Math.ceil(((r.height/b) * 90) / this.state.cell.height, 10);
-        var w = props.width;
+        var h = Math.ceil(((r.height/b) * 100) / this.state.cell.height, 10);
+        var w = 3;
         this.buffer.removeChild(d);
         return {
             width:w,
@@ -143,13 +144,7 @@ class Panel extends React.Component {
             let month = dt.month;
 
             let buffered =
-                this.bufferEl(
-                    {ranking:i,
-                     numbers:event.text,
-                     title:event.title,
-                     width:2,
-                     month:month}
-                );
+                this.bufferEl(event, dt, month);
             
             let res =
                 this.doReservation(
@@ -160,12 +155,13 @@ class Panel extends React.Component {
                 );
 
             if (res.success) {
+                console.log(event);
                 let el = (
                     <Event
                       key={Math.random()}
 		      
                       width={res.w * this.state.cell.width + '%'}
-                      left={res.x * this.state.cell.width + '%'}
+                      left={(-1 + res.x) * this.state.cell.width + '%'}
 		      
                       height={res.h * this.state.cell.height + '%'}
                       top={10 + res.y * this.state.cell.height + '%'}
@@ -174,48 +170,43 @@ class Panel extends React.Component {
                       dt={dt}
 		      event={event}
 		      title={event.title}
-		      body={event.body}/>);
+		      text={event.text}/>);
 		
                 els.push(el);
             }
         }
         return els;
     }
-    
-    componentDidMount() {
-	let _this = this;
-	axios.get(`http://127.0.0.1:8000/events/?${this.state.span}`)
+
+    getSpan() {
+        let _this = this;
+	cachios.get(`http://127.0.0.1:8000/events/?${_this.state.timeSpan}`)
 	    .then(resp => {
                 _this.setState(prevState => ({
 		    events: _this.makeEls(resp.data)
-                }));        	    
+                }));
 	    }).catch(err => {
-	        console.log('Error', err.response.status)
+	        console.log('Error', err.response.status);
 	    });
     }
     
-    componentWillReceiveProps(nextProps) {
-	let _this = this;	
-        this.bitsGrid = this.makeGrid(this.state.grid.height);
-        this.setState({
-	    center: nextProps.center,
-	    offset: nextProps.offset
-        });
-	
-        if (this.props.center !== nextProps.center) {
-	    axios.get(`http://127.0.0.1:8000/events/?${this.props.span}`)
-                .then(resp => {
-		    _this.setState(prevState => ({
-		        events: _this.makeEls(resp.data)
-		    }));        	    
-	        }).catch(err => {
-		    console.log('Error', err.response.status)
-	        });
-        }
+    componentDidMount() {
+        this.getSpan();
     }
 
-    componentDidUpdate() {
-
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevProps.timeSpan !== this.state.timeSpan) {
+            this.bitsGrid = this.makeGrid();
+            this.getSpan();
+        }
+    }
+    
+    static getDerivedStateFromProps(nextProps, prevState) {
+        return {
+	    center: nextProps.center,
+	    offset: nextProps.offset,
+            timeSpan: nextProps.timeSpan
+        };
     }
 
     render() {

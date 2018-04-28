@@ -162,13 +162,13 @@ class Timeline extends React.Component {
     }
 
     toProps(num) {
-        let [title, span] = this.adjust(num);
+        let [title, timeSpan] = this.adjust(num);
         
         return {
             center:this.state.center + num,
             frame:this.state.context,
             title:title,
-            span:span,
+            timeSpan:timeSpan,
             offset:this.state.offset
         };
     }
