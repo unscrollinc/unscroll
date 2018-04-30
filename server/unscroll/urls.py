@@ -13,7 +13,7 @@ from rest_framework import generics, serializers, viewsets, routers, response
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
-from scrolls.models import User, Scroll, Event, Note, Media, Thumbnail
+from scrolls.models import User, Scroll, Event, Notebook, Note, Media, Thumbnail
 from rest_framework_swagger.views import get_swagger_view
 from PIL import Image, ImageOps
 from io import BytesIO
@@ -353,11 +353,10 @@ class ScrollFilter(django_filters.rest_framework.FilterSet):
         model = Scroll
         fields = ['uuid', 'title', 'by_user__username']
 
-
 class ScrollSerializer(serializers.HyperlinkedModelSerializer):
     user_username = serializers.CharField(
         read_only=True,
-        source="user.username")
+        source="by_user.username")
     first_event = serializers.DateTimeField(
         read_only=True)
     last_event = serializers.DateTimeField(
@@ -421,6 +420,60 @@ class ScrollViewSet(viewsets.ModelViewSet):
             many=True)
         return Response(serializer.data)
 
+class NotebookFilter(django_filters.rest_framework.FilterSet):
+    class Meta:
+        model = Notebook
+        fields = ['uuid', 'title', 'by_user__username']
+
+class NotebookSerializer(serializers.HyperlinkedModelSerializer):
+    user_username = serializers.CharField(
+        read_only=True,
+        source="user.username")
+
+    class Meta:
+        model = Notebook
+        fields = (
+            'uuid',
+            'url',
+            'by_user',
+            'user_username',
+            'when_created',
+            'when_modified',            
+            'title',
+            'is_public',
+            'subtitle',
+            'description',)
+        depth = 0
+        read_only_fields = (
+            'uuid',
+            'by_user',
+            'notes',
+            'user_username',)
+
+    def create(self, validated_data):
+        validated_data['by_user'] = self.context['request'].user
+        s = Notebook(**validated_data)
+        s.save()
+        return s
+
+
+class NotebookViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    serializer_class = NotebookSerializer
+    queryset = Notebook.objects.select_related('by_user')\
+                             .filter(is_public=True)
+    filter_class = NotebookFilter
+
+    @detail_route(methods=['get'])
+    def notes(self, request, pk=None):
+        notes = Note.objects\
+                    .select_related('event')\
+                    .filter(in_notebook=pk)
+        serializer = NoteEventSerializer(
+            notes,
+            context={'request': request},
+            many=True)
+        return Response(serializer.data)
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     full_scrolls = ScrollSerializer(User.full_scrolls, many=True)
@@ -462,8 +515,7 @@ router = BulkRouter()
 # router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
 router.register(r'scrolls', ScrollViewSet)
-# router.register(r'events', EventViewSet)
-# router.register(r'notes', NoteViewSet)
+router.register(r'notebooks', NotebookViewSet)
 router.register(r'thumbnails', ThumbnailViewSet)
 router.register(r'events', BulkEventViewSet)
 router.register(r'notes', BulkNoteViewSet)
