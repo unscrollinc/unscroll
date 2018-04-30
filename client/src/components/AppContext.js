@@ -8,10 +8,14 @@ export class AppProvider extends React.Component {
 
     state = {        
         user: {
+            isLoggedIn:false,
             id:undefined,
+            authToken:undefined,
+            username:undefined,
             profile:undefined,
             notebookCurrent:undefined,
-            notebookList:[]
+            notebookList:[],
+            scrollList:[]
         },
         notebook: {
             on:false,
@@ -31,7 +35,7 @@ export class AppProvider extends React.Component {
             position:undefined
         }
     };
-        
+
     render() {
         return (
             <AppContext.Provider value={{

@@ -161,3 +161,32 @@ button.new {
     background:yellow;
     opacity:80%;
 }
+
+.Timelist {
+    width:100%;
+    width:50%;
+    height:90%;
+    top:10%;
+    position:fixed;
+    overflow:auto;
+    
+}
+.timelist-event {
+    border-bottom:1px solid #ccc;
+    padding:1em;
+}
+
+.dtsince {
+    background:black;
+    color:white;
+}
+
+.event-meta {
+    float:right;
+    text-align:right;
+    position:absolute;
+    right:0;
+}
+.event-meta a {
+    text-decoration:none;
+}

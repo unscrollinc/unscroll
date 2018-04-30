@@ -1,7 +1,7 @@
 from django.db import models
 from django.db.models import Max, Min, Count
 from django.contrib.auth.models import User
-import uuid
+from uuid import uuid4
 
 
 class User(User):
@@ -57,7 +57,7 @@ class Scroll(models.Model):
         related_name='scrolls',
         on_delete=models.CASCADE)
     uuid = models.UUIDField(
-        default=uuid.uuid4,
+        default=uuid4,
         editable=False,
         unique=True)
     title = models.TextField()
@@ -103,6 +103,46 @@ class Scroll(models.Model):
     def __unicode__(self):
         return '{}'.format(self.title,)
 
+class Notebook(models.Model):
+    """A notebook is a bag of notes."""
+    by_user = models.ForeignKey(
+        User,
+        null=True,
+        related_name='notebooks',
+        on_delete=models.CASCADE)
+    uuid = models.UUIDField(
+        default=uuid4,
+        editable=False,
+        unique=True)
+    title = models.TextField()
+    subtitle = models.TextField(
+        blank=True, null=True)
+    description = models.TextField(
+        null=True)
+    when_published = models.DateTimeField(
+        null=True)
+    when_created = models.DateTimeField(
+        auto_now_add=True)
+    when_modified = models.DateTimeField(
+        auto_now=True)
+    is_public = models.BooleanField(
+        default=False)
+    is_deleted = models.BooleanField(
+        default=False)
+
+    class Meta:
+        db_table = 'notebook'
+        unique_together = (("title", "by_user"),)
+        ordering = ['-when_modified']
+
+    def full_notes(self):
+        return Note.objects\
+                   .select_related('scroll')\
+                   .filter(scroll__id=self.id)
+
+    def __unicode__(self):
+        return '{}'.format(self.title,)
+    
 
 class EventQueryset(models.QuerySet):
     def full_text_search(self, text):
@@ -141,7 +181,7 @@ class Event(models.Model):
         related_name='events',
         on_delete=models.CASCADE)
     uuid = models.UUIDField(
-        default=uuid.uuid4,
+        default=uuid4,
         editable=False,
         unique=True)
     media_type = models.CharField(
@@ -185,11 +225,10 @@ class Event(models.Model):
     class Meta:
         # unique_together = (("user", "title", "text"),)
         db_table = 'event'
-        ordering = ['-ranking', 'when_happened']
+        ordering = ['when_happened']
 
     def __unicode__(self):
         return '{}'.format(self.title,)
-
 
 class Note(models.Model):
     """
@@ -204,15 +243,19 @@ class Note(models.Model):
         related_name="notes",
         on_delete=models.CASCADE)
     uuid = models.UUIDField(
-        default=uuid.uuid4,
+        default=uuid4,
         editable=False,
         unique=True)
-    in_scroll = models.ForeignKey(
-        Scroll,
+    uuid_next = models.UUIDField(
+        default=uuid4,
+        editable=True,
+        unique=False)
+    in_notebook = models.ForeignKey(
+        Notebook,
         null=True,
         related_name="notes",
         on_delete=models.CASCADE)
-    in_event = models.ForeignKey(
+    with_event = models.ForeignKey(
         Event,
         null=True,
         related_name="notes",

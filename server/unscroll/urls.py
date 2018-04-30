@@ -134,28 +134,28 @@ class BulkEventSerializer(BulkSerializerMixin,
                           serializers.HyperlinkedModelSerializer):
     scroll_title = serializers.CharField(
         read_only=True,
-        source="scroll.title")
+        source="in_scroll.title")
     scroll_uuid = serializers.UUIDField(
         read_only=True,
-        source="scroll.uuid")
+        source="in_scroll.uuid")
     username = serializers.CharField(
         read_only=True,
-        source="user.username")
+        source="by_user.username")
     is_public = serializers.BooleanField(
         read_only=True,
-        source="scroll.is_public")
+        source="in_scroll.is_public")
     scroll_thumb_image = serializers.CharField(
         read_only=True,
-        source="scroll.thumbnail.image_location")
+        source="in_scroll.thumbnail.image_location")
     thumb_height = serializers.IntegerField(
         read_only=True,
-        source="thumbnail.height")
+        source="with_thumbnail.height")
     thumb_width = serializers.IntegerField(
         read_only=True,
-        source="thumbnail.width")
+        source="with_thumbnail.width")
     thumb_image = serializers.CharField(
         read_only=True,
-        source="thumbnail.image_location")
+        source="with_thumbnail.image_location")
 
     class Meta:
         model = Event

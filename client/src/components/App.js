@@ -13,8 +13,8 @@ class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            editorOn:true,
-            timelineOn:true,            
+            editorOn:false,
+            timelineOn:false,            
             notes:[]
         };
     }
@@ -76,7 +76,8 @@ class App extends React.Component {
         const display = timelineOn ?
               (<ReactCursorPosition>
                <Timeline addNote={this.addNote}/>
-               </ReactCursorPosition>) : (<Timelist addNote={this.addNote}/>);
+               </ReactCursorPosition>) :
+              (<Timelist addNote={this.addNote}/>);
         
         return (
             <AppProvider>           
