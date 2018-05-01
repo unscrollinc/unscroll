@@ -17,6 +17,18 @@ class User(User):
                          first_event=Min('events__datetime'),
                          last_event=Max('events__datetime'))
 
+    # Use FAST topics vs Wikipedia topics?
+    # Always add room for Wikipedia links
+# class Topic(models.Model):
+#    """Topic hierarchy."""
+#    by_user = models.ForeignKey(
+#        User,
+#        null=True,
+#        related_name='thumbnails',
+#        on_delete=models.CASCADE)
+#    # books published
+#    # topics
+#    # 
 
 class Thumbnail(models.Model):
     """Thumbnail images."""

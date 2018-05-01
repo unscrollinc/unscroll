@@ -1,6 +1,5 @@
 from django.contrib import admin
 from django.urls import path
-
 from django.conf.urls import url, include
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
@@ -32,7 +31,14 @@ from rest_framework_bulk import (
     ListBulkCreateUpdateDestroyAPIView,
 )
 
+# Scrolls, Events, Notebooks, Notes
+# User
+# User lists their SENNs
+# 
 
+# ##############################
+# Thumbnails
+# ##############################
 class ThumbnailSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Thumbnail
@@ -105,7 +111,9 @@ class ThumbnailViewSet(viewsets.ModelViewSet):
             height=height,
             sha1=hashed['img_hash'])
 
-
+# ##############################
+# Events
+# ##############################
 class EventFilter(django_filters.rest_framework.FilterSet):
     start = django_filters.IsoDateTimeFilter(
         name='when_happened',
@@ -226,6 +234,7 @@ class BulkEventViewSet(BulkModelViewSet):
             serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
 
+
 # ##############################
 # NOTES
 # ##############################
@@ -281,8 +290,6 @@ class NoteViewSet(viewsets.ModelViewSet):
     serializer_class = NoteSerializer
     ordering_fields = ('order',)
     ordering = ('order',)
-
-    
 
 
 class BulkNoteSerializer(BulkSerializerMixin,
@@ -509,6 +516,8 @@ class UserViewSet(viewsets.ModelViewSet):
             context={'request': request},
             many=True)
         return Response(serializer.data)
+
+    
 
 # Routers provide a way of automatically determining the URL conf.
 router = BulkRouter()
