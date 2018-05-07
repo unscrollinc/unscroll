@@ -2,6 +2,10 @@ body {
     margin:0;
     padding:0;
     position:fixed;
+    font-family:'Open Sans', sans-serif;
+}
+.input, th, td {
+    font-family:'Open Sans', sans-serif;
 }
 .App {
     width:100%;
@@ -11,14 +15,16 @@ body {
 
 .Nav {
     width:100%;
-    height:5%;
+    height:10%;
     position:fixed;
-    background:yellow;
+    background:white;
+    font-size:80%;
+    box-shadow: inset 0 -1px 0 #eee;
 }
 
 .Timeline, .Editor {
-    top:5%;
-    height:95%;
+    top:10%;
+    height:90%;
     position:absolute;    
 }
 
@@ -91,7 +97,7 @@ h1 a {
     border-top:1px solid #00F;
     border-left:1px solid #00F;    
     position:absolute;
-    background:#ccf;
+    background:white;
     font-size:9pt;
 }
 
@@ -189,4 +195,70 @@ button.new {
 }
 .event-meta a {
     text-decoration:none;
+}
+
+button, input.inputButton {
+    text-transform:uppercase;
+    color:black;
+    background:white;    
+    border:1px solid #ccc;
+    margin:0px 0px 0px 2px;
+    border-radius:8px;    
+}
+button:active, input.inputButton:active {
+    background:white;
+    color:black;
+}
+.login {
+    padding:0.5em 1em 0 0;
+
+    font-weight:bold;
+    float:right;
+
+    text-align:right;
+}
+button.logout {
+    margin-left:1em;
+}
+
+.searchBox {
+    padding:1em 0 1em 0;
+    width:75%;
+    background:white;
+    text-transform:uppercase;
+    
+}
+
+.subsearch {
+    padding-left:0.5em;
+    width:20%;
+    font-size:9pt;
+    line-height:149%;
+}
+
+.subsearch input {
+    padding:0.05em;
+    width:10%;
+    background:#eee;
+    border:1px solid gray;
+    padding-left:0.25em;
+    text-transform:none;    
+    font-size:9pt;
+}
+
+input.loginButton {
+    background:red;
+    border:pink;
+    color:white;
+    font-weight:bold;
+}
+
+th {
+    font-weight:normal;
+    text-transform:uppercase;
+    font-size:9pt;
+}
+
+.rangeInput {
+    width:90%;
 }

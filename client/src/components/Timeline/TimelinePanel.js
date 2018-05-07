@@ -1,10 +1,10 @@
 import React from 'react';
 import Column from './TimelinePanelColumn.js';
 import Event from './TimelinePanelEvent.js';
+
+import { DateTime, Interval } from 'luxon';
 import axios from 'axios';
 import cachios from 'cachios';
-import { DateTime, Interval } from 'luxon';
-
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.withCredentials = true;

@@ -316,7 +316,7 @@ class BulkNoteSerializer(BulkSerializerMixin,
             'in_scroll',
             'scroll_uuid',
             'kind',
-            'public',
+            'is_public',
             'by_user',
             'in_event',
             'event_full',
@@ -484,6 +484,7 @@ class NotebookViewSet(viewsets.ModelViewSet):
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     full_scrolls = ScrollSerializer(User.full_scrolls, many=True)
+    full_notebooks = ScrollSerializer(User.full_notebooks, many=True)    
 
     class Meta:
         model = User
@@ -492,6 +493,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
             'username',
             'email',
             'full_scrolls',
+            'full_notebooks',            
             'is_staff')
 
 
@@ -537,6 +539,7 @@ schema_view = get_swagger_view(title='Unscroll API')
 urlpatterns = [
     url(r'', include(router.urls)),
     path('admin/', admin.site.urls),
+    url(r'^auth/', include('djoser.urls')),
     url(r'^auth/', include('djoser.urls.authtoken')),
 ] + static(settings.STATIC_URL,
            document_root=settings.STATIC_ROOT)

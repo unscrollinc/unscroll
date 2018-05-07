@@ -13,7 +13,6 @@ SEARCH = "collection:wwIIarchive-audio"
 
 # SOMETHING IS UP WHERE THIS PUTS DATES OF JUST YEARS AS JANUARY 3
 
-
 class Collection:
     id = None
     image_url = None
@@ -87,7 +86,7 @@ def search(search_term):
                     f.content_url = "{}{}/{}".format(DOWNLOAD_URL,
                                                      item.identifier,
                                                      urllib.parse.quote_plus(fdict['name']))
-                    f.mediatype = 'audio/mpeg'
+                    f.mediatype = 'audio/mp3'
                     f.source_date = item.metadata['date']
                     title = 'Untitled'
                     if 'title' in fdict:

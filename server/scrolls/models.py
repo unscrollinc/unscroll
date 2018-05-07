@@ -10,12 +10,18 @@ class User(User):
 
     def full_scrolls(self):
         return Scroll.objects\
-                     .select_related('user')\
-                     .filter(user__id=self.id, public=True)\
+                     .select_related('by_user')\
+                     .filter(by_user__id=self.id, is_public=True)\
                      .annotate(
                          event_count=Count('events'),
-                         first_event=Min('events__datetime'),
-                         last_event=Max('events__datetime'))
+                         first_event=Min('events__when_happened'),
+                         last_event=Max('events__when_happened'))
+    
+    def full_notebooks(self):
+        return Notebook.objects\
+                     .select_related('by_user')\
+                     .filter(by_user__id=self.id, is_public=True)\
+                     .annotate(event_count=Count('notes'))
 
     # Use FAST topics vs Wikipedia topics?
     # Always add room for Wikipedia links

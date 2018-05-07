@@ -4,9 +4,15 @@ import Timeline from './Timeline/Timeline';
 import Timelist from './Timelist/Timelist';
 import Notebook from './Notebook/Notebook';
 import TimelineEventEditor from './Timeline/TimelineEventEditor';
-import { AppProvider } from './AppContext';
-
+import AppContext, {AppProvider} from './AppContext';
+import axios from 'axios';
+import cachios from 'cachios';
 import '../index.css';
+
+axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+axios.defaults.xsrfCookieName = "csrftoken";
+axios.defaults.withCredentials = true;
+
 
 class App extends React.Component {
 
@@ -15,7 +21,10 @@ class App extends React.Component {
         this.state = {
             editorOn:false,
             timelineOn:false,            
-            notes:[]
+            notes:[],
+            username:undefined,
+            password:undefined,
+            auth_token:undefined
         };
     }
 
@@ -38,7 +47,7 @@ class App extends React.Component {
     renderEditButton() {
         return(
             <button onClick={this.handleEditButtonClick}>
-                {this.state.editorOn ? 'Hide Editor' : 'Show Editor'}
+                {this.state.editorOn ? 'Notebook' : 'Notebook'}
             </button>
         );
     }
@@ -46,27 +55,81 @@ class App extends React.Component {
     renderViewButton() {
         return(
             <button onClick={this.handleViewButtonClick}>
-                {this.state.timelineOn ? 'Show List' : 'Show Timeline'}
+                {this.state.timelineOn ? 'Horizontally' : 'Vertically'}
             </button>
         );
     }
 
-    renderLoginForm() {
+    renderLoginForm(context) {
+        if (context.state.user.isLoggedIn) {
+            return(
+                <div className="login">
+                  <a href="/profile">{context.state.user.username}</a>
+                  <button className="logout" onClick={context.doLogout}>Log out</button>
+                  {this.renderEditButton()}
+                  <button>+ Scroll</button>
+                      
+                  
+                </div>);
+        }
         return(
-            <span>
-              <input type="text" value="email"/>
-              <input type="text" value="password"/>              
-              <input type="submit" value="login"/>
-            </span>
+            <form class="login">
+              <table>
+                <tbody>
+                  <tr>
+                    <th>Username</th>
+                    <td>
+                      <input name="email" onChange={context.handleUsernameUpdate} type="text"/>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>Password</th>
+                    <td>
+                      <input name="password" onChange={context.handlePasswordUpdate} type="password"/>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2">
+                      <button onClick={context.doRegister}>Create account</button>                      
+                      <input className="inputButton loginButton" type="submit" onClick={context.doLogin} value="login"/>
+                    </td>                      
+                  </tr>
+                </tbody>
+              </table>
+            </form>
         );
     }
 
     renderSearch() {
         return(
-            <span>
-              <input type="text" value="search"/>
-              <input type="submit" value="go"/>
-            </span>
+            <div className="searchBox">
+              <div>
+                Unscroll is
+                {this.renderViewButton()}
+              </div>
+              <div>
+              <span className="subsearch">
+                showing <input type="text" value="all events"/>
+              </span>
+              <span className="subsearch">
+                between <input type="text" value="yesterday"/>
+              </span>
+              <span className="subsearch">
+                and <input type="text" value="today"/>
+              </span>
+              </div>
+              <div>
+              <span className="subsearch">
+                by <input type="text" value="all creators"/>
+                </span>
+              <span className="subsearch">                
+                in <input type="text" value="all scrolls"/>
+              </span>
+              <span className="subsearch">                
+                about <input type="text" value="all topics"/>
+              </span>
+              </div>
+            </div>
         );
     }
 
@@ -83,10 +146,12 @@ class App extends React.Component {
             <AppProvider>           
                 <div className="App">
                   <div className="Nav">
-                    {this.renderLoginForm()}
-                    {this.renderEditButton()}
-                    {this.renderViewButton()}
-                    {this.renderSearch()}                                
+                    <AppContext.Consumer>
+                      {(context) => this.renderLoginForm(context)}
+                    </AppContext.Consumer>                      
+                    <AppContext.Consumer>                      
+                      {(context) => this.renderSearch(context)}
+                    </AppContext.Consumer>
                   </div>
                   {display}
                   <Notebook status={this.state.editorOn}/>
