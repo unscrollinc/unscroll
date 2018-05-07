@@ -55,7 +55,7 @@ class App extends React.Component {
     renderViewButton() {
         return(
             <button onClick={this.handleViewButtonClick}>
-                {this.state.timelineOn ? 'Timelist' : 'Timeline'}
+                {this.state.timelineOn ? 'Horizontally' : 'Vertically'}
             </button>
         );
     }
@@ -66,6 +66,10 @@ class App extends React.Component {
                 <div className="login">
                   <a href="/profile">{context.state.user.username}</a>
                   <button className="logout" onClick={context.doLogout}>Log out</button>
+                  {this.renderEditButton()}
+                  <button>+ Scroll</button>
+                      
+                  
                 </div>);
         }
         return(
@@ -99,18 +103,32 @@ class App extends React.Component {
     renderSearch() {
         return(
             <div className="searchBox">
+              <div>
+                Unscroll is
+                {this.renderViewButton()}
+              </div>
+              <div>
               <span className="subsearch">
-                Search: <input type="text" value="all events"/>
+                showing <input type="text" value="all events"/>
               </span>
               <span className="subsearch">
-                By: <input type="text" value="all creators"/>
+                between <input type="text" value="yesterday"/>
+              </span>
+              <span className="subsearch">
+                and <input type="text" value="today"/>
+              </span>
+              </div>
+              <div>
+              <span className="subsearch">
+                by <input type="text" value="all creators"/>
+                </span>
+              <span className="subsearch">                
+                in <input type="text" value="all scrolls"/>
               </span>
               <span className="subsearch">                
-                In: <input type="text" value="all scrolls"/>
+                about <input type="text" value="all topics"/>
               </span>
-              <span className="subsearch">                
-                About: <input type="text" value="all topics"/>
-              </span>
+              </div>
             </div>
         );
     }
@@ -134,9 +152,6 @@ class App extends React.Component {
                     <AppContext.Consumer>                      
                       {(context) => this.renderSearch(context)}
                     </AppContext.Consumer>
-                    {this.renderEditButton()}
-                    {this.renderViewButton()}
-                    <button>+ Scroll</button>
                   </div>
                   {display}
                   <Notebook status={this.state.editorOn}/>
