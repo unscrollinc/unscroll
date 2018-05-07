@@ -49,7 +49,11 @@ CREATE INDEX triples_p_idx ON triples(p);
 INSERT INTO subject (uri) SELECT DISTINCT(s) AS uri FROM triples;
 CREATE INDEX subject_idx ON subject(uri);
 
-INSERT INTO titles (subject_id, title) SELECT subject.id AS subject_id, olit AS title FROM triples, subject WHERE (p='http://schema.org/name' OR p='http://www.w3.org/2000/01/rdf-schema#label' OR p='http://www.w3.org/2004/02/skos/core#prefLabel') AND triples.s = subject.uri;
+INSERT INTO titles (subject_id, title)
+       SELECT subject.id AS subject_id, olit AS title
+       FROM triples, subject
+       WHERE (p='http://schema.org/name'
+             OR p='http://www.w3.org/2000/01/rdf-schema#label' OR p='http://www.w3.org/2004/02/skos/core#prefLabel') AND triples.s = subject.uri;
 
 SELECT subject.id FROM triples, subject WHERE p = 'http://www.w3.org/2004/02/skos/core#broader' AND triples.s=subject.uri;
 

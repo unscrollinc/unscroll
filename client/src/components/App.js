@@ -86,8 +86,8 @@ class App extends React.Component {
                   </tr>
                   <tr>
                     <td colspan="2">
-                      <input type="submit" onClick={context.doLogin} value="login"/>
-                      <button onClick={context.doRegister}>Make account</button>
+                      <button onClick={context.doRegister}>Create account</button>                      
+                      <input className="inputButton loginButton" type="submit" onClick={context.doLogin} value="login"/>
                     </td>                      
                   </tr>
                 </tbody>

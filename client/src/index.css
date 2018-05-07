@@ -195,7 +195,7 @@ button.new {
     text-decoration:none;
 }
 
-button {
+button, input.inputButton {
     text-transform:uppercase;
     color:black;
     background:white;    
@@ -203,7 +203,7 @@ button {
     margin:0px 0px 0px 2px;
     border-radius:8px;    
 }
-button:active {
+button:active, input.inputButton:active {
     background:white;
     color:black;
 }
@@ -212,6 +212,7 @@ button:active {
 
     font-weight:bold;
     float:right;
+
     text-align:right;
 }
 button.logout {
@@ -233,4 +234,17 @@ button.logout {
     padding:0.15em;
     width:10%;
     font-size:10pt;
+}
+
+input.loginButton {
+    background:red;
+    border:pink;
+    color:white;
+    font-weight:bold;
+}
+
+th {
+    font-weight:normal;
+    text-transform:uppercase;
+    font-size:9pt;
 }
