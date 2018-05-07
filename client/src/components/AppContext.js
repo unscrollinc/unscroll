@@ -1,46 +1,134 @@
 import React from 'react';
+import cookie from 'js-cookie';
 import update from 'immutability-helper';
 import uuidv4 from 'uuid/v4';
+import axios from 'axios';
+import cachios from 'cachios';
+axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+axios.defaults.xsrfCookieName = "csrftoken";
+axios.defaults.withCredentials = true;
 
 export const AppContext = React.createContext();
 
 export class AppProvider extends React.Component {
-
-    state = {        
-        user: {
-            isLoggedIn:false,
-            id:undefined,
-            authToken:undefined,
-            username:undefined,
-            profile:undefined,
-            notebookCurrent:undefined,
-            notebookList:[],
-            scrollList:[]
-        },
-        notebook: {
-            on:false,
-            id:undefined,
-            title:undefined,
-            subtitle:undefined,
-            summary:undefined,
-            notes:new Map()
-        },
-        eventEditor: {
-            on:false,
-            currentEvent:{}
-        },
-        timeline: {
-            frame:undefined,
-            span:undefined,
-            position:undefined
+    constructor(state, context) {
+        super(state, context);
+        let c = cookie.get();        
+        this.state = this.makeState(c);
+    }
+    
+    makeState(c) {
+        let isLoggedIn = false;
+        let authToken = undefined;
+        let username = undefined;
+    
+        if (c && c.authToken && c.username) {
+            isLoggedIn = true;
+            authToken = c.authToken;
+            username = c.username;
         }
-    };
-
+        return {
+            user: {
+                isLoggedIn:isLoggedIn,
+                id:undefined,
+                authToken:authToken,
+                username:username,
+                password:undefined,
+                profile:undefined,
+                notebookCurrent:undefined,
+                notebookList:[],
+                scrollList:[]
+            },
+            notebook: {
+                on:false,
+                id:undefined,
+                title:undefined,
+                subtitle:undefined,
+                summary:undefined,
+                notes:new Map()
+            },
+            eventEditor: {
+                on:false,
+                currentEvent:{}
+            },
+            timeline: {
+                frame:undefined,
+                span:undefined,
+                position:undefined
+            }
+        }
+    }
+    
+    makeAuthHeader(token) {
+        return {Authorization: `Token ${token}`};
+    }
+    
     render() {
         return (
             <AppContext.Provider value={{
 
                 state:this.state,
+                
+                handleUsernameUpdate:(event) => {
+                    this.setState({user: update(this.state.user, {username: {$set: event.target.value}})});
+                },
+                
+                handlePasswordUpdate:(event) => {
+                    this.setState({user: update(this.state.user, {password: {$set: event.target.value}})});                    
+                },
+
+                doLogout:() => {
+                    let _this = this;
+                    axios({method:'post',
+                           url:'http://127.0.0.1:8000/auth/logout/',
+                           headers: this.makeAuthHeader(this.state.user.authToken)
+                          })
+                        .then(function(response) {
+                            _this.setState(_this.makeState());
+                        })
+                        .catch(function(error) {
+                            console.log(error);
+                        })
+                        .finally(function(x) {
+                            cookie.remove('authToken');
+                            cookie.remove('username');                            
+                            _this.setState(_this.makeState());
+                        });
+                },
+                
+                doLogin:(event) => {
+                    event.preventDefault();
+                    let _this = this;
+                    cachios.post(
+                        'http://127.0.0.1:8000/auth/login/',
+                        {
+                            username: this.state.user.username,
+                            password: this.state.user.password
+                        })
+                        .then(function(response) {
+                            console.log(response);
+                            let u1 = update(_this.state.user, {
+                                authToken: {$set: response.data.auth_token},
+                                password: {$set: undefined},
+                                isLoggedIn: {$set: true}                              
+                            });
+                            cookie.set('authToken', response.data.auth_token);
+                            cookie.set('username', _this.state.user.username);
+                            
+                            _this.setState(
+                                {user: u1},
+                                function() {
+                                    console.log(_this.state);
+                                });
+                            
+
+                            console.log(cookie.get());
+                            
+                        })
+                        .catch(function(error) {
+                            console.log('ERROR', error);
+                        });
+                },
                 
                 addNotebook:() => {
                     this.setState({notebook: {

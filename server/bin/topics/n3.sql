@@ -20,57 +20,94 @@ CREATE TABLE triples (
   olit TEXT DEFAULT NULL
 );
 
+DROP TABLE IF EXISTS subject;
 CREATE TABLE subject (
        id INTEGER PRIMARY KEY,
        uri TEXT NOT NULL
 );
 
-; INSERT INTO subject (uri) select distinct(s) as uri from triples;
-; CREATE index subject_idx on subject(uri);
-;
-
-SELECT subject.id as subject_id, olit as title FROM triples, subject WHERE (p='http://schema.org/name' OR p='http://www.w3.org/2000/01/rdf-schema#label' OR p='http://www.w3.org/2004/02/skos/core#prefLabel') AND triples.s = subject.uri;
-
+DROP TABLE IF EXISTS titles;
 CREATE TABLE titles (
        id INTEGER PRIMARY KEY,
        subject_id INTEGER,       
        title TEXT NOT NULL,
-       foreign key (subject_id) REFERENCES subject(id)
+       FOREIGN KEY (subject_id) REFERENCES subject(id)
 );
 
-;; Make a big table of TITLES
-INSERT INTO TITLES (subject_id, title) SELECT subject.id as subject_id, olit as title FROM triples, subject WHERE (p='http://schema.org/name' OR p='http://www.w3.org/2000/01/rdf-schema#label' OR p='http://www.w3.org/2004/02/skos/core#prefLabel') AND triples.s = subject.uri;
-
+DROP TABLE IF EXISTS broader;
 CREATE TABLE broader (
        from_id integer,
        to_id integer,
-       FOREIGN KEY (from_id) references subject(id), foreign key (to_id) references subject(id));
+       FOREIGN KEY (from_id) REFERENCES subject(id),
+       FOREIGN KEY (to_id) REFERENCES subject(id)
+);
 
-SELECT from_id, to_id, t1.title, t2.title
-FROM   broader, subject s1, subject s2, titles t1, titles t2
-WHERE  t1.subject_id = s1.id AND broader.from_id = s1.id AND t1.subject_id = broader.from_id
-AND    t2.subject_id = s2.id AND broader.to_id = s2.id AND t2.subject_id = broader.to_id;
+BEGIN TRANSACTION;
+
+CREATE INDEX triples_s_idx ON triples(s);
+CREATE INDEX triples_p_idx ON triples(p);
+INSERT INTO subject (uri) SELECT DISTINCT(s) AS uri FROM triples;
+CREATE INDEX subject_idx ON subject(uri);
+
+INSERT INTO titles (subject_id, title) SELECT subject.id AS subject_id, olit AS title FROM triples, subject WHERE (p='http://schema.org/name' OR p='http://www.w3.org/2000/01/rdf-schema#label' OR p='http://www.w3.org/2004/02/skos/core#prefLabel') AND triples.s = subject.uri;
+
+SELECT subject.id FROM triples, subject WHERE p = 'http://www.w3.org/2004/02/skos/core#broader' AND triples.s=subject.uri;
+
+INSERT INTO broader (from_id, to_id)
+       SELECT s1.id AS from_id,
+              s2.id AS to_id
+       FROM triples, subject s1, subject s2
+       WHERE p = 'http://www.w3.org/2004/02/skos/core#broader'
+             AND triples.s=s1.uri
+             AND triples.o=s2.uri;
 
 
-http://purl.org/dc/terms/identifier
-http://purl.org/dc/terms/isReplacedBy
-http://purl.org/dc/terms/license
-http://purl.org/dc/terms/replaces
-http://purl.org/dc/terms/title
-http://schema.org/geo
-http://schema.org/latitude
-http://schema.org/longitude
-http://schema.org/name
-http://schema.org/sameAs
-http://www.w3.org/1999/02/22-rdf-syntax-ns#type
-http://www.w3.org/2000/01/rdf-schema#comment
-http://www.w3.org/2000/01/rdf-schema#label
-http://www.w3.org/2000/01/rdf-schema#seeAlso
-http://www.w3.org/2002/07/owl#sameAs
-http://www.w3.org/2004/02/skos/core#altLabel
-http://www.w3.org/2004/02/skos/core#broader
-http://www.w3.org/2004/02/skos/core#inScheme
-http://www.w3.org/2004/02/skos/core#prefLabel
-http://www.w3.org/2004/02/skos/core#related
-http://www.w3.org/2004/02/skos/core#relatedMatch
-http://xmlns.com/foaf/0.1/focus
+COMMIT;
+
+-- SELECT from_id, to_id, t1.title, t2.title
+-- FROM   broader, subject s1, subject s2, titles t1, titles t2
+-- WHERE  t1.subject_id = s1.id AND broader.from_id = s1.id AND t1.subject_id = broader.from_id
+-- AND    t2.subject_id = s2.id AND broader.to_id = s2.id AND t2.subject_id = broader.to_id;
+-- http://purl.org/dc/terms/identifier
+-- http://purl.org/dc/terms/isReplacedBy
+-- http://purl.org/dc/terms/license
+-- http://purl.org/dc/terms/replaces
+-- http://purl.org/dc/terms/title
+-- http://schema.org/geo
+-- http://schema.org/latitude
+-- http://schema.org/longitude
+-- http://schema.org/name
+-- http://schema.org/sameAs
+-- http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+-- http://www.w3.org/2000/01/rdf-schema#comment
+-- http://www.w3.org/2000/01/rdf-schema#label
+-- http://www.w3.org/2000/01/rdf-schema#seeAlso
+-- http://www.w3.org/2002/07/owl#sameAs
+-- http://www.w3.org/2004/02/skos/core#altLabel
+-- http://www.w3.org/2004/02/skos/core#broader
+-- http://www.w3.org/2004/02/skos/core#inScheme
+-- http://www.w3.org/2004/02/skos/core#prefLabel
+-- http://www.w3.org/2004/02/skos/core#related
+-- http://www.w3.org/2004/02/skos/core#relatedMatch
+-- http://xmlns.com/foaf/0.1/focus
+
+
+EXPLAIN
+SELECT from_id, t1.title, to_id
+FROM broader
+JOIN titles AS t1 ON t1.subject_id = broader.from_id
+
+
+SELECT from_id, t1.title, to_id, t2.title
+FROM broader
+JOIN titles AS t1 ON t1.subject_id = broader.from_id
+JOIN titles AS t2 ON t2.subject_id = broader.to_id;
+
+
+SELECT t1.title FROM broader
+INNER JOIN subject AS s1 ON s1.id = broader.from_id
+INNER JOIN titles AS t1 ON s1.id = t1.subject_id;
+
+JOIN subject AS s2 ON s2.id = broader.to_id
+JOIN titles AS t2 ON s2.id = t2.subject_id;
+

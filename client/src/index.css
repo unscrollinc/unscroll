@@ -2,6 +2,7 @@ body {
     margin:0;
     padding:0;
     position:fixed;
+    font-family:'Open Sans', sans-serif;
 }
 .App {
     width:100%;
@@ -11,14 +12,17 @@ body {
 
 .Nav {
     width:100%;
-    height:5%;
+    height:10%;
     position:fixed;
-    background:yellow;
+    background:white;
+    font-size:80%;
+    box-shadow: inset 0 -1px 0 black;
+    
 }
 
 .Timeline, .Editor {
-    top:5%;
-    height:95%;
+    top:10%;
+    height:90%;
     position:absolute;    
 }
 
@@ -91,7 +95,7 @@ h1 a {
     border-top:1px solid #00F;
     border-left:1px solid #00F;    
     position:absolute;
-    background:#ccf;
+    background:white;
     font-size:9pt;
 }
 
@@ -189,4 +193,44 @@ button.new {
 }
 .event-meta a {
     text-decoration:none;
+}
+
+button {
+    text-transform:uppercase;
+    color:black;
+    background:white;    
+    border:1px solid #ccc;
+    margin:0px 0px 0px 2px;
+    border-radius:8px;    
+}
+button:active {
+    background:white;
+    color:black;
+}
+.login {
+    padding:0.5em 1em 0 0;
+
+    font-weight:bold;
+    float:right;
+    text-align:right;
+}
+button.logout {
+    margin-left:1em;
+}
+
+.searchBox {
+    padding:1em 0 1em 0;
+    width:75%;
+    background:white;
+}
+.subsearch {
+    padding-right:1em;
+    width:20%;
+}
+
+.subsearch input {
+    font-family:'Open Sans', sans-serif;
+    padding:0.15em;
+    width:10%;
+    font-size:10pt;
 }

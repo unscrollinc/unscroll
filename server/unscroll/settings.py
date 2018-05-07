@@ -38,10 +38,10 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django.contrib.postgres',
+    'django_filters',
     'rest_framework',
     'corsheaders',
     'rest_framework.authtoken',
-    'django_filters',
     'djoser',
 #    'silk'
 )
