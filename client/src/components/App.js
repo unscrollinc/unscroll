@@ -100,7 +100,7 @@ class App extends React.Component {
         );
     }
 
-    renderSearch() {
+    renderSearch(context) {
         return(
             <div className="searchBox">
               <div>
@@ -109,7 +109,8 @@ class App extends React.Component {
               </div>
               <div>
               <span className="subsearch">
-                showing <input type="text" value="all events"/>
+                showing <input type="text" onChange={context.onEventSearch}
+	    value="all events"/>
               </span>
               <span className="subsearch">
                 between <input type="text" value="yesterday"/>
