@@ -20,17 +20,21 @@ export class AppProvider extends React.Component {
 
     saveNotebook() {
         let _this = this;
-        console.log(this.state.notebook);
-        axios(
-            {method:'post',
-             url:'http://127.0.0.1:8000/notebooks/',
-             headers:this.makeAuthHeader(this.state.user.authToken),
-             data:update(this.state.notebook, {$unset: ['notes']})})
+        axios({
+	    method:'post',
+	    url:'http://127.0.0.1:8000/notebooks/',
+	    headers:this.makeAuthHeader(this.state.user.authToken),
+	    data:update(this.state.notebook, {$unset: ['notes']})
+	})
             .then(function(resp) {
-                console.log(resp);
+		let _nb0 = update(_this.state.notebook, {$merge: {
+		    isSaved: true,
+		    notes:new Map(),
+		    ...resp.data}});
+		_this.setState({notebook: _nb0}, ()=> { console.log('1. NBNBNB', _this.state.notebook); } );
             })
             .catch(error => {
-                alert(`There is already a notebook by you with that name! ${error.response.data.detail}`);
+                alert(`saveNotebook: There is already a notebook by you with that name! ${error}`);
             });
     }
 
@@ -48,7 +52,19 @@ export class AppProvider extends React.Component {
                 alert(`There is already a notebook by you with that name! ${error.response.data.detail}`);
             });
     }
-    
+
+    loadNotebookList() {
+        let _this = this;	
+        axios({method:'get',
+	       url:'http://localhost:8000/users/notebooks/',
+               headers: this.makeAuthHeader(_this.state.user.authToken)
+	      })
+	    .then(function(response) {
+		_this.setState({user: update(_this.state.user, {$merge: {notebookList:response.data}})},
+			       ()=>{console.log(_this.state.user);}
+			      );
+	    });
+    }
     
     makeState(c) {
         let isLoggedIn = false;
@@ -60,7 +76,7 @@ export class AppProvider extends React.Component {
             authToken = c.authToken;
             username = c.username;
         }
-        
+
         return {
             user: {
                 isLoggedIn:isLoggedIn,
@@ -73,20 +89,7 @@ export class AppProvider extends React.Component {
                 notebookList:[],
                 scrollList:[]
             },
-            notebook: {
-                on:true,
-                by_user:undefined,
-                is_public:undefined,
-                url:undefined,
-                uuid:undefined,
-                when_created:undefined,
-                when_modified:undefined,
-                id:undefined,
-                title:undefined,
-                subtitle:undefined,
-                description:undefined,
-                notes:new Map()
-            },
+            notebook: {},
             eventEditor: {
                 on:false,
                 currentEvent:{}
@@ -155,21 +158,16 @@ export class AppProvider extends React.Component {
                             password: this.state.user.password
                         })
                         .then(function(response) {
-                            console.log(response);
                             let u1 = update(_this.state.user, {
-                                authToken: {$set: response.data.auth_token},
-                                password: {$set: undefined},
-                                isLoggedIn: {$set: true}                              
-                            });
+				$merge: 
+				{
+				    authToken: response.data.auth_token,
+                                    password: undefined,
+                                    isLoggedIn: true
+				}});
                             cookie.set('authToken', response.data.auth_token);
                             cookie.set('username', _this.state.user.username);
-                            
-                            _this.setState(
-                                {user: u1},
-                                function() {
-                                    console.log(_this.state);
-                                });
-                            console.log(cookie.get());
+                            _this.setState({user: u1});
                         })
                         .catch(function(error) {
                             console.log('ERROR', error);
@@ -179,6 +177,7 @@ export class AppProvider extends React.Component {
                 addNotebook:() => {
                     this.setState({notebook: {
                         on:true,
+			isSaved:false,
                         title:'Untitled ' + Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 3),
                         subtitle:'Un-subtitled',
                         description:'Un-summarized',
@@ -191,7 +190,11 @@ export class AppProvider extends React.Component {
                                                    {$set: {id:id}})},
                                   this.loadNotebook);
                 },
-                
+
+		listNotebooks:()=>{
+		    this.loadNotebookList();
+		},
+		
                 addNote:(event) => {
                     let _notes = update(this.state.notebook.notes,
                                         {$add:[[uuidv4(),
