@@ -43,7 +43,7 @@ INSTALLED_APPS = (
     'corsheaders',
     'rest_framework.authtoken',
     'djoser',
-#    'silk'
+    'silk'
 )
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS':
@@ -61,7 +61,7 @@ REST_FRAMEWORK = {
 
 
 MIDDLEWARE = (
-#    'silk.middleware.SilkyMiddleware',
+    'silk.middleware.SilkyMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

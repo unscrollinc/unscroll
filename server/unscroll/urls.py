@@ -461,21 +461,20 @@ class NotebookSerializer(serializers.HyperlinkedModelSerializer):
 
     def create(self, validated_data):
         validated_data['by_user'] = self.context['request'].user
-        s = Notebook(**validated_data)
+        n = Notebook(**validated_data)
         try:
-            s.save()
-            return s            
+            n.save()
+            return n
         except Exception as e:
             raise APIException(str(e))
-
 
 
 class NotebookViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = NotebookSerializer
-    queryset = Notebook.objects.select_related('by_user')\
-                             .filter(is_public=True)
     filter_class = NotebookFilter
+    queryset = Notebook.objects.select_related('by_user')\
+                               .filter(is_public=True)
 
     @detail_route(methods=['get'])
     def notes(self, request, pk=None):
@@ -487,6 +486,7 @@ class NotebookViewSet(viewsets.ModelViewSet):
             context={'request': request},
             many=True)
         return Response(serializer.data)
+
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     full_scrolls = ScrollSerializer(User.full_scrolls, many=True)
@@ -513,14 +513,26 @@ class UserViewSet(viewsets.ModelViewSet):
     def scrolls(self, request):
         user = self.request.user
         scrolls = Scroll.objects\
-                        .select_related('user')\
-                        .filter(user__id=user.id, is_public=True)\
+                        .select_related('by_user')\
+                        .filter(by_user__id=user.id, is_public=True)\
                         .annotate(
                             event_count=Count('events'),
                             first_event=Min('events__datetime'),
                             last_event=Max('events__datetime'))
         serializer = ScrollSerializer(
             scrolls,
+            context={'request': request},
+            many=True)
+        return Response(serializer.data)
+
+    @list_route()
+    def notebooks(self, request):
+        user = self.request.user
+        notebooks = Notebook.objects\
+                          .select_related('by_user')\
+                          .filter(by_user__id=user.id)
+        serializer = NotebookSerializer(
+            notebooks,
             context={'request': request},
             many=True)
         return Response(serializer.data)
@@ -550,5 +562,5 @@ urlpatterns = [
 ] + static(settings.STATIC_URL,
            document_root=settings.STATIC_ROOT)
 
-# urlpatterns += [url(r'^silk/', include('silk.urls', namespace='silk'))]
+urlpatterns += [url(r'^silk/', include('silk.urls', namespace='silk'))]
     
