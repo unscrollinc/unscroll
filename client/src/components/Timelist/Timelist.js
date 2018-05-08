@@ -58,8 +58,9 @@ class Timelist extends React.Component {
     render() {
         return(
             <div className="Timelist" onScroll={this.handleScroll.bind(this)}>
-              <h1>Timelist</h1>
-              Start: <input className="rangeInput" type="range" min="1968" max="2018"/>
+                <span className="startRange">
+                Start: <input className="rangeInput" type="range" min="1968" max="2018"/>
+                </span>
               <div>
                 {this.state.events}
               </div>

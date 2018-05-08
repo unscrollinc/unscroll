@@ -34,23 +34,16 @@ class Notebook extends React.Component {
                     return (
                         <div style={{ display: this.props.status ? 'block' : 'none' }} className="Editor">
                           <span>
-	                    <button onClick={context.addNotebook}>+ Notebook</button>                          
                             <button onClick={context.addNote}>+ Note</button>
+	                    <button onClick={context.listNotebooks}>+ List</button>
+	                    <button onClick={context.addNotebook}>+ Notebook</button>                          
                           </span>
-                          <br/>Load notebook:
-                          <input list="articles" id="myArticles" name="myArticles" />
-                          
-	                  <datalist id="articles">
-		            <option>Article 1</option>
-		            <option>Article 2</option>
-	                  </datalist>
-                          
 		          <TitleEditor/>
                           
 		          <h1>{context.state.notebook.title}</h1>
 		          <h2>{context.state.notebook.subhed}</h2>
 
-                          <div className="summary">{context.state.notebook.summary}</div>
+                          <div className="summary">{context.state.notebook.description}</div>
 
                           <div className="notebook-event-list">
                             {Array.from(context.state.notebook.notes).map(this.makeNote)}

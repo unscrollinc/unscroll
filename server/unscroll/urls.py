@@ -12,6 +12,8 @@ from rest_framework import generics, serializers, viewsets, routers, response
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
+from rest_framework.exceptions import APIException
+
 from scrolls.models import User, Scroll, Event, Notebook, Note, Media, Thumbnail
 from rest_framework_swagger.views import get_swagger_view
 from PIL import Image, ImageOps
@@ -460,8 +462,12 @@ class NotebookSerializer(serializers.HyperlinkedModelSerializer):
     def create(self, validated_data):
         validated_data['by_user'] = self.context['request'].user
         s = Notebook(**validated_data)
-        s.save()
-        return s
+        try:
+            s.save()
+            return s            
+        except Exception as e:
+            raise APIException(str(e))
+
 
 
 class NotebookViewSet(viewsets.ModelViewSet):

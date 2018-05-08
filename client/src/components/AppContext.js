@@ -4,6 +4,7 @@ import update from 'immutability-helper';
 import uuidv4 from 'uuid/v4';
 import axios from 'axios';
 import cachios from 'cachios';
+
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.withCredentials = true;
@@ -16,6 +17,38 @@ export class AppProvider extends React.Component {
         let c = cookie.get();        
         this.state = this.makeState(c);
     }
+
+    saveNotebook() {
+        let _this = this;
+        console.log(this.state.notebook);
+        axios(
+            {method:'post',
+             url:'http://127.0.0.1:8000/notebooks/',
+             headers:this.makeAuthHeader(this.state.user.authToken),
+             data:update(this.state.notebook, {$unset: ['notes']})})
+            .then(function(resp) {
+                console.log(resp);
+            })
+            .catch(error => {
+                alert(`There is already a notebook by you with that name! ${error.response.data.detail}`);
+            });
+    }
+
+    loadNotebook() {
+        let _this = this;
+        console.log(this.state.notebook);
+        axios(
+            {method:'get',
+             url:this.state.notebook.id,
+             headers:this.makeAuthHeader(this.state.user.authToken)})
+            .then(function(resp) {
+                console.log(resp);
+            })
+            .catch(error => {
+                alert(`There is already a notebook by you with that name! ${error.response.data.detail}`);
+            });
+    }
+    
     
     makeState(c) {
         let isLoggedIn = false;
@@ -27,6 +60,7 @@ export class AppProvider extends React.Component {
             authToken = c.authToken;
             username = c.username;
         }
+        
         return {
             user: {
                 isLoggedIn:isLoggedIn,
@@ -40,11 +74,17 @@ export class AppProvider extends React.Component {
                 scrollList:[]
             },
             notebook: {
-                on:false,
+                on:true,
+                by_user:undefined,
+                is_public:undefined,
+                url:undefined,
+                uuid:undefined,
+                when_created:undefined,
+                when_modified:undefined,
                 id:undefined,
                 title:undefined,
                 subtitle:undefined,
-                summary:undefined,
+                description:undefined,
                 notes:new Map()
             },
             eventEditor: {
@@ -52,6 +92,15 @@ export class AppProvider extends React.Component {
                 currentEvent:{}
             },
             timeline: {
+                isHorizontal:true,
+                search: {
+                    showing:undefined,
+                    from:undefined,
+                    to:undefined,
+                    creator:undefined,
+                    scroll:undefined,
+                    topic:undefined
+                },
                 frame:undefined,
                 span:undefined,
                 position:undefined
@@ -99,7 +148,7 @@ export class AppProvider extends React.Component {
                 doLogin:(event) => {
                     event.preventDefault();
                     let _this = this;
-                    cachios.post(
+                    axios.post(
                         'http://127.0.0.1:8000/auth/login/',
                         {
                             username: this.state.user.username,
@@ -120,10 +169,7 @@ export class AppProvider extends React.Component {
                                 function() {
                                     console.log(_this.state);
                                 });
-                            
-
                             console.log(cookie.get());
-                            
                         })
                         .catch(function(error) {
                             console.log('ERROR', error);
@@ -133,12 +179,17 @@ export class AppProvider extends React.Component {
                 addNotebook:() => {
                     this.setState({notebook: {
                         on:true,
-                        id:uuidv4(),
-                        title:'Untitled',
+                        title:'Untitled ' + Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 3),
                         subtitle:'Un-subtitled',
-                        summary:'Un-summarized',
+                        description:'Un-summarized',
                         notes:new Map()
-                    }});
+                    }}, this.saveNotebook);
+                },
+
+                loadNotebook:(id)=>{
+                    this.setState({notebook:update(this.state.notebook,
+                                                   {$set: {id:id}})},
+                                  this.loadNotebook);
                 },
                 
                 addNote:(event) => {

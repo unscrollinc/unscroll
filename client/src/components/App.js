@@ -13,13 +13,12 @@ axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.withCredentials = true;
 
-
 class App extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            editorOn:false,
+            editorOn:true,
             timelineOn:false,            
             notes:[],
             username:undefined,
@@ -63,14 +62,12 @@ class App extends React.Component {
     renderLoginForm(context) {
         if (context.state.user.isLoggedIn) {
             return(
-                <div className="login">
-                  <a href="/profile">{context.state.user.username}</a>
-                  <button className="logout" onClick={context.doLogout}>Log out</button>
-                  {this.renderEditButton()}
-                  <button>+ Scroll</button>
-                      
-                  
-                </div>);
+                    <div className="login">
+                    <a href="/profile">{context.state.user.username}</a>
+                    <button className="logout" onClick={context.doLogout}>Log out</button>
+                    {this.renderEditButton()}
+                    <button>+ Scroll</button>
+                    </div>);
         }
         return(
             <form class="login">
@@ -104,31 +101,16 @@ class App extends React.Component {
         return(
             <div className="searchBox">
               <div>
-                Unscroll is
-                {this.renderViewButton()}
+                Unscroll
               </div>
               <div>
               <span className="subsearch">
-                showing <input type="text" onChange={context.onEventSearch}
+                Search <input type="text" onChange={context.onEventSearch}
 	    value="all events"/>
-              </span>
-              <span className="subsearch">
-                between <input type="text" value="yesterday"/>
-              </span>
-              <span className="subsearch">
-                and <input type="text" value="today"/>
-              </span>
-              </div>
-              <div>
-              <span className="subsearch">
-                by <input type="text" value="all creators"/>
-                </span>
-              <span className="subsearch">                
-                in <input type="text" value="all scrolls"/>
-              </span>
-              <span className="subsearch">                
-                about <input type="text" value="all topics"/>
-              </span>
+                <br/>from: to: by: in: topic:
+            </span>
+                {this.renderViewButton()}
+                
               </div>
             </div>
         );
