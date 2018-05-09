@@ -474,19 +474,14 @@ class NotebookViewSet(viewsets.ModelViewSet):
     queryset = Notebook.objects.select_related('by_user')\
                                    .filter(is_public=True)
 
+    # Need to override only-public filter here so we use a custom destroy    
     def destroy(self, request, *args, **kwargs):
         self.queryset = Notebook.objects.all()    
         instance = self.get_object()
-        print(instance)
         if instance.by_user == request.user:
             self.perform_destroy(instance)
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(status=status.HTTP_404_NOT_FOUND)        
-        
-        
-
-        return super(NotebookViewSet, self).destroy(request, *args, **kwargs)
-
    
     @detail_route(methods=['get'])
     def notes(self, request, pk=None):
