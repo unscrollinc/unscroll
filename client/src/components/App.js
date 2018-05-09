@@ -5,13 +5,7 @@ import Timelist from './Timelist/Timelist';
 import Notebook from './Notebook/Notebook';
 import TimelineEventEditor from './Timeline/TimelineEventEditor';
 import AppContext, {AppProvider} from './AppContext';
-import axios from 'axios';
-import cachios from 'cachios';
 import '../index.css';
-
-axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
-axios.defaults.xsrfCookieName = "csrftoken";
-axios.defaults.withCredentials = true;
 
 class App extends React.Component {
 

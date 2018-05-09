@@ -6,16 +6,8 @@ import TitleEditor from './TitleEditor.js';
 
 class Notebook extends React.Component {
 
-    constructor(props, context) {
-        super(props, context);
-    }
-
     makeNote(note, i) {        
         return (<NotebookEvent key={'notebook__'+note[0]} note={note}/>);
-    }
-
-    makeNotebook() {        
-        return (<div/>);
     }
 
     makeManuscriptText(note, i) {
