@@ -7,13 +7,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 import django_filters
 from django.db.models import Max, Min, Count
-from rest_framework import pagination
-from rest_framework import generics, serializers, viewsets, routers, response
+from rest_framework import pagination, generics, serializers, viewsets, routers, response, status
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.exceptions import APIException
-
 from scrolls.models import User, Scroll, Event, Notebook, Note, Media, Thumbnail
 from rest_framework_swagger.views import get_swagger_view
 from PIL import Image, ImageOps
@@ -467,15 +465,29 @@ class NotebookSerializer(serializers.HyperlinkedModelSerializer):
             return n
         except Exception as e:
             raise APIException(str(e))
-
+        
 
 class NotebookViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = NotebookSerializer
     filter_class = NotebookFilter
     queryset = Notebook.objects.select_related('by_user')\
-                               .filter(is_public=True)
+                                   .filter(is_public=True)
 
+    def destroy(self, request, *args, **kwargs):
+        self.queryset = Notebook.objects.all()    
+        instance = self.get_object()
+        print(instance)
+        if instance.by_user == request.user:
+            self.perform_destroy(instance)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_404_NOT_FOUND)        
+        
+        
+
+        return super(NotebookViewSet, self).destroy(request, *args, **kwargs)
+
+   
     @detail_route(methods=['get'])
     def notes(self, request, pk=None):
         notes = Note.objects\

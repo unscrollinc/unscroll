@@ -27,11 +27,12 @@ export class AppProvider extends React.Component {
 	    data:update(this.state.notebook, {$unset: ['notes']})
 	})
             .then(function(resp) {
-		let _nb0 = update(_this.state.notebook, {$merge: {
-		    isSaved: true,
-		    notes:new Map(),
-		    ...resp.data}});
-		_this.setState({notebook: _nb0}, ()=> { console.log('1. NBNBNB', _this.state.notebook); } );
+                _this.loadNotebookList();
+		_this.setState({notebook: update(
+                    _this.state.notebook, {$merge: {
+		        isSaved: true,
+		        notes:new Map(),
+		        ...resp.data}})});
             })
             .catch(error => {
                 alert(`saveNotebook: There is already a notebook by you with that name! ${error}`);
@@ -60,12 +61,37 @@ export class AppProvider extends React.Component {
                headers: this.makeAuthHeader(_this.state.user.authToken)
 	      })
 	    .then(function(response) {
-		_this.setState({user: update(_this.state.user, {$merge: {notebookList:response.data}})},
-			       ()=>{console.log(_this.state.user);}
-			      );
+                let notebookMap = new Map(response.data.map((n)=>[n.uuid, n]));
+		_this.setState(
+                    {user: update(_this.state.user, {$merge: {notebookList:notebookMap}})},
+		    ()=>{console.log(_this.state.user);}
+		);
 	    });
     }
-    
+
+    deleteNotebook(uuid) {
+        console.log(`GONNA DELETE ${uuid}`);
+        let nb = this.state.user.notebookList.get(uuid);
+        console.log(nb);
+        axios({method:'delete',
+               url:nb.url,
+               headers: this.makeAuthHeader(this.state.user.authToken)               
+              })
+            .then(response=>{
+                console.log('DID IT', response);
+                  this.setState({
+                      user:
+                      update(this.state.user,
+                             {$merge:
+                              {notebookList:
+                               update(this.state.user.notebookList,
+                                      {$remove:
+                                       [uuid]})                                                             
+                              }})}, ()=>console.log(this.state.user))})
+            .catch(error=>{
+                console.log("ERROR!!!!!", error);
+            });
+    }
     makeState(c) {
         let isLoggedIn = false;
         let authToken = undefined;
@@ -86,7 +112,7 @@ export class AppProvider extends React.Component {
                 password:undefined,
                 profile:undefined,
                 notebookCurrent:undefined,
-                notebookList:[],
+                notebookList:new Map(),
                 scrollList:[]
             },
             notebook: {},
@@ -194,7 +220,11 @@ export class AppProvider extends React.Component {
 		listNotebooks:()=>{
 		    this.loadNotebookList();
 		},
-		
+                
+                deleteNotebook:(uuid)=> {
+                    this.deleteNotebook(uuid);
+                },
+                
                 addNote:(event) => {
                     let _notes = update(this.state.notebook.notes,
                                         {$add:[[uuidv4(),

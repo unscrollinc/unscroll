@@ -24,12 +24,18 @@ class Notebook extends React.Component {
         );
     }
 
-    makeNotebook(notebook, i) {
+    deleteNotebook() {
+        
+    }
+    
+    makeNotebook(notebookEntry, i) {
+        let context = this;
+        let [key, notebook] = notebookEntry;
 	return(
-	    <div key={i}>
+	    <div key={key}>
 	      <a href={notebook.uuid}>{notebook.title}</a>
-	      <button>Delete</button>
-	      <button>{notebook.is_private ? 'private' : 'public'}</button>	      
+	      <button onClick={()=>{context.deleteNotebook(notebook.uuid);}}>Delete</button>
+	      <button>{notebook.is_public ? 'private' : 'public'}</button>	      
 	    </div>
 	);
     }
@@ -61,7 +67,7 @@ class Notebook extends React.Component {
 			  </div>
 
 			  
-                          {Array.from(context.state.user.notebookList).map(this.makeNotebook)}
+                          {Array.from(context.state.user.notebookList).map(this.makeNotebook.bind(context))}
 			  
 			  {/*			  
                           <div className="notebook-event-list">
