@@ -35,7 +35,7 @@ class Notebook extends React.Component {
 	    <div key={key}>
 	      <a href={notebook.uuid}>{notebook.title}</a>
 	      <button onClick={()=>{context.deleteNotebook(notebook.uuid);}}>Delete</button>
-	      <button>{notebook.is_public ? 'private' : 'public'}</button>	      
+	      <button>{notebook.is_public ? 'public' : 'private'}</button>	      
 	    </div>
 	);
     }

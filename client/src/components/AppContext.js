@@ -204,7 +204,7 @@ export class AppProvider extends React.Component {
                     this.setState({notebook: {
                         on:true,
 			isSaved:false,
-                        title:'Untitled ' + Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 3),
+                        title:'Untitled-' + Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 6),
                         subtitle:'Un-subtitled',
                         description:'Un-summarized',
                         notes:new Map()
