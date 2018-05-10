@@ -103,6 +103,15 @@ CORS_ORIGIN_REGEX_WHITELIST = (
     'localhost:3000',
 )
 
+CORS_ALLOW_METHODS = (
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+)
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # Host for sending e-mail.
 EMAIL_HOST = 'smtp.gmail.com'

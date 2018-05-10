@@ -262,7 +262,7 @@ class Note(models.Model):
         on_delete=models.CASCADE)
     uuid = models.UUIDField(
         default=uuid4,
-        editable=False,
+        editable=True,
         unique=True)
     uuid_next = models.UUIDField(
         default=uuid4,

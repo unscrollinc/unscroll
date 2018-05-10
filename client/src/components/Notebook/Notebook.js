@@ -63,7 +63,7 @@ class Notebook extends React.Component {
 			  
                           {Array.from(context.state.user.notebookList).map(this.makeNotebook.bind(context))}
 			  
-			  {/*			  
+
                           <div className="notebook-event-list">
                             {Array.from(context.state.notebook.notes).map(this.makeNote)}
                           </div>
@@ -71,7 +71,7 @@ class Notebook extends React.Component {
                           <div className="Manuscript">
                             {Array.from(context.state.notebook.notes).map(this.makeManuscriptText)}
                           </div>
-			  */}
+
                         </div>);}}
 
               </AppContext.Consumer>                  

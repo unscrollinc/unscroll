@@ -246,7 +246,7 @@ class NoteSerializer(serializers.HyperlinkedModelSerializer):
             'id',
             'url',
             'uuid',
-            'in_scroll',
+            'in_notebook',
             'kind',
             'by_user',
             'event',
@@ -256,7 +256,7 @@ class NoteSerializer(serializers.HyperlinkedModelSerializer):
             'text',)
 
     def create(self, validated_data):
-        validated_data['user'] = self.context['request'].user
+        validated_data['by_user'] = self.context['request'].user
         s = Note(**validated_data)
         s.save()
         return s
@@ -300,27 +300,26 @@ class BulkNoteSerializer(BulkSerializerMixin,
         many=False,
         read_only=True)
 
-    public = serializers.BooleanField(
+    is_public = serializers.BooleanField(
         read_only=True,
-        source="scroll.public")
+        source="notebook.is_public")
 
-    scroll_uuid = serializers.UUIDField(
+    notebook_uuid = serializers.UUIDField(
         read_only=True,
-        source="scroll.uuid")
+        source="notebook.uuid")
 
     class Meta(object):
         model = Note
         fields = (
             'id',
             'url',
-            'in_scroll',
-            'scroll_uuid',
+            'in_notebook',
+            'notebook_uuid',
             'kind',
             'is_public',
             'by_user',
-            'in_event',
+            'with_event',
             'event_full',
-            'point',
             'order',
             'when_created',
             'when_modified',
@@ -328,7 +327,7 @@ class BulkNoteSerializer(BulkSerializerMixin,
         list_serializer_class = BulkListSerializer
 
     def create(self, validated_data):
-        validated_data['user'] = self.context['request'].user
+        validated_data['by_user'] = self.context['request'].user
         s = Note(**validated_data)
         s.save()
         return s
@@ -336,19 +335,19 @@ class BulkNoteSerializer(BulkSerializerMixin,
 
 class NoteFilter(django_filters.rest_framework.FilterSet):
     scroll = django_filters.UUIDFilter(
-        name="scroll__uuid")
+        name="notebook__uuid")
     
     class Meta:
         model = Note
-        fields = ['scroll', ]
+        fields = ['in_notebook', ]
 
 
 class BulkNoteViewSet(BulkModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Note.objects.select_related(
-        'scroll',
+        'notebook',
         'event',
-        'user')
+        'by_user')
     serializer_class = BulkNoteSerializer
     filter_class = NoteFilter
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
@@ -440,6 +439,7 @@ class NotebookSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Notebook
         fields = (
+            'id',
             'uuid',
             'url',
             'by_user',
@@ -456,7 +456,7 @@ class NotebookSerializer(serializers.HyperlinkedModelSerializer):
             'by_user',
             'notes',
             'user_username',)
-
+        
     def create(self, validated_data):
         validated_data['by_user'] = self.context['request'].user
         n = Notebook(**validated_data)
@@ -464,16 +464,15 @@ class NotebookSerializer(serializers.HyperlinkedModelSerializer):
             n.save()
             return n
         except Exception as e:
-            raise APIException(str(e))
-        
+            raise APIException(str(e))        
 
 class NotebookViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = NotebookSerializer
     filter_class = NotebookFilter
     queryset = Notebook.objects.select_related('by_user')\
-                                   .filter(is_public=True)
-
+                               .filter(is_public=True)
+    
     # Need to override only-public filter here so we use a custom destroy    
     def destroy(self, request, *args, **kwargs):
         self.queryset = Notebook.objects.all()    
@@ -482,6 +481,21 @@ class NotebookViewSet(viewsets.ModelViewSet):
             self.perform_destroy(instance)
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(status=status.HTTP_404_NOT_FOUND)        
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        self.queryset = Notebook.objects.all()           
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
    
     @detail_route(methods=['get'])
     def notes(self, request, pk=None):

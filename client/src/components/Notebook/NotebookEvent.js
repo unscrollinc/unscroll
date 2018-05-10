@@ -10,6 +10,7 @@ class NotebookEvent extends React.Component {
             ...props.note[1],
             uuid:props.note[0],
             text:'',
+	    order:0,
             statusIsMoving:false,
             statusIsRangeTarget:false,
             statusIsMoveTarget:false,
@@ -72,8 +73,8 @@ class NotebookEvent extends React.Component {
 	          <button className={'active-'+this.state.statusIsToBeDeleted}
                           onClick={()=>this.onDeleteClick(context)}>Delete</button>                            
                   
-                  <h3><a href={'/span/{span}/' + this.state.event.id}>{this.state.event.title}</a></h3>
-	          <p>{this.state.event.text}</p>		
+                <h3>{this.state.event ? this.state.event.title : 'NO EVENT'}</h3>
+	        <p>{this.state.event ? this.state.event.text : 'NO EVENT TEXT'}</p>		
                   <textarea defaultValue={this.state.text}
                             onChange={(event)=>{this.onTextChange(event, context);
                     }}/>
