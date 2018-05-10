@@ -50,8 +50,10 @@ class Notebook extends React.Component {
 			  <form>
 			    Public: <input type="checkbox" name="public"/>
 			  </form>
-		          <h1>T:{context.state.notebook.title}</h1>
-		          <h2>ST:{context.state.notebook.subtitle}</h2>
+		          <h1>Title: <input type="text"
+                                            onChange={(event)=>{context.notebookChange('title', event);}}
+                              value={context.state.notebook.title}/></h1>
+		          <h2>SubTitle: {context.state.notebook.subtitle}</h2>
 		          <div>Saved: {context.state.notebook.isSaved ? 'true' : 'false'}</div>
 			  
                           <div className="summary">

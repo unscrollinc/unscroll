@@ -224,6 +224,15 @@ export class AppProvider extends React.Component {
                 deleteNotebook:(uuid)=> {
                     this.deleteNotebook(uuid);
                 },
+
+                notebookChange:(field, event)=>{
+                    this.setState(
+                        {notebook:update(this.state.notebook,
+                                         {$merge: {
+                                             isSaved:false,
+                                             [field]: event.target.value}})});
+                    console.log(field, event.target.value);
+                },
                 
                 addNote:(event) => {
                     let _notes = update(this.state.notebook.notes,
