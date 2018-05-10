@@ -9,15 +9,73 @@ axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.withCredentials = true;
 
+const SWEEP_DURATION_SECONDS = 3;
 export const AppContext = React.createContext();
 
 export class AppProvider extends React.Component {
     constructor(state, context) {
         super(state, context);
         let c = cookie.get();        
-        this.state = this.makeState(c);
-    }
 
+        this.state = this.makeState(c);
+
+	this.sweep = () => {
+	    console.log("CHECKING NOTEBOOK");
+	    if (!this.state.notebook.isSaved) {
+		if (this.state.notebook.url)  {
+		    this.putNotebook();
+		}
+		else {
+		    this.saveNotebook();
+		}
+	    }
+	    console.log("CHECKING NOTES");
+	    this.state.notebook.notes.forEach((v,k,m) => {
+		if (!v.isSaved) {
+		    this.saveNote(v);
+		}
+	    });
+
+	}
+
+	this.sweepPeriodically = () => {
+	    setInterval(this.sweep, 1000 * SWEEP_DURATION_SECONDS);
+	}
+	this.sweepPeriodically();
+    }
+    
+    saveNote(note) {
+        let _this = this;
+	console.log('TODO: Save note', note);
+        axios({
+	    method:'post',
+	    in_notebook:this.state.notebook.url,
+	    url:'http://127.0.0.1:8000/notes/',
+	    headers:this.makeAuthHeader(this.state.user.authToken),
+	    data:note
+	})
+            .then(function(resp) {
+		console.log("saved it!", resp);
+		_this.setState(
+		    {notebook:
+		     update(_this.state.notebook,
+			    {notes:
+			     {$merge:
+			      {notes: update(_this.notebook.notes,
+					     {$add: [resp.uuid,
+						     update(_this.notebook.notes.get(resp.uuid),
+							    {$merge: {url:resp.url, isSaved:true}})]})}}})}
+		    ,
+		    ()=>{console.log('CHANGED THAT STATE', _this.state);}
+		);
+		
+		})
+            .catch(error => {
+                console.log(`saveNote: There is already a notebook by you with that name! ${error}`);
+            });
+	
+    }
+    
     saveNotebook() {
         let _this = this;
         axios({
@@ -35,7 +93,29 @@ export class AppProvider extends React.Component {
 		        ...resp.data}})});
             })
             .catch(error => {
-                alert(`saveNotebook: There is already a notebook by you with that name! ${error}`);
+                console.log(`saveNotebook: There is already a notebook by you with that name! ${error}`);
+            });
+    }
+
+    putNotebook() {
+        let _this = this;
+	console.log(this.state.notebook);
+        axios({
+	    method:'put',
+	    url:this.state.notebook.url,
+	    headers:this.makeAuthHeader(this.state.user.authToken),
+	    data:update(this.state.notebook, {$unset: ['notes']})
+	})
+            .then(function(resp) {
+                _this.loadNotebookList();
+		_this.setState({notebook: update(
+                    _this.state.notebook, {$merge: {
+		        isSaved: true,
+		        notes:new Map(),
+		        ...resp.data}})});
+            })
+            .catch(error => {
+                console.log(`saveNotebook: There is already a notebook by you with that name! ${error}`);
             });
     }
 
@@ -102,7 +182,7 @@ export class AppProvider extends React.Component {
             authToken = c.authToken;
             username = c.username;
         }
-
+	
         return {
             user: {
                 isLoggedIn:isLoggedIn,
@@ -113,9 +193,11 @@ export class AppProvider extends React.Component {
                 profile:undefined,
                 notebookCurrent:undefined,
                 notebookList:new Map(),
-                scrollList:[]
+                scrollList:new Map()
             },
-            notebook: {},
+            notebook: {
+		notes:new Map()
+	    },
             eventEditor: {
                 on:false,
                 currentEvent:{}
@@ -235,9 +317,29 @@ export class AppProvider extends React.Component {
                 },
                 
                 addNote:(event) => {
+		    console.log('ADDING NOTE', event);
+		    let _newNote = {
+			isSaved:false,
+			id:undefined,
+			url:undefined,
+			uuid:undefined,
+			uuid_next:undefined,
+			with_event:undefined,
+			order:0,
+			text:undefined,
+			kind:event ? 'event' : 'text',
+			when_created:undefined,
+			when_modified:undefined,
+			is_deleted:false
+		    };
+		    let _uuid = uuidv4();
                     let _notes = update(this.state.notebook.notes,
-                                        {$add:[[uuidv4(),
-                                                {event: event}]]});
+                                        {$add:[[_uuid,
+                                                {order:0,
+						 uuid:_uuid,
+						 text:'THE TEXT OF THE NOTE',
+						 in_notebook:this.state.notebook.url,
+						 event_url: event.url}]]});
                     let _sorted = new Map([..._notes.entries()]
                                           .sort((a,b) => a.order > b.order ? 1 : a.order < b.order ? -1 : 0));
                     this.setState({
@@ -274,7 +376,8 @@ export class AppProvider extends React.Component {
                     _notes.set(newState.uuid, newState);
                     this.setState({
                         notebook:update(this.state.notebook, {$merge: { notes: _notes }})
-                    });                    
+                    });
+		    console.log(this.state.notebook);
                 },
                 
                 editNote:(e) => {
