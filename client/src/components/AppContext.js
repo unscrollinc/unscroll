@@ -9,7 +9,8 @@ axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.withCredentials = true;
 
-const SWEEP_DURATION_SECONDS = 24;
+const SWEEP_DURATION_SECONDS = 5;
+const API = 'http://127.0.0.1:8000/';
 export const AppContext = React.createContext();
 
 export class AppProvider extends React.Component {
@@ -26,6 +27,7 @@ export class AppProvider extends React.Component {
 		    this.putNotebook();
 		}
                 else if (!this.state.notebook.title) {
+                    console.log(this.state.notebook);
                     console.log("NO TITLE, FIX THIS");
                 }
 		else {
@@ -54,7 +56,7 @@ export class AppProvider extends React.Component {
         axios({
 	    method:'post',
 	    in_notebook:this.state.notebook.url,
-	    url:'http://127.0.0.1:8000/notes/',
+	    url:API+'notes/',
 	    headers:this.makeAuthHeader(this.state.user.authToken),
 	    data:note
 	})
@@ -65,7 +67,7 @@ export class AppProvider extends React.Component {
 		_this.setState(
 		    {notebook:
 		     update(_this.state.notebook,
-			    {$set: {notes: update(_this.state.notebook.notes,
+			    {$merge: {notes: update(_this.state.notebook.notes,
 					   {$add: [[_uuid,
 						   update(_this.state.notebook.notes.get(_uuid),
 							  {$merge: {
@@ -89,7 +91,7 @@ export class AppProvider extends React.Component {
         let _this = this;
         axios({
 	    method:'post',
-	    url:'http://127.0.0.1:8000/notebooks/',
+	    url:API+'notebooks/',
 	    headers:this.makeAuthHeader(this.state.user.authToken),
 	    data:update(this.state.notebook, {$unset: ['notes']})
 	})
@@ -205,6 +207,8 @@ export class AppProvider extends React.Component {
                 scrollList:new Map()
             },
             notebook: {
+                isSaved:false,
+                isOnServer:false,
 		notes:new Map()
 	    },
             eventEditor: {
@@ -249,7 +253,7 @@ export class AppProvider extends React.Component {
                 doLogout:() => {
                     let _this = this;
                     axios({method:'post',
-                           url:'http://127.0.0.1:8000/auth/logout/',
+                           url:API+'auth/logout/',
                            headers: this.makeAuthHeader(this.state.user.authToken)
                           })
                         .then(function(response) {
@@ -269,7 +273,7 @@ export class AppProvider extends React.Component {
                     event.preventDefault();
                     let _this = this;
                     axios.post(
-                        'http://127.0.0.1:8000/auth/login/',
+                        API + 'auth/login/',
                         {
                             username: this.state.user.username,
                             password: this.state.user.password
@@ -381,12 +385,28 @@ export class AppProvider extends React.Component {
                 },
                 
                 updateNote:(newState) => {
-                    let _notes = this.state.notebook.notes;
-                    _notes.set(newState.uuid, newState);
-                    this.setState({
-                        notebook:update(this.state.notebook, {$merge: { notes: _notes }})
-                    });
-		    console.log(this.state.notebook);
+                    let _this = this;
+		    console.log('DOING UPDATENOTE', newState, _this.state.notebook);                    
+                    _this.setState({
+                        notebook:update(
+                            _this.state.notebook,
+                            {$merge:
+                             {notes:
+                              update(_this.state.notebook.notes,
+                                     {$add:
+                                      [[newState.uuid,
+                                        update(_this.state.notebook.notes.get(newState.uuid),
+                                               {$merge: {isSaved: false}})
+                                        
+                                       ]]
+                                     })
+                             }
+                            }
+                        )
+                    },
+                                   ()=>{}
+                                  );
+
                 },
                 
                 editNote:(e) => {
