@@ -9,7 +9,7 @@ axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.withCredentials = true;
 
-const SWEEP_DURATION_SECONDS = 3;
+const SWEEP_DURATION_SECONDS = 24;
 export const AppContext = React.createContext();
 
 export class AppProvider extends React.Component {
@@ -20,11 +20,14 @@ export class AppProvider extends React.Component {
         this.state = this.makeState(c);
 
 	this.sweep = () => {
-	    console.log("CHECKING NOTEBOOK");
+	    console.log("CHECKING NOTEBOOK", this.state.notebook);
 	    if (!this.state.notebook.isSaved) {
 		if (this.state.notebook.url)  {
 		    this.putNotebook();
 		}
+                else if (!this.state.notebook.title) {
+                    console.log("NO TITLE, FIX THIS");
+                }
 		else {
 		    this.saveNotebook();
 		}
@@ -41,6 +44,7 @@ export class AppProvider extends React.Component {
 	this.sweepPeriodically = () => {
 	    setInterval(this.sweep, 1000 * SWEEP_DURATION_SECONDS);
 	}
+        
 	this.sweepPeriodically();
     }
     
@@ -56,22 +60,27 @@ export class AppProvider extends React.Component {
 	})
             .then(function(resp) {
 		console.log("saved it!", resp);
+                let _uuid = resp.data.uuid;
+                console.log("THINK I GOT", _this.state.notebook, _this.state.notebook.notes.get(_uuid));
 		_this.setState(
 		    {notebook:
 		     update(_this.state.notebook,
-			    {notes:
-			     {$merge:
-			      {notes: update(_this.notebook.notes,
-					     {$add: [resp.uuid,
-						     update(_this.notebook.notes.get(resp.uuid),
-							    {$merge: {url:resp.url, isSaved:true}})]})}}})}
-		    ,
-		    ()=>{console.log('CHANGED THAT STATE', _this.state);}
+			    {$set: {notes: update(_this.state.notebook.notes,
+					   {$add: [[_uuid,
+						   update(_this.state.notebook.notes.get(_uuid),
+							  {$merge: {
+                                                              url:resp.url,
+                                                              isSaved:true}})
+                                                   ]]
+                                           })}})},
+		    () => {
+                        console.log('CHANGED THAT STATE', _this.state);
+                    }
 		);
 		
 		})
             .catch(error => {
-                console.log(`saveNote: There is already a notebook by you with that name! ${error}`);
+                console.log(error, _this.state);
             });
 	
     }

@@ -313,6 +313,7 @@ class BulkNoteSerializer(BulkSerializerMixin,
         fields = (
             'id',
             'url',
+            'uuid',
             'in_notebook',
             'notebook_uuid',
             'kind',
