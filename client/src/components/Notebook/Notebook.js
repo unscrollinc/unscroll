@@ -12,12 +12,10 @@ class Notebook extends React.Component {
 
     makeManuscriptText(note, i) {
         return (
-            <NotebookManuscriptText key={'manuscript__'+note[0]} note={note}/>
+            <span> *
+              <NotebookManuscriptText key={'manuscript__'+note[0]} note={note}/>
+            </span>
         );
-    }
-
-    deleteNotebook() {
-        
     }
     
     makeNotebook(notebookEntry, i) {
@@ -33,6 +31,13 @@ class Notebook extends React.Component {
     }
 
 
+    makeAddNoteButton(context) {
+        if (context.state.notebook.uuid !== undefined) {
+            return(<button onClick={context.addNote}>+ Note</button>);
+        }
+        return undefined;
+    }
+    
     render() {
         return (
 
@@ -42,33 +47,53 @@ class Notebook extends React.Component {
                     return (
                         <div style={{ display: this.props.status ? 'block' : 'none' }} className="Editor">
                           <span>
-                            <button onClick={context.addNote}>+ Note</button>
+                            {this.makeAddNoteButton(context)}
 	                    <button onClick={context.listNotebooks}>+ List</button>
 	                    <button onClick={context.addNotebook}>+ Notebook</button>                          
                           </span>
 		          <TitleEditor/>
-			  <form>
-			    Public: <input type="checkbox" name="public"/>
-			  </form>
-		          <h1>Title: <input type="text"
-                                            onChange={(event)=>{context.notebookChange('title', event);}}
-                              value={context.state.notebook.title}/></h1>
-		          <h2>SubTitle: {context.state.notebook.subtitle}</h2>
-		          <div>Saved: {context.state.notebook.isSaved ? 'true' : 'false'}</div>
-			  
-                          <div className="summary">
-			    {context.state.notebook.description}
-			  </div>
 
+			  <form>
+			    Public
+                            <input type="checkbox" name="public"/>
+			  </form>
+                          
+		          <div>
+                            Title:
+                            <input type="text"
+                                   value={context.state.notebook.title}
+                                   onChange={(event)=>{context.notebookChange('title', event);}}/>
+                          </div>
+                          
+		          <div>
+                            Subtitle:
+                            <input type="text"
+                                   value={context.state.notebook.subtitle}                                               
+                                   onChange={(event)=>{context.notebookChange('subtitle', event);}}/>
+                          </div>
+                          
+                          <div className="summary">
+		            Description:
+                            <input type="text"
+                                   value={context.state.notebook.description}
+                                   onChange={(event)=>{context.notebookChange('description', event);}}/>
+			  </div>
+                          
+		          <div>
+                            Saved: 
+                            {context.state.notebook.isSaved ? 'true' : 'false'}
+                          </div>
 			  
                           {Array.from(context.state.user.notebookList).map(this.makeNotebook.bind(context))}
-			  
 
                           <div className="notebook-event-list">
                             {Array.from(context.state.notebook.notes).map(this.makeNote)}
                           </div>
                           
                           <div className="Manuscript">
+                            <h1>{context.state.notebook.title}</h1>
+                            <h2>{context.state.notebook.subtitle}</h2>
+                            <div className="description">{context.state.notebook.description}</div>   
                             {Array.from(context.state.notebook.notes).map(this.makeManuscriptText)}
                           </div>
 

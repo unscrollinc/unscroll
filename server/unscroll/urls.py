@@ -30,7 +30,7 @@ from rest_framework_bulk import (
     BulkSerializerMixin,
     ListBulkCreateUpdateDestroyAPIView,
 )
-
+    
 # Scrolls, Events, Notebooks, Notes
 # User
 # User lists their SENNs
@@ -39,12 +39,23 @@ from rest_framework_bulk import (
 # ##############################
 # Thumbnails
 # ##############################
+
+
+# class CreateListModelMixin(object):
+
+#     def get_serializer(self, *args, **kwargs):
+#         """ if an array is passed, set serializer to many """
+#         if isinstance(kwargs.get('data', {}), list):
+#             kwargs['many'] = True
+#         return super(CreateListModelMixin, self).get_serializer(*args, **kwargs)
+
+
 class ThumbnailSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Thumbnail
         fields = (
             'url',
-            'user',
+            'by_user',
             'sha1',
             'width',
             'height',
@@ -52,7 +63,7 @@ class ThumbnailSerializer(serializers.HyperlinkedModelSerializer):
             'source_url')
 
     def create(self, validated_data):
-        validated_data['user'] = self.context['request'].user
+        validated_data['by_user'] = self.context['request'].user
         s = Thumbnail(**validated_data)
         s.save()
         return s
@@ -135,7 +146,7 @@ class EventFilter(django_filters.rest_framework.FilterSet):
 
     class Meta:
         model = Event
-        fields = ['start', 'before', 'scroll', ]
+        fields = ['start', 'before', 'in_scroll', ]
 
 
 class BulkEventSerializer(BulkSerializerMixin,
@@ -226,7 +237,9 @@ class BulkEventViewSet(BulkModelViewSet):
     def search(self, request):
         filtered = EventFilter(request.GET,
                                queryset=Event.objects
-                               .select_related('scroll', 'user', 'thumbnail')
+                               .select_related('in_scroll',
+                                               'by_user',
+                                               'thumbnail')
                                .filter(scroll__public=True))
 
         page = self.paginate_queryset(filtered.qs)
@@ -245,12 +258,12 @@ class NoteSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             'id',
             'url',
+            'order',            
             'uuid',
             'in_notebook',
-            'kind',
             'by_user',
-            'event',
-            'order',
+            'with_event',
+            'kind',
             'when_created',
             'when_modified',
             'text',)
@@ -273,16 +286,15 @@ class NoteEventSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             'id',
             'url',            
+            'order',
             'uuid',
-            'kind',            
-            'in_scroll',
+            'in_notebook',
             'by_user',
             'event_full',
-            'order',
+            'kind',            
             'when_created',
             'when_modified',
             'text',)
-
 
 class NoteViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]    
@@ -291,69 +303,17 @@ class NoteViewSet(viewsets.ModelViewSet):
     ordering_fields = ('order',)
     ordering = ('order',)
 
-
-class BulkNoteSerializer(BulkSerializerMixin,
-                         serializers.HyperlinkedModelSerializer):
-
-    event_full = BulkEventSerializer(
-        source='event',
-        many=False,
-        read_only=True)
-
-    is_public = serializers.BooleanField(
-        read_only=True,
-        source="notebook.is_public")
-
-    notebook_uuid = serializers.UUIDField(
-        read_only=True,
-        source="notebook.uuid")
-
-    class Meta(object):
-        model = Note
-        fields = (
-            'id',
-            'url',
-            'uuid',
-            'in_notebook',
-            'notebook_uuid',
-            'kind',
-            'is_public',
-            'by_user',
-            'with_event',
-            'event_full',
-            'order',
-            'when_created',
-            'when_modified',
-            'text')
-        list_serializer_class = BulkListSerializer
-
-    def create(self, validated_data):
-        validated_data['by_user'] = self.context['request'].user
-        s = Note(**validated_data)
-        s.save()
-        return s
-
-
 class NoteFilter(django_filters.rest_framework.FilterSet):
-    scroll = django_filters.UUIDFilter(
+    in_notebook = django_filters.UUIDFilter(
         name="notebook__uuid")
     
     class Meta:
         model = Note
         fields = ['in_notebook', ]
 
-
-class BulkNoteViewSet(BulkModelViewSet):
-    permission_classes = [IsAuthenticatedOrReadOnly]
-    queryset = Note.objects.select_related(
-        'notebook',
-        'event',
-        'by_user')
-    serializer_class = BulkNoteSerializer
-    filter_class = NoteFilter
-    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
-    filter_class = NoteFilter
-
+##############################
+# Scrolls
+##############################
 
 class ScrollFilter(django_filters.rest_framework.FilterSet):
     class Meta:
@@ -569,18 +529,20 @@ router.register(r'scrolls', ScrollViewSet)
 router.register(r'notebooks', NotebookViewSet)
 router.register(r'thumbnails', ThumbnailViewSet)
 router.register(r'events', BulkEventViewSet)
-router.register(r'notes', BulkNoteViewSet)
+router.register(r'notes', NoteViewSet)
 
 schema_view = get_swagger_view(title='Unscroll API')
-# schema_view = get_schema_view(title="Unscroll API")
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
+    url('^$', schema_view),
     url(r'', include(router.urls)),
     path('admin/', admin.site.urls),
     url(r'^auth/', include('djoser.urls')),
+    url(r'^auth/', include('djoser.urls')),
     url(r'^auth/', include('djoser.urls.authtoken')),
+    
 ] + static(settings.STATIC_URL,
            document_root=settings.STATIC_ROOT)
 

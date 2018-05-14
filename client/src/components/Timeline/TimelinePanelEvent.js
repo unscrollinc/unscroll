@@ -8,8 +8,6 @@ class Event extends React.Component {
         super(props, context);
         console.log(props);
     }
-
-
     
     render() {
         return(

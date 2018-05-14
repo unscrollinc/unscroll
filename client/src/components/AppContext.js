@@ -3,7 +3,6 @@ import cookie from 'js-cookie';
 import update from 'immutability-helper';
 import uuidv4 from 'uuid/v4';
 import axios from 'axios';
-import cachios from 'cachios';
 
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.xsrfCookieName = "csrftoken";
@@ -20,8 +19,37 @@ export class AppProvider extends React.Component {
 
         this.state = this.makeState(c);
 
+        this.sequenceNotes = () => {
+            let notes = this.state.notebook.notes;
+            let sequenced = Map();
+            let uuids = Set();
+            let es = notes.entries();
+
+            // Make a set of all the uuid_next
+            es.map((k, v)=>{uuids.add(v.uuid_next)});
+
+            // This does the resequencing
+            function go (k) {
+                if (k) {
+                    let v = notes.get(k);
+                    sequenced.set(k, v);
+                    go(v.uuid_next);
+                }
+            }
+            
+            // The first one is the first one we find where
+            es.map((k,v)=>{
+                if (sequenced.size == 0  // there's nothing sequences
+                    && !uuids.has(k) // it's uuid doesn't show up in any `uuid_next`s
+                    && v.uuid_next   // it has a `uuid_next` itself
+                    && !v.deleted) { // and it hasn't been deleted
+                    go(k,v);
+                }
+            });
+            return sequenced;
+        };
 	this.sweep = () => {
-	    console.log("CHECKING NOTEBOOK", this.state.notebook);
+	    console.log("[Checking Notebook]");
 	    if (!this.state.notebook.isSaved) {
 		if (this.state.notebook.url)  {
 		    this.putNotebook();
@@ -34,13 +62,17 @@ export class AppProvider extends React.Component {
 		    this.saveNotebook();
 		}
 	    }
-	    console.log("CHECKING NOTES");
+	    console.log("[Checking Notes]");
 	    this.state.notebook.notes.forEach((v,k,m) => {
 		if (!v.isSaved) {
-		    this.saveNote(v);
+		    if (!v.url) {
+		        this.saveNote(v);
+                    }
+                    else {
+                        this.patchNote(v);
+                    }
 		}
 	    });
-
 	}
 
 	this.sweepPeriodically = () => {
@@ -49,10 +81,52 @@ export class AppProvider extends React.Component {
         
 	this.sweepPeriodically();
     }
+
+    modifyNote(uuid, o) {
+	this.setState(
+            {notebook:
+	     update(this.state.notebook,
+		    {$merge: {
+                        notes: update(
+                            this.state.notebook.notes,
+			    {$add: [[uuid,
+				     update(this.state.notebook.notes.get(uuid),
+					    {$merge: o})]]})}})},
+		    () => {
+                        console.log('modified note', uuid, o);
+                    }
+		);        
+    }
+
+    reseq(current, next) {
+    }
     
+    cutNotes(from, to, targetBefore) {
+        let _notes = this.state.notebook.notes;
+        
+
+    }
+    patchNote(note) {
+        let _this = this;
+        axios({
+	    method:'patch',
+	    url:note.url,
+	    headers:this.makeAuthHeader(this.state.user.authToken),
+	    data:{text:note.text,
+                  order:note.order,
+                  kind:note.kind}
+	})
+            .then(function(resp) {
+		console.log("[@patchNote()]", resp.data);
+                _this.modifyNote(note.uuid, {isSaved:true});
+	    })
+            .catch(error => {
+                console.log(error, _this.state);
+            });
+        
+    }
     saveNote(note) {
         let _this = this;
-	console.log('TODO: Save note', note);
         axios({
 	    method:'post',
 	    in_notebook:this.state.notebook.url,
@@ -61,28 +135,13 @@ export class AppProvider extends React.Component {
 	    data:note
 	})
             .then(function(resp) {
-		console.log("saved it!", resp);
+		console.log("[@saveNote()]", resp);
                 let _uuid = resp.data.uuid;
-                console.log("THINK I GOT", _this.state.notebook, _this.state.notebook.notes.get(_uuid));
-		_this.setState(
-		    {notebook:
-		     update(_this.state.notebook,
-			    {$merge: {notes: update(_this.state.notebook.notes,
-					   {$add: [[_uuid,
-						   update(_this.state.notebook.notes.get(_uuid),
-							  {$merge: {
-                                                              url:resp.url,
-                                                              isSaved:true}})
-                                                   ]]
-                                           })}})},
-		    () => {
-                        console.log('CHANGED THAT STATE', _this.state);
-                    }
-		);
-		
-		})
+                _this.modifyNote(_uuid, {url:resp.data.url,
+                                         isSaved:true});
+	    })
             .catch(error => {
-                console.log(error, _this.state);
+                console.log('[!saveNote()]', error, _this.state);
             });
 	
     }
@@ -161,7 +220,7 @@ export class AppProvider extends React.Component {
     }
 
     deleteNotebook(uuid) {
-        console.log(`GONNA DELETE ${uuid}`);
+        console.log(`[Deleting ${uuid}]`);
         let nb = this.state.user.notebookList.get(uuid);
         console.log(nb);
         axios({method:'delete',
@@ -330,7 +389,7 @@ export class AppProvider extends React.Component {
                 },
                 
                 addNote:(event) => {
-		    console.log('ADDING NOTE', event);
+		    console.log('[@addNote(event)', event);
 		    let _newNote = {
 			isSaved:false,
 			id:undefined,
@@ -352,7 +411,9 @@ export class AppProvider extends React.Component {
 						 uuid:_uuid,
 						 text:'THE TEXT OF THE NOTE',
 						 in_notebook:this.state.notebook.url,
-						 event_url: event.url}]]});
+                                                 event:event,
+						 with_event: event.url}]]});
+
                     let _sorted = new Map([..._notes.entries()]
                                           .sort((a,b) => a.order > b.order ? 1 : a.order < b.order ? -1 : 0));
                     this.setState({
@@ -386,7 +447,6 @@ export class AppProvider extends React.Component {
                 
                 updateNote:(newState) => {
                     let _this = this;
-		    console.log('DOING UPDATENOTE', newState, _this.state.notebook);                    
                     _this.setState({
                         notebook:update(
                             _this.state.notebook,
@@ -396,14 +456,7 @@ export class AppProvider extends React.Component {
                                      {$add:
                                       [[newState.uuid,
                                         update(_this.state.notebook.notes.get(newState.uuid),
-                                               {$merge: {isSaved: false}})
-                                        
-                                       ]]
-                                     })
-                             }
-                            }
-                        )
-                    },
+                                               {$merge: {isSaved: false, ...newState}})]]})}})},
                                    ()=>{}
                                   );
 

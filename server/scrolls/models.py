@@ -276,6 +276,7 @@ class Note(models.Model):
     with_event = models.ForeignKey(
         Event,
         null=True,
+        blank=True,
         related_name="notes",
         on_delete=models.CASCADE)
     order = models.FloatField(

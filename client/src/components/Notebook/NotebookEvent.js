@@ -9,7 +9,6 @@ class NotebookEvent extends React.Component {
         this.state = {
             ...props.note[1],
             uuid:props.note[0],
-            text:'',
 	    order:0,
             statusIsMoving:false,
             statusIsRangeTarget:false,
@@ -17,6 +16,7 @@ class NotebookEvent extends React.Component {
             statusIsSaved:false,
             statusIsToBeDeleted:false
         };
+        console.log("LET'S DO IT", this.state);
 
         this.onMoveClick = (context) => {
             this.setState({statusIsMoving:!this.state.statusIsMoving}, function() {
@@ -47,20 +47,12 @@ class NotebookEvent extends React.Component {
             context.deleteNote(this.state.uuid);
         };
     }
-
-
     
     makeNotebookEvent(context) {
         return (
                 <div key={this.state.uuid} className='notebook-event'>
                   
-                  <button>T</button>
-                  <button>t</button>
-                  <button>-</button>
-                  <button>pic</button>
-
-                  <button>Move</button>                                                      
-                  
+                  <button>T/T/-/pic</button>
                   <button className={'active-'+this.state.statusIsMoving}
                           onClick={()=>this.onMoveClick(context)}>Move</button>
                   
@@ -75,9 +67,9 @@ class NotebookEvent extends React.Component {
                   
                 <h3>{this.state.event ? this.state.event.title : 'NO EVENT'}</h3>
 	        <p>{this.state.event ? this.state.event.text : 'NO EVENT TEXT'}</p>		
-                  <textarea defaultValue={this.state.text}
+                  <textarea value={this.state.text}
                             onChange={(event)=>{this.onTextChange(event, context);
-                    }}/>
+                    }}></textarea>
                 </div>
         );
     }

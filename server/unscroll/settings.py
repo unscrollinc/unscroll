@@ -40,9 +40,10 @@ INSTALLED_APPS = (
     'django.contrib.postgres',
     'django_filters',
     'rest_framework',
-    'corsheaders',
     'rest_framework.authtoken',
-    'djoser',
+    'djoser',    
+    'rest_framework_swagger',    
+    'corsheaders',
     'silk'
 )
 REST_FRAMEWORK = {
@@ -73,15 +74,15 @@ MIDDLEWARE = (
     'django.middleware.security.SecurityMiddleware',
 )
 
-# SWAGGER_SETTINGS = {
-#     'SECURITY_DEFINITIONS': {
-#         'api_key': {
-#             'type': 'apiKey',
-#             'in': 'header',
-#             'name': 'Authorization'
-#         }
-#     },
-# }
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'api_key': {
+            'type': 'apiKey',
+            'in': 'header',
+            'name': 'Authorization'
+        }
+    }
+}
 
 DJOSER = {
     'DOMAIN': '127.0.0.1',
