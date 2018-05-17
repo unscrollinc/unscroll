@@ -156,11 +156,13 @@ export class AppProvider extends React.Component {
 	})
             .then(function(resp) {
                 _this.loadNotebookList();
-		_this.setState({notebook: update(
-                    _this.state.notebook, {$merge: {
-		        isSaved: true,
-		        notes:new Map(),
-		        ...resp.data}})});
+		_this.setState(
+		    {notebook: update(
+			_this.state.notebook, {$merge: {
+		            isSaved: true,
+		            notes:new Map(),
+		            ...resp.data}})
+		    });
             })
             .catch(error => {
                 console.log(`saveNotebook: There is already a notebook by you with that name! ${error}`);

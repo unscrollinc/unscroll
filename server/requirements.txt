@@ -30,12 +30,13 @@ django-filter==1.1.0
 django-rest-auth==0.9.1
 django-rest-knox==3.0.0
 django-rest-swagger==2.1.2
-django-silk==1.0.0
+django-silk==2.0.0
 djangorestframework==3.8.2
 djangorestframework-bulk==0.2.1
 djoser==0.5.4
 docopt==0.6.2
 ephem==3.7.6.0
+gprof2dot==2016.10.13
 graphene==2.1
 graphene-django==2.0.0
 graphql-core==2.0

@@ -1,16 +1,69 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {Editor, EditorState} from 'draft-js';
+import AppContext from '../AppContext.js';
 
 class TitleEditor extends React.Component {
-  constructor(props) {
-    super(props);
-      this.state = {editorState: EditorState.createEmpty()};
-      this.onChange = (editorState) => this.setState({editorState});
-  }
+    
+    makeAddNoteButton(context) {
+        if (context.state.notebook.uuid !== undefined) {
+            return(<button onClick={context.addNote}>+ Note</button>);
+        }
+        return undefined;
+    }
+
+    makeNotebook(notebookEntry, i) {
+        let context = this;
+        let [key, notebook] = notebookEntry;
+	return(
+	    <div key={key}>
+	      <a href={notebook.uuid} onClick={(e)=>{this.loadNotebook}}>{notebook.title}</a>
+	      <button onClick={()=>{context.deleteNotebook(notebook.uuid);}}>Delete</button>
+	      <button>{notebook.is_public ? 'public' : 'private'}</button>	      
+	    </div>
+	);
+    }
+    
     render() {
 	return (
-		<h1><Editor editorState={this.state.editorState} onChange={this.onChange} /></h1>
+            <AppContext.Consumer>
+              {(context) => {
+                  return (
+                      <div className="Meta">
+			<form>
+			  Public
+                          <input type="checkbox" name="public"/>
+			</form>
+                        
+		        <div>
+                          Title:
+                          <input type="text"
+                                 value={context.state.notebook.title}
+                                 onChange={(event)=>{context.notebookChange('title', event);}}/>
+                        </div>
+                        
+		        <div>
+                          Subtitle:
+                          <input type="text"
+                                 value={context.state.notebook.subtitle}                                               
+                                 onChange={(event)=>{context.notebookChange('subtitle', event);}}/>
+                        </div>
+                          
+                        <div className="summary">
+		          Description:
+                          <input type="text"
+                                 value={context.state.notebook.description}
+                                   onChange={(event)=>{context.notebookChange('description', event);}}/>
+			</div>
+                          
+		        <div>
+                          Saved: 
+                          {context.state.notebook.isSaved ? 'true' : 'false'}
+                        </div>
+                      </div>);}}
+
+              </AppContext.Consumer>                  
+
 	);
     }
 }

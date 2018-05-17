@@ -18,88 +18,34 @@ class Notebook extends React.Component {
         );
     }
     
-    makeNotebook(notebookEntry, i) {
-        let context = this;
-        let [key, notebook] = notebookEntry;
-	return(
-	    <div key={key}>
-	      <a href={notebook.uuid}>{notebook.title}</a>
-	      <button onClick={()=>{context.deleteNotebook(notebook.uuid);}}>Delete</button>
-	      <button>{notebook.is_public ? 'public' : 'private'}</button>	      
-	    </div>
-	);
-    }
 
-
-    makeAddNoteButton(context) {
-        if (context.state.notebook.uuid !== undefined) {
-            return(<button onClick={context.addNote}>+ Note</button>);
-        }
-        return undefined;
-    }
-    
     render() {
         return (
-
-              <AppContext.Consumer>
-                
-                {(context) => {
-                    return (
-                        <div style={{ display: this.props.status ? 'block' : 'none' }} className="Editor">
-                          <span>
-                            {this.makeAddNoteButton(context)}
-	                    <button onClick={context.listNotebooks}>+ List</button>
-	                    <button onClick={context.addNotebook}>+ Notebook</button>                          
-                          </span>
-		          <TitleEditor/>
-
-			  <form>
-			    Public
-                            <input type="checkbox" name="public"/>
-			  </form>
-                          
-		          <div>
-                            Title:
-                            <input type="text"
-                                   value={context.state.notebook.title}
-                                   onChange={(event)=>{context.notebookChange('title', event);}}/>
-                          </div>
-                          
-		          <div>
-                            Subtitle:
-                            <input type="text"
-                                   value={context.state.notebook.subtitle}                                               
-                                   onChange={(event)=>{context.notebookChange('subtitle', event);}}/>
-                          </div>
-                          
-                          <div className="summary">
-		            Description:
-                            <input type="text"
-                                   value={context.state.notebook.description}
-                                   onChange={(event)=>{context.notebookChange('description', event);}}/>
-			  </div>
-                          
-		          <div>
-                            Saved: 
-                            {context.state.notebook.isSaved ? 'true' : 'false'}
-                          </div>
+            <AppContext.Consumer>
+              {(context) => {
+                  return (
+                      <div className="Editor">
+                        <span>
+	                  <button onClick={context.listNotebooks}>+ List</button>
+	                  <button onClick={context.addNotebook}>+ Notebook</button>                          
+                        </span>
 			  
-                          {Array.from(context.state.user.notebookList).map(this.makeNotebook.bind(context))}
+			<TitleEditor/>			  
 
-                          <div className="notebook-event-list">
-                            {Array.from(context.state.notebook.notes).map(this.makeNote)}
-                          </div>
-                          
-                          <div className="Manuscript">
-                            <h1>{context.state.notebook.title}</h1>
-                            <h2>{context.state.notebook.subtitle}</h2>
-                            <div className="description">{context.state.notebook.description}</div>   
-                            {Array.from(context.state.notebook.notes).map(this.makeManuscriptText)}
-                          </div>
+                        <div className="notebook-event-list">
+                          {Array.from(context.state.notebook.notes).map(this.makeNote)}
+                        </div>
+                        
+                        <div className="Manuscript">
+                          <h1>{context.state.notebook.title}</h1>
+                          <h2>{context.state.notebook.subtitle}</h2>
+                          <div className="description">{context.state.notebook.description}</div>   
+                          {Array.from(context.state.notebook.notes).map(this.makeManuscriptText)}
+                        </div>
 
-                        </div>);}}
-
-              </AppContext.Consumer>                  
+                      </div>);
+	      }}
+            </AppContext.Consumer>                  
         );
     }
 }
