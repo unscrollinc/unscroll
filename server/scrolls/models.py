@@ -113,11 +113,6 @@ class Scroll(models.Model):
         unique_together = (("title", "by_user"),)
         ordering = ['-when_modified']
 
-    def full_notes(self):
-        return Note.objects\
-                   .select_related('scroll')\
-                   .filter(scroll__id=self.id)
-
     def __unicode__(self):
         return '{}'.format(self.title,)
 
@@ -154,9 +149,7 @@ class Notebook(models.Model):
         ordering = ['-when_modified']
 
     def full_notes(self):
-        return Note.objects\
-                   .select_related('scroll')\
-                   .filter(scroll__id=self.id)
+        return Note.objects.filter(in_notebook__id=self.id)
 
     def __unicode__(self):
         return '{}'.format(self.title,)
@@ -264,10 +257,6 @@ class Note(models.Model):
         default=uuid4,
         editable=True,
         unique=True)
-    uuid_next = models.UUIDField(
-        default=uuid4,
-        editable=True,
-        unique=False)
     in_notebook = models.ForeignKey(
         Notebook,
         null=True,
