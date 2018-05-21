@@ -4,11 +4,6 @@ import TimelinePanelEventEditButton from './TimelinePanelEventEditButton';
 
 class Event extends React.Component {
 
-    constructor(props, context) {
-        super(props, context);
-        console.log(props);
-    }
-    
     render() {
         return(
             <div style={{

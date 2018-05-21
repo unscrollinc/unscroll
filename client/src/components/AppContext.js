@@ -19,45 +19,13 @@ export class AppProvider extends React.Component {
 
         this.state = this.makeState(c);
 
-        this.sequenceNotes = () => {
-            let notes = this.state.notebook.notes;
-            let sequenced = Map();
-            let uuids = Set();
-            let es = notes.entries();
-
-            // Make a set of all the uuid_next
-            es.map((k, v)=>{uuids.add(v.uuid_next)});
-
-            // This does the resequencing
-            function go (k) {
-                if (k) {
-                    let v = notes.get(k);
-                    sequenced.set(k, v);
-                    go(v.uuid_next);
-                }
-            }
-            
-            // The first one is the first one we find where
-            es.map((k,v)=>{
-                if (sequenced.size == 0  // there's nothing sequences
-                    && !uuids.has(k) // it's uuid doesn't show up in any `uuid_next`s
-                    && v.uuid_next   // it has a `uuid_next` itself
-                    && !v.deleted) { // and it hasn't been deleted
-                    go(k,v);
-                }
-            });
-            return sequenced;
-        };
+        
 	this.sweep = () => {
 	    console.log("[Checking Notebook]");
-	    if (!this.state.notebook.isSaved) {
+	    if (this.state.user.notebookCurrent && !this.state.notebook.isSaved) {
 		if (this.state.notebook.url)  {
 		    this.putNotebook();
 		}
-                else if (!this.state.notebook.title) {
-                    console.log(this.state.notebook);
-                    console.log("NO TITLE, FIX THIS");
-                }
 		else {
 		    this.saveNotebook();
 		}
@@ -83,6 +51,10 @@ export class AppProvider extends React.Component {
     }
 
     modifyNote(uuid, o) {
+        console.log('[@modifyNote(uuid,o,this.state.notebook.notes)]', uuid, o, this.state.notebook.notes);
+        console.log('[@modifyNote:note by uuid]', this.state.notebook.notes.get(uuid));        
+        
+        const _this = this;
 	this.setState(
             {notebook:
 	     update(this.state.notebook,
@@ -93,19 +65,15 @@ export class AppProvider extends React.Component {
 				     update(this.state.notebook.notes.get(uuid),
 					    {$merge: o})]]})}})},
 		    () => {
-                        console.log('modified note', uuid, o);
+                        console.log('[@modifyNote:uuid,o]', uuid, o);
                     }
 		);        
     }
 
-    reseq(current, next) {
-    }
-    
     cutNotes(from, to, targetBefore) {
         let _notes = this.state.notebook.notes;
-        
-
     }
+    
     patchNote(note) {
         let _this = this;
         axios({
@@ -125,7 +93,9 @@ export class AppProvider extends React.Component {
             });
         
     }
+    
     saveNote(note) {
+        console.log('[@saveNote(note)]',note);
         let _this = this;
         axios({
 	    method:'post',
@@ -135,7 +105,7 @@ export class AppProvider extends React.Component {
 	    data:note
 	})
             .then(function(resp) {
-		console.log("[@saveNote()]", resp);
+		console.log("[@saveNote():resp.data]", resp.data);
                 let _uuid = resp.data.uuid;
                 _this.modifyNote(_uuid, {url:resp.data.url,
                                          isSaved:true});
@@ -155,14 +125,15 @@ export class AppProvider extends React.Component {
 	    data:update(this.state.notebook, {$unset: ['notes']})
 	})
             .then(function(resp) {
-                _this.loadNotebookList();
+                
 		_this.setState(
 		    {notebook: update(
 			_this.state.notebook, {$merge: {
 		            isSaved: true,
 		            notes:new Map(),
 		            ...resp.data}})
-		    });
+		    },
+                    _this.loadNotebookList);
             })
             .catch(error => {
                 console.log(`saveNotebook: There is already a notebook by you with that name! ${error}`);
@@ -171,7 +142,6 @@ export class AppProvider extends React.Component {
 
     putNotebook() {
         let _this = this;
-	console.log(this.state.notebook);
         axios({
 	    method:'put',
 	    url:this.state.notebook.url,
@@ -192,8 +162,7 @@ export class AppProvider extends React.Component {
     }
 
     loadNotebook() {
-        let _this = this;
-        console.log(this.state.notebook);
+        const _this = this;
         axios(
             {method:'get',
              url:this.state.notebook.id,
@@ -207,22 +176,23 @@ export class AppProvider extends React.Component {
     }
 
     loadNotebookList() {
-        let _this = this;	
+        const _this = this;	
         axios({method:'get',
-	       url:'http://localhost:8000/users/notebooks/',
+	       url:API+'users/notebooks/',
                headers: this.makeAuthHeader(_this.state.user.authToken)
 	      })
 	    .then(function(response) {
-                let notebookMap = new Map(response.data.map((n)=>[n.uuid, n]));
 		_this.setState(
-                    {user: update(_this.state.user, {$merge: {notebookList:notebookMap}})},
+                    {user: update(_this.state.user,
+                                  {$merge:
+                                   {notebookList:new Map(response.data.map((n)=>[n.uuid, n]))}})},
 		    ()=>{console.log(_this.state.user);}
 		);
 	    });
     }
 
     deleteNotebook(uuid) {
-        console.log(`[Deleting ${uuid}]`);
+        console.log(`[@deleteNotebook()] ${uuid}]`);
         let nb = this.state.user.notebookList.get(uuid);
         console.log(nb);
         axios({method:'delete',
@@ -230,9 +200,8 @@ export class AppProvider extends React.Component {
                headers: this.makeAuthHeader(this.state.user.authToken)               
               })
             .then(response=>{
-                console.log('DID IT', response);
-                  this.setState({
-                      user:
+                this.setState({
+                    user:
                       update(this.state.user,
                              {$merge:
                               {notebookList:
@@ -264,13 +233,12 @@ export class AppProvider extends React.Component {
                 password:undefined,
                 profile:undefined,
                 notebookCurrent:undefined,
-                notebookList:new Map(),
-                scrollList:new Map()
+                notebookList:[],
+                scrollList:[]
             },
             notebook: {
-                isSaved:false,
-                isOnServer:false,
-		notes:new Map()
+		notes:new Map(),
+                noteCurrent:undefined
 	    },
             eventEditor: {
                 on:false,
@@ -291,6 +259,35 @@ export class AppProvider extends React.Component {
                 position:undefined
             }
         }
+    }
+    
+    sequenceNotes(notes) {
+        console.log('[@sequenceNotes:notes]', notes);
+        return new Map(
+            Array.from(notes).map((v, i) => {
+                if (i!==v.order) {
+                    return [v.uuid, update(v, {$merge: {isSaved:false, order:i}})];
+                }
+                else {
+                    return [v.uuid, update(v, {$merge: {isSaved:true}})];
+                }
+            }));
+    }
+
+    
+    sortNotes(notes) {
+        const _sorted =
+              Array.from(notes)
+              .sort((a,b) => {
+                  if (a.order > b.order) {
+                      return 1;
+                  }
+                  else if (a.order < b.order) {
+                      return -1;
+                  }
+                  return 0;
+              });
+        return _sorted;
     }
     
     makeAuthHeader(token) {
@@ -328,13 +325,16 @@ export class AppProvider extends React.Component {
                             cookie.remove('username');                            
                             _this.setState(_this.makeState());
                         });
+
+                    
                 },
+                
                 
                 doLogin:(event) => {
                     event.preventDefault();
                     let _this = this;
                     axios.post(
-                        API + 'auth/login/',
+                        API+'auth/login/',
                         {
                             username: this.state.user.username,
                             password: this.state.user.password
@@ -360,17 +360,26 @@ export class AppProvider extends React.Component {
                     this.setState({notebook: {
                         on:true,
 			isSaved:false,
-                        title:'Untitled-' + Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 6),
+                        title:'Untitled-'
+                            + Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 6),
                         subtitle:'Un-subtitled',
                         description:'Un-summarized',
-                        notes:new Map()
+                        notes:[]
                     }}, this.saveNotebook);
                 },
 
-                loadNotebook:(id)=>{
-                    this.setState({notebook:update(this.state.notebook,
-                                                   {$set: {id:id}})},
-                                  this.loadNotebook);
+                loadNotebook:(notebook)=>{
+                    const _this = this;
+                    axios({method:'get',
+	                   headers:this.makeAuthHeader(this.state.user.authToken),
+                           url:`${API}users/${notebook.uuid}/notebook`
+                          }).then((response) => {
+                              this.setState({notebook:
+                                             {...notebook,
+                                              isSaved:true,
+                                              isOnServer:true,
+                                              notes:_this.sequenceNotes(_this.sortNotes(response.data.full_notes)),
+                                             }}, ()=>{console.log(this.state.notebook)})});
                 },
 
 		listNotebooks:()=>{
@@ -391,35 +400,20 @@ export class AppProvider extends React.Component {
                 },
                 
                 addNote:(event) => {
-		    console.log('[@addNote(event)', event);
-		    let _newNote = {
-			isSaved:false,
-			id:undefined,
-			url:undefined,
-			uuid:undefined,
-			uuid_next:undefined,
-			with_event:undefined,
-			order:0,
-			text:undefined,
-			kind:event ? 'event' : 'text',
-			when_created:undefined,
-			when_modified:undefined,
-			is_deleted:false
-		    };
-		    let _uuid = uuidv4();
-                    let _notes = update(this.state.notebook.notes,
-                                        {$add:[[_uuid,
-                                                {order:0,
-						 uuid:_uuid,
-						 text:'THE TEXT OF THE NOTE',
-						 in_notebook:this.state.notebook.url,
-                                                 event:event,
-						 with_event: event.url}]]});
-
-                    let _sorted = new Map([..._notes.entries()]
-                                          .sort((a,b) => a.order > b.order ? 1 : a.order < b.order ? -1 : 0));
+		    console.log('[@addNote(event)]', event);
+                    const newNote = {
+                        uuid: uuidv4(),                    
+			text: 'Blank',
+                        order: undefined,
+			in_notebook: this.state.notebook.url,
+                        event:event.uuid ? event : undefined,
+			with_event:event.url
+                    };
+                    const _notes = update(this.state.notebook.notes, {$add: [[newNote.uuid, newNote]]});
+                    const _sorted = new Map(this.sequenceNotes(Array.from(_notes).map(([k,v])=>v)));
+		    console.log('[@addNote:_sorted]', _sorted);                    
                     this.setState({
-                        notebook:update(this.state.notebook, {$merge: { notes: _sorted }})
+                        notebook:update(this.state.notebook, {$merge: { notes:  _sorted}})
                     });
                 },
 
@@ -427,13 +421,30 @@ export class AppProvider extends React.Component {
                     
                 },
                 
-                moveNoteRange:() => {
-                    let notes = this.state.notebook.notes;
-                    let entries = notes.entries();
-                    let range = entries.filter(noteId => notes.get(noteId).statusIsRangerTarget);
-                    let mover = entries.filter(noteId => notes.get(noteId).statusIsMoving);
-                    let target = entries.filter(noteId => notes.get(noteId).statusIsMoveTarget);
-
+                moveNote:(from, to) => {
+                    const _notes = Array.from(this.state.notebook.notes);
+                    const _from = from.order;
+                    const _to = to.order;
+                    const _reduced = _notes.reduce((prev, current, idx, self) => {
+                        if (_from === to) {
+                            prev.push(current);
+                        }
+                        if (idx === _from) {
+                            return prev;
+                        }
+                        if (_from < _to) {
+                            prev.push(current);
+                        }
+                        if (idx === _to) {
+                            prev.push(self[from]);
+                        }
+                        if (_from > _to) {
+                            prev.push(current);
+                        }
+                        return prev;
+                    }, []);
+                    const _resequenced = this.resequenceNotes(_reduced);
+                    this.setState({notebook:{$merge: {notes: _resequenced}}});
                     /* 
                        then rewrite the entries by making two arrays:
                        - 1 one of the things to move,
@@ -448,18 +459,15 @@ export class AppProvider extends React.Component {
                 },
                 
                 updateNote:(newState) => {
-                    let _this = this;
-                    _this.setState({
-                        notebook:update(
-                            _this.state.notebook,
-                            {$merge:
-                             {notes:
-                              update(_this.state.notebook.notes,
-                                     {$add:
-                                      [[newState.uuid,
-                                        update(_this.state.notebook.notes.get(newState.uuid),
-                                               {$merge: {isSaved: false, ...newState}})]]})}})},
-                                   ()=>{}
+                    const nb = this.state.notebook;
+                    this.setState({
+                        notebook:update(nb, {$merge: {currentNote:newState.uuid,
+                                                      notes:update(nb.notes,
+                                                                   {$add:
+                                                                    [[newState.uuid,
+                                                                      update(nb.notes.get(newState.uuid),
+                                                                             {$merge: {isSaved: false, ...newState}})]]})}})},
+                                  ()=>{}
                                   );
 
                 },
@@ -468,6 +476,24 @@ export class AppProvider extends React.Component {
                     this.setState({
                         eventEditor:{on:true, event:e}
                     });
+                },
+                
+                deleteNote:(note) => {
+                    const _this = this;
+                    axios({
+                        method:'delete',
+                        url:note.url,
+	                headers:this.makeAuthHeader(this.state.user.authToken)})
+                        .then(
+                            (response)=> {
+                                _this.setState({notebook:
+                                               update(_this.state.notebook,
+                                                      { $merge:
+                                                        { notes:
+                                                          update(_this.state.notebook.notes,
+                                                                 { $remove: [note.uuid]})}})},
+                                               ()=>{console.log(_this.state.notebook);});
+                            });
                 },
                 
                 editEvent:(e) => {
@@ -484,17 +510,8 @@ export class AppProvider extends React.Component {
 
                 eventWindowClose:() => {
                     this.setState({eventEditor:{on:false, event:undefined}});
-                },
-                
-                deleteNote:(uuid) => {
-                    console.log('deleting note', uuid);
-                    let _notes = this.state.notebook.notes;
-                    _notes.delete(uuid);
-                    console.log(_notes);
-                    this.setState({
-                        notebook:update(this.state.notebook, {$merge: { notes:  _notes}})
-                    });
                 }
+                
             }}>
             {this.props.children}
             </AppContext.Provider>

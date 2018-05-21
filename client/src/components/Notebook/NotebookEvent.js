@@ -6,18 +6,11 @@ class NotebookEvent extends React.Component {
     
     constructor(props, context) {
         super(props, context);
-        this.state = {
-            ...props.note[1],
-            uuid:props.note[0],
-	    order:0,
-            statusIsMoving:false,
-            statusIsRangeTarget:false,
-            statusIsMoveTarget:false,
-            statusIsSaved:false,
-            statusIsToBeDeleted:false
-        };
-        console.log("LET'S DO IT", this.state);
 
+        this.state = {...props,
+                      statusIsMoving:undefined,
+                      statusIsToBeDeleted:undefined};
+        
         this.onMoveClick = (context) => {
             this.setState({statusIsMoving:!this.state.statusIsMoving}, function() {
                 context.updateNote(this.state);                
@@ -44,32 +37,30 @@ class NotebookEvent extends React.Component {
 
         this.onDeleteClick = (context) => {
             console.log(context, this);
-            context.deleteNote(this.state.uuid);
+            context.deleteNote(this.state);
         };
     }
     
     makeNotebookEvent(context) {
+        console.log('OKAY OKAY', this);
         return (
-                <div key={this.state.uuid} className='notebook-event'>
+                <div key={this.props.uuid} className='notebook-event'>
                   
-                  <button>T/T/-/pic</button>
-                  <button className={'active-'+this.state.statusIsMoving}
-                          onClick={()=>this.onMoveClick(context)}>Move</button>
+                  <span className={'button active-'+this.state.statusIsMoving}
+                        onClick={()=>this.onMoveClick(context)}>Move</span>
                   
-                  <button className={'active-'+this.state.statusIsRangeTarget}
-                      onClick={()=>this.onRangeClick(context)}>Set range</button>
+	          <span className={'button active-'+this.state.statusIsToBeDeleted}
+                        onClick={()=>{context.deleteNote(this.props);}}>Delete</span>                            
                   
-	          <button className={'active-'+this.state.statusIsMoveTarget}
-                          onClick={()=>this.onMoveTargetClick(context)}>Move above here</button>
-                  
-	          <button className={'active-'+this.state.statusIsToBeDeleted}
-                          onClick={()=>this.onDeleteClick(context)}>Delete</button>                            
-                  
-                <h3>{this.state.event ? this.state.event.title : 'NO EVENT'}</h3>
-	        <p>{this.state.event ? this.state.event.text : 'NO EVENT TEXT'}</p>		
-                  <textarea value={this.state.text}
-                            onChange={(event)=>{this.onTextChange(event, context);
-                    }}></textarea>
+                  <h3>ORDER: {(this.props.order !== 'undefined') ? this.props.order : 'NO ORDER'}</h3>
+                  <h3>{this.props.isSaved ? 'SAVED!' : 'UNSAVED'}</h3>                  
+                  <h3>EVENT: {this.props.event ? this.props.event.title : 'NO EVENT'}</h3>
+	          <p>{this.props.event ? this.props.event.text : 'NO EVENT TEXT'}</p>		
+                  <textarea value={this.props.text}
+                            onChange={(event)=>{
+                                context.updateNote({uuid:this.props.uuid, text:event.target.value});                                
+                    }}>
+                  </textarea>
                 </div>
         );
     }

@@ -6,14 +6,37 @@ import TitleEditor from './TitleEditor.js';
 
 class Notebook extends React.Component {
 
-    makeNote(note, i) {        
-        return (<NotebookEvent key={'notebook__'+note[0]} note={note}/>);
+    makeAddNoteButton(context) {
+        if (context.state.notebook.uuid !== undefined) {
+            return(<button onClick={context.addNote}>+ Note</button>);
+        }
+        return undefined;
+    }
+
+    makeNotebook(notebookEntry, i) {
+        const context = this;
+        const [key, notebook] = notebookEntry;
+	return(
+	    <div key={key}>
+	      <button
+                 onClick={
+                 (e) => {context.loadNotebook(notebook);}}>
+                {notebook.title}
+              </button>
+	      <button onClick={()=>{context.deleteNotebook(notebook.uuid);}}>Delete</button>
+	      <button>{notebook.is_public ? 'public' : 'private'}</button>
+	    </div>
+	);
+    }
+    
+    makeNote(note, i) {
+        return (<NotebookEvent key={note[0]} {...note[1]}/>);
     }
 
     makeManuscriptText(note, i) {
         return (
-            <span> *
-              <NotebookManuscriptText key={'manuscript__'+note[0]} note={note}/>
+            <span key={note[0]}>
+              <NotebookManuscriptText key={note[0]} note={note}/>
             </span>
         );
     }
@@ -25,13 +48,18 @@ class Notebook extends React.Component {
               {(context) => {
                   return (
                       <div className="Editor">
-                        <span>
-	                  <button onClick={context.listNotebooks}>+ List</button>
-	                  <button onClick={context.addNotebook}>+ Notebook</button>                          
-                        </span>
+                          <span>
+                            {this.makeAddNoteButton(context)}
+	                    <button onClick={context.listNotebooks}>+ List</button>
+	                    <button onClick={context.addNotebook}>+ Notebook</button>                          
+                          </span>
 			  
 			<TitleEditor/>			  
 
+                        <div className="notebook-list">
+                          {Array.from(context.state.user.notebookList).map(this.makeNotebook.bind(context))}
+                        </div>
+                        
                         <div className="notebook-event-list">
                           {Array.from(context.state.notebook.notes).map(this.makeNote)}
                         </div>

@@ -197,13 +197,14 @@ button.new {
     text-decoration:none;
 }
 
-button, input.inputButton {
+.button, button, input.inputButton {
     text-transform:uppercase;
     color:black;
     background:white;    
     border:1px solid #ccc;
     margin:0px 0px 0px 2px;
-    border-radius:8px;    
+    border-radius:8px;
+    cursor:pointer;
 }
 button:active, input.inputButton:active {
     background:white;

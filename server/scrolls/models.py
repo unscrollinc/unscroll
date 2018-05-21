@@ -269,7 +269,8 @@ class Note(models.Model):
         related_name="notes",
         on_delete=models.CASCADE)
     order = models.FloatField(
-        blank=False)
+        null=True,
+        blank=True)
     text = models.TextField(
         blank=True,
         null=True)

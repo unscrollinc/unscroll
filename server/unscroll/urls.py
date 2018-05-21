@@ -8,7 +8,7 @@ from django.conf.urls.static import static
 import django_filters
 from django.db.models import Max, Min, Count
 from rest_framework import pagination, generics, serializers, viewsets, routers, response, status
-from rest_framework.decorators import detail_route, list_route
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.exceptions import APIException
@@ -221,7 +221,7 @@ class BulkEventViewSet(BulkModelViewSet):
     filter_class = EventFilter
     serializer_class = BulkEventSerializer
 
-    @list_route()
+    @action(detail=True)
     def maxmin(self, request):
         filtered = EventFilter(request.GET,
                                queryset=Event.objects)
@@ -233,7 +233,7 @@ class BulkEventViewSet(BulkModelViewSet):
                          first_event=Min('when_happened'))
         return Response(qs)
 
-    @list_route()
+    @action(detail=False)
     def search(self, request):
         filtered = EventFilter(request.GET,
                                queryset=Event.objects
@@ -352,7 +352,6 @@ class ScrollSerializer(serializers.HyperlinkedModelSerializer):
         read_only_fields = (
             'uuid',
             'by_user',
-            'notes',
             'user_username',
             'event_count',
             'first_event',
@@ -376,46 +375,25 @@ class ScrollViewSet(viewsets.ModelViewSet):
                                  last_event=Max('events__when_happened'))
     filter_class = ScrollFilter
 
-    @detail_route(methods=['get'])
-    def notes(self, request, pk=None):
-        notes = Note.objects\
-                    .select_related('event')\
-                    .filter(scroll_id=pk)
-        serializer = NoteEventSerializer(
-            notes,
-            context={'request': request},
-            many=True)
-        return Response(serializer.data)
 
 class NotebookFilter(django_filters.rest_framework.FilterSet):
     class Meta:
         model = Notebook
         fields = ['uuid', 'title', 'by_user__username']
 
+
 class NotebookSerializer(serializers.HyperlinkedModelSerializer):
     user_username = serializers.CharField(
         read_only=True,
-        source="user.username")
-
+        source="by_user.username")
+    
     class Meta:
         model = Notebook
-        fields = (
-            'id',
-            'uuid',
-            'url',
-            'by_user',
-            'user_username',
-            'when_created',
-            'when_modified',            
-            'title',
-            'is_public',
-            'subtitle',
-            'description',)
         depth = 0
+        fields = '__all__'        
         read_only_fields = (
             'uuid',
             'by_user',
-            'notes',
             'user_username',)
         
     def create(self, validated_data):
@@ -427,12 +405,16 @@ class NotebookSerializer(serializers.HyperlinkedModelSerializer):
         except Exception as e:
             raise APIException(str(e))        
 
+
+class NotebookNotesSerializer(NotebookSerializer):
+    full_notes = NoteSerializer(read_only=True, many=True)
+
+    
 class NotebookViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = NotebookSerializer
     filter_class = NotebookFilter
-    queryset = Notebook.objects.select_related('by_user')\
-                               .filter(is_public=True)
+    queryset = Notebook.objects.filter(is_public=True)
     
     # Need to override only-public filter here so we use a custom destroy    
     def destroy(self, request, *args, **kwargs):
@@ -458,7 +440,7 @@ class NotebookViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.data)
    
-    @detail_route(methods=['get'])
+    @action(detail=True)
     def notes(self, request, pk=None):
         notes = Note.objects\
                     .select_related('event')\
@@ -472,7 +454,7 @@ class NotebookViewSet(viewsets.ModelViewSet):
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     full_scrolls = ScrollSerializer(User.full_scrolls, many=True)
-    full_notebooks = ScrollSerializer(User.full_notebooks, many=True)    
+    full_notebooks = NotebookSerializer(User.full_notebooks, many=True)    
 
     class Meta:
         model = User
@@ -486,40 +468,52 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAdminUser]
     serializer_class = UserSerializer
     queryset = User.objects.all()
     permission_classes = [IsAuthenticated]
 
-    @list_route()
+    @action(detail=False)
     def scrolls(self, request):
         user = self.request.user
         scrolls = Scroll.objects\
                         .select_related('by_user')\
-                        .filter(by_user__id=user.id, is_public=True)\
+                        .filter(by_user__id=user.id)\
                         .annotate(
                             event_count=Count('events'),
-                            first_event=Min('events__datetime'),
-                            last_event=Max('events__datetime'))
+                            first_event=Min('events__when_happened'),
+                            last_event=Max('events__when_happened'))
         serializer = ScrollSerializer(
             scrolls,
             context={'request': request},
             many=True)
         return Response(serializer.data)
 
-    @list_route()
+    @action(detail=False)
     def notebooks(self, request):
         user = self.request.user
         notebooks = Notebook.objects\
                           .select_related('by_user')\
-                          .filter(by_user__id=user.id)
+                          .filter(by_user__id=user.id)\
+                          .annotate(note_count=Count('notes'))
         serializer = NotebookSerializer(
             notebooks,
             context={'request': request},
             many=True)
         return Response(serializer.data)
 
-    
+    @action(detail=True)
+    def notebook(self, request, pk=None):
+        user = self.request.user
+        notebook = Notebook.objects.get(uuid=str(pk))
+        notes = Note.objects\
+                          .select_related('with_event')\
+                          .filter(by_user__id=user.id)\
+                          .filter(in_notebook=notebook.id)                          
+        serializer = NotebookNotesSerializer(
+            notebook,
+            context={'request': request},
+            many=False)
+        return Response(serializer.data)
 
 # Routers provide a way of automatically determining the URL conf.
 router = BulkRouter()
