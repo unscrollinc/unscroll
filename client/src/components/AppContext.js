@@ -192,7 +192,7 @@ export class AppProvider extends React.Component {
     }
 
     deleteNotebook(uuid) {
-        console.log(`[@deleteNotebook()] ${uuid}]`);
+        console.log('[@deleteNotebook:uuid]', uuid);
         let nb = this.state.user.notebookList.get(uuid);
         console.log(nb);
         axios({method:'delete',
@@ -237,6 +237,8 @@ export class AppProvider extends React.Component {
                 scrollList:[]
             },
             notebook: {
+                moveFrom:undefined,
+                targetNote:undefined,
 		notes:new Map(),
                 noteCurrent:undefined
 	    },
@@ -376,6 +378,7 @@ export class AppProvider extends React.Component {
                           }).then((response) => {
                               this.setState({notebook:
                                              {...notebook,
+                                              movingNote:undefined,                                                 
                                               isSaved:true,
                                               isOnServer:true,
                                               notes:_this.sequenceNotes(_this.sortNotes(response.data.full_notes)),
@@ -420,31 +423,48 @@ export class AppProvider extends React.Component {
                 doEventEditor:(event) => {
                     
                 },
-                
-                moveNote:(from, to) => {
-                    const _notes = Array.from(this.state.notebook.notes);
-                    const _from = from.order;
-                    const _to = to.order;
-                    const _reduced = _notes.reduce((prev, current, idx, self) => {
-                        if (_from === to) {
-                            prev.push(current);
-                        }
-                        if (idx === _from) {
+
+                startMove:(uuid) => {
+                    console.log('gonna start it now!!!!', uuid);
+                    this.setState({notebook: update(this.state.notebook, {$merge: {moveFrom:uuid}})});
+                },
+
+                endMove:(uuid) => {
+                    const nb = this.state.notebook;
+                    const _keys = Array.from(nb.notes.keys());
+                    const _from = _keys.indexOf(nb.moveFrom);
+//                    const _to = _keys.indexOf(nb.moveFrom);                    
+                    const _target = _keys.indexOf(uuid);
+
+                    // https://stackoverflow.com/questions/2440700/reordering-arrays
+                    function immutableMove(arr, from, to) {
+                        return arr.reduce((prev, current, idx, self) => {
+                            if (from === to) {
+                                prev.push(current);
+                            }
+                            if (idx === from) {
+                                return prev;
+                            }
+                            if (from < to) {
+                                prev.push(current);
+                            }
+                            if (idx === to) {
+                                prev.push(self[from]);
+                            }
+                            if (from > to) {
+                                prev.push(current);
+                            }
                             return prev;
-                        }
-                        if (_from < _to) {
-                            prev.push(current);
-                        }
-                        if (idx === _to) {
-                            prev.push(self[from]);
-                        }
-                        if (_from > _to) {
-                            prev.push(current);
-                        }
-                        return prev;
-                    }, []);
-                    const _resequenced = this.resequenceNotes(_reduced);
-                    this.setState({notebook:{$merge: {notes: _resequenced}}});
+                        }, []);
+                    }
+                    
+                    const _reduced = immutableMove(_keys, _from, _target);
+                    const _rebuilt = _reduced.map(u=>nb.notes.get(u))
+                    const _resequenced = this.sequenceNotes(_rebuilt);
+                    console.log('#######XXX#######', _keys, _reduced, _rebuilt, _resequenced);
+                    this.setState({notebook:update(this.state.notebook, {$merge:
+                                                                         {moveFrom:undefined,
+                                                                          notes: _resequenced}})});
                     /* 
                        then rewrite the entries by making two arrays:
                        - 1 one of the things to move,

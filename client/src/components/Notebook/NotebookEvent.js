@@ -40,14 +40,19 @@ class NotebookEvent extends React.Component {
             context.deleteNote(this.state);
         };
     }
+
+    makeTarget(uuid, context) {
+        console.log('OKELY DOKELY');
+        return (<div onClick={(e)=>context.endMove(uuid)} className="move-target">MOVE RIGHT HERE {uuid}</div>);
+    }
     
     makeNotebookEvent(context) {
-        console.log('OKAY OKAY', this);
+
+        console.log(context.state.notebook.moveFrom);
         return (
                 <div key={this.props.uuid} className='notebook-event'>
-                  
                   <span className={'button active-'+this.state.statusIsMoving}
-                        onClick={()=>this.onMoveClick(context)}>Move</span>
+                        onClick={()=>context.startMove(this.props.uuid)}>Move</span>
                   
 	          <span className={'button active-'+this.state.statusIsToBeDeleted}
                         onClick={()=>{context.deleteNote(this.props);}}>Delete</span>                            
@@ -61,6 +66,8 @@ class NotebookEvent extends React.Component {
                                 context.updateNote({uuid:this.props.uuid, text:event.target.value});                                
                     }}>
                   </textarea>
+
+                  {context.state.notebook.moveFrom ? this.makeTarget(this.props.uuid, context) : undefined}
                 </div>
         );
     }

@@ -263,3 +263,9 @@ th {
 .rangeInput {
     width:90%;
 }
+
+.move-target {
+    background:yellow;
+    width:100%;
+    height:10%;
+}
