@@ -32,8 +32,9 @@ class TitleEditor extends React.Component {
                                            onChange={(event)=>{context.notebookChange('subtitle', event);}}/></td>
                               </tr>
                               <tr>
-		                <th>Description:</th>
-                                <td><input type="text"
+				<th>Description:</th>
+                                <td>
+				  <input type="text"
                                            value={context.state.notebook.description}
                                            onChange={(event)=>{context.notebookChange('description', event);}}/></td>
                               </tr>

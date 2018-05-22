@@ -1,6 +1,6 @@
 import React from 'react';
 import { AppContext } from '../AppContext';
-class TimelinePanelEventNoteButton extends React.Component {
+class EventNoteButton extends React.Component {
     constructor(props, context) {
         super(props, context);
     }
@@ -21,4 +21,4 @@ class TimelinePanelEventNoteButton extends React.Component {
     }
 }
 
-export default TimelinePanelEventNoteButton;
+export default EventNoteButton;

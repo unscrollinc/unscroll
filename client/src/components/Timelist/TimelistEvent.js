@@ -1,6 +1,8 @@
 import React from 'react';
 import 'react-virtualized/styles.css';
 import {DateTime, Interval} from 'luxon';
+import EventNoteButton from '../Event/EventNoteButton';
+
 
 class TimelistEvent extends React.Component {
 
@@ -27,7 +29,9 @@ class TimelistEvent extends React.Component {
         return(
             <div className="timelist-event-wrapper">
               {this.showWhenHappened(this.state.lastTime, e.when_happened)}
-              <div className="timelist-event">
+	      <div className="timelist-event">
+		<EventNoteButton event={this.props.event}/>
+	    
                 <div className="event-meta">
                   <a className="title" href={`/search/?scroll:${e.scroll_title}`}>
                     {e.scroll_title}

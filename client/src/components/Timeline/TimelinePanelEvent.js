@@ -1,5 +1,5 @@
 import React from 'react';
-import TimelinePanelEventNoteButton from './TimelinePanelEventNoteButton';
+import EventNoteButton from '../Event/EventNoteButton';
 import TimelinePanelEventEditButton from './TimelinePanelEventEditButton';
 
 class Event extends React.Component {
@@ -15,8 +15,7 @@ class Event extends React.Component {
                  className='event'>
               <TimelinePanelEventEditButton
                 event={this.props.event}/>
-              <TimelinePanelEventNoteButton
-                event={this.props.event}/>
+              <EventNoteButton event={this.props.event}/>
 	      <h3><a href={this.props.event.content_url} target="_blank">{this.props.month}/{this.props.title}</a></h3>
               <p>{this.props.text}</p>
             </div>

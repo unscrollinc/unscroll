@@ -119,10 +119,10 @@ h1 a {
 }
 .notebook-event {
     width:100%;
-    font-size:8pt;
-    font-family:Arial;
+    font-size:10pt;
     background:white;
     border-bottom:1px solid #ccc;
+    padding:0.25em;
 }
 
 .Manuscript {
@@ -268,4 +268,18 @@ th {
     background:yellow;
     width:100%;
     height:10%;
+}
+
+.saved {
+    background:none;
+}
+
+.unsaved {
+    background:pink;
+}
+
+span.order {
+    font-size:100%;
+    display:block;z-index:-1;float:right;color:white;
+    margin-right:0.5em;
 }

@@ -149,6 +149,21 @@ class EventFilter(django_filters.rest_framework.FilterSet):
         fields = ['start', 'before', 'in_scroll', ]
 
 
+class EventSerializer(serializers.HyperlinkedModelSerializer):
+    user_username = serializers.CharField(
+        read_only=True,
+        source="by_user.username")
+    
+    class Meta:
+        model = Event
+        depth = 0
+        fields = '__all__'        
+        read_only_fields = (
+            'uuid',
+            'by_user',
+            'user_username',)
+
+        
 class BulkEventSerializer(BulkSerializerMixin,
                           serializers.HyperlinkedModelSerializer):
     scroll_title = serializers.CharField(
@@ -276,8 +291,8 @@ class NoteSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class NoteEventSerializer(serializers.HyperlinkedModelSerializer):
-    event_full = BulkEventSerializer(
-        source='event',
+    event = EventSerializer(
+        source='with_event',
         many=False,
         read_only=True)
 
@@ -290,11 +305,13 @@ class NoteEventSerializer(serializers.HyperlinkedModelSerializer):
             'uuid',
             'in_notebook',
             'by_user',
-            'event_full',
+            'event',
             'kind',            
             'when_created',
             'when_modified',
             'text',)
+
+
 
 class NoteViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]    
@@ -407,8 +424,7 @@ class NotebookSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class NotebookNotesSerializer(NotebookSerializer):
-    full_notes = NoteSerializer(read_only=True, many=True)
-
+    full_notes = NoteEventSerializer(read_only=True, many=True)
     
 class NotebookViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
@@ -508,7 +524,7 @@ class UserViewSet(viewsets.ModelViewSet):
         notes = Note.objects\
                           .select_related('with_event')\
                           .filter(by_user__id=user.id)\
-                          .filter(in_notebook=notebook.id)                          
+                          .filter(in_notebook=notebook.id)
         serializer = NotebookNotesSerializer(
             notebook,
             context={'request': request},
