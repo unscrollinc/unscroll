@@ -17,15 +17,21 @@ class Notebook extends React.Component {
         const context = this;
         const [key, notebook] = notebookEntry;
 	return(
-	    <div key={key}>
-	      <button
-                 onClick={
-                 (e) => {context.loadNotebook(notebook);}}>
-                {notebook.title}
-              </button>
-	      <button onClick={()=>{context.deleteNotebook(notebook.uuid);}}>Delete</button>
-	      <button>{notebook.is_public ? 'public' : 'private'}</button>
-	    </div>
+            <tr key={key}>
+              <th>
+	        <span
+                      onClick={
+                      (e) => {context.loadNotebook(notebook);}}>
+                  {notebook.title}
+                </span>
+              </th>
+              <td>
+	        <button onClick={()=>{context.deleteNotebook(notebook.uuid);}}>Del</button>
+              </td>
+              <td>
+	       {notebook.is_public ? '*' : '-'}
+              </td>
+            </tr>
 	);
     }
     
@@ -51,14 +57,20 @@ class Notebook extends React.Component {
                           <span>
                             {this.makeAddNoteButton(context)}
 	                    <button onClick={context.listNotebooks}>+ List</button>
-	                    <button onClick={context.addNotebook}>+ Notebook</button>                          
+	                  <button onClick={context.addNotebook}>+ Notebook</button>
+                          <span className={'status ' + (context.state.notebook.isSaved ? 'saved' : 'unsaved')}>
+                            ●
+                          </span>                                
+                          
                           </span>
 			  
 			<TitleEditor/>			  
 
-                        <div className="notebook-list">
-                          {Array.from(context.state.user.notebookList).map(this.makeNotebook.bind(context))}
-                        </div>
+                        <table className="notebook-list">
+                          <tbody>
+                            {Array.from(context.state.user.notebookList).map(this.makeNotebook.bind(context))}
+                          </tbody>
+                        </table>
                         
                         <div className="notebook-event-list">
                           {Array.from(context.state.notebook.notes).map(this.makeNote)}

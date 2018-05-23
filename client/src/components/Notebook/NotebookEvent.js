@@ -24,11 +24,14 @@ class NotebookEvent extends React.Component {
 
     showEvent() {
 	const e = this.props.event;
+        function getText() {
+            return(<div className='note-event-text'>{e.text}</div>);
+        }
 	if (e) {
 	    return(
-		<div class="noteEvent">
-		  <a target="_new" href={e.content_url}>{e.title}</a>
-		  <p>{e.text}</p>
+		<div className='note-event'>
+		  <div className='note-event-title'><a target="_new" href={e.content_url}>{e.title}</a></div>
+                  {getText()}
 		</div>
 	    );
 	}
@@ -37,38 +40,34 @@ class NotebookEvent extends React.Component {
     }
     makeNotebookEvent(context) {
         return (
-            <div key={this.props.uuid} className={'notebook-event ' + (this.props.isSaved ? 'saved' : 'unsaved')}>
+            <div key={this.props.uuid} className='note'>
+              <div className='note-inner'>
+                <div className='note-nav'>                
                   <span className={'button active-'+this.state.statusIsMoving}
                         onClick={()=>context.startMove(this.props.uuid)}>Move</span>
                   
 	          <span className={'button active-'+this.state.statusIsToBeDeleted}
                         onClick={()=>{context.deleteNote(this.props);}}>Delete</span>                            
                   
-                  <span className="order">{(this.props.order !== 'undefined') ? this.props.order : 'NO ORDER'}</span>
-
-		  {this.showEvent()}
-		  
-		  <Editor className="draft-editor"
-			  key={this.props.uuid}
-			  editorState={this.state.editorState}
-
-
-			  onChange={(editorState)=> {
-			      this.setState({editorState},
-					    ()=>
-					    context.updateNote({uuid:this.props.uuid,
-		    text:editorState.getCurrentContent().getPlainText()}));}}/>
-
-		    {/*
-							
-                  <textarea value={this.props.text}
-                            onChange={(event)=>{
-                            context.updateNote({uuid:this.props.uuid, text:event.target.value});                                                    }}>
-                  </textarea>
-				*/}
-
-                  {context.state.notebook.moveFrom ? this.makeTarget(this.props.uuid, context) : undefined}
+                  <span className={'order ' + (this.props.isSaved ? 'saved' : 'unsaved')}>
+                    {(this.props.order !== 'undefined') ? '●' : 'NO ORDER'}
+                  </span>
                 </div>
+
+		{this.showEvent()}
+		  
+		<Editor className="note-editor draft-editor"
+			key={this.props.uuid}
+			editorState={this.state.editorState}
+			onChange={(editorState)=> {
+			    this.setState({editorState},
+					  ()=>
+					    context.updateNote({uuid:this.props.uuid,
+		  text:editorState.getCurrentContent().getPlainText()}));}}/>
+                    
+                  {context.state.notebook.moveFrom ? this.makeTarget(this.props.uuid, context) : undefined}
+              </div>
+            </div>  
         );
     }
     

@@ -11,6 +11,7 @@ class TitleEditor extends React.Component {
             <AppContext.Consumer>
               {(context) => {
                   return (
+                      
                       <div className="Meta">
 			<form>
                           <table>
@@ -40,10 +41,8 @@ class TitleEditor extends React.Component {
                               </tr>
                               <tr>
                                 <th>
-                                  Saved
                                 </th>
                                 <td>
-                                  {context.state.notebook.isSaved ? 'true' : 'false'}
                                 </td>
                               </tr>
                             </tbody>

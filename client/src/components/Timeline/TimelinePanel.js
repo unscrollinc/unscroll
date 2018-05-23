@@ -157,7 +157,6 @@ class Panel extends React.Component {
                 );
 
             if (res.success) {
-                console.log(event);
                 let el = (
                     <Event
                       key={Math.random()}

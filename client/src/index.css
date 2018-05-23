@@ -2,10 +2,11 @@ body {
     margin:0;
     padding:0;
     position:fixed;
-    font-family:'Open Sans', sans-serif;
+    font-size:13pt;
+/*    font-family:'Open Sans', sans-serif; */
 }
 .input, th, td {
-    font-family:'Open Sans', sans-serif;
+/*    font-family:'Open Sans', sans-serif; */
 }
 .App {
     width:100%;
@@ -44,7 +45,7 @@ body {
 
 .Editor {
     width:50%;
-    background:lightblue;
+    background:white;
     left:50%;
     border-left:1px solid black;
     opacity:1;
@@ -114,21 +115,55 @@ h1 a {
 
 .notebook-event-list {
     overflow:auto;
-    height:95%;
     width:50%;
+    height:70%;
+    margin-bottom:500px;
 }
-.notebook-event {
+
+.note {
     width:100%;
     font-size:10pt;
+    font-family:sans-serif;
     background:white;
     border-bottom:1px solid #ccc;
-    padding:0.25em;
+}
+
+.note-inner {
+    margin:0.5em;
+    line-height:149%;
+}
+.note-event a {
+    color:#884;
+    text-decoration:none;
+    border-bottom:1px solid #662;
+    font-weight:bold;
+}
+.note-event {
+    color:#884;
+    padding:0.5em;
+}
+.note-nav {
+    text-align:right;
+}
+
+.public-DraftEditor-content {
+    margin-top:0.5em;
+    padding:0.5em;
+    font-family:serif;
+    font-size:13pt;
+    border:1px dotted #ccc;
+    background:#eec;
+}
+
+.public-DraftEditor-content:focus {
+    background:white;
 }
 
 .Manuscript {
     width:49%;
     margin-left:50%;
-    background:#dff;
+    background:#fff;
+    border-left:1px dotted black;
     height:100%;
     top:0;
     position:absolute;
@@ -270,16 +305,28 @@ th {
     height:10%;
 }
 
+
+.order {
+    font-size:100%;
+    display:block;
+    float:right;
+    margin-right:0.5em;
+    
+}
+
 .saved {
-    background:none;
+    color:darkgreen;
+    text-shadow: 0 0 5px darkgreen;
+    
 }
 
 .unsaved {
-    background:pink;
+    color:red;
+    text-shadow: 0 0 5px red;    
 }
 
-span.order {
-    font-size:100%;
-    display:block;z-index:-1;float:right;color:white;
-    margin-right:0.5em;
+span.status {
+    padding-left:0.5em;
+    text-align:right;
 }
+th {text-align:right;}

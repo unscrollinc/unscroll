@@ -22,6 +22,8 @@ export class AppProvider extends React.Component {
         
 	this.sweep = () => {
 	    console.log("[Checking Notebook]");
+            console.log(this.state.user.notebookCurrent);
+            console.log(this.state.notebook);            
 	    if (this.state.user.notebookCurrent && !this.state.notebook.isSaved) {
 		if (this.state.notebook.url)  {
 		    this.putNotebook();
@@ -150,11 +152,12 @@ export class AppProvider extends React.Component {
 	})
             .then(function(resp) {
                 _this.loadNotebookList();
-		_this.setState({notebook: update(
+/*		_this.setState({notebook: update(
                     _this.state.notebook, {$merge: {
 		        isSaved: true,
 		        notes:new Map(),
 		        ...resp.data}})});
+*/
             })
             .catch(error => {
                 console.log(`saveNotebook: There is already a notebook by you with that name! ${error}`);
@@ -376,6 +379,8 @@ export class AppProvider extends React.Component {
 	                   headers:this.makeAuthHeader(this.state.user.authToken),
                            url:`${API}users/${notebook.uuid}/notebook`
                           }).then((response) => {
+
+                              this.setState({user: update(this.state.user, {$merge: {notebookCurrent: notebook.uuid}})});
                               this.setState({notebook:
                                              {...notebook,
                                               movingNote:undefined,                                                 
