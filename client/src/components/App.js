@@ -54,6 +54,7 @@ class App extends React.Component {
     }
 
     renderLoginForm(context) {
+
         if (context.state.user.isLoggedIn) {
             return(
                     <div className="login">
@@ -61,8 +62,10 @@ class App extends React.Component {
                     <button className="logout" onClick={context.doLogout}>Log out</button>
                     {this.renderEditButton()}
                     <button>+ Scroll</button>
-                    </div>);
+                    </div>
+            );
         }
+        
         return(
             <form class="login">
               <table>
@@ -96,14 +99,13 @@ class App extends React.Component {
             <div className="searchBox">
               <div>
                 Unscroll
-              </div>
-              <div>
               <span className="subsearch">
-                Search <input type="text" onChange={context.onEventSearch}
-	    value="all events"/>
+                Search
+                <input type="text" onChange={context.onEventSearch}
+	                      value="all events"/>
                 <br/>from: to: by: in: topic:
-            </span>
-                {this.renderViewButton()}
+              </span>
+              {this.renderViewButton()}
                 
               </div>
             </div>
