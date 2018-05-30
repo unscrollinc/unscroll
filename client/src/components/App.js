@@ -8,21 +8,12 @@ import AppContext, {AppProvider} from './AppContext';
 import '../index.css';
 
 class App extends React.Component {
-
     constructor(props) {
         super(props);
         this.state = {
-            editorOn:true,
-            timelineOn:false,            
-            notes:[],
-            username:undefined,
-            password:undefined,
-            auth_token:undefined
+            timelineOn:false,
+            editorOn:false
         };
-    }
-
-    addNote = (e) => {
-        console.log(e);
     }
 
     handleEditButtonClick = () => {
@@ -36,6 +27,7 @@ class App extends React.Component {
             timelineOn: !prevState.timelineOn
         }));
     }    
+
 
     renderEditButton() {
         return(
@@ -58,16 +50,17 @@ class App extends React.Component {
         if (context.state.user.isLoggedIn) {
             return(
                     <div className="login">
-                    <a href="/profile">{context.state.user.username}</a>
-                    <button className="logout" onClick={context.doLogout}>Log out</button>
-                    {this.renderEditButton()}
-                    <button>+ Scroll</button>
+                      <a href="/profile">{context.state.user.username}</a>
+                      <button className="logout" onClick={context.doLogout}>Log out</button>
+                      {this.renderEditButton()}
+                      <button>+ Scroll</button>
                     </div>
             );
         }
-        
+
+        // Otherwise...
         return(
-            <form class="login">
+            <form className="login">
               <table>
                 <tbody>
                   <tr>
@@ -83,7 +76,7 @@ class App extends React.Component {
                     </td>
                   </tr>
                   <tr>
-                    <td colspan="2">
+                    <td colSpan="2">
                       <button onClick={context.doRegister}>Create account</button>                      
                       <input className="inputButton loginButton" type="submit" onClick={context.doLogin} value="login"/>
                     </td>                      
@@ -97,15 +90,16 @@ class App extends React.Component {
     renderSearch(context) {
         return(
             <div className="searchBox">
-              <div>
-                Unscroll
-              <span className="subsearch">
-                Search
-                <input type="text" onChange={context.onEventSearch}
-	                      value="all events"/>
-                <br/>from: to: by: in: topic:
-              </span>
-              {this.renderViewButton()}
+              <div> Unscroll
+                <span className="subsearch">
+                  Search
+                  <input type="text"
+                         onChange={context.onEventSearch}
+	                 defaultValue="all events"/>
+                  <br/>from: to: by: in: topic:
+                </span>
+                
+                {this.renderViewButton()}
                 
               </div>
             </div>
@@ -120,22 +114,32 @@ class App extends React.Component {
                <Timeline addNote={this.addNote}/>
                </ReactCursorPosition>) :
               (<Timelist addNote={this.addNote}/>);
-        
+
+        const notebook = this.state.editorOn ?
+              (<Notebook/>) : (undefined);        
         return (
             <AppProvider>           
-                <div className="App">
-                  <div className="Nav">
-                    <AppContext.Consumer>
-                      {(context) => this.renderLoginForm(context)}
-                    </AppContext.Consumer>                      
-                    <AppContext.Consumer>                      
-                      {(context) => this.renderSearch(context)}
-                    </AppContext.Consumer>
-                  </div>
-                  {display}
-                  <Notebook status={this.state.editorOn}/>
-                  <TimelineEventEditor/>
+              <div className="App">
+                
+                <div className="Nav">
+
+                  <AppContext.Consumer>
+                    {(context) => this.renderLoginForm(context)}
+                  </AppContext.Consumer>
+
+                  <AppContext.Consumer>
+                    {(context) => this.renderSearch(context)}
+                  </AppContext.Consumer>
+                  
                 </div>
+
+                {display}
+
+                {notebook}
+
+                
+                <TimelineEventEditor/>
+              </div>
             </AppProvider>
         );
     }

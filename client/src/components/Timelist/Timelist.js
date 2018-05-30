@@ -18,7 +18,7 @@ class Timelist extends React.Component {
 
     makeEls(data) {
         return data.results.map((e, i)=> {
-            return (<TimelistEvent lastTime={i>0?data.results[i-1].when_happened:undefined} event={e}/>);
+            return (<TimelistEvent key={e.uuid} lastTime={i>0?data.results[i-1].when_happened:undefined} event={e}/>);
         });
     }
     

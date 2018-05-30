@@ -31,7 +31,7 @@ class TimelistEvent extends React.Component {
               {this.showWhenHappened(this.state.lastTime, e.when_happened)}
 	      <div className="timelist-event">
 		<EventNoteButton event={this.props.event}/>
-	    
+	        
                 <div className="event-meta">
                   <a className="title" href={`/search/?scroll:${e.scroll_title}`}>
                     {e.scroll_title}
@@ -49,8 +49,7 @@ class TimelistEvent extends React.Component {
                 </div>
                 <div>{e.text}</div>
               </div>
-              </div>
-            
+            </div>
         );
     }
 }
