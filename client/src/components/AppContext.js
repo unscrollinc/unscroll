@@ -32,7 +32,7 @@ export class AppProvider extends React.Component {
 		    this.saveNotebook();
 		}
 	    }
-	    console.log("[Checking Notes]");
+//	    console.log("[Checking Notes]");
 	    this.state.notebook.notes.forEach((v,k,m) => {
 		if (!v.isSaved) {
 		    if (!v.url) {
