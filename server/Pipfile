@@ -99,6 +99,7 @@ Pygments = "==2.2.0"
 pyOpenSSL = "==17.0.0"
 "rope_py3k" = "==0.9.4.post1"
 Rx = "==1.6.1"
+pyvips = "*"
 
 [dev-packages]
 

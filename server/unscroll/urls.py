@@ -132,8 +132,8 @@ class EventFilter(django_filters.rest_framework.FilterSet):
     before = django_filters.IsoDateTimeFilter(
         name='when_happened',
         lookup_expr='lt')
-    scroll = django_filters.UUIDFilter(
-        name="scroll__uuid")
+    in_scroll = django_filters.UUIDFilter(
+        name="in_scroll__uuid")
 
     q = django_filters.CharFilter(method='filter_by_q', distinct=True)
 
@@ -254,8 +254,8 @@ class BulkEventViewSet(BulkModelViewSet):
                                queryset=Event.objects
                                .select_related('in_scroll',
                                                'by_user',
-                                               'thumbnail')
-                               .filter(scroll__public=True))
+                                               'with_thumbnail')
+                               .filter(in_scroll__is_public=True))
 
         page = self.paginate_queryset(filtered.qs)
         if page is not None:
