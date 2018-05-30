@@ -140,7 +140,7 @@ class EventFilter(django_filters.rest_framework.FilterSet):
     # TODO THIS THING IS FRANKLY REAL DODGY
     def filter_by_q(self, queryset, what_is_this_arg_i_do_not_know, value):
         uq = unquote(value)
-        apos = re.sub("'", "''", uq)
+        apos = re.sub("'", "", uq)
         filtered_val = "'{}'".format(apos,)
         return queryset.full_text_search(filtered_val)
 
@@ -230,7 +230,8 @@ class BulkEventSerializer(BulkSerializerMixin,
 
 class BulkEventViewSet(BulkModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
-    queryset = Event.objects.select_related('in_scroll', 'by_user')\
+    queryset = Event.objects.select_related('in_scroll',
+                                            'by_user')\
                             .filter(in_scroll__is_public=True)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     filter_class = EventFilter
@@ -247,21 +248,7 @@ class BulkEventViewSet(BulkModelViewSet):
                          last_event=Max('when_happened'),
                          first_event=Min('when_happened'))
         return Response(qs)
-
-    @action(detail=False)
-    def search(self, request):
-        filtered = EventFilter(request.GET,
-                               queryset=Event.objects
-                               .select_related('in_scroll',
-                                               'by_user',
-                                               'with_thumbnail')
-                               .filter(in_scroll__is_public=True))
-
-        page = self.paginate_queryset(filtered.qs)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
+    
 
 # ##############################
 # NOTES
