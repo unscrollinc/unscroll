@@ -236,10 +236,10 @@ button.new {
     color:black;
     padding:1pt 2pt 1pt 2pt;
     font-size:8pt;
-    background:#f00;
-    color:white;
-    border:1px solid #ccc;
-    margin:-10px 0px 0px 2px;
+    background:#ffc;
+    color:black;
+    border:1px solid #ddd;
+    margin:-1px 0px 0px 1px;
   vertical-align:middle; 
     
     border-radius:4px;
@@ -339,3 +339,10 @@ span.status {
 }
 th {text-align:right;}
 
+
+form.search {
+    width:25%;
+    display:inline;
+    margin:none;
+    padding:none;
+}

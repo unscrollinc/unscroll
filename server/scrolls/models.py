@@ -168,7 +168,7 @@ class EventQueryset(models.QuerySet):
                    + " || ' ' || event.content_type"                   
                    + " || ' ' || coalesce(event.text,'')) @@ to_tsquery(%s)",),
             params=(text,),
-            order_by=('-rank',)
+            order_by=('when_happened',)
         )
 
 

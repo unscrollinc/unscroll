@@ -1,5 +1,7 @@
 import React from 'react';
 import ReactCursorPosition from 'react-cursor-position';
+
+import Search from './Search';
 import Timeline from './Timeline/Timeline';
 import Timelist from './Timelist/Timelist';
 import Notebook from './Notebook/Notebook';
@@ -11,6 +13,7 @@ class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            search:undefined,
             timelineOn:false,
             editorOn:false
         };
@@ -28,11 +31,10 @@ class App extends React.Component {
         }));
     }    
 
-
     renderEditButton() {
         return(
             <button onClick={this.handleEditButtonClick}>
-                {this.state.editorOn ? 'Notebook' : 'Notebook'}
+                {this.state.editorOn ? 'Notebook Off' : 'Notebook On'}
             </button>
         );
     }
@@ -87,25 +89,7 @@ class App extends React.Component {
         );
     }
 
-    renderSearch(context) {
-        return(
-            <div className="searchBox">
-              <div> Unscroll
-                <span className="subsearch">
-                  Search
-                  <input type="text"
-                         onChange={context.onEventSearch}
-	                 defaultValue="all events"/>
-                  <br/>from: to: by: in: topic:
-                </span>
-                
-                {this.renderViewButton()}
-                
-              </div>
-            </div>
-        );
-    }
-
+ 
     render() {
         const timelineOn = this.state.timelineOn;
 
@@ -127,9 +111,11 @@ class App extends React.Component {
                     {(context) => this.renderLoginForm(context)}
                   </AppContext.Consumer>
 
-                  <AppContext.Consumer>
-                    {(context) => this.renderSearch(context)}
-                  </AppContext.Consumer>
+                  
+                  <Search/>
+
+                {this.renderViewButton()}
+                
                   
                 </div>
 

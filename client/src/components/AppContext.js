@@ -19,11 +19,7 @@ export class AppProvider extends React.Component {
 
         this.state = this.makeState(c);
 
-        
 	this.sweep = () => {
-	    console.log("[Checking Notebook]");
-            console.log(this.state.user.notebookCurrent);
-            console.log(this.state.notebook);            
 	    if (this.state.user.notebookCurrent && !this.state.notebook.isSaved) {
 		if (this.state.notebook.url)  {
 		    this.putNotebook();
@@ -32,7 +28,6 @@ export class AppProvider extends React.Component {
 		    this.saveNotebook();
 		}
 	    }
-//	    console.log("[Checking Notes]");
 	    this.state.notebook.notes.forEach((v,k,m) => {
 		if (!v.isSaved) {
 		    if (!v.url) {
@@ -45,11 +40,9 @@ export class AppProvider extends React.Component {
 	    });
 	}
 
-	this.sweepPeriodically = () => {
-	    setInterval(this.sweep, 1000 * SWEEP_DURATION_SECONDS);
-	}
-        
-	this.sweepPeriodically();
+        // Periodically (SWEEP_DURATION_SECONDS) sweep the notebook
+        // and notes and see what needs to be saved.
+	setInterval(this.sweep, 1000 * SWEEP_DURATION_SECONDS);
     }
 
     modifyNote(uuid, o) {
@@ -252,7 +245,7 @@ export class AppProvider extends React.Component {
             timeline: {
                 isHorizontal:true,
                 search: {
-                    showing:undefined,
+                    q:undefined,
                     from:undefined,
                     to:undefined,
                     creator:undefined,
@@ -466,21 +459,18 @@ export class AppProvider extends React.Component {
                     const _reduced = immutableMove(_keys, _from, _target);
                     const _rebuilt = _reduced.map(u=>nb.notes.get(u))
                     const _resequenced = this.sequenceNotes(_rebuilt);
-                    console.log('#######XXX#######', _keys, _reduced, _rebuilt, _resequenced);
                     this.setState({notebook:update(this.state.notebook, {$merge:
                                                                          {moveFrom:undefined,
                                                                           notes: _resequenced}})});
-                    /* 
-                       then rewrite the entries by making two arrays:
-                       - 1 one of the things to move,
-                       - 2 one of what's left before the target
-                       - 3 one of what's left after the target
-                       - then make a new array from 2, 1, 3
-                       - then make a new map in that order
-                       - then run through the array and look if b.order > c.order
-                       - if so give it a new order of (c.order - a.order)/2 and mark that one to be saved
-                    */
-                    
+                },
+                
+                doEventSearch:(e, searchTerm) => {
+                    e.preventDefault();
+                    this.setState({timeline:
+                                   update(this.state.timeline,
+                                          {$merge: {search:
+                                                    update(this.state.timeline.search, {$merge: {q:searchTerm}})}})},
+                                  ()=>{console.log(this.state.timeline.search)});
                 },
                 
                 updateNote:(newState) => {
