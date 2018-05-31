@@ -42,8 +42,9 @@ class Notebook extends React.Component {
                           <span className={'status ' + (context.state.notebook.isSaved ? 'saved' : 'unsaved')}>●</span>                                                          
 			</span>
 			
-			<TitleEditor/>			  
-			<NotebookList/>
+			  <TitleEditor/>
+		          
+			  <NotebookList/>
 
                         <div className="notebook-event-list">
                           {Array.from(context.state.notebook.notes).map(this.makeNote)}
