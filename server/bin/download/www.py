@@ -28,13 +28,29 @@ def li_to_event(li):
     }
     return e
 
+FILE='cache/www.html'
+URL='https://www.w3.org/TR/'
+
 def __main__():
-    c = open('cache/www.html')
-    soup = bs4.BeautifulSoup(c, "lxml")
+    def get_content():
+        try:
+            return open(FILE)
+        except FileNotFoundError as e:
+            resp = requests.get(URL)
+            f = open(FILE, 'wb')
+            f.write(resp.content)
+            print(resp.content)
+            f.close()
+            return resp.content
+        return None
+
+    c = get_content()
+    soup = bs4.BeautifulSoup(get_content(), "lxml")
     lis = soup.select('ul#container > li')
     events = [li_to_event(li) for li in lis]
     c = UnscrollClient()
-    pprint.pprint(c)
+
+#    W3C Web Standards
     c.__batch__(
         api='http://127.0.0.1:8000',
         username='ford',
