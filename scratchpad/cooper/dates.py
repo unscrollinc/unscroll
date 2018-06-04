@@ -5,6 +5,7 @@ import datetime
 from dateutil.parser import *
 import re
 import sqlite3
+import requests
 
 class DateTimeEncoder(json.JSONEncoder):
     def default(self, o):
@@ -130,7 +131,12 @@ def __main__():
     c = conn.cursor()
 
     c.execute("SELECT * FROM objects")
+
+    
     for row in c.fetchall():
+        response = requests(fetch(row['primary_image']))
+        thumbnail = thumbnail(response)
+        sleep(1)
         if row['date'] is not None:
             resolution, when_happened, when_original = classify(row['date'])
             d = {
