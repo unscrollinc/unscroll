@@ -228,6 +228,8 @@ class Event(models.Model):
         auto_now_add=True)
     when_happened = models.DateTimeField(
         db_index=True)
+    original_when = models.TextField(
+        null=True)
     is_deleted = models.BooleanField(
         default=False)
 

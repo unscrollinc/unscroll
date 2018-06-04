@@ -76,7 +76,6 @@ pytz = "==2017.2"
 pytzdata = "==2017.2"
 requests = "==2.17.3"
 requests-oauthlib = "==0.8.0"
-"ruamel.yaml" = "==0.14.12"
 schema = "==0.6.6"
 simplejson = "==3.10.0"
 singledispatch = "==3.4.0.3"
@@ -101,6 +100,7 @@ pyOpenSSL = "==17.0.0"
 Rx = "==1.6.1"
 pyvips = "*"
 lxml = "*"
+csvs-to-sqlite = "*"
 
 [dev-packages]
 

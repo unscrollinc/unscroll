@@ -3,10 +3,10 @@ body {
     padding:0;
     position:fixed;
     font-size:13pt;
-/*    font-family:'Open Sans', sans-serif; */
+    font-family:'Open Sans', sans-serif;
 }
 .input, th, td {
-/*    font-family:'Open Sans', sans-serif; */
+    font-family:'Open Sans', sans-serif;
 }
 .App {
     width:100%;
@@ -217,11 +217,14 @@ button.new {
 .timelist-event {
     border-bottom:1px solid #ccc;
     padding:1em;
+    font-size:10pt;
 }
 
 .dtsince {
-    background:black;
+    background:#448;
     color:white;
+    font-size:10pt;
+    padding-left:1em;
 }
 
 .event-meta {
@@ -236,17 +239,14 @@ button.new {
 
 .button, button, input.inputButton {
     color:black;
-    padding:1pt 2pt 1pt 2pt;
     font-size:8pt;
-    background:#ffc;
+    background:white;
     color:black;
-    border:1px solid #ddd;
-    margin:-1px 0px 0px 1px;
-  vertical-align:middle; 
-    
+    border:1px solid #black;
+    margin:-3px 0px 0px 1px;
     border-radius:4px;
+    vertical-align:middle; 
     cursor:pointer;
-    box-shadow: 1pt 1pt 2pt #cccccc;
 }
 
 .button:active, .button:hover,
@@ -343,8 +343,17 @@ th {text-align:right;}
 
 
 form.search {
-    width:25%;
-    display:inline;
+    width:75%;
     margin:none;
     padding:none;
+}
+span.search-input {
+    float:left;
+    display:block;
+}
+div.search-ruby {
+    font-size:9pt;
+    color:#555;
+    width:100%;
+    text-align:center;
 }

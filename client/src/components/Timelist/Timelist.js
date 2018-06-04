@@ -67,11 +67,7 @@ class Timelist extends React.Component {
                           this.getSpan(`${API}?q=${q}&limit=50`));
         }
         
-        return (
-            <div>
-              <h2>Searching for "{this.state.search.q}"</h2>
-            </div>
-        );
+        return undefined;
     }
     
     componentDidMount() {
@@ -98,9 +94,7 @@ class Timelist extends React.Component {
     render() {
         return(
             <div className="Timelist" onScroll={this.handleScroll.bind(this)}>
-              <span className="startRange">
-                Start: <input className="rangeInput" type="range" min="1968" max="2018"/>
-              </span>
+
               <div>
                 <AppContext.Consumer>
                   {(context)=>this.manageSearch(context)}

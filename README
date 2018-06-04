@@ -3,11 +3,18 @@
 ┗━┛╹ ╹┗━┛┗━╸╹┗╸┗━┛┗━╸┗━╸
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-1) Users can log in.
-2) Users can make scrolls.
-3) Users can set scrolls public.
-4) User can be created with an email.
-5) 
+SERVER
+- Camelcase JSON (camelcase filter)
+- Add filters
+-
+
+CLIENT
+- Full login/auth cycle
+- Scroll/Notebook management tools
+- Create note
+- Better image upload
+- Refactor timeline stuff/context stuff into module
+
 
 DELETE FROM event WHERE id IN (SELECT id FROM (SELECT id, ROW_NUMBER()
 OVER (partition BY title, scroll_id ORDER BY id) AS rnum FROM event) t
