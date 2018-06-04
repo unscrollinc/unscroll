@@ -25,7 +25,6 @@ coreschema = "==0.0.4"
 cryptography = "==1.9"
 curtsies = "==0.3.0"
 datefinder = "==0.6.1"
-dateparser = "==0.6.0"
 defusedxml = "==0.5.0"
 django-allauth = "==0.32.0"
 django-cors-headers = "==2.2.0"
@@ -101,6 +100,7 @@ Rx = "==1.6.1"
 pyvips = "*"
 lxml = "*"
 csvs-to-sqlite = "*"
+"base36" = "*"
 
 [dev-packages]
 

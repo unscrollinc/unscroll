@@ -68,7 +68,7 @@ class ThumbnailSerializer(serializers.HyperlinkedModelSerializer):
         s.save()
         return s
 
-
+    
 class ThumbnailViewSet(viewsets.ModelViewSet):
     queryset = Thumbnail.objects.all()
     serializer_class = ThumbnailSerializer

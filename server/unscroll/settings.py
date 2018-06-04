@@ -170,5 +170,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-THUMBNAIL_SIZE = 256, 256
+THUMBNAIL_SIZE = 300, 300
 THUMBNAIL_DIR = '/home/unscroll/unscroll/unscroll/scrolls/static/scrolls/'

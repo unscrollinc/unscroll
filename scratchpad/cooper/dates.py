@@ -136,7 +136,7 @@ def __main__():
     for row in c.fetchall():
         response = requests(fetch(row['primary_image']))
         thumbnail = thumbnail(response)
-        sleep(1)
+        sleep(10)
         if row['date'] is not None:
             resolution, when_happened, when_original = classify(row['date'])
             d = {
@@ -149,7 +149,8 @@ def __main__():
                 'when_happened':when_happened,
                 'when_original':when_original
             }
-            pprint(json.dumps(d, cls=DateTimeEncoder))
+            # json.dumps(d, cls=DateTimeEncoder)
+            pprint(d)
     
 
     
