@@ -5,6 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.conf.urls.static import static
+from django.db import IntegrityError
 import django_filters
 from django.db.models import Max, Min, Count
 from rest_framework import pagination, generics, serializers, viewsets, routers, response, status
@@ -13,6 +14,7 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthentic
 from rest_framework.response import Response
 from rest_framework.exceptions import APIException
 from scrolls.models import User, Scroll, Event, Notebook, Note, Media, Thumbnail
+from unscroll.thumbnail import InboundThumbnail
 from rest_framework_swagger.views import get_swagger_view
 from PIL import Image, ImageOps
 from io import BytesIO
@@ -30,7 +32,10 @@ from rest_framework_bulk import (
     BulkSerializerMixin,
     ListBulkCreateUpdateDestroyAPIView,
 )
-    
+
+
+#  "auth_token": "5df680234a68c9a75112a4ad9d2e772a324426dc"
+
 # Scrolls, Events, Notebooks, Notes
 # User
 # User lists their SENNs
@@ -51,7 +56,13 @@ from rest_framework_bulk import (
 
 
 class ThumbnailSerializer(serializers.HyperlinkedModelSerializer):
+    image = serializers.ImageField(
+        max_length=None,
+        allow_empty_file=False,
+        use_url=False)
+    
     class Meta:
+        
         model = Thumbnail
         fields = (
             'url',
@@ -59,7 +70,7 @@ class ThumbnailSerializer(serializers.HyperlinkedModelSerializer):
             'sha1',
             'width',
             'height',
-            'image_location',
+            'image',
             'source_url')
 
     def create(self, validated_data):
@@ -75,53 +86,47 @@ class ThumbnailViewSet(viewsets.ModelViewSet):
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     filter_fields = ('source_url',)
 
-    def hash_image(self, o):
-        img_hash = hashlib.sha1(o)
-        img_hex = img_hash.hexdigest()
-        img_int = int(img_hex, 16)
-        img_36 = base36.encode(img_int)
-        img_dir = 'img/{}/{}'.format(img_36[0:2], img_36[2:4],)
-        img_filename = "{}/{}.jpg".format(img_dir, img_36,)
-        return {
-            'img_hash': img_36,
-            'img_dir': img_dir,
-            'img_filename': img_filename
-        }
+    @action(detail=False, methods=['post'])
+    def upload(self, request):
+        sha1=None
+        try:
+            f = request.data['file']
+            t = InboundThumbnail(content=f.read())
+            sha1=t.sha1
+            s = Thumbnail(
+                by_user=self.request.user,
+                image=t.img_filename,
+                width=t.width,
+                height=t.height,
+                sha1=t.sha1)
+            s.save()
+            serializer = ThumbnailSerializer(s, context={'request': request})
+            return Response(serializer.data)
+            
+        except IntegrityError as e:
+            s = Thumbnail.objects.get(sha1=t.sha1)
+            serializer = ThumbnailSerializer(s, context={'request': request})
+            return Response(serializer.data)
+        # raise APIException('[urls.py error] {}'.format(e))
+
+        except KeyError:
+            raise APIException('[urls.py error] Request has no resource file attached')
+        
+
 
     def perform_create(self, serializer):
         source_url = serializer.initial_data['source_url']
-        r = requests.get(source_url)
-        img = Image.open(BytesIO(r.content))
-        img.convert("RGBA")
-        width, height = img.size
-        thumb = img
-        if width > settings.THUMBNAIL_SIZE[0]:
-            thumb = ImageOps.fit(img, settings.THUMBNAIL_SIZE)
-            width, height = thumb.size
-        hashed = self.hash_image(thumb.tobytes())
-        try:
-            makedirs('{}/{}'.format(settings.THUMBNAIL_DIR,
-                                    hashed['img_dir'],))
-            thumb\
-                .convert('RGB')\
-                .save('{}/{}'
-                      .format(settings.THUMBNAIL_DIR, hashed['img_filename']),
-                      quality=50,
-                      optimize=True,
-                      progressive=True)
-
-        except FileExistsError as e:
-            print(e)
-            pass
-
+        t = InboundThumbnail(url=source_url)
         serializer.save(
             source_url=source_url,
-            user=self.request.user,
-            image_location=hashed['img_filename'],
-            width=width,
-            height=height,
-            sha1=hashed['img_hash'])
+            by_user=self.request.user,
+            image_location=t.img_filename,
+            width=t.width,
+            height=t.height,
+            sha1=t.sha1)
 
+
+        
 # ##############################
 # Events
 # ##############################

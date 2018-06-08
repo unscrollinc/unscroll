@@ -51,13 +51,15 @@ class Thumbnail(models.Model):
         null=True)
     height = models.IntegerField(
         null=True)
-    image_location = models.CharField(
-        max_length=128,
-        unique=True,
-        null=True)
+    image = models.ImageField(
+        null=True,
+        upload_to='img',
+        height_field='height',
+        width_field='width',
+        max_length=100)
     source_url = models.URLField(
         max_length=512,
-        unique=True,
+        unique=False,
         null=False)
 
     class Meta:
@@ -236,7 +238,7 @@ class Event(models.Model):
     objects = EventQueryset.as_manager()
 
     class Meta:
-        # unique_together = (("user", "title", "text"),)
+        unique_together = (("by_user", "in_scroll", "title", "text"),)
         db_table = 'event'
         ordering = ['when_happened']
 

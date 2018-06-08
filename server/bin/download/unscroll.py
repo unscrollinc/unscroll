@@ -137,6 +137,12 @@ class UnscrollClient():
         except KeyError:
             return None
 
+    def post_thumbnail(self, file_name):
+        r = requests.post(self.api + '/thumbnails/upload/',
+                          headers=self.authentication_header,
+                          files={'file': open(file_name, 'rb')})
+        return r.json()
+        
     def cache_thumbnail(self, url):
         r = requests.post(self.api + '/thumbnails/',
                           headers=self.authentication_header,

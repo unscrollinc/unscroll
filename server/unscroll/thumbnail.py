@@ -5,29 +5,29 @@ from os import makedirs
 import hashlib
 import base36
 from unscroll.settings_dev import THUMBNAIL_SIZE, THUMBNAIL_DIR
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
-class ThumbnailProcessor:
+class InboundThumbnail(object):
     
-    def __init__(self, url):
+    def __init__(self, **kwargs):
         """
             
         """
-        self.source_url = url
+        self.url = kwargs.get('url')
+        self.content = kwargs.get('content')        
         self.sha1 = None
         self.width = None
         self.height = None
         self.image_location = None
-        
-        if url is not None:
-            self.perform_create()
+        self.image_hash = None
+        self.img_dir = None
+        self.img_filename = None
+        self.ufile = None
 
-    # def thumb(self, user):
-    #     return (by_user=user,
-    #                      sha1=this.sha1,
-    #                      width=this.width,
-    #                      height=this.height,
-    #                      image_location=this.image_location,
-    #                      source_url=this.source_url)
+        if self.url is not None:
+            self.create_from_web()
+        else:
+            self.create()
         
     def hash_image(self, o):
         img_hash = hashlib.sha1(o)
@@ -39,40 +39,42 @@ class ThumbnailProcessor:
 
         self.sha1 = img_36
         self.image_location = img_filename
-        
-        return {
-            'img_hash': img_36,
-            'img_dir': img_dir,
-            'img_filename': img_filename
-        }
-        return self.location
-    
+
+        self.img_hash = img_36
+        self.img_dir = img_dir
+        self.img_filename = img_filename
+
     def create(self):
-        r = requests.get(self.url)
-        self.content = r.content
-        img = Image.open(BytesIO(r.content))
+        img = Image.open(BytesIO(self.content))
         img.convert("RGBA")
         self.width, self.height = img.size
 
         thumb = img
 
+
         if self.width > THUMBNAIL_SIZE[0]:
             thumb = ImageOps.fit(img, THUMBNAIL_SIZE)
             self.width, self.height = thumb.size
 
-        hashed = self.hash_image(thumb.tobytes())
+        self.hash_image(thumb.tobytes())
 
         try:
             makedirs('{}/{}'.format(THUMBNAIL_DIR,
-                                    hashed['img_dir'],))
+                                    self.img_dir,))
             thumb\
                 .convert('RGB')\
                 .save('{}/{}'
-                      .format(THUMBNAIL_DIR, hashed['img_filename']),
+                      .format(THUMBNAIL_DIR, self.img_filename),
                       quality=50,
                       optimize=True,
                       progressive=True)
 
         except FileExistsError as e:
-            print(e)
+            print('[error] File exists: {}'.format(e,))
             pass
+        
+    def create_from_web(self):
+        r = requests.get(self.url)
+        self.content = r.content
+        self.create()
+

@@ -14,7 +14,6 @@ DATABASES = {
 
 STATIC_URL = '/static/'
 
-THUMBNAIL_SIZE = 256, 256
-THUMBNAIL_DIR = '/Users/ford/dev/unscroll/unscroll/scrolls/static/scrolls/'
+THUMBNAIL_DIR = '/Users/ford/dev/unscroll/server/scrolls/static/scrolls/'
 
 DEBUG = True
