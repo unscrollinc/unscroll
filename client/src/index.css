@@ -219,6 +219,11 @@ button.new {
     padding:1em;
     font-size:10pt;
 }
+.timelist-image {
+    overflow:hide;
+    max-width:15%;
+    float:right;
+}
 
 .dtsince {
     background:#448;
@@ -231,7 +236,7 @@ button.new {
     float:right;
     text-align:right;
     position:absolute;
-    right:0;
+    right:20%;
 }
 .event-meta a {
     text-decoration:none;

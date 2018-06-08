@@ -230,7 +230,7 @@ class Event(models.Model):
         auto_now_add=True)
     when_happened = models.DateTimeField(
         db_index=True)
-    original_when = models.TextField(
+    when_original = models.TextField(
         null=True)
     is_deleted = models.BooleanField(
         default=False)
@@ -238,7 +238,7 @@ class Event(models.Model):
     objects = EventQueryset.as_manager()
 
     class Meta:
-        unique_together = (("by_user", "in_scroll", "title", "text"),)
+        unique_together = (("by_user", "in_scroll", "title", "source_url"),)
         db_table = 'event'
         ordering = ['when_happened']
 

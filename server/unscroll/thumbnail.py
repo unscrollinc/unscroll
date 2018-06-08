@@ -1,7 +1,7 @@
 from PIL import Image, ImageOps
 from io import BytesIO
 import requests
-from os import makedirs
+from os import makedirs, path
 import hashlib
 import base36
 from unscroll.settings_dev import THUMBNAIL_SIZE, THUMBNAIL_DIR
@@ -45,22 +45,21 @@ class InboundThumbnail(object):
         self.img_filename = img_filename
 
     def create(self):
-        img = Image.open(BytesIO(self.content))
-        img.convert("RGBA")
-        self.width, self.height = img.size
-
-        thumb = img
-
-
-        if self.width > THUMBNAIL_SIZE[0]:
-            thumb = ImageOps.fit(img, THUMBNAIL_SIZE)
-            self.width, self.height = thumb.size
-
-        self.hash_image(thumb.tobytes())
-
         try:
-            makedirs('{}/{}'.format(THUMBNAIL_DIR,
-                                    self.img_dir,))
+            img = Image.open(BytesIO(self.content))
+            img.convert("RGBA")
+            self.width, self.height = img.size
+            thumb = img
+            if self.width > THUMBNAIL_SIZE[0]:
+                thumb = ImageOps.fit(img, THUMBNAIL_SIZE)
+                self.width, self.height = thumb.size
+            self.hash_image(thumb.tobytes())
+
+            d = '{}/{}'.format(THUMBNAIL_DIR, self.img_dir,)
+
+            if not path.isdir(d):
+                makedirs(d)
+                
             thumb\
                 .convert('RGB')\
                 .save('{}/{}'
@@ -68,10 +67,18 @@ class InboundThumbnail(object):
                       quality=50,
                       optimize=True,
                       progressive=True)
+        except OSError as e:
+            print('[thumbnail.py] OSError: {}'.format(e,))
+            pass
 
         except FileExistsError as e:
-            print('[error] File exists: {}'.format(e,))
+            print('[thumbnail.py] FileExistsError: {}'.format(e,))
             pass
+
+        except Exception as e:
+            print('[thumbnail.py] Exception: {}'.format(e,))
+            pass        
+        
         
     def create_from_web(self):
         r = requests.get(self.url)

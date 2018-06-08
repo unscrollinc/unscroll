@@ -113,7 +113,6 @@ class ThumbnailViewSet(viewsets.ModelViewSet):
             raise APIException('[urls.py error] Request has no resource file attached')
         
 
-
     def perform_create(self, serializer):
         source_url = serializer.initial_data['source_url']
         t = InboundThumbnail(url=source_url)
@@ -194,7 +193,7 @@ class BulkEventSerializer(BulkSerializerMixin,
         source="with_thumbnail.width")
     thumb_image = serializers.CharField(
         read_only=True,
-        source="with_thumbnail.image_location")
+        source="with_thumbnail.image")
 
     class Meta:
         model = Event
@@ -220,6 +219,7 @@ class BulkEventSerializer(BulkSerializerMixin,
             'content_type',
             'resolution',
             'when_happened',
+            'when_original',            
             'content_url',
             'source_name',
             'source_url')
@@ -229,7 +229,16 @@ class BulkEventSerializer(BulkSerializerMixin,
     def create(self, validated_data):
         validated_data['by_user'] = self.context['request'].user
         s = Event(**validated_data)
-        s.save()
+        try:
+            s.save()
+        except IntegrityError as e:
+            # print('[urls.py IntegrityError] {}'.format(e,))
+            es = Event.objects.get(
+                by_user=validated_data['by_user'],
+                in_scroll=validated_data['in_scroll'],
+                title=validated_data['title'],
+                source_url=validated_data['source_url'],)
+            return es
         return s
 
 

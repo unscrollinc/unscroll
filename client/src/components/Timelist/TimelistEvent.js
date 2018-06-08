@@ -23,18 +23,35 @@ class TimelistEvent extends React.Component {
         }
         return undefined;
     }
+
+    makeImage(e) {
+        if (e.thumb_image) {
+            return(
+                <a href={e.content_url} target="_blank">
+                  <img className="timelist-image" src={'http://localhost/' + e.thumb_image}/>
+                </a>
+            );
+        }
+        else {
+            return undefined;
+        }
+        
+
+    }
     
     render() {
         let e = this.state.event;
         return(
             <div className="timelist-event-wrapper">
+              {this.makeImage(e)}                  
+              
               {this.showWhenHappened(this.state.lastTime, e.when_happened)}
 	      <div className="timelist-event">
 		<EventNoteButton event={this.props.event}/>
 	        
                 <div className="event-meta">
                   <a className="title" href={`/search/?scroll:${e.scroll_title}`}>
-                    {e.scroll_title}
+                {e.scroll_title}
                   </a>
                   <br/>
                   <a className="title" href={`/search/?by:${e.username}`}>
@@ -48,6 +65,8 @@ class TimelistEvent extends React.Component {
                   </a>
                 </div>
                 <div>{e.text}</div>
+
+                
               </div>
             </div>
         );
