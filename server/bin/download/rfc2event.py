@@ -2,7 +2,6 @@ import xmltodict
 import dateparser
 from datetime import datetime
 from unscroll import UnscrollClient
-#from scroll.models import Scroll, Event
 import re
 import random
 import pprint
@@ -21,17 +20,22 @@ MONTHS = {'January': '01',
           'December': '12'}
 
 
-def date(el):
+def get_date(el):
     _y = el['year']
     _m = MONTHS[el['month']]
+    resolution = 6
+    original = ''
     if 'day' in el:
+        original = "{} {}, {}".format(el['month'], el['day'], el['year'])
         d = dateparser.parse("{}-{}-0{}".format(_y, _m, el['day']))
+        resolution = 8
     else:
+        original = "{} {}".format(el['month'], el['year'])        
         d = dateparser.parse("{}-{}-{}".format(_y, _m, '01'))
 
     d2 = datetime.combine(d, datetime.min.time())
     d3 = d2.isoformat()
-    return d3
+    return d3, resolution, original
 
 
 def normalize_rfc_id_to_url(id):
@@ -51,14 +55,18 @@ def html_to_txt(od):
 
 
 def rfc_to_event(rfc):
+    date, resolution, original = *get_date(rfc['date']),
     event = {
         'title': "{}".format(rfc['title']),
         'text': html_to_txt(rfc['abstract']) if 'abstract' in rfc else None,
         'mediatype': "text/html",
-        'resolution': '7',
-        'ranking': random.random()/2,
-        'content_url': normalize_rfc_id_to_url(rfc['doc-id']),
-        'when_happened': date(rfc['date'])
+        'ranking':0,
+        'content_url':normalize_rfc_id_to_url(rfc['doc-id']),
+        'source_name':'IETF RFCs XML',
+        'source_url':'https://www.ietf.org/standards/rfcs/',
+        'when_original':original,
+        'when_happened': date,
+        'resolution': resolution,
     }
     return event
 
@@ -85,3 +93,4 @@ def __main__():
 
 
 __main__()
+

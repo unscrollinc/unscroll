@@ -25,7 +25,7 @@ def __main__():
     
     sqlc = conn.cursor()
 
-    i = 2681
+    i = 27400
     sqlc.execute("SELECT * FROM objects LIMIT -1 OFFSET {}".format(i))
     for row in sqlc.fetchall():
 
@@ -42,29 +42,35 @@ def __main__():
                 f.close()
                 found = True
             except FileNotFoundError as e:
-                r = requests.get(sq)
-                p = pathlib.Path(local)
-                p.parent.mkdir(parents=True, exist_ok=True) 
-                f = open(local, 'wb')
-                f.write(r.content)
-                f.close()
+                try:
+                    r = requests.get(sq)
+                    p = pathlib.Path(local)
+                    p.parent.mkdir(parents=True, exist_ok=True) 
+                    f = open(local, 'wb')
+                    f.write(r.content)
+                    f.close()
+                    found = True
+                except ConnectionError as e:
+                    print('[cooperhewitt2.py] ConnectionError: {}'.format(e,))
 
             print('{}: {}/{}'.format(i, local, found))
-                
             
             ud = UnscrollDate(row['date'])
-            text = ""
-            if row['description'] is not None:
-                text = row['description']
             if ud.is_okay():
-                thumb = c.post_thumbnail(local)
+
+                with_thumbnail = None
+                if found:
+                    thumb = c.post_thumbnail(local)
+                    if thumb is not None:
+                        with_thumbnail = thumb.get('url')
+                        
                 d = {
                     'title':row['title'],
-                    'text':text,
+                    'text':row['description'],
                     'resolution':ud.resolution,
                     'ranking':0,
                     'content_url':'https://collection.cooperhewitt.org/objects/{}/'.format(row['id'],),
-                    'with_thumbnail':thumb.get('url'),
+                    'with_thumbnail':with_thumbnail,
                     'source_name':'Collection Data for Cooper Hewitt, Smithsonian Design Museum',
                     'source_url':'https://github.com/cooperhewitt/collection',
                     'when_happened':ud.when_happened,

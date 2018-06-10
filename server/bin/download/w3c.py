@@ -7,6 +7,8 @@ import re
 import random
 import pprint
 
+# TODO Editors and Tags and a thumbnail
+
 def li_to_event(li):
     hrefs = li.select('h2 a')
     deliverer = li.select('p.deliverer')[0].text
@@ -22,8 +24,10 @@ def li_to_event(li):
          'text':'By {}. Editors: {}. Tags: {}.'.format(deliverer, editors, tags,),
          'mediatype': "text/html",
          'resolution': '7',
-         'ranking': random.random()/2,
+         'ranking':0,
          'content_url': a['href'],
+         'source_url':'https://www.w3.org/TR/',
+         'source_name':'W3C All Standards and Drafts',
          'when_happened':d3,
     }
     return e

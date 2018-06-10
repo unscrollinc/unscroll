@@ -82,8 +82,10 @@ class Scroll(models.Model):
         unique=True)
     title = models.TextField()
     subtitle = models.TextField(
-        blank=True, null=True)
+        blank=True,
+        null=True)
     description = models.TextField(
+        blank=True,
         null=True)
     citation = models.TextField(
         blank=True,
@@ -225,6 +227,7 @@ class Event(models.Model):
         null=True)
     source_url = models.URLField(
         max_length=512,
+        blank=True,
         null=True)
     when_created = models.DateTimeField(
         auto_now_add=True)
