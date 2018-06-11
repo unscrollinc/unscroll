@@ -16,7 +16,6 @@ class UnscrollClient():
     username = None
     password = None
     authentication_header = None
-    scroll_url = None
     user_url = None
 
     def __init__(self,
@@ -73,33 +72,32 @@ class UnscrollClient():
                                 'subtitle': subtitle,
                                 'description': description,
                                 'thumbnail': thumbnail})
+        
         if r.status_code == 200:
             scroll_d = dict(r.json())
-            self.scroll_url = scroll_d['url']
-            return self.scroll_url
+            return scroll_d['url']
         else:
             r = requests.get(self.api + '/scrolls/?title=' + quote_plus(title),
                              headers=self.authentication_header,)
             results = r.json()['results']
             if (len(results) > 0):
                 scroll_d = dict(results[0])
-                self.scroll_url = scroll_d['url']
-                return self.scroll_url                
+                return scroll_d['url']
 
-    def create_event_batch(self, events):
+    def create_event_batch(self, events, scroll):
         print("Batching {} events in scroll {} with url {}.".format(
-            len(events), self, self.scroll_url,))
+            len(events), self, scroll,))
         r_events = []
         for event in events:
-            event['in_scroll'] = self.scroll_url
+            event['in_scroll'] = scroll
             r_events.append(event)
         r = requests.post(self.api + '/events/',
                           headers=self.authentication_header,
                           json=r_events)
         return r.json()
 
-    def create_event(self, event):
-        event['in_scroll'] = self.scroll_url
+    def create_event(self, event, scroll):
+        event['in_scroll'] = scroll
         r = requests.post(self.api + '/events/',
                           headers=self.authentication_header,
                           data=event)
@@ -136,7 +134,6 @@ class UnscrollClient():
         r = requests.post(self.api + '/thumbnails/cache/',
                           headers=self.authentication_header,
                           data={'url': url})
-#       print(r.status_code, r)
 
         if r.status_code == 500:
             return None

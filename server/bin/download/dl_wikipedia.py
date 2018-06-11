@@ -31,23 +31,25 @@ MONTHS_HASH = {'January': 1,
                'November': 11,
                'December': 12}
 
-
 class WikipediaText():
     year = None
     events = []
     parsed = None
     unscroll_client = None
-
+    scrolls = {}
+    
     def __init__(self, year=None):
         self.year = year
         self.wiki_url = 'https://en.wikipedia.org/wiki/{}'.format(year)
         r = requests.get(self.wiki_url)
         self.parsed = BeautifulSoup(r.content, 'html.parser')
         self.unscroll_client = UnscrollClient(api='http://127.0.0.1:8000',
-                                              username='admin',
-                                              password='password')
+                                              username='ford',
+                                              password='***REMOVED***')
         self.unscroll_client.login()
-        self.unscroll_client.create_or_retrieve_scroll('Wikipedia Years')
+        self.scrolls['world event'] = self.unscroll_client.create_or_retrieve_scroll('Wikipedia Years')
+        self.scrolls['human birth'] = self.unscroll_client.create_or_retrieve_scroll('Wikipedia Births')
+        self.scrolls['human death'] = self.unscroll_client.create_or_retrieve_scroll('Wikipedia Deaths')                
 
     def tidy(self, txt=None):
         return re.sub('\[edit\]\s*', '', txt)
@@ -96,30 +98,28 @@ class WikipediaText():
 
         if kind == 'human/birth':
             trimmed = 'Born: {}'.format(trimmed)
+            
         elif kind == 'human/death':
             trimmed = 'Died: {}'.format(trimmed)            
 
         ranking = 1 - random.random()/3
         if kind == 'world/event':
             ranking = 1 - random.random()/10
-            
+        dt = datetime.combine(date, datetime.max.time()).isoformat(' ')            
         event = {
             'title': trimmed,
             'text': None,
             'resolution': 10,
             'ranking': ranking,
-            'datetime': datetime.combine(
-                date,
-                datetime.min.time()
-            ).isoformat(' '),
-            'thumbnail': thumbnail,
+            'when_happened': dt,
+            'when_original': None,
+            'with_thumbnail': thumbnail,
             'content_url': None,
             'source_url': self.wiki_url,
-            'source_name': 'Wikipedia',
+            'source_name': 'Wikipedia Event Pages',
             'content_type': kind
         }
-        e = self.unscroll_client.create_event(event)
-        pprint.pprint(event)
+        e = self.unscroll_client.create_event(event, self.scrolls[kind])
         pprint.pprint(e.json())
         return e
 
@@ -148,9 +148,9 @@ class WikipediaText():
             return events
 
     def get_events(self):
-        event_types = {'#Events': 'world/event',
-                       '#Births': 'human/birth',
-                       '#Deaths': 'human/death'}
+        event_types = {'#Events': 'world event',
+                       '#Births': 'human birth',
+                       '#Deaths': 'human death'}
         events = []
         for keytype in event_types:
             try:
