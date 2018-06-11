@@ -8,20 +8,17 @@ from random import random
 ADOBE_URL = "http://news.adobe.com/views/ajax?js=1&page={}&view_name=bw_press_release&view_display_id=panel_pane_7&view_args=all%2Fall&view_path=news&view_base_path=null&view_dom_id=1&pager_element=0"
 
 c = UnscrollClient(api='http://127.0.0.1',
-                   username='admin',
-                   password='password')
-
+                   username='ford',
+                   password='***REMOVED***')
 c.login()
+
 favicon_url = c.fetch_favicon_url('https://www.adobe.com')
 favthumb = c.cache_thumbnail(favicon_url['url'])
-print(favthumb)
-
 c.create_or_retrieve_scroll('Adobe PR',
                             thumbnail=favthumb['url'])
 
-for i in range(1,85):
+for i in range(1,92):
     pr_url = ADOBE_URL.format(i,)
-    print(pr_url)
     r = requests.get(pr_url)
     r_as_data = r.json()
     r_html = r_as_data['display']
@@ -44,7 +41,8 @@ for i in range(1,85):
             'title': title,
             'text': None,
             'ranking': random()/3,
-            'datetime': date,
+            'when_happened': date,
+            'when_original': date_source_txt,            
             'resolution': '10',
             'source_name': 'Adobe PR',
             'source_url': 'http://news.adobe.com/',
@@ -52,6 +50,7 @@ for i in range(1,85):
             'thumbnail': None
         }
         events.append(event)
+    print(events)        
     c.create_event_batch(events)
     
 print('Done')

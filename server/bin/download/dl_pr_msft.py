@@ -9,8 +9,8 @@ from random import random
 URL = 'https://news.microsoft.com/category/press-releases/page/{}/'
 
 c = UnscrollClient(api='http://127.0.0.1',
-                   username='admin',
-                   password='password')
+                   username='ford',
+                   password='***REMOVED***')
 
 c.login()
 favicon_url = c.fetch_favicon_url('https://www.microsoft.com')
@@ -20,7 +20,7 @@ print(favthumb)
 c.create_or_retrieve_scroll('Microsoft PR',
                             thumbnail=favthumb['url'])
 
-for i in range(1,828):
+for i in range(1,958):
     pr_url = URL.format(i,)
     print(pr_url)
     r = requests.get(pr_url)
@@ -31,7 +31,7 @@ for i in range(1,828):
 
     for el in els:
         href = el.attrs['href']
-        datetime_ = None
+        _datetime = None
         matches = re.match(r'https://news.microsoft.com/(\d{4})/(\d{2})/(\d{2})', href)
 
         if matches:
@@ -39,7 +39,7 @@ for i in range(1,828):
             month = matches.group(2)
             day = matches.group(3)
             dt = datetime.datetime(int(year), int(month), int(day), 0, 0)
-            datetime_ = dt.isoformat()
+            _datetime = dt.isoformat()
 
         title = el.text
         
@@ -49,7 +49,7 @@ for i in range(1,828):
             'title': title,
             'text': None,
             'ranking': random()/3,
-            'datetime': datetime_,
+            'when_happened': _datetime,
             'resolution': '10',
             'source_name': 'Microsoft PR',
             'source_url': 'https://news.microsoft.com/',

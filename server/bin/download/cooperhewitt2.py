@@ -25,7 +25,7 @@ def __main__():
     
     sqlc = conn.cursor()
 
-    i = 27400
+    i = 0
     sqlc.execute("SELECT * FROM objects LIMIT -1 OFFSET {}".format(i))
     for row in sqlc.fetchall():
 

@@ -87,7 +87,8 @@ class UnscrollClient():
                 return self.scroll_url                
 
     def create_event_batch(self, events):
-        print("Batching {} events in scroll {} with url {}.".format(self, self.scroll_url, len(events)))
+        print("Batching {} events in scroll {} with url {}.".format(
+            len(events), self, self.scroll_url,))
         r_events = []
         for event in events:
             event['in_scroll'] = self.scroll_url
@@ -103,18 +104,6 @@ class UnscrollClient():
                           headers=self.authentication_header,
                           data=event)
         return r
-
-    def enhash(self, o):
-        img_hash = hashlib.sha1(o)
-        img_hex = img_hash.hexdigest()
-        img_int = int(img_hex, 16)
-        img_36 = base36.encode(img_int)
-        img_dir = 'img/{}/{}'.format(img_36[0:2], img_36[2:4],)
-        img_filename = "{}/{}.jpg".format(img_dir, img_36,)
-        
-        return {'img_hash': img_36,
-                'img_dir': img_dir,
-                'img_filename': img_filename}
 
     def fetch_favicon_url(self, url):
         favicon_url = favicon.get_favicon_url(url)
@@ -144,9 +133,9 @@ class UnscrollClient():
         return r.json()
         
     def cache_thumbnail(self, url):
-        r = requests.post(self.api + '/thumbnails/',
+        r = requests.post(self.api + '/thumbnails/cache/',
                           headers=self.authentication_header,
-                          data={'source_url': url})
+                          data={'url': url})
 #       print(r.status_code, r)
 
         if r.status_code == 500:
@@ -160,6 +149,6 @@ class UnscrollClient():
                     d = r2.json()
                     if (len(d['results']) > 0):
                         return d['results'][0]
-            return None
+            return r.content
 
         return r.json()

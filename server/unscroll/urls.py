@@ -111,6 +111,32 @@ class ThumbnailViewSet(viewsets.ModelViewSet):
 
         except KeyError:
             raise APIException('[urls.py error] Request has no resource file attached')
+
+    @action(detail=False, methods=['post'])
+    def cache(self, request):
+        sha1=None
+        try:
+            u = request.data['url']
+            t = InboundThumbnail(url=u)
+            sha1=t.sha1
+            s = Thumbnail(
+                by_user=self.request.user,
+                image=t.img_filename,
+                width=t.width,
+                height=t.height,
+                sha1=t.sha1)
+            s.save()
+            serializer = ThumbnailSerializer(s, context={'request': request})
+            return Response(serializer.data)
+            
+        except IntegrityError as e:
+            s = Thumbnail.objects.get(sha1=t.sha1)
+            serializer = ThumbnailSerializer(s, context={'request': request})
+            return Response(serializer.data)
+        # raise APIException('[urls.py error] {}'.format(e))
+
+        except KeyError:
+            raise APIException('[urls.py error] Request has no resource file attached')        
         
 
     def perform_create(self, serializer):
