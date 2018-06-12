@@ -31,6 +31,11 @@ class Search extends React.Component {
                             <input type="text" defaultValue="" onChange={(e)=>this.setState({scroll:e.target.value})}/>
                               <div className="search-ruby">Scroll</div>                              
                           </span>
+
+                          <span className="search-input">                          
+                            <input type="text" defaultValue="" onChange={(e)=>this.setState({type:e.target.value})}/>
+                              <div className="search-ruby">Type</div>                              
+                          </span>
                           
                           <span className="search-input">                          
                             <input type="text" defaultValue="" onChange={(e)=>this.setState({topic:e.target.value})}/>
