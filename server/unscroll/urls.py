@@ -16,8 +16,6 @@ from rest_framework.exceptions import APIException
 from scrolls.models import User, Scroll, Event, Notebook, Note, Media, Thumbnail
 from unscroll.thumbnail import InboundThumbnail
 from rest_framework_swagger.views import get_swagger_view
-from PIL import Image, ImageOps
-from io import BytesIO
 import requests
 import hashlib
 import pprint
@@ -168,7 +166,7 @@ class EventFilter(django_filters.rest_framework.FilterSet):
     q = django_filters.CharFilter(method='filter_by_q', distinct=True)
 
     # TODO THIS THING IS FRANKLY REAL DODGY
-    def filter_by_q(self, queryset, what_is_this_arg_i_do_not_know, value):
+    def filter_by_q(self, queryset, WHAT_IS_THIS_ARG_I_DO_NOT_KNOW, value):
         uq = unquote(value)
         apos = re.sub("'", "", uq)
         filtered_val = "'{}'".format(apos,)
@@ -253,10 +251,13 @@ class BulkEventSerializer(BulkSerializerMixin,
         list_serializer_class = BulkListSerializer
 
     def create(self, validated_data):
+        pprint.pprint(validated_data)
         validated_data['by_user'] = self.context['request'].user
         s = Event(**validated_data)
         try:
             s.save()
+            es = Event.objects.get(id=s.id)
+            return es            
         except IntegrityError as e:
             # print('[urls.py IntegrityError] {}'.format(e,))
             es = Event.objects.get(
@@ -265,8 +266,6 @@ class BulkEventSerializer(BulkSerializerMixin,
                 title=validated_data['title'],
                 source_url=validated_data['source_url'],)
             return es
-        return s
-
 
 class BulkEventViewSet(BulkModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]

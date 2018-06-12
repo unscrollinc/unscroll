@@ -1,7 +1,11 @@
 from django.db import models
 from django.db.models import Max, Min, Count
+from django_bleach.models import BleachField
 from django.contrib.auth.models import User
+
 from uuid import uuid4
+import lxml.html
+from lxml.html.clean import Cleaner
 
 
 class User(User):
@@ -80,14 +84,14 @@ class Scroll(models.Model):
         default=uuid4,
         editable=False,
         unique=True)
-    title = models.TextField()
-    subtitle = models.TextField(
+    title = BleachField()
+    subtitle = BleachField(
         blank=True,
         null=True)
-    description = models.TextField(
+    description = BleachField(
         blank=True,
         null=True)
-    citation = models.TextField(
+    citation = BleachField(
         blank=True,
         null=True)
     link = models.URLField(
@@ -131,10 +135,11 @@ class Notebook(models.Model):
         default=uuid4,
         editable=False,
         unique=True)
-    title = models.TextField()
-    subtitle = models.TextField(
-        blank=True, null=True)
-    description = models.TextField(
+    title = BleachField()
+    subtitle = BleachField(
+        blank=True,
+        null=True)
+    description = BleachField(
         null=True)
     when_published = models.DateTimeField(
         null=True)
@@ -199,42 +204,50 @@ class Event(models.Model):
         default=uuid4,
         editable=False,
         unique=True)
+    # Typically filtered text/html, could also be text/text, or something else.
     media_type = models.CharField(
         max_length=128,
         default="text/html")
+    # The root content type. A tag. PR, etc.
     content_type = models.CharField(
+        db_index=True,        
         max_length=128,
         default="event")
-    title = models.TextField(
+    title = BleachField(
         blank=False)
-    text = models.TextField(
+    text = BleachField(
         blank=True,
-        null=True)
+        default="",
+        null=False)
     ranking = models.FloatField(
         db_index=True,
         default=0)
-    resolution = models.CharField(
-        max_length=32,
-        default='days')
+    resolution = models.IntegerField(
+        default=0)
     content_url = models.URLField(
         max_length=512,
+        blank=True,
         null=True)
-    citation = models.TextField(
-        null=True)
+    citation = BleachField(
+        default="",
+        blank=True,
+        null=False)
     source_name = models.CharField(
         max_length=512,
-        blank=True,
-        null=True)
+        default="",
+        blank=True)
     source_url = models.URLField(
         max_length=512,
-        blank=True,
-        null=True)
+        default="",
+        blank=True)
     when_created = models.DateTimeField(
         auto_now_add=True)
     when_happened = models.DateTimeField(
         db_index=True)
-    when_original = models.TextField(
-        null=True)
+    when_original = models.CharField(
+        default="",
+        max_length=128,
+        blank=True)
     is_deleted = models.BooleanField(
         default=False)
 
@@ -278,7 +291,7 @@ class Note(models.Model):
     order = models.FloatField(
         null=True,
         blank=True)
-    text = models.TextField(
+    text = BleachField(
         blank=True,
         null=True)
     kind = models.CharField(

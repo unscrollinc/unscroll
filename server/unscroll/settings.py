@@ -44,8 +44,10 @@ INSTALLED_APPS = (
     'djoser',    
     'rest_framework_swagger',    
     'corsheaders',
+    'django_bleach',
     'silk'
 )
+
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS':
     ('django_filters.rest_framework.DjangoFilterBackend',),
@@ -178,3 +180,11 @@ STATIC_URL = '/static/'
 THUMBNAIL_SIZE = 300, 300
 THUMBNAIL_DIR = '/home/unscroll/unscroll/unscroll/scrolls/static/scrolls/'
 DATA_UPLOAD_MAX_MEMORY_SIZE=4621440
+
+BLEACH_ALLOWED_TAGS = ['p', 'b', 'i', 'u', 'em', 'strong']
+BLEACH_ALLOWED_ATTRIBUTES = []
+BLEACH_STRIP_TAGS = True
+BLEACH_STRIP_COMMENTS = True
+
+
+

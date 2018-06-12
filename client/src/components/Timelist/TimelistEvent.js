@@ -60,12 +60,11 @@ class TimelistEvent extends React.Component {
                 </div>                
                 <div className="dt">{e.when_happened}</div>             
                 <div>
-                  <a href={e.content_url} target="_blank">
-                    {e.title}
-                  </a>
+                <a href={e.content_url} target="_blank">
+                <div dangerouslySetInnerHTML={{__html: e.title}}/>
+                </a>
                 </div>
-                <div>{e.text}</div>
-
+                <div dangerouslySetInnerHTML={{__html: e.text}}/>
                 
               </div>
             </div>

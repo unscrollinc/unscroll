@@ -3,10 +3,13 @@
 ┗━┛╹ ╹┗━┛┗━╸╹┗╸┗━┛┗━╸┗━╸
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+
+
+
 SERVER
 - Camelcase JSON (camelcase filter)
 - Add filters
--
+- lxml clean
 
 CLIENT
 - Full login/auth cycle
@@ -14,6 +17,10 @@ CLIENT
 - Create note
 - Better image upload
 - Refactor timeline stuff/context stuff into module
+-
+var clean = DOMPurify.sanitize(dirty, {ALLOWED_TAGS: ['b']});
+
+var clean = DOMPurify.sanitize(dirty, {ALLOWED_TAGS: ['b', 'em'], ALLOWED_ATTR: ['style']});
 
 
 DELETE FROM event WHERE id IN (SELECT id FROM (SELECT id, ROW_NUMBER()

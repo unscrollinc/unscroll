@@ -101,6 +101,7 @@ pyvips = "*"
 lxml = "*"
 csvs-to-sqlite = "*"
 "base36" = "*"
+django-bleach = "*"
 
 [dev-packages]
 
