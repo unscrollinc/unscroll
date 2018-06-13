@@ -81,8 +81,7 @@ def __main__():
     events = [rfc_to_event(x) for x in docs]
     # events = []
     c = UnscrollClient()
-    pprint.pprint(c)
-    c.__batch__(
+    scroll = c.__batch__(
         api='http://127.0.0.1:8000',
         username='ford',
         password='***REMOVED***',

@@ -177,15 +177,6 @@ h1 a {
     color:white;
 }
 
-.Timelist {
-    position:fixed;
-    top:10%;
-    height:90%;
-    overflow:auto;
-    width:50%;
-    left:0;
-             
-}
 
 textarea {
     width:95%;
@@ -206,23 +197,41 @@ button.new {
 }
 
 .Timelist {
-    width:100%;
     width:50%;
     height:90%;
     top:10%;
     position:fixed;
     overflow:auto;
-    
 }
-.timelist-event {
-    border-bottom:1px solid #ccc;
-    padding:1em;
+
+div.timelist-event {
+    border-bottom:1px solid black;
+    padding:0px;
+    width: 100%;
+    display:flex;
+    justify-content: space-between;
+}
+
+div.event-meta {
+    font-size:8pt;
+}
+div.dt {
+    font-size:8pt;
+}
+div.title {
     font-size:10pt;
 }
-.timelist-image {
-    overflow:hide;
-    max-width:15%;
-    float:right;
+div.text {
+}
+
+div.timelist-image:hover {
+    opacity:1;
+}
+
+div.timelist-image {
+    flex:2;
+    width:15%;
+    height:100%;
 }
 
 .dtsince {
@@ -232,15 +241,6 @@ button.new {
     padding-left:1em;
 }
 
-.event-meta {
-    float:right;
-    text-align:right;
-    position:absolute;
-    right:20%;
-}
-.event-meta a {
-    text-decoration:none;
-}
 
 .button, button, input.inputButton {
     color:black;

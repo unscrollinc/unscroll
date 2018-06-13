@@ -28,7 +28,12 @@ class TimelistEvent extends React.Component {
         if (e.thumb_image) {
             return(
                 <a href={e.content_url} target="_blank">
-                  <img className="timelist-image" src={'http://localhost/' + e.thumb_image}/>
+                  <div className="timelist-image"
+                       style={{
+                           backgroundSize: 'cover',
+                           backgroundImage:'url(http://localhost/'+e.thumb_image+')'
+                       }}>
+                  </div>
                 </a>
             );
         }
@@ -61,10 +66,10 @@ class TimelistEvent extends React.Component {
                 <div className="dt">{e.when_happened}</div>             
                 <div>
                 <a href={e.content_url} target="_blank">
-                <div dangerouslySetInnerHTML={{__html: e.title}}/>
+                <div className="title" dangerouslySetInnerHTML={{__html: e.title}}/>
                 </a>
                 </div>
-                <div dangerouslySetInnerHTML={{__html: e.text}}/>
+                <div className="text" dangerouslySetInnerHTML={{__html: e.text}}/>
                 
               </div>
             </div>

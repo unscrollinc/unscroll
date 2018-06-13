@@ -18,7 +18,7 @@ def __main__():
                        username='ford',
                        password='***REMOVED***')
     c.login()
-    c.create_or_retrieve_scroll('Cooper-Hewitt Museum Collection')
+    scroll = c.create_or_retrieve_scroll('Cooper-Hewitt Museum Collection')
 
     conn = sqlite3.connect('cooper/objects.db')
     conn.row_factory = sqlite3.Row
@@ -76,7 +76,7 @@ def __main__():
                     'when_happened':ud.when_happened,
                     'when_original':ud.when_original
                 }
-                e = c.create_event(d)
+                e = c.create_event(d, scroll)
                 # print(e.json())
     
 
