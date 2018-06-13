@@ -362,3 +362,8 @@ div.search-ruby {
     width:100%;
     text-align:center;
 }
+
+table.timelist td {
+    font-size:10pt;
+    vertical-align:top;
+}

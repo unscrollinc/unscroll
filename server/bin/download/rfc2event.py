@@ -58,7 +58,7 @@ def rfc_to_event(rfc):
     date, resolution, original = *get_date(rfc['date']),
     event = {
         'title': "{}".format(rfc['title']),
-        'text': html_to_txt(rfc['abstract']) if 'abstract' in rfc else None,
+        'text': html_to_txt(rfc['abstract']) if 'abstract' in rfc else "",
         'mediatype': "text/html",
         'ranking':0,
         'content_url':normalize_rfc_id_to_url(rfc['doc-id']),
@@ -81,15 +81,15 @@ def __main__():
     events = [rfc_to_event(x) for x in docs]
     # events = []
     c = UnscrollClient()
+    favicon_url = c.fetch_favicon_url('https://www.ietf.org')
+    favthumb = c.cache_thumbnail(favicon_url['url'])
     scroll = c.__batch__(
-        api='http://127.0.0.1:8000',
-        username='ford',
-        password='***REMOVED***',
         scroll_title='IETF RFCs',
+        thumbnail=favthumb['url'], 
         events=events
     )
     print(len(events))
-
+                                
 
 __main__()
 

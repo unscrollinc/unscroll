@@ -12,45 +12,38 @@ from urllib.parse import quote_plus
 import pprint
 
 class UnscrollClient():
-    api = None
-    username = None
-    password = None
     authentication_header = None
     user_url = None
 
     def __init__(self,
-                 api=None,
-                 username=None,
-                 password=None):
+                 api='http://127.0.0.1:8000',
+                 username='ford',
+                 password='***REMOVED***'):
         self.api = api
         self.username = username
         self.password = password
+        self.login()
 
     def __batch__(self,
-                  api=None,
-                  username=None,
-                  password=None,
+                  thumbnail=None,                  
                   scroll_title=None,
                   events=None):
-        self.api = api
-        self.username = username
-        self.password = password
+        self.with_thumbnail = thumbnail
 
         if (scroll_title is not None and events is not None):
             self.login()
-            scroll_url = self.create_or_retrieve_scroll(scroll_title)
+            scroll = self.create_or_retrieve_scroll(scroll_title)
             for event in events:
-                event['in_scroll'] = scroll_url
+                event['in_scroll'] = scroll
             chunks = [events[x:x+500] for x in range(0, len(events), 500)]
             for docs in chunks:
-                res = self.create_event_batch(docs)
+                res = self.create_event_batch(docs, scroll)
                 print("Logged {}".format(res))
 
     def login(self):
         r = requests.post(self.api + '/auth/login/',
                           json={'username': self.username,
                                 'password': self.password})
-        pprint.pprint(r)
         login = r.json()
 
         self.authentication_header = {'Authorization':

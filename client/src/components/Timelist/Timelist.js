@@ -98,8 +98,12 @@ class Timelist extends React.Component {
               <div>
                 <AppContext.Consumer>
                   {(context)=>this.manageSearch(context)}
-                </AppContext.Consumer>
-                {this.state.events}                                            
+		</AppContext.Consumer>
+		<table className="timelist">
+		  <tbody>
+                    {this.state.events}
+		  </tbody>
+		</table>
 
               </div>
             </div>
