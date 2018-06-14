@@ -203,18 +203,31 @@ class BulkEventSerializer(BulkSerializerMixin,
     is_public = serializers.BooleanField(
         read_only=True,
         source="in_scroll.is_public")
-    scroll_thumb_image = serializers.CharField(
-        read_only=True,
-        source="in_scroll.thumbnail.image_location")
-    thumb_height = serializers.IntegerField(
-        read_only=True,
-        source="with_thumbnail.height")
-    thumb_width = serializers.IntegerField(
-        read_only=True,
-        source="with_thumbnail.width")
     thumb_image = serializers.CharField(
         read_only=True,
         source="with_thumbnail.image")
+    thumb_width = None
+    thumb_height = None
+    if thumb_image is not None:
+        thumb_height = serializers.IntegerField(
+            read_only=True,
+            source="with_thumbnail.height")
+        thumb_width = serializers.IntegerField(
+            read_only=True,
+            source="with_thumbnail.width")
+    else:
+        thumb_image = serializers.CharField(
+            read_only=True,
+            source="in_scroll.with_thumbnail.image")
+        thumb_height = serializers.IntegerField(
+            read_only=True,
+            source="in_scroll.with_thumbnail.height")
+        thumb_width = serializers.IntegerField(
+            read_only=True,
+            source="in_scroll.with_thumbnail.width")
+        
+        
+
 
     class Meta:
         model = Event
@@ -227,7 +240,6 @@ class BulkEventSerializer(BulkSerializerMixin,
             'scroll_uuid',
             'scroll_title',
             'is_public',
-            'scroll_thumb_image',
             'with_thumbnail',
             'thumb_height',
             'thumb_width',
