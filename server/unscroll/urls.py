@@ -31,9 +31,6 @@ from rest_framework_bulk import (
     ListBulkCreateUpdateDestroyAPIView,
 )
 
-
-#  "auth_token": "5df680234a68c9a75112a4ad9d2e772a324426dc"
-
 # Scrolls, Events, Notebooks, Notes
 # User
 # User lists their SENNs
@@ -258,6 +255,7 @@ class BulkEventSerializer(BulkSerializerMixin,
             es = Event.objects.get(id=s.id)
             return es            
         except IntegrityError as e:
+            pprint.pprint(validated_data)
             # print('[urls.py IntegrityError] {}'.format(e,))
             es = Event.objects.get(
                 by_user=validated_data['by_user'],
