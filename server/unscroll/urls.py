@@ -251,7 +251,6 @@ class BulkEventSerializer(BulkSerializerMixin,
         list_serializer_class = BulkListSerializer
 
     def create(self, validated_data):
-        pprint.pprint(validated_data)
         validated_data['by_user'] = self.context['request'].user
         s = Event(**validated_data)
         try:
