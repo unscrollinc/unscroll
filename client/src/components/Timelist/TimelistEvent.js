@@ -18,22 +18,26 @@ class TimelistEvent extends React.Component {
             let dur = Interval.fromDateTimes(thenISO, nowISO);
             let ct = dur.count('months') - 1;
             if (ct > 0) {
-                return(<tr className="dtsince"><td>+ {ct} months </td></tr>);
+                return(<tr className="dtsince"><td colSpan="3">+ {ct} months </td></tr>);
             }
         }
         return undefined;
+    }
+
+    getImage(e) {
+        return 'http://localhost/'+ e.thumb_image;
+    }
+
+    getImageUrl(e) {
+        return 'url('+ this.getImage(e) + ')';
     }
 
     makeImage(e) {
         if (e.thumb_image) {
             return(
                 <a href={e.content_url} target="_blank">
-                  <div className="timelist-image"
-                       style={{
-                           backgroundSize: 'cover',
-                           backgroundImage:'url(http://localhost/'+e.thumb_image+')'
-                       }}>
-                  </div>
+                  <img className="timelist-image"
+                       src={this.getImage(e)}/>
                 </a>
             );
         }
@@ -41,7 +45,13 @@ class TimelistEvent extends React.Component {
             return undefined;
         }
     }
-    
+    makeWhen(e) {
+        if (e.when_original) {
+            return (<div title={'Date parsed as: ' + e.when_happened}>{e.when_original}</div>);
+        }
+        return e.when_happened;
+    }
+
     render() {
         let e = this.state.event;
         return(
@@ -49,10 +59,10 @@ class TimelistEvent extends React.Component {
 
 	      {this.showWhenHappened(this.state.lastTime, e.when_happened)}
 	      
-	      <tr>
-
-		<td>
-                  <div>{e.when_happened}</div>
+	      <tr className="timelist">
+                
+		<td className="meta">
+                  <div className="dt">{this.makeWhen(e)}</div>
                   <a className="title" href={`/search/?scroll:${e.scroll_title}`}>
                     {e.scroll_title}
 		  </a>             	  
@@ -60,16 +70,14 @@ class TimelistEvent extends React.Component {
 		  <div><EventNoteButton event={this.props.event}/></div>
 		</td>
 		
-		<td>
-                  <h3>
-                    <a href={e.content_url} target="_blank">
-		      <div className="title" dangerouslySetInnerHTML={{__html: e.title}}/>
-		    </a>
-		  </h3>
+		<td className="content">
+                  <a href={e.content_url} target="_blank">
+		    <div className="event-title" dangerouslySetInnerHTML={{__html: e.title}}/>
+                  </a>
                   <div className="text" dangerouslySetInnerHTML={{__html: e.text}}/>
 		</td>
-		
-		<td>
+		 
+		<td className="image">
 		  {this.makeImage(e)}
 		</td>
 		

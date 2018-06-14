@@ -23,36 +23,36 @@ class Search extends React.Component {
                         <form className="search" onSubmit={(e)=>context.doEventSearch(e, this.state.q)}>
                           
                           <span className="search-input">
+                            <div className="search-ruby">Text</div>
                             <input type="text" defaultValue="" onChange={(e)=>this.setState({q:e.target.value})}/>
-                              <div className="search-ruby">Text</div>
                           </span>
                           
                           <span className="search-input">                          
+                            <div className="search-ruby">Scroll</div>
                             <input type="text" defaultValue="" onChange={(e)=>this.setState({scroll:e.target.value})}/>
-                              <div className="search-ruby">Scroll</div>                              
                           </span>
-
-                          <span className="search-input">                          
+                          
+                          <span className="search-input">
+                            <div className="search-ruby">Type</div>                              
                             <input type="text" defaultValue="" onChange={(e)=>this.setState({type:e.target.value})}/>
-                              <div className="search-ruby">Type</div>                              
                           </span>
                           
                           <span className="search-input">                          
+                            <div className="search-ruby">Topic</div>
                             <input type="text" defaultValue="" onChange={(e)=>this.setState({topic:e.target.value})}/>
-                              <div className="search-ruby">Topic</div>                              
                           </span>
                           
                           <span className="search-input">                          
+                            <div className="search-ruby">Creator</div>
                             <input type="text" defaultValue=""
                                    onChange={(e)=>this.setState({creator:e.target.value})}/>
-                              <div className="search-ruby">Creator</div>                                                            
                           </span>
                           
                           <span className="search-input">                                                    
+                            <div className="search-ruby">After {this.state.from}</div>
                             <input className="rangeInput" type="range" min="1968" max="2018"
                                    onChange={(e)=>this.setState({from:e.target.value})}
                               />
-                              <div className="search-ruby">After {this.state.from}</div>
                           </span> 
                           <input type="submit" value="Go"/>
                           
