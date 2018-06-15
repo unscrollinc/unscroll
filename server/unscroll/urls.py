@@ -203,30 +203,14 @@ class BulkEventSerializer(BulkSerializerMixin,
     is_public = serializers.BooleanField(
         read_only=True,
         source="in_scroll.is_public")
-    thumb_image = serializers.CharField(
+
+    with_thumbnail = serializers.CharField(
         read_only=True,
         source="with_thumbnail.image")
-    thumb_width = None
-    thumb_height = None
-    if thumb_image is not None:
-        thumb_height = serializers.IntegerField(
-            read_only=True,
-            source="with_thumbnail.height")
-        thumb_width = serializers.IntegerField(
-            read_only=True,
-            source="with_thumbnail.width")
-    else:
-        thumb_image = serializers.CharField(
-            read_only=True,
-            source="in_scroll.with_thumbnail.image")
-        thumb_height = serializers.IntegerField(
-            read_only=True,
-            source="in_scroll.with_thumbnail.height")
-        thumb_width = serializers.IntegerField(
-            read_only=True,
-            source="in_scroll.with_thumbnail.width")
-        
-        
+
+    scroll_with_thumbnail = serializers.CharField(
+        read_only=True,
+        source="in_scroll.with_thumbnail.image")
 
 
     class Meta:
@@ -241,9 +225,7 @@ class BulkEventSerializer(BulkSerializerMixin,
             'scroll_title',
             'is_public',
             'with_thumbnail',
-            'thumb_height',
-            'thumb_width',
-            'thumb_image',
+            'scroll_with_thumbnail',            
             'when_created',
             'title',
             'text',
@@ -267,7 +249,6 @@ class BulkEventSerializer(BulkSerializerMixin,
             es = Event.objects.get(id=s.id)
             return es            
         except IntegrityError as e:
-            pprint.pprint(validated_data)
             # print('[urls.py IntegrityError] {}'.format(e,))
             es = Event.objects.get(
                 by_user=validated_data['by_user'],

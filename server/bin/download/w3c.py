@@ -55,11 +55,12 @@ def __main__():
     c = UnscrollClient()
 
 #    W3C Web Standards
+    TITLE='W3C Web Standards'
+    favthumb = c.cache_thumbnail('https://2.bp.blogspot.com/-70GFD8HsG3I/VMKLC7IoiBI/AAAAAAAAIck/GCu0LIY3PCU/s1600/Logo%2BW3C.png')
+    c.delete_scroll_with_title(TITLE)
     c.__batch__(
-        api='http://127.0.0.1:8000',
-        username='ford',
-        password='***REMOVED***',
-        scroll_title='W3C Web Standards',
+        scroll_title=TITLE,
+        thumbnail=favthumb['url'],
         events=events
     )
     print(len(events))

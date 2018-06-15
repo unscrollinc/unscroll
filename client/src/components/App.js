@@ -55,7 +55,6 @@ class App extends React.Component {
                       <a href="/profile">{context.state.user.username}</a>
                       <button className="logout" onClick={context.doLogout}>Log out</button>
                       {this.renderEditButton()}
-                      <button>+ Scroll</button>
                     </div>
             );
         }

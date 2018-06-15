@@ -70,26 +70,28 @@ def rfc_to_event(rfc):
     }
     return event
 
-
 def __main__():
-    read = ''
     events = []
+    title = 'IETF RFCs'
+    c = UnscrollClient()
+    c.delete_scroll_with_title('IETF RFCs')
+    favthumb = c.cache_thumbnail('https://ietf.org/media/images/ietf-logo.original.png')
+
+    # Load RFCs
+    read = ''
     with open('cache/rfc/rfc-index.xml', 'r') as f:
         read = f.read()
     parsed = xmltodict.parse(read)
     docs = parsed['rfc-index']['rfc-entry']
     events = [rfc_to_event(x) for x in docs]
-    # events = []
-    c = UnscrollClient()
-    favicon_url = c.fetch_favicon_url('https://www.ietf.org')
-    favthumb = c.cache_thumbnail(favicon_url['url'])
+
+    # Do it
     scroll = c.__batch__(
-        scroll_title='IETF RFCs',
+        scroll_title=title,
         thumbnail=favthumb['url'], 
         events=events
     )
     print(len(events))
-                                
 
 __main__()
 

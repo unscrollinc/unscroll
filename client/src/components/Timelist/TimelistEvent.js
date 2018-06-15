@@ -25,7 +25,12 @@ class TimelistEvent extends React.Component {
     }
 
     getImage(e) {
-        return 'http://localhost/'+ e.thumb_image;
+        if (e.with_thumbnail) {
+            return 'http://localhost/'+ e.with_thumbnail;
+        }
+        if (e.scroll_with_thumbnail) {
+            return 'http://localhost/'+ e.scroll_with_thumbnail;
+        }        
     }
 
     getImageUrl(e) {
@@ -33,7 +38,7 @@ class TimelistEvent extends React.Component {
     }
 
     makeImage(e) {
-        if (e.thumb_image) {
+        if (e.with_thumbnail || e.scroll_with_thumbnail) {
             return(
                 <a href={e.content_url} target="_blank">
                   <img className="timelist-image"
@@ -62,25 +67,35 @@ class TimelistEvent extends React.Component {
 	      <tr className="timelist">
                 
 		<td className="meta">
-                  <div className="dt">{this.makeWhen(e)}</div>
-                  <a className="title" href={`/search/?scroll:${e.scroll_title}`}>
-                    {e.scroll_title}
-		  </a>             	  
-		  <div><a className="title" href={`/search/?by:${e.username}`}>{e.username}</a></div>
-		  <div><EventNoteButton event={this.props.event}/></div>
+		  {this.makeImage(e)}                  
+		  <div className="collection">
+                    
+                    <div className="scroll-title">
+                      <a className="title" href={`/search/?scroll:${e.scroll_title}`}>
+                        {e.scroll_title}
+	              </a>
+                    </div>
+                    
+                    <div className="author">
+                      <a className="title" href={`/search/?by:${e.username}`}>@{e.username}</a>
+                    </div>
+
+                    
+                  </div>
+                  
 		</td>
-		
+	    
 		<td className="content">
+                    <div class="eventNoteButton"><EventNoteButton event={this.props.event}/></div>
+                  
+                  <div className="dt">{this.makeWhen(e)}</div>
+                  
                   <a href={e.content_url} target="_blank">
 		    <div className="event-title" dangerouslySetInnerHTML={{__html: e.title}}/>
                   </a>
                   <div className="text" dangerouslySetInnerHTML={{__html: e.text}}/>
+
 		</td>
-		 
-		<td className="image">
-		  {this.makeImage(e)}
-		</td>
-		
 	      </tr>
 	    </React.Fragment>
 

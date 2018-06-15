@@ -87,13 +87,13 @@ class Scroll(models.Model):
     title = BleachField()
     subtitle = BleachField(
         blank=True,
-        null=True)
+        default="")
     description = BleachField(
         blank=True,
-        null=True)
+        default="")
     citation = BleachField(
         blank=True,
-        null=True)
+        default="true")
     link = models.URLField(
         blank=True,
         null=True)    
