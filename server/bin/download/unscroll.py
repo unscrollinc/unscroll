@@ -27,12 +27,11 @@ class UnscrollClient():
     def __batch__(self,
                   thumbnail=None,                  
                   scroll_title=None,
-                  events=None):
-        self.with_thumbnail = thumbnail
+                  events=[]):
 
-        if (scroll_title is not None and events is not None):
+        if (scroll_title is not None):
             self.login()
-            scroll = self.create_or_retrieve_scroll(scroll_title)
+            scroll = self.create_or_retrieve_scroll(scroll_title, thumbnail=thumbnail)
             for event in events:
                 event['in_scroll'] = scroll
             chunks = [events[x:x+500] for x in range(0, len(events), 500)]
@@ -54,8 +53,8 @@ class UnscrollClient():
     def create_or_retrieve_scroll(self,
                                   title,
                                   public=True,
-                                  subtitle=None,
-                                  description=None,
+                                  subtitle='',
+                                  description='',
                                   thumbnail=None):
 
         r = requests.post(self.api + '/scrolls/',
@@ -64,7 +63,7 @@ class UnscrollClient():
                                 'is_public': public,
                                 'subtitle': subtitle,
                                 'description': description,
-                                'thumbnail': thumbnail})
+                                'with_thumbnail': thumbnail})
         
         if r.status_code == 200:
             scroll_d = dict(r.json())
@@ -76,6 +75,20 @@ class UnscrollClient():
             if (len(results) > 0):
                 scroll_d = dict(results[0])
                 return scroll_d['url']
+
+    def delete_scroll_with_title(self, title):
+        r = requests.get(self.api + '/scrolls/?title=' + quote_plus(title),
+                             headers=self.authentication_header,)        
+        
+        if r.status_code == 200:
+            j = r.json()['results'][0]
+            r = requests.delete(j['url'],
+                                headers=self.authentication_header)
+            
+            return True
+
+        else:
+            return r.results
 
     def create_event_batch(self, events, scroll):
         print("Batching {} events in scroll {} with url {}.".format(
