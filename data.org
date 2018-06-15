@@ -1,5 +1,29 @@
 Data sets
 
+Anchor Sets:
+- Cooper Hewitt github
+- DPLA s3://dpla-provider-export
+       http://dpla-provider-export.s3.amazonaws.com/
+- Archive.org
+  - MusicBrainz archive
+  - WHATEVERaw
+- Wikipedia day pages
+- Spider museum collections
+
+- Schema.org???
+
+- Otherwise: Use gentle spiders and follow search engine ethos. APIs
+  have a lot of terms of use that aren't really spider-friendly and
+  are contrary to the purpose of the index.
+
+- We want four things:
+  - A thumbnail
+  - A TK
+  - 
+
+- APIs are exhausting
+- 
+
 Do as much in PostgreSQL as poss
 Do as much with DRF as poss
 

@@ -102,6 +102,7 @@ lxml = "*"
 csvs-to-sqlite = "*"
 "base36" = "*"
 django-bleach = "*"
+awscli = "*"
 
 [dev-packages]
 
