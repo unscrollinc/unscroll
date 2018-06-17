@@ -1,4 +1,4 @@
-DB=dpla.db
+DB=/Volumes/External/dpla/dpla.db
 rm $DB ;
 cat db.sql | sqlite3 $DB ;
 echo "begin transaction; " |sqlite3 $DB

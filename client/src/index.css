@@ -18,16 +18,31 @@ body {
 
 .Nav {
     width:100%;
-    height:10%;
+    vertical-align: middle;
+    line-height:90px;    
+    line-height:150%;
+    height:5%;
     position:fixed;
-    background:white;
+    display: table;    
     font-size:80%;
-    box-shadow: inset 0 -1px 0 #eee;
+    border-bottom:px solid #07e;
+    color:#07e;    
+    box-shadow: inset 0px -1px #ccc;
 }
-
+.Nav > table {
+    height:100%;
+}
+.Nav a {
+    color:#07e;
+    text-decoration:none;
+    padding-right:0.5em;
+}
+.Nav a:hover {
+    text-decoration:underline;
+}
 .Timeline, .Editor {
-    top:10%;
-    height:90%;
+    top:5%;
+    height:95%;
     position:absolute;    
 }
 
@@ -112,7 +127,7 @@ h1 a {
     position:fixed;
     top:100%;
     width:100%;
-    height:90%;
+    height:95%;
 }
 
 .notebook-event-list {
@@ -200,8 +215,8 @@ button.new {
 
 .Timelist {
     width:50%;
-    height:90%;
-    top:10%;
+    height:95%;
+    top:5%;
     position:fixed;
     overflow:auto;
 }
@@ -313,13 +328,6 @@ button.logout {
     margin-left:1em;
 }
 
-.searchBox {
-    padding:1em 0 1em 0;
-    width:75%;
-    background:white;
-    text-transform:uppercase;
-    
-}
 
 .subsearch {
     padding-left:0.5em;
@@ -347,7 +355,6 @@ input.loginButton {
 
 th {
     font-weight:normal;
-    text-transform:uppercase;
 }
 
 .rangeInput {
@@ -387,14 +394,7 @@ span.status {
 th {text-align:right;}
 
 
-form.search {
-    width:75%;
-    margin:none;
-    padding:none;
-}
 span.search-input {
-    float:left;
-    display:block;
     padding-top:1%;
 }
 div.search-ruby {
@@ -406,4 +406,7 @@ div.search-ruby {
 
 .eventNoteButton {
     float:right;
+}
+form.search {
+    display:inline;
 }

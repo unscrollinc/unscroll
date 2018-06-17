@@ -1,9 +1,26 @@
+How to read wireframes
+
+Wireframes are pictures of an imagined website or web application composed of thin lines showing the barest outline of the thing to be built. They are the absolute definition of desperate compromise. If we show the client, or the stakeholder, a thing that looks to real, they will seize upon that. Imagine a recipe book that had a picture of an over, little outlines of apples, because the word "apple" is too vague; these are wireframes. They are in many ways the absolute deliverable in the endless battle to make software, an attempt to freeze the chaotic discussions and force everyone to acknowledge just how screwed we all are. They can be made by many kinds of humans, and there are even programs that make them look hand-drawn. There are some that come with menus of widgets, so that you might sketch different thingies.
+
+They know they will be sold and think they are above the selling. But for gods sake let us present to you. Let us tell you the story in our own language so that you can learn. Stop being the product genius. People are exhausting.
+
+unscroll/
 Data sets
 
 Anchor Sets:
 - Cooper Hewitt github
 - DPLA s3://dpla-provider-export
        http://dpla-provider-export.s3.amazonaws.com/
+
+.dataProvider
+.sourceResource.title
+.date
+.identifier[0]
+.@id
+.object
+.isShownAt
+
+
 - Archive.org
   - MusicBrainz archive
   - WHATEVERaw

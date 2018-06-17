@@ -54,7 +54,6 @@ class App extends React.Component {
                     <div className="login">
                       <a href="/profile">{context.state.user.username}</a>
                       <button className="logout" onClick={context.doLogout}>Log out</button>
-                      {this.renderEditButton()}
                     </div>
             );
         }
@@ -69,14 +68,10 @@ class App extends React.Component {
                     <td>
                       <input name="email" onChange={context.handleUsernameUpdate} type="text"/>
                     </td>
-                  </tr>
-                  <tr>
                     <th>Password</th>
                     <td>
                       <input name="password" onChange={context.handlePasswordUpdate} type="password"/>
                     </td>
-                  </tr>
-                  <tr>
                     <td colSpan="2">
                       <button onClick={context.doRegister}>Create account</button>                      
                       <input className="inputButton loginButton" type="submit" onClick={context.doLogin} value="login"/>
@@ -103,26 +98,37 @@ class App extends React.Component {
         return (
             <AppProvider>           
               <div className="App">
-                
                 <div className="Nav">
-
-                  <AppContext.Consumer>
-                    {(context) => this.renderLoginForm(context)}
-                  </AppContext.Consumer>
-
-                  
-                  <Search/>
-
-                {this.renderViewButton()}
-                
-                  
+                  <table>
+                    <tbody>
+                      <tr>
+                        <td>
+                          [U]
+                        </td>
+                        <td>
+                          <a href="a">Timelines</a>
+                        </td>
+                        <td>
+                          <a href="a">Notebooks</a>
+                        </td>
+                        <td>
+                          <Search/>
+                        </td>
+                        <td>
+                          <AppContext.Consumer>
+                            {(context) => this.renderLoginForm(context)}
+                          </AppContext.Consumer>
+                          {this.renderViewButton()}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
-
-                {display}
-
-                {notebook}
-
-                
+              {display}
+              
+              {notebook}
+              
+              
                 <TimelineEventEditor/>
               </div>
             </AppProvider>
