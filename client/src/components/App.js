@@ -19,27 +19,13 @@ class App extends React.Component {
         };
     }
 
-    handleEditButtonClick = () => {
+    handleNotebookButtonClick = () => {
         this.setState(prevState => ({
             editorOn: !prevState.editorOn
         }));
     }
 
-    handleViewButtonClick = () => {
-        this.setState(prevState => ({
-            timelineOn: !prevState.timelineOn
-        }));
-    }    
-
-    renderEditButton() {
-        return(
-            <button onClick={this.handleEditButtonClick}>
-                {this.state.editorOn ? 'Notebook Off' : 'Notebook On'}
-            </button>
-        );
-    }
-
-    renderViewButton() {
+    renderNotebooksButton() {
         return(
             <button onClick={this.handleViewButtonClick}>
                 {this.state.timelineOn ? 'Horizontally' : 'Vertically'}
@@ -82,7 +68,6 @@ class App extends React.Component {
             </form>
         );
     }
-
  
     render() {
         const timelineOn = this.state.timelineOn;
@@ -106,10 +91,10 @@ class App extends React.Component {
                           [U]
                         </td>
                         <td>
-                          <a href="a">Timelines</a>
+                          <button>Timelines</button>
                         </td>
                         <td>
-                          <a href="a">Notebooks</a>
+                          <button onClick={this.handleNotebookButtonClick}>Notebook</button>
                         </td>
                         <td>
                           <Search/>
@@ -118,7 +103,7 @@ class App extends React.Component {
                           <AppContext.Consumer>
                             {(context) => this.renderLoginForm(context)}
                           </AppContext.Consumer>
-                          {this.renderViewButton()}
+
                         </td>
                       </tr>
                     </tbody>

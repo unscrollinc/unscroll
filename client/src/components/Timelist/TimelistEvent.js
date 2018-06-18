@@ -86,7 +86,7 @@ class TimelistEvent extends React.Component {
 		</td>
 	    
 		<td className="content">
-                    <div class="eventNoteButton"><EventNoteButton event={this.props.event}/></div>
+                    <div className="eventNoteButton"><EventNoteButton event={this.props.event}/></div>
                   
                   <div className="dt">{this.makeWhen(e)}</div>
                   
