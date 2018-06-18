@@ -74,7 +74,7 @@ class Thumbnail(models.Model):
 
 
 class Scroll(models.Model):
-    """A scroll is a bag of Events and Notes controlled by a single user."""
+    """A scroll is a bag of Events controlled by a single user."""
     by_user = models.ForeignKey(
         User,
         null=True,
@@ -85,9 +85,6 @@ class Scroll(models.Model):
         editable=False,
         unique=True)
     title = BleachField()
-    subtitle = BleachField(
-        blank=True,
-        default="")
     description = BleachField(
         blank=True,
         default="")
@@ -96,7 +93,7 @@ class Scroll(models.Model):
         default="true")
     link = models.URLField(
         blank=True,
-        null=True)    
+        null=True)
     with_thumbnail = models.ForeignKey(
         Thumbnail,
         related_name='scrolls',
@@ -149,6 +146,8 @@ class Notebook(models.Model):
         auto_now=True)
     is_public = models.BooleanField(
         default=False)
+    is_fiction = models.BooleanField(
+        default=False)    
     is_deleted = models.BooleanField(
         default=False)
 
@@ -183,8 +182,9 @@ class EventQueryset(models.QuerySet):
 
 class Event(models.Model):
     """
-    An event is something that happened approximately at a moment in
-    time.
+
+    An event is something that happened at a moment in time.
+
     """
     in_scroll = models.ForeignKey(
         Scroll,
@@ -217,8 +217,7 @@ class Event(models.Model):
         blank=False)
     text = BleachField(
         blank=True,
-        default="",
-        null=False)
+        default="")
     ranking = models.FloatField(
         db_index=True,
         default=0)
@@ -263,10 +262,9 @@ class Event(models.Model):
 
 class Note(models.Model):
     """
-    A Note is...a note. It can be a note on a scroll, or a note on an
-    event. When you add up notes together and put them into order by
-    their order field, you can see that as an essay or article, if you
-    want.
+    A Note is...a note. It can be by itself or linked to an event. When
+    you add up notes together and put them into order by their order
+    field, you can see that as an essay or article, if you want.
     """
     by_user = models.ForeignKey(
         User,
