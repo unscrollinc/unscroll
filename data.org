@@ -21,6 +21,9 @@ Anchor Sets:
 .isShownAt
 
 
+- Advertising:
+https://repository.duke.edu/dc/adaccess/BH1353
+
 - Archive.org
   - MusicBrainz archive
   - WHATEVERaw
