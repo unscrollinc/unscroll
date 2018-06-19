@@ -17,14 +17,17 @@ const routes = [
     left: () => <Timeline/>,
     right: () => null
   },
+    
   { path: '/timeline',
     left: () => <Timeline/>,
     right: () => <TimelineList/>
   },
+    
   { path: '/notebook',
     left: () => <Timelist/>,
     right: () => <NotebookList/>
   },
+    
   { path: '/notebook/:id',
     left: () => <Timelist/>,
     right: () => <Notebook/>
