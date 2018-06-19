@@ -23,14 +23,13 @@ class Nav extends React.Component {
 
         if (context.state.user.isLoggedIn) {
             return(
-                    <div className="login">
-                      <a href="/profile">{context.state.user.username}</a>
-                      <button className="logout" onClick={context.doLogout}>Log out</button>
-                    </div>
+                <div className="login">
+                  <a href="/profile">{context.state.user.username}</a>
+                  <button className="logout" onClick={context.doLogout}>Log out</button>
+                </div>
             );
         }
 
-        // Otherwise...
         return(
             <form className="login">
               <table>

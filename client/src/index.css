@@ -130,11 +130,28 @@ h1 a {
     height:95%;
 }
 
+.notebook-header {
+    width:100%;
+}
+
+table.notebook-list {
+    width:100%;
+}
+table.notebook-list {
+    text-align:left;
+}
+
+.notebook-list-title {
+    text-align:left;
+}
+
+
 .notebook-event-list {
     overflow:auto;
     width:50%;
     height:70%;
     margin-bottom:500px;
+    width:100%;
 }
 
 .note {

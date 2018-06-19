@@ -12,25 +12,28 @@ import Nav from './Nav';
 import '../index.css';
 
 const routes = [
-  { path: '/',
-    exact: true,
-    left: () => <Timeline/>,
-    right: () => null
-  },
-  { path: '/timeline',
-    left: () => <Timeline/>,
-    right: () => <TimelineList/>
-  },
-  { path: '/notebook',
-    left: () => <Timelist/>,
-    right: () => <NotebookList/>
-  },
-  { path: '/notebook/:id',
-    left: () => <Timelist/>,
-    right: () => <Notebook/>
-  }    
-]
-
+    { path: '/',
+      exact: true,
+      left: () => <Timeline/>,
+      right: () => null
+    },
+    { path: '/timeline',
+      left: () => <Timeline/>,
+      right: () => <TimelineList/>
+    },
+    { path: '/notebook',
+      left: () => <Timelist/>,
+      right: () => <NotebookList/>
+    },
+    { path: '/notebook/all',
+      left: () => <Timelist/>,
+      right: () => <NotebookList props={{all:true}}/>
+    },
+    { path: '/notebook/:uuid',
+      left: () => <Timelist/>,
+      right: (props) => <Notebook {...props}/>
+    }    
+];
 
 class App extends React.Component {
     constructor(props) {
@@ -43,19 +46,9 @@ class App extends React.Component {
     }
     
     render() {
-/*
-        const timelineOn = this.state.timelineOn;
-
-
-        const display = timelineOn ?
-              (<ReactCursorPosition>
-               <Timeline addNote={this.addNote}/>
-               </ReactCursorPosition>) :
-              (<Timelist addNote={this.addNote}/>);
-*/
         return (
-            <AppProvider>
-	      <div className="App">
+                <AppProvider>
+	        <div className="App">
 		
 		<Nav/>
 		
