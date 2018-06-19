@@ -18,6 +18,7 @@ export class AppProvider extends React.Component {
         let c = cookie.get();        
 
         this.state = this.makeState(c);
+        this.loadNotebookList();            
 
 	this.sweep = () => {
 	    if (this.state.user.notebookCurrent && !this.state.notebook.isSaved) {
@@ -53,8 +54,7 @@ export class AppProvider extends React.Component {
 	this.setState(
             {notebook:
 	     update(this.state.notebook,
-		    {$merge: {
-                        notes: update(
+		    {$merge: {                        notes: update(
                             this.state.notebook.notes,
 			    {$add: [[uuid,
 				     update(this.state.notebook.notes.get(uuid),
@@ -157,20 +157,6 @@ export class AppProvider extends React.Component {
             });
     }
 
-    loadNotebook() {
-        const _this = this;
-        axios(
-            {method:'get',
-             url:this.state.notebook.id,
-             headers:this.makeAuthHeader(this.state.user.authToken)})
-            .then(function(resp) {
-                console.log(resp);
-            })
-            .catch(error => {
-                alert(`There is already a notebook by you with that name! ${error.response.data.detail}`);
-            });
-    }
-
     loadNotebookList() {
         const _this = this;	
         axios({method:'get',
@@ -219,7 +205,7 @@ export class AppProvider extends React.Component {
             authToken = c.authToken;
             username = c.username;
         }
-	
+        
         return {
             user: {
                 isLoggedIn:isLoggedIn,
@@ -372,15 +358,16 @@ export class AppProvider extends React.Component {
 	                   headers:this.makeAuthHeader(this.state.user.authToken),
                            url:`${API}users/${notebook.uuid}/notebook`
                           }).then((response) => {
-
-                              this.setState({user: update(this.state.user, {$merge: {notebookCurrent: notebook.uuid}})});
+                              this.setState({user: update(this.state.user,
+                                                          {$merge: {notebookCurrent: notebook.uuid}})});
+                              console.log('[@response]', response);
                               this.setState({notebook:
-                                             {...notebook,
+                                             {...response.data,
                                               movingNote:undefined,                                                 
                                               isSaved:true,
                                               isOnServer:true,
                                               notes:_this.sequenceNotes(_this.sortNotes(response.data.full_notes)),
-                                             }}, ()=>{console.log(this.state.notebook)})});
+                                             }}, ()=>{console.log('[@this.state.notebook]', this.state.notebook)})});
                 },
 
 		listNotebooks:()=>{

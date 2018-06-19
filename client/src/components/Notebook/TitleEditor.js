@@ -7,11 +7,11 @@ class TitleEditor extends React.Component {
     
     
     render() {
+
 	return (
             <AppContext.Consumer>
-              {(context) => {
+                {(context) => {
                   return (
-                      
                       <div className="Meta">
 			<form>
                           <table>

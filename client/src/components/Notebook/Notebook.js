@@ -6,6 +6,7 @@ import TitleEditor from './TitleEditor';
 
 
 /*
+  if (x) show (y)
   /notebooks/?by=ford    // Notebook listing mine
   /notebooks/            // Notebook listing all
   /notebooks/{id}/edit   // Notebook edit
@@ -35,10 +36,7 @@ class Notebook extends React.Component {
 
     constructor(props, context) {
         super(props, context);
-        this.state = {...props,
-                      isEditingNotebook:false,
-                      isNotebookListing:false,
-                      isTimelineListing:false};
+        this.state = props.match.params;
     }
     
 
@@ -61,7 +59,11 @@ class Notebook extends React.Component {
             </span>
         );
     }
-    
+
+    componentDidMount() {
+        this.props.context.loadNotebook(this.state);        
+    }
+
 
     render() {
         return (
@@ -70,14 +72,13 @@ class Notebook extends React.Component {
                   return (
 		      <div className="Editor">
                         <span>
-                          {this.makeAddNoteButton(context)}
-	                  <button onClick={context.listNotebooks}>+ List</button>
-	                  <button onClick={context.addNotebook}>+ Notebook</button>
+                          + note {this.makeAddNoteButton(context)}
+                          Saved: 
                           <span className={'status '
                                            + (context.state.notebook.isSaved
                                               ? 'saved'
                                               : 'unsaved')}>●</span>
-			  </span>
+			</span>
 			
 			  <TitleEditor/>
 		          
@@ -99,4 +100,8 @@ class Notebook extends React.Component {
     }
 }
 
-export default Notebook;
+export default props => (
+  <AppContext.Consumer>
+    {context => <Notebook {...props} context={context} />}
+  </AppContext.Consumer>
+);

@@ -419,11 +419,14 @@ class NotebookSerializer(serializers.HyperlinkedModelSerializer):
     user_username = serializers.CharField(
         read_only=True,
         source="by_user.username")
+
+    id = serializers.IntegerField(
+        read_only=True)
     
     class Meta:
         model = Notebook
         depth = 0
-        fields = '__all__'        
+        fields = '__all__'
         read_only_fields = (
             'uuid',
             'by_user',
