@@ -7,6 +7,7 @@ import NotebookList from './NotebookList';
 
 
 /*
+  if (x) show (y)
   /notebooks/?by=ford    // Notebook listing mine
   /notebooks/            // Notebook listing all
   /notebooks/{id}/edit   // Notebook edit
