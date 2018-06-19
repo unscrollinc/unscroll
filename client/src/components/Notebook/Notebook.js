@@ -3,7 +3,6 @@ import NotebookEvent from './NotebookEvent';
 import NotebookManuscriptText from './NotebookManuscriptText';
 import AppContext from '../AppContext';
 import TitleEditor from './TitleEditor';
-import NotebookList from './NotebookList';
 
 
 /*
@@ -83,8 +82,6 @@ class Notebook extends React.Component {
 			
 			  <TitleEditor/>
 		          
-			  <NotebookList/>
-                          
                           <div className="notebook-event-list">
                             {Array.from(context.state.notebook.notes).map(this.makeNote)}
                           </div>

@@ -1,13 +1,36 @@
 import React from 'react';
-import ReactCursorPosition from 'react-cursor-position';
-
-import Search from './Search';
 import Timeline from './Timeline/Timeline';
 import Timelist from './Timelist/Timelist';
+import TimelineList from './Timeline/TimelineList';
 import Notebook from './Notebook/Notebook';
-import TimelineEventEditor from './Timeline/TimelineEventEditor';
-import AppContext, {AppProvider} from './AppContext';
+import NotebookList from './Notebook/NotebookList';
+// import TimelineEventEditor from './Timeline/TimelineEventEditor';
+import {AppProvider} from './AppContext';
+import { Route } from 'react-router-dom' ;
+import Nav from './Nav';
+
 import '../index.css';
+
+const routes = [
+  { path: '/',
+    exact: true,
+    left: () => <Timeline/>,
+    right: () => null
+  },
+  { path: '/timeline',
+    left: () => <Timeline/>,
+    right: () => <TimelineList/>
+  },
+  { path: '/notebook',
+    left: () => <Timelist/>,
+    right: () => <NotebookList/>
+  },
+  { path: '/notebook/:id',
+    left: () => <Timelist/>,
+    right: () => <Notebook/>
+  }    
+]
+
 
 class App extends React.Component {
     constructor(props) {
@@ -18,105 +41,43 @@ class App extends React.Component {
             editorOn:false
         };
     }
-
-    handleNotebookButtonClick = () => {
-        this.setState(prevState => ({
-            editorOn: !prevState.editorOn
-        }));
-    }
-
-    renderNotebooksButton() {
-        return(
-            <button onClick={this.handleViewButtonClick}>
-                {this.state.timelineOn ? 'Horizontally' : 'Vertically'}
-            </button>
-        );
-    }
-
-    renderLoginForm(context) {
-
-        if (context.state.user.isLoggedIn) {
-            return(
-                    <div className="login">
-                      <a href="/profile">{context.state.user.username}</a>
-                      <button className="logout" onClick={context.doLogout}>Log out</button>
-                    </div>
-            );
-        }
-
-        // Otherwise...
-        return(
-            <form className="login">
-              <table>
-                <tbody>
-                  <tr>
-                    <th>Username</th>
-                    <td>
-                      <input name="email" onChange={context.handleUsernameUpdate} type="text"/>
-                    </td>
-                    <th>Password</th>
-                    <td>
-                      <input name="password" onChange={context.handlePasswordUpdate} type="password"/>
-                    </td>
-                    <td colSpan="2">
-                      <button onClick={context.doRegister}>Create account</button>                      
-                      <input className="inputButton loginButton" type="submit" onClick={context.doLogin} value="login"/>
-                    </td>                      
-                  </tr>
-                </tbody>
-              </table>
-            </form>
-        );
-    }
- 
+    
     render() {
+/*
         const timelineOn = this.state.timelineOn;
+
 
         const display = timelineOn ?
               (<ReactCursorPosition>
                <Timeline addNote={this.addNote}/>
                </ReactCursorPosition>) :
               (<Timelist addNote={this.addNote}/>);
-
-        const notebook = this.state.editorOn ?
-              (<Notebook/>) : (undefined);        
+*/
         return (
-            <AppProvider>           
-              <div className="App">
-                <div className="Nav">
-                  <table>
-                    <tbody>
-                      <tr>
-                        <td>
-                          [U]
-                        </td>
-                        <td>
-                          <button>Timelines</button>
-                        </td>
-                        <td>
-                          <button onClick={this.handleNotebookButtonClick}>Notebook</button>
-                        </td>
-                        <td>
-                          <Search/>
-                        </td>
-                        <td>
-                          <AppContext.Consumer>
-                            {(context) => this.renderLoginForm(context)}
-                          </AppContext.Consumer>
+            <AppProvider>
+	      <div className="App">
+		
+		<Nav/>
+		
+		{routes.map((route, index) => (
+		    <React.Fragment>
+		      <Route
+			key={'left-' + index}
+			path={route.path}
+			exact={route.exact}
+			component={route.left}
+			/>
+		      <Route
+			key={'right-' + index}
+			path={route.path}
+			exact={route.exact}
+			component={route.right}
+			/>
+		    </React.Fragment>
+		))}
+            </div>
+	 </AppProvider>	      
 
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              {display}
-              
-              {notebook}
-              
-              
-                <TimelineEventEditor/>
-              </div>
-            </AppProvider>
         );
     }
 }

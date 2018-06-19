@@ -29,17 +29,23 @@ class NotebookList extends React.Component {
     
     render() {
 	return (
-            <AppContext.Consumer>
-              {(context) => {
-                  return (
-                      <table className="notebook-list">
-                        <tbody>
-                          {Array.from(context.state.user.notebookList).map(this.makeNotebook.bind(context))}
-                        </tbody>
+	    <div className="Editor">
+
+	      <h1>Notebook twList</h1>
+	      
+              <AppContext.Consumer>
+		{(context) => {
+		    console.log(context);
+                    return (
+			<table className="notebook-list">
+                          <tbody>
+                            {Array.from(context.state.user.notebookList).map(this.makeNotebook.bind(context))}
+                          </tbody>
                       </table>		      
-                  );
-	      }}
-              </AppContext.Consumer>                  
+                    );
+		}}
+            </AppContext.Consumer>
+	  </div>
 	);
     }
 }

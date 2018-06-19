@@ -20,7 +20,7 @@ def __main__():
         case_statement('object', 'object'),
         case_statement('dataProvider', 'source'),
         case_statement('isShownAt', 'url'),
-        case_statement('@id', 'id')        
+        case_statement('@id', 'id')
     ]
     
     cases = ",\n\t".join(cases_list)
@@ -30,6 +30,7 @@ def __main__():
 SELECT 
    
     {}
+
 FROM DATA LIMIT 100000;
 """.format(cases,)
     print(query)
