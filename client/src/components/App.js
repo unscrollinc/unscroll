@@ -1,6 +1,6 @@
 import React from 'react';
 import Timeline from './Timeline/Timeline';
-import Timelist from './Timelist/Timelist';
+import Timelist from './Timeline/Timelist';
 import TimelineList from './Timeline/TimelineList';
 import Notebook from './Notebook/Notebook';
 import NotebookList from './Notebook/NotebookList';
