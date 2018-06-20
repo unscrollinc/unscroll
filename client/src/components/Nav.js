@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom' ;
 
 
 class Nav extends React.Component {
+    
     handleNotebookButtonClick = () => {
         this.setState(prevState => ({
             editorOn: !prevState.editorOn
@@ -21,7 +22,7 @@ class Nav extends React.Component {
 
     renderLoginForm(context) {
 
-        if (context.state.user.isLoggedIn) {
+        if (context.state.user.hasAuth) {
             return(
                 <div className="login">
                   <a href="/profile">{context.state.user.username}</a>

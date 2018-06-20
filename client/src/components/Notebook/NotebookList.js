@@ -21,19 +21,18 @@ class NotebookList extends React.Component {
                 {formatDate(notebook.when_created)}
               </td>
               
-              <th className="notebook-list-title">
+              <td className="notebook-list-title">
 	        <Link to={'/notebook/'+notebook.uuid}>{notebook.title}</Link>
-              </th>
+              </td >
               <td>
 	        <button onClick={()=>{context.deleteNotebook(notebook.uuid);}}>Del</button>
               </td>              
               <td>
-		{notebook.is_public ? '' : 'Private'}
+		{notebook.is_public ? 'Published' : 'Private'}
               </td>
             </tr>
 	);
     }
-    
     
     render() {
 	return (

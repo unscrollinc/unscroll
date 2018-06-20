@@ -6,8 +6,27 @@ import AppContext from '../AppContext.js';
 class TitleEditor extends React.Component {
     
     
-    render() {
+    makeToggle(field, type, context) {
+        return (
+	    <tr key={field}>
+	      <th>{field}:</th>
+	      <td><input type={type}
+			 checked={context.state.notebook[field]}
+			 onChange={(event)=>{context.notebookChange(field, event);}}/></td>
+	    </tr>);
+    }
 
+    makeField(field, type, context) {
+        return (
+	    <tr key={field}>
+	      <th>{field}:</th>
+	      <td><input type={type}
+			 value={context.state.notebook[field]}
+			 onChange={(event)=>{context.notebookChange(field, event);}}/></td>
+	    </tr>);
+    }
+    
+    render() {
 	return (
             <AppContext.Consumer>
                 {(context) => {
@@ -16,41 +35,15 @@ class TitleEditor extends React.Component {
 			<form>
                           <table>
                             <tbody>
-			      <tr>
-                                <th>Public</th>
-                                <td><input type="checkbox" name="public"/></td>
-                              </tr>
-                              <tr>
-                                <th>Title:</th>
-                                <td><input type="text"
-                                           value={context.state.notebook.title}
-                                           onChange={(event)=>{context.notebookChange('title', event);}}/></td>
-                              </tr>
-                              <tr>
-                                <th>Subtitle:</th>
-                                <td><input type="text"
-                                           value={context.state.notebook.subtitle}
-                                           onChange={(event)=>{context.notebookChange('subtitle', event);}}/></td>
-                              </tr>
-                              <tr>
-				<th>Description:</th>
-                                <td>
-				  <input type="text"
-                                           value={context.state.notebook.description}
-                                           onChange={(event)=>{context.notebookChange('description', event);}}/></td>
-                              </tr>
-                              <tr>
-                                <th>
-                                </th>
-                                <td>
-                                </td>
-                              </tr>
+			      {this.makeToggle('is_public', 'checkbox', context)}
+			      {this.makeField('title', 'text', context)}
+			      {this.makeField('subtitle', 'text', context)}
+			      {this.makeField('description', 'text', context)}			      			      
                             </tbody>
                           </table>
 			</form>
                       </div>
                   );}}
-
               </AppContext.Consumer>                  
 	);
     }

@@ -1,9 +1,8 @@
 import React from 'react';
-import NotebookEvent from './NotebookEvent';
-import NotebookManuscriptText from './NotebookManuscriptText';
-import AppContext from '../AppContext';
+import Note from './Note';
 import TitleEditor from './TitleEditor';
-
+import Manuscript from './Manuscript';
+import AppContext from '../AppContext';
 
 /*
   if (x) show (y)
@@ -49,13 +48,13 @@ class Notebook extends React.Component {
 
     
     makeNote(note, i) {
-        return (<NotebookEvent key={note[0]} {...note[1]}/>);
+        return (<Note key={note[0]} {...note[1]}/>);
     }
 
     makeManuscriptText(note, i) {
         return (
             <span key={note[0]}>
-              <NotebookManuscriptText key={note[0]} note={note}/>
+              <Manuscript key={note[0]} note={note}/>
             </span>
         );
     }
@@ -72,27 +71,27 @@ class Notebook extends React.Component {
                   return (
 		      <div className="Editor">
                         <span>
-                          + note {this.makeAddNoteButton(context)}
-                          Saved: 
                           <span className={'status '
                                            + (context.state.notebook.isSaved
                                               ? 'saved'
-                                              : 'unsaved')}>●</span>
+                                : 'unsaved')}>●</span>
 			</span>
 			
-			  <TitleEditor/>
-		          
-                          <div className="notebook-event-list">
-                            {Array.from(context.state.notebook.notes).map(this.makeNote)}
-                          </div>
-                          
-                          <div className="Manuscript">
-                            <h1>{context.state.notebook.title}</h1>
-                            <h2>{context.state.notebook.subtitle}</h2>
-                            <div className="description">{context.state.notebook.description}</div>   
-                            {Array.from(context.state.notebook.notes).map(this.makeManuscriptText)}
-                          </div>
-
+			{this.makeAddNoteButton(context)}
+			
+			
+			<TitleEditor/>
+		        
+                        <div className="notebook-event-list">
+                          {Array.from(context.state.notebook.notes).map(this.makeNote)}
+                        </div>
+                        
+                        <div className="Manuscript">
+                          <h1>{context.state.notebook.title}</h1>
+                          <h2>{context.state.notebook.subtitle}</h2>
+                          <div className="description">{context.state.notebook.description}</div>   
+                          {Array.from(context.state.notebook.notes).map(this.makeManuscriptText)}
+                        </div>
                       </div>);
 	      }}
             </AppContext.Consumer>                  

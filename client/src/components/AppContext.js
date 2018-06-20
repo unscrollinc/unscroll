@@ -10,12 +10,13 @@ axios.defaults.withCredentials = true;
 
 const SWEEP_DURATION_SECONDS = 5;
 const API = 'http://127.0.0.1:8000/';
+
 export const AppContext = React.createContext();
 
 export class AppProvider extends React.Component {
     constructor(state, context) {
         super(state, context);
-        let c = cookie.get();        
+        const c = cookie.get();        
 
         this.state = this.makeState(c);
         this.loadNotebookList();            
@@ -66,11 +67,11 @@ export class AppProvider extends React.Component {
     }
 
     cutNotes(from, to, targetBefore) {
-        let _notes = this.state.notebook.notes;
+        const _notes = this.state.notebook.notes;
     }
     
     patchNote(note) {
-        let _this = this;
+        const _this = this;
         axios({
 	    method:'patch',
 	    url:note.url,
@@ -91,7 +92,7 @@ export class AppProvider extends React.Component {
     
     saveNote(note) {
         console.log('[@saveNote(note)]',note);
-        let _this = this;
+        const _this = this;
         axios({
 	    method:'post',
 	    in_notebook:this.state.notebook.url,
@@ -101,7 +102,7 @@ export class AppProvider extends React.Component {
 	})
             .then(function(resp) {
 		console.log("[@saveNote():resp.data]", resp.data);
-                let _uuid = resp.data.uuid;
+                const _uuid = resp.data.uuid;
                 _this.modifyNote(_uuid, {url:resp.data.url,
                                          isSaved:true});
 	    })
@@ -112,7 +113,7 @@ export class AppProvider extends React.Component {
     }
     
     saveNotebook() {
-        let _this = this;
+        const _this = this;
         axios({
 	    method:'post',
 	    url:API+'notebooks/',
@@ -136,21 +137,24 @@ export class AppProvider extends React.Component {
     }
 
     putNotebook() {
-        let _this = this;
+        const _this = this;
         axios({
 	    method:'put',
 	    url:this.state.notebook.url,
 	    headers:this.makeAuthHeader(this.state.user.authToken),
-	    data:update(this.state.notebook, {$unset: ['notes']})
+	    data:update(this.state.notebook,
+			{
+			    $unset: ['notes', 'isOnServer', 'isSaved']})
 	})
             .then(function(resp) {
                 _this.loadNotebookList();
-/*		_this.setState({notebook: update(
+		_this.setState({notebook: update(
                     _this.state.notebook, {$merge: {
-		        isSaved: true,
-		        notes:new Map(),
-		        ...resp.data}})});
-*/
+		        isSaved: true
+			
+
+		    }})});
+
             })
             .catch(error => {
                 console.log(`saveNotebook: There is already a notebook by you with that name! ${error}`);
@@ -175,7 +179,7 @@ export class AppProvider extends React.Component {
 
     deleteNotebook(uuid) {
         console.log('[@deleteNotebook:uuid]', uuid);
-        let nb = this.state.user.notebookList.get(uuid);
+        const nb = this.state.user.notebookList.get(uuid);
         console.log(nb);
         axios({method:'delete',
                url:nb.url,
@@ -196,19 +200,14 @@ export class AppProvider extends React.Component {
             });
     }
     makeState(c) {
-        let isLoggedIn = false;
-        let authToken = undefined;
-        let username = undefined;
-    
-        if (c && c.authToken && c.username) {
-            isLoggedIn = true;
-            authToken = c.authToken;
-            username = c.username;
-        }
+
+	const hasAuth = (c && c.authToken && c.username);
+        const authToken = hasAuth ? c.authToken : null;
+        const username = hasAuth ? c.username : null; 	
         
         return {
             user: {
-                isLoggedIn:isLoggedIn,
+                hasAuth:hasAuth,
                 id:undefined,
                 authToken:authToken,
                 username:username,
@@ -293,7 +292,7 @@ export class AppProvider extends React.Component {
                 },
 
                 doLogout:() => {
-                    let _this = this;
+                    const _this = this;
                     axios({method:'post',
                            url:API+'auth/logout/',
                            headers: this.makeAuthHeader(this.state.user.authToken)
@@ -316,20 +315,20 @@ export class AppProvider extends React.Component {
                 
                 doLogin:(event) => {
                     event.preventDefault();
-                    let _this = this;
+                    const _this = this;
                     axios.post(
-                        API+'auth/login/',
+                        API + 'auth/login/',
                         {
                             username: this.state.user.username,
                             password: this.state.user.password
                         })
                         .then(function(response) {
-                            let u1 = update(_this.state.user, {
+                            const u1 = update(_this.state.user, {
 				$merge: 
 				{
 				    authToken: response.data.auth_token,
                                     password: undefined,
-                                    isLoggedIn: true
+                                    hasAuth: true
 				}});
                             cookie.set('authToken', response.data.auth_token);
                             cookie.set('username', _this.state.user.username);
@@ -348,6 +347,7 @@ export class AppProvider extends React.Component {
                             + Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 6),
                         subtitle:'Un-subtitled',
                         description:'Un-summarized',
+                        uuid: uuidv4(),
                         notes:[]
                     }}, this.saveNotebook);
                 },
@@ -379,12 +379,15 @@ export class AppProvider extends React.Component {
                 },
 
                 notebookChange:(field, event)=>{
+		    const value = event.target.type === 'checkbox'
+			  ? event.target.checked
+			  : event.target.value;
+		    
                     this.setState(
                         {notebook:update(this.state.notebook,
                                          {$merge: {
                                              isSaved:false,
-                                             [field]: event.target.value}})});
-                    console.log(field, event.target.value);
+                                             [field]: value}})});
                 },
                 
                 addNote:(event) => {

@@ -21,9 +21,8 @@ class NotebookManuscriptText extends React.Component {
 
     makeManuscriptText(context) {
         return(
-            <span className='manuscript-text'>
-                {context.state.notebook.notes.get(this.state.uuid).text}<span> </span>
-            </span>
+	    <span className='manuscript-text'
+		  dangerouslySetInnerHTML={{__html:context.state.notebook.notes.get(this.state.uuid).text}}/>
         );
     }
     render() {

@@ -4,7 +4,7 @@ body {
     position:fixed;
     font-size:13pt;
     font-family: 'IBM Plex Sans', sans-serif;
-    
+
 }
 .input, th, td {
     font-family: 'IBM Plex Sans', sans-serif;
@@ -33,7 +33,7 @@ body {
     height:100%;
 }
 .Nav a {
-    color:#07e;
+    color:#06b;
     text-decoration:none;
     padding-right:0.5em;
 }
@@ -48,7 +48,6 @@ body {
 
 .Timeline {
     width:100%;
-    /* left:-100%; */
     position:fixed;
 }
 
@@ -90,14 +89,6 @@ h1 a {
     display:block;
 }
 
-.show {
-    display:none;
-}
-
-.hide {
-    display:block;
-}
-
 .column {
     box-sizing:border-box;
     border-left:1px solid black;
@@ -136,11 +127,21 @@ h1 a {
 
 table.notebook-list {
     width:100%;
-}
-table.notebook-list {
-    text-align:left;
+    border-collapse:collapse;
 }
 
+table.notebook-list tr {
+}
+table.notebook-list th {
+    font-weight:bold;
+    vertical-align:bottom;
+    text-align:left;
+    padding:0.5em 1em 1em 1em;    
+}
+table.notebook-list td {
+    vertical-align:top;
+    padding:0.5em 1em 1em 1em;
+}
 .notebook-list-title {
     text-align:left;
 }
@@ -155,7 +156,7 @@ table.notebook-list {
 }
 
 .note {
-    width:100%;
+    width:47%;
     font-size:10pt;
     font-family:sans-serif;
     background:white;
@@ -167,13 +168,13 @@ table.notebook-list {
     line-height:149%;
 }
 .note-event a {
-    color:#884;
+    color:#c00;
     text-decoration:none;
     border-bottom:1px solid #662;
     font-weight:bold;
 }
 .note-event {
-    color:#884;
+    color:#c00;
     padding:0.5em;
 }
 .note-nav {
@@ -186,8 +187,9 @@ table.notebook-list {
     font-family:serif;
     font-size:10pt;
     border:1px dotted #ccc;
-    background:#eec;
-    font-family:Courier;
+    background:#0077ee73;
+    font-family: 'IBM Plex Sans', monospace;
+    width:100%;
     
 }
 
@@ -203,6 +205,7 @@ table.notebook-list {
     height:100%;
     top:0;
     position:absolute;
+font-family: 'IBM Plex Serif', serif;    
 
 }
 
@@ -295,13 +298,13 @@ td.image {
 }
 td a {
     text-decoration:none;
-    color:#C00;
+    color:#c00;
 }
 
 div.dt {
     font-family: 'IBM Plex Serif', serif;
     font-weight:bold;
-    color:#448;
+    color:#444;
 }
 
 div.title {
@@ -309,7 +312,7 @@ div.title {
 }
 
 .dtsince {
-    background:#448;
+    background:#06d;
     color:white;
     padding-left:1em;
 }
@@ -320,7 +323,7 @@ div.title {
     font-size:8pt;
     background:white;
     color:black;
-    border:1px solid #black;
+    border:1px solid black;
     margin:-3px 0px 0px 1px;
     border-radius:4px;
     vertical-align:middle; 
