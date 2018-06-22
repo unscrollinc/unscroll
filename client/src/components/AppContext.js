@@ -19,7 +19,8 @@ export class AppProvider extends React.Component {
         const c = cookie.get();        
 
         this.state = this.makeState(c);
-        this.loadNotebookList();            
+        this.loadNotebookList();
+        this.loadScrollList();	
 
 	this.sweep = () => {
 	    if (this.state.user.notebookCurrent && !this.state.notebook.isSaved) {
@@ -161,6 +162,24 @@ export class AppProvider extends React.Component {
             });
     }
 
+    loadScrollList() {
+        const _this = this;	
+        axios({method:'get',
+	       url:API+'users/scrolls/',
+               headers: this.makeAuthHeader(_this.state.user.authToken)
+	      })
+	    .then(function(response) {
+		console.log("Load scroll list", response);
+		_this.setState(
+                    {user: update(_this.state.user,
+                                  {$merge:
+                                   {scrollList:new Map(response.data.map((n)=>[n.uuid, n]))}})},
+		    ()=>{console.log(_this.state.user);}
+		);
+	    });
+    }
+    
+
     loadNotebookList() {
         const _this = this;	
         axios({method:'get',
@@ -172,7 +191,7 @@ export class AppProvider extends React.Component {
                     {user: update(_this.state.user,
                                   {$merge:
                                    {notebookList:new Map(response.data.map((n)=>[n.uuid, n]))}})},
-		    ()=>{console.log(_this.state.user);}
+		    ()=>{console.log('[@loadNotebookList() logged in user]',_this.state.user);}
 		);
 	    });
     }

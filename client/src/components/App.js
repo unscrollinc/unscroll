@@ -17,21 +17,39 @@ const routes = [
       left: () => <Timeline/>,
       right: () => null
     },
-    { path: '/timeline',
+    
+    { path: '/timelines',
+      exact: true,
       left: () => <Timeline/>,
       right: () => <TimelineList/>
     },
-    { path: '/notebook',
+    
+    { path: '/my/timelines',
+      exact: true,      
+      left: () => <Timeline/>,
+      right: () => <TimelineList my={true}/>
+    },    
+
+    { path: '/timelines/:uuid',
+      left: (props) => <Timelist {...props.match.params}/>,
+      right: (props) => <TimelineList {...props.match.params}/>
+    },        
+
+    { path: '/notebooks',
+      exact: true,      
       left: () => <Timelist/>,
       right: () => <NotebookList/>
     },
-    { path: '/notebook/all',
+
+    { path: '/my/notebooks',
+      exact: true,
       left: () => <Timelist/>,
-      right: () => <NotebookList props={{all:true}}/>
+      right: () => <NotebookList my={true}/>
     },
+
     { path: '/notebook/:uuid',
-      left: () => <Timelist/>,
-      right: (props) => <Notebook {...props}/>
+      left: (props) => <Timelist {...props.match.params}/>,
+      right: (props) => <Notebook {...props.match.params}/>
     }    
 ];
 

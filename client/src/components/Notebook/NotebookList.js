@@ -3,18 +3,21 @@ import ReactDOM from 'react-dom';
 import { Link } from 'react-router-dom' ;
 import AppContext from '../AppContext.js';
 import { DateTime } from 'luxon';
+
 class NotebookList extends React.Component {
 
     
     makeNotebook(notebookEntry, i) {
-        
+
+	const context = this;
+	
         const formatDate = (dt) => {
             const luxonDt = DateTime.fromISO(dt);
             return luxonDt.toLocaleString(DateTime.DATE_SHORT);
         };
         
-        const context = this;
         const [key, notebook] = notebookEntry;
+
 	return(
             <tr key={key}>
               <td>
@@ -22,7 +25,7 @@ class NotebookList extends React.Component {
               </td>
               
               <td className="notebook-list-title">
-	        <Link to={'/notebook/'+notebook.uuid}>{notebook.title}</Link>
+	        <Link to={'/notebooks/'+notebook.uuid}>{notebook.title}</Link>
               </td >
               <td>
 	        <button onClick={()=>{context.deleteNotebook(notebook.uuid);}}>Del</button>

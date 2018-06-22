@@ -125,27 +125,23 @@ h1 a {
     width:100%;
 }
 
-table.notebook-list {
+table.notebook-list, table.timeline-list {
     width:100%;
     border-collapse:collapse;
 }
-
-table.notebook-list tr {
-}
-table.notebook-list th {
+table.notebook-list th, table.timeline-list th {
     font-weight:bold;
     vertical-align:bottom;
     text-align:left;
     padding:0.5em 1em 1em 1em;    
 }
-table.notebook-list td {
+table.notebook-list td, table.timeline-list td {
     vertical-align:top;
     padding:0.5em 1em 1em 1em;
 }
-.notebook-list-title {
+.notebook-list-title, .timeline-list-title {
     text-align:left;
 }
-
 
 .notebook-event-list {
     overflow:auto;
@@ -239,6 +235,7 @@ button.new {
     top:5%;
     position:fixed;
     overflow:auto;
+    margin-bottom:1000px;
 }
 
 table {

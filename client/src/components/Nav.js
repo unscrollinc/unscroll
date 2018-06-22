@@ -66,10 +66,10 @@ class Nav extends React.Component {
 			  <Link to="/about">[U]</Link>
                         </td>
                         <td>
-			  <Link to="/notebook">Notebooks</Link>
+			  <Link to="/notebooks">Notebooks</Link>
                         </td>
                         <td>
-			  <Link to="/timeline">Timelines</Link>
+			  <Link to="/timelines">Timelines</Link>
                         </td>
                         <td>
                           <Search/>

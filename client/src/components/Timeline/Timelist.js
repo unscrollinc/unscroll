@@ -16,8 +16,12 @@ class Timelist extends React.Component {
             events:[],
             doGetNext:false,
             fetchUrl:undefined,
-            nextUrl:undefined
+            nextUrl:undefined,
+	    ...props
         };
+	console.log(props);
+	console.log('GOT ALL INSTANTIATED AGAIN');
+	
     }
 
     makeEls(data) {
@@ -30,7 +34,6 @@ class Timelist extends React.Component {
     }
     
     getSpan(url) {
-        console.log('made it to getSpan');
         const _this = this;
 	cachios.get(url)
 	    .then(resp => {
@@ -57,8 +60,12 @@ class Timelist extends React.Component {
 
         // So we just do a string comparison filter, which'll always
         // be pretty fast.
+
+	// (TODO there are some ways to read context as props.)
         
         if (q && this.state.search.q!==q) {
+	    console.log('made it to manageSearch comparison');
+	    
             this.setState(prevState =>
                           ({events:[],
                             nextUrl:undefined,
@@ -69,14 +76,24 @@ class Timelist extends React.Component {
         
         return undefined;
     }
-    
-    componentDidMount() {
-        console.log("DID MOUNT");
 
+    kickoff() {
+	const url = this.state.uuid
+	      ? `${API}?in_scroll=${this.state.uuid}&`
+	      : `${API}?`;
         this.setState(prevState => ({events:[]}),
-                      this.getSpan(`${API}?q=&limit=50&offset=0`));
+                      this.getSpan(`${url}q=&limit=20&offset=0`));
+    }
+    componentDidMount() {
+	this.kickoff();
     }
 
+    componentDidUpdate(prevProps, prevState, snapshot) {
+	if (this.state.uuid !== this.props.uuid) {
+	    this.setState({uuid:this.props.uuid}, this.kickoff);
+	}
+    }
+    
     handleScroll(e) {
         let _this = this;        
         let t = e.nativeEvent.target;
@@ -94,7 +111,6 @@ class Timelist extends React.Component {
     render() {
         return(
             <div className="Timelist" onScroll={this.handleScroll.bind(this)}>
-
               <div>
                 <AppContext.Consumer>
                   {(context)=>this.manageSearch(context)}
