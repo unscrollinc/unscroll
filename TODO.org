@@ -1,3 +1,45 @@
-* TODO Make it possible to log in and log out
-* TODO Know who a person is
-* TODO TKTK
+* DONE Make it possible to log in and log out
+* DONE Know who a person is
+* DONE TKTK
+
+* TODO User [0/5]:
+  * [ ] Create account
+  * [ ] Register
+  * [ ] Reset password
+  * [ ] Confirm
+  * [ ] Edit profile
+
+* Timelines [0/2]
+  * [ ] Refactor all "Scroll" stuff to be Timeline
+  * [ ] Vertical view
+
+* Timelist [0/7]
+  * [ ] Reverse chronological
+  * [ ] Create new timeline
+  * [ ] Add event
+  * [ ] Delete event
+  * [ ] Edit event
+  * [ ] 
+  * [ ] 
+
+* Notebooks
+  * [ ] Rich text in title editor
+  * [ ] Different kinds of notes
+    * [ ] paragraph break
+    * [ ] image/upload
+  * [ ] 
+  * [ ] 
+  * [ ] 
+
+* Design
+
+  * [ ] Overall simple color scheme
+  * [ ] Overall simple grid
+  * [ ] Overall simple colors for backgrounds and events
+
+* API
+  * [ ] Refactor all "Scroll" stuff to be Timeline
+  * [ ] "My" views differentiated from other views
+
+* Nice to have
+  * [ ] Snake case JSON
