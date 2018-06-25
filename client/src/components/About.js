@@ -50,10 +50,18 @@ class About extends React.Component {
                   at and thinking about writing online. It makes me so
                   happy and it helps me be a better writer. I think
                   that writing is a service to the reader and that it's
-                  important to get things right. Also, the publishing
+                  important to get things right. When I get things wrong I'm depressed for days.</p>
+
+                <p>Also, the publishing
                   industry laid off so many fact-checkers and editors
                   that the responsibility for accuracy now falls very
-                  firmly on the shoulders of writers. In general writing
+            firmly on the shoulders of writers, at the exact moment
+	    when the media industry is utterly besieged by the political establishment and people are all yelling about Fake News. We can't all write for the <i>Times</i>.</p>
+
+              <p>Also: When you write online you have to write defensively. This is
+a defensive writing tool.</p>
+
+	<p>In general writing
 		  software is designed for writing processes that don't make
                   as much sense in 2018.
 		</p>

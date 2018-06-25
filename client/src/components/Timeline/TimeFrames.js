@@ -45,7 +45,6 @@ const frames =
 	    },
 	    'year': {
 		getAdjustedDt:(interval) => {
-		    console.log('I N T E R V A L', interval.start.startOf('year'));
 		    const i = Interval.fromDateTimes(
 			interval.start.startOf('year'),
 			interval.start.endOf('year'));
@@ -60,6 +59,7 @@ const frames =
 		    const title = frames['year'].getTitle(adjustedInterval);
 		    return {title:title, interval:adjustedInterval};
 		},
+		
 		getColumnCount:()=>{
 		    return 12;
 		},		
