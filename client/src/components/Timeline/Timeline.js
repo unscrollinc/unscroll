@@ -1,4 +1,6 @@
 import React from 'react';
+import ReactCursorPosition from 'react-cursor-position';
+
 import {DateTime, Interval} from 'luxon';
 import WheelReact from '../../ext/wheel-react.js';
 import Panel from './TimelinePanel.js';
@@ -7,7 +9,7 @@ class Timeline extends React.Component {
     constructor(props, context) {
         super(props, context);
 
-        let span = this.asYear(DateTime.fromISO('1980-05-25T09:08:34.123'));
+        let span = this.asYear(DateTime.fromISO('2018-05-25T09:08:34.123'));
 
 
         this.timeFrames = [
@@ -131,6 +133,7 @@ class Timeline extends React.Component {
     }
     
     handleMouseMove(e) {
+        // console.log('EEEEEEEEEEEEEEEEEEE',e);
         if (e.buttons > 0) {
             let delta = this.getXPercentage() - this.state.atMouseDown;
             let center = 0 - Math.round(this.state.offset/100);
@@ -191,19 +194,22 @@ class Timeline extends React.Component {
             }
         });
         return (
-            <div className="Timeline"
-                 style={{position:'fixed'}}
-                 {...WheelReact.events}
-                 onMouseDown={this.handleMouseDown.bind(this)}
-                 onMouseUp={this.handleMouseUp.bind(this)}                 
-                 onMouseMove={this.handleMouseMove.bind(this)}
-                 >            
-              <div id="Panels">
+            <ReactCursorPosition>
+              
+              <div className="Timeline"
+                   style={{position:'fixed'}}
+                   {...WheelReact.events}
+                   onMouseDown={this.handleMouseDown.bind(this)}
+                   onMouseUp={this.handleMouseUp.bind(this)}                 
+                   onMouseMove={this.handleMouseMove.bind(this)}
+                   >            
+                <div id="Panels">
                   <Panel {...this.toProps(-1)} />
                   <Panel {...this.toProps(0)} />
                   <Panel {...this.toProps(1)} />
+                </div>
               </div>
-            </div>
+            </ReactCursorPosition>                        
         );
     }
 

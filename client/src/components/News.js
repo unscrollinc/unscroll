@@ -8,8 +8,8 @@ class News extends React.Component {
     
     render() {
         return (
-            <div class="Editor">
-              <div class="About">
+            <div className="Editor">
+              <div className="About">
               <h1>Welcome to Unscroll!</h1>
               
               <p>Unscroll is an experimental website that is simultaneously a bunch of timelines and also a writing tool designed to make it easier to write clear, factual prose on deadline. It's brand new, full of bugs and quirks, and the work of one person named <a href="mailto:ford@unscroll.com">Paul Ford</a>. This is my side project. I'm a programmer (I programmed this), journalist (I write a lot about technology and even once won a National Magazine Award), and entrepreneur (CEO of a software company called Postlight.)</p>

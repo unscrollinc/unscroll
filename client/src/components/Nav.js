@@ -45,8 +45,8 @@ class Nav extends React.Component {
                       <input name="password" onChange={context.handlePasswordUpdate} type="password"/>
                     </td>
                     <td colSpan="2">
-                      <button onClick={context.doRegister}>Create account</button>                      
                       <input className="inputButton loginButton" type="submit" onClick={context.doLogin} value="login"/>
+                      <Link to="/user/register">Create account</Link>
                     </td>                      
                   </tr>
                 </tbody>
@@ -63,8 +63,11 @@ class Nav extends React.Component {
                     <tbody>
 		      <tr>
                         <td>
-			  <Link to="/about">[U]</Link>
+			  <Link to="/">[Unscroll]</Link>
                         </td>
+                        <td>
+			  <Link to="/about">?</Link>
+                        </td>                
                         <td>
 			  <Link to="/notebooks">Notebooks</Link>
                         </td>

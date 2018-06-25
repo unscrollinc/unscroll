@@ -19,8 +19,11 @@ export class AppProvider extends React.Component {
         const c = cookie.get();        
 
         this.state = this.makeState(c);
-        this.loadNotebookList();
-        this.loadScrollList();	
+
+        if (this.state.user.authToken) {
+            this.loadNotebookList();
+            this.loadScrollList();
+        }
 
 	this.sweep = () => {
 	    if (this.state.user.notebookCurrent && !this.state.notebook.isSaved) {
@@ -365,7 +368,11 @@ export class AppProvider extends React.Component {
 				}});
                             cookie.set('authToken', response.data.auth_token);
                             cookie.set('username', _this.state.user.username);
-                            _this.setState({user: u1});
+                            _this.setState({user: u1},
+                                           () => {
+                                               _this.loadNotebookList();
+                                               _this.loadScrollList();
+                                           });
                         })
                         .catch(function(error) {
                             console.log('ERROR', error);

@@ -498,7 +498,6 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             'url',
             'username',
-            'email',
             'full_scrolls',
             'full_notebooks',            
             'is_staff')
@@ -557,10 +556,10 @@ router = BulkRouter()
 # router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
 router.register(r'scrolls', ScrollViewSet)
-router.register(r'notebooks', NotebookViewSet)
-router.register(r'thumbnails', ThumbnailViewSet)
 router.register(r'events', BulkEventViewSet)
+router.register(r'notebooks', NotebookViewSet)
 router.register(r'notes', NoteViewSet)
+router.register(r'thumbnails', ThumbnailViewSet)
 
 schema_view = get_swagger_view(title='Unscroll API')
 

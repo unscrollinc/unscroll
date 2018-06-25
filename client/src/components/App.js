@@ -1,49 +1,70 @@
 import React from 'react';
+import ReactCursorPosition from 'react-cursor-position';
+
 import Nav from './Nav';
+
+import News from './News';
+
 import Profile from './Profile';
 import About from './About';
-import News from './News';
+
+import Register from './User/Register';
+import Confirm from './User/Confirm';
 
 import Timeline from './Timeline/Timeline';
 import Timelist from './Timeline/Timelist';
 import TimelineList from './Timeline/TimelineList';
+
 import Notebook from './Notebook/Notebook';
 import NotebookList from './Notebook/NotebookList';
-// import TimelineEventEditor from './Timeline/TimelineEventEditor';
-import {AppProvider} from './AppContext';
+
+import { AppProvider } from './AppContext';
 import { Route } from 'react-router-dom' ;
 
 
 import '../index.css';
 
+const tl = (<ReactCursorPosition><Timeline/></ReactCursorPosition>);
 const routes = [
     { path: '/',
       exact: true,
-      Research: () => <Timeline/>,
+      Research: () => tl,
       Workbook: () => <News/>
     },
 
+    { path: '/user/register',
+      exact: true,
+      Research: () => tl,
+      Workbook: () => <Register/>
+    },
+
+    { path: '/user/confirm/:key',
+      exact: true,
+      Research: () => tl,
+      Workbook: (props) => <Confirm {...props.match.params}/>
+    },
+    
     { path: '/about',
       exact: true,
-      Research: () => <Timeline/>,
+      Research: () => tl,
       Workbook: () => <About/>
     },
     
     { path: '/my/profile',
       exact: true,      
-      Research: () => <Timeline/>,
+      Research: () => tl,
       Workbook: () => <Profile/>
     },    
 
     { path: '/timelines',
       exact: true,
-      Research: () => <Timeline/>,
+      Research: () => tl,
       Workbook: () => <TimelineList/>
     },
     
     { path: '/my/timelines',
       exact: true,      
-      Research: () => <Timeline/>,
+      Research: () => tl,
       Workbook: () => <TimelineList my={true}/>
     },    
 

@@ -7,9 +7,17 @@ class Profile extends React.Component {
         return (
                 <AppContext.Consumer>
                 {(context)=>{
-                    return(<div className="Profile">Profile</div>);
+                    return(
+                        <div className="Editor">
+                            <div className="Profile">
+                            <h1>Profile</h1>
+                            Username: {context.state.user.username}
+                            <br/>
+                        </div>
+                            </div>
+                    );
                 }}
-o            </AppContext.Consumer>
+            </AppContext.Consumer>
         );
     }
 }
