@@ -1,7 +1,7 @@
 import React from 'react';
 import Search from './Search';
 import AppContext from './AppContext';
-import { Link } from 'react-router-dom' ;
+import { Link } from 'react-router-dom';
 
 
 class Nav extends React.Component {
@@ -63,17 +63,18 @@ class Nav extends React.Component {
                     <tbody>
 		      <tr>
                         <td>
-			  <Link to="/">[Unscroll]</Link>
+			  <Link className="logo" to="/">UNSCROLL</Link>
                         </td>
                         <td>
 			  <Link to="/about">?</Link>
                         </td>                
                         <td>
-			  <Link to="/notebooks">Notebooks</Link>
-                        </td>
-                        <td>
 			  <Link to="/timelines">Timelines</Link>
                         </td>
+                        <td>
+			  <Link to="/notebooks">Notebooks</Link>
+                        </td>
+		
                         <td>
                           <Search/>
                         </td>

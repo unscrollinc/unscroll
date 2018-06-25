@@ -1,5 +1,5 @@
 import React from 'react';
-import NewEventButton from './NewEventButton';
+import { Link } from 'react-router-dom';
 
 class Column extends React.Component {
 
@@ -11,7 +11,7 @@ class Column extends React.Component {
                          width:100/12 + '%'
                  }}
                  >
-                <a href={'/whatever-' + (this.props.count)}>{this.props.count}</a>
+                <Link to={`/timelines/${this.props.span}`}>{this.props.count}</Link>
             </div>
         );
     }

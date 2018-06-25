@@ -1,131 +1,28 @@
 import React from 'react';
-import ReactCursorPosition from 'react-cursor-position';
-
-import {DateTime, Interval} from 'luxon';
-import WheelReact from '../../ext/wheel-react.js';
-import Panel from './TimelinePanel.js';
+import { DateTime, Duration, Interval } from 'luxon';
+import WheelReact from '../../ext/wheel-react';
+import Panel from './Panel';
+import TimeFrames from './TimeFrames';
 
 class Timeline extends React.Component {
     constructor(props, context) {
-        super(props, context);
 
-        let span = this.asYear(DateTime.fromISO('2018-05-25T09:08:34.123'));
-
-
-        this.timeFrames = [
-            {
-                frame: 'millennium',
-                getTitle:()=>{
-                    return 'MILLENNIUM';
-                },
-
-                getDuration:()=> {
-                    return 1000;
-                },
-
-                getAdjusted:(dt) => {
-                    let beginYear = 1000 * Math.floor(dt.year()/1000, 10);
-                    let endYear = beginYear + 1000 - 1;
-                    let span = `start=${beginYear}-01-01T00:00:00&before=${endYear}-12-31T23:59:59`;
-                    return span;
-                },
-
-                getColumnCount:()=>{
-                    return 10;
-                },
-
-                getColumnSpan:(begin, ct)=>{
-                    let beginYear = begin + (ct * 100); // years;
-                    let endYear = beginYear + 99;
-                    let span = `start=${beginYear}-01-01T00:00:00&before=${endYear}-12-31T23:59:59`;
-                    return span;
-                },
-
-                getInterval:(dt) => {
-		    let i = Interval.fromDateTimes(dt.startOf('year'), dt.endOf('year'));
-		    return `start=${i.start.toISO()}&before=${i.end.toISO()}`;
-                }
-            },
-
-            {
-                frame:'century',
-                getDuration:()=> {return 100;},
-            },
-
-            {
-                frame:'decade',
-                getDuration:()=> {return 10;},
-            },
-
-            {
-                frame:'year',
-                getDuration:()=>{
-                    return 1;
-                },
-                getInterval:(dt) => {
-		    let i = Interval.fromDateTimes(dt.startOf('year'), dt.endOf('year'));
-		    return `start=${i.start.toISO()}&before=${i.end.toISO()}`;                    
-                },
-                getTitle:(dt) => {
-                    return dt.year;
-                }
-            },
-
-            {
-                frame:'month'
-            },
-
-            {
-                frame:'day'
-            },
-
-            {
-                frame:'hour'
-            },
-
-            {
-                frame:'minute'
-            }
-        ];
-
-        // The above but `key`ed by `frame`.
-        this.frames = this.timeFrames.reduce(function(allFrames, frame) {
-            allFrames[frame.frame]=frame;
-            return allFrames;
-        },{});
-
-
-        var frame = 'year';
-        var dt = DateTime.local();
-
+	super(props, context);
+	
+	let dt = DateTime.local();
+	this.interval = Interval.fromDateTimes(dt, dt.plus({months:5}));
+	this.timeframe = new TimeFrames(this.interval);
+        this.frame = this.timeframe.getTimeFrameObject();
+	this.adjusted = this.frame.getAdjustedDt(this.interval);
+	console.log('TIMEFRAME IS', this.timeframe, this.frame, this.adjusted);
         this.state = {
-            title:this.frames[frame].getTitle(dt),
-            frame:'year',
-            span:span,
+            title:this.frame.getTitle(this.adjusted),
+            span:this.frame.adjusted,
             offset:0,
             center:0,
             atMouseDown:undefined,
             mouseDown:false
         };
-    }
-
-    asYear(dt) {
-        return Interval.fromDateTimes(
-            dt.startOf('year'),
-            dt.endOf('year')
-        ).toISO();
-    }
-    
-    adjust(toAdd) {
-        let _span = Interval.fromISO(this.state.span);
-        let o = {};
-        o[this.state.frame]=this.state.center + toAdd;
-        let _interval = Interval.fromDateTimes(
-            _span.start.plus(o),
-            _span.end.plus(o));
-        let _title = this.frames[this.state.frame].getTitle(_interval.start);
-        let _interval_iso = `start=${_interval.start.toISO()}&before=${_interval.end.toISO()}`;
-        return [_title, _interval_iso];
     }
 
     getXPercentage() {
@@ -166,16 +63,21 @@ class Timeline extends React.Component {
         console.log('+1 timeframe');        
     }
 
+    toSpan(interval) {
+	return `start=${interval.start.toISO()}&before=${interval.end.toISO()}`;
+    }
+    
     toProps(num) {
-        let [title, timeSpan] = this.adjust(num);
-        
-        return {
-            center:this.state.center + num,
-            frame:this.state.context,
+	const newCenter = this.state.center + num;
+        const {title, interval} = this.frame.offset(this.adjusted, newCenter);
+        const props = {
+            center:newCenter,
+            frame:this.frame,
             title:title,
-            timeSpan:timeSpan,
+            timeSpan:this.toSpan(interval),
             offset:this.state.offset
         };
+	return props;
     }
     
     render() {
@@ -194,9 +96,7 @@ class Timeline extends React.Component {
             }
         });
         return (
-            <ReactCursorPosition>
-              
-              <div className="Timeline"
+		<div className="Timeline"
                    style={{position:'fixed'}}
                    {...WheelReact.events}
                    onMouseDown={this.handleMouseDown.bind(this)}
@@ -209,7 +109,6 @@ class Timeline extends React.Component {
                   <Panel {...this.toProps(1)} />
                 </div>
               </div>
-            </ReactCursorPosition>                        
         );
     }
 

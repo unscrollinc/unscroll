@@ -17,6 +17,7 @@ body {
 }
 
 .Nav {
+    padding-left:1em;
     width:100%;
     vertical-align: middle;
     line-height:90px;    
@@ -36,6 +37,11 @@ body {
     color:#06b;
     text-decoration:none;
     padding-right:0.5em;
+}
+.Nav .logo {
+    font-weight:bold;
+    color:black;
+
 }
 .Nav a:hover {
     text-decoration:underline;
@@ -58,7 +64,11 @@ body {
 .Panel {
     height:100%;
 }
-
+.Panel h1 {
+    font-size:11.5pt;
+    padding:0.5em 1em 0.5em 1em;
+    font-weight:bold;
+}
 .Editor {
     width:50%;
     background:white;

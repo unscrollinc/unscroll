@@ -1,7 +1,7 @@
 import React from 'react';
-import Column from './TimelinePanelColumn.js';
-import Event from './TimelinePanelEvent.js';
-
+import Column from './Column';
+import Event from './PanelEvent';
+import { Link } from 'react-router-dom';
 import { DateTime } from 'luxon';
 import axios from 'axios';
 import cachios from 'cachios';
@@ -16,9 +16,6 @@ class Panel extends React.Component {
         this.buffer = document.getElementById('buffer');        
         
         this.state = {
-            center:props.center,
-            timeSpan:props.timeSpan,
-            offset:props.offset,
             grid:{
                 width:12,
                 height:10
@@ -35,13 +32,13 @@ class Panel extends React.Component {
 
     }
     
-    renderColumn(parent, i) {
+    renderColumn(parent, span, i) {
         return(
             <Column
               count={i}
+	      span={span}
               parent={parent}
-              key={parent + '-' + i}
-              />
+              key={parent + '-' + i}/>
         );
     }
 
@@ -116,7 +113,7 @@ class Panel extends React.Component {
         // This makes a real version and drops it into an offscreen
         // buffer to get its real sizing.
         //
-        // Then we make it virtually.
+        // Then we re-make it virtually.
 
         let d = document.createElement('div');
         d.className='event';
@@ -181,7 +178,7 @@ class Panel extends React.Component {
 
     getSpan() {
         let _this = this;
-	cachios.get(`http://127.0.0.1:8000/events/?${_this.state.timeSpan}`)
+	cachios.get(`http://127.0.0.1:8000/events/?${_this.props.timeSpan}`)
 	    .then(resp => {
                 _this.setState(prevState => ({
 		    events: _this.makeEls(resp.data)
@@ -196,7 +193,7 @@ class Panel extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (prevProps.timeSpan !== this.state.timeSpan) {
+        if (prevProps.timeSpan !== this.props.timeSpan) {
             this.bitsGrid = this.makeGrid();
             this.getSpan();
         }
@@ -211,12 +208,13 @@ class Panel extends React.Component {
     }
 
     render() {
-        let title = this.props.title;
+        const title = this.props.title;
         let columns = [];
         for (var i=1;i<13;i++) {
-            columns.push(this.renderColumn(title, i));
+	    const span = '?span-TODO';
+            columns.push(this.renderColumn(title, span, i));
         }
-        let left = `${((this.state.center * 100) + this.state.offset)}%`;
+        const left = `${((this.props.center * 100) + this.props.offset)}%`;
         return (
             <div className="Panel"
                  id={this.props.center}
@@ -226,7 +224,7 @@ class Panel extends React.Component {
                      width:'100%',
                      left:left
                  }}>
-                <h1><a href="{title}">{title}</a></h1>
+                <h1><Link to={`/timelines?${this.props.timeSpan}`}>{title}</Link></h1>
               {columns}
               {this.state.events}
             </div>

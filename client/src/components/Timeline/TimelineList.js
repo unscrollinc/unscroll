@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom' ;
-import AppContext from '../AppContext.js';
 import { DateTime } from 'luxon';
 
+import AppContext from '../AppContext.js';
 
 class TimelineList extends React.Component {
     
