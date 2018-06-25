@@ -41,6 +41,15 @@ export class AppProvider extends React.Component {
                     }
 		}
 	    });
+
+	    if (this.state.user.notebookCurrent && !this.state.notebook.isSaved) {
+		if (this.state.notebook.url)  {
+		    this.putNotebook();
+		}
+		else {
+		    this.saveNotebook();
+		}
+	    }            
 	}
 
         // Periodically (SWEEP_DURATION_SECONDS) sweep the notebook
@@ -52,7 +61,7 @@ export class AppProvider extends React.Component {
         console.log('[@modifyNote(uuid,o,this.state.notebook.notes)]', uuid, o, this.state.notebook.notes);
         console.log('[@modifyNote:note by uuid]', this.state.notebook.notes.get(uuid));        
         
-        const _this = this;
+        // const _this = this;
 	this.setState(
             {notebook:
 	     update(this.state.notebook,
@@ -69,6 +78,7 @@ export class AppProvider extends React.Component {
 
     cutNotes(from, to, targetBefore) {
         const _notes = this.state.notebook.notes;
+        return _notes;
     }
     
     patchNote(note) {
@@ -169,12 +179,12 @@ export class AppProvider extends React.Component {
                headers: this.makeAuthHeader(_this.state.user.authToken)
 	      })
 	    .then(function(response) {
-		console.log("Load scroll list", response);
+		// console.log("Load scroll list", response);
 		_this.setState(
                     {user: update(_this.state.user,
                                   {$merge:
-                                   {scrollList:new Map(response.data.map((n)=>[n.uuid, n]))}})},
-		    ()=>{console.log(_this.state.user);}
+                                   {scrollList:new Map(response.data.map((n)=>[n.uuid, n]))}})}
+//                   , ()=>{console.log(_this.state.user);}
 		);
 	    });
     }
@@ -190,8 +200,8 @@ export class AppProvider extends React.Component {
 		_this.setState(
                     {user: update(_this.state.user,
                                   {$merge:
-                                   {notebookList:new Map(response.data.map((n)=>[n.uuid, n]))}})},
-		    ()=>{console.log('[@loadNotebookList() logged in user]',_this.state.user);}
+                                   {notebookList:new Map(response.data.map((n)=>[n.uuid, n]))}})}
+		    //,()=>{console.log('[@loadNotebookList() logged in user]',_this.state.user);}
 		);
 	    });
     }
@@ -234,6 +244,7 @@ export class AppProvider extends React.Component {
                 profile:undefined,
                 notebookCurrent:undefined,
                 notebookList:[],
+                scrollCurrent:undefined,                
                 scrollList:[]
             },
             notebook: {
@@ -242,6 +253,7 @@ export class AppProvider extends React.Component {
 		notes:new Map(),
                 noteCurrent:undefined
 	    },
+            scroll: {},
             eventEditor: {
                 on:false,
                 currentEvent:{}
@@ -310,6 +322,8 @@ export class AppProvider extends React.Component {
                     this.setState({user: update(this.state.user, {password: {$set: event.target.value}})});                    
                 },
 
+                makeAuthHeader: (token) => { return this.makeAuthHeader(token) } ,
+                
                 doLogout:() => {
                     const _this = this;
                     axios({method:'post',
@@ -386,7 +400,9 @@ export class AppProvider extends React.Component {
                                               isSaved:true,
                                               isOnServer:true,
                                               notes:_this.sequenceNotes(_this.sortNotes(response.data.full_notes)),
-                                             }}, ()=>{console.log('[@this.state.notebook]', this.state.notebook)})});
+                                             }}
+                                            // , ()=>{console.log('[@this.state.notebook]', this.state.notebook)}
+                                           )});
                 },
 
 		listNotebooks:()=>{
@@ -397,11 +413,7 @@ export class AppProvider extends React.Component {
                     this.deleteNotebook(uuid);
                 },
 
-                notebookChange:(field, event)=>{
-		    const value = event.target.type === 'checkbox'
-			  ? event.target.checked
-			  : event.target.value;
-		    
+                notebookChange:(field, value)=>{
                     this.setState(
                         {notebook:update(this.state.notebook,
                                          {$merge: {
@@ -515,8 +527,9 @@ export class AppProvider extends React.Component {
                                                       { $merge:
                                                         { notes:
                                                           update(_this.state.notebook.notes,
-                                                                 { $remove: [note.uuid]})}})},
-                                               ()=>{console.log(_this.state.notebook);});
+                                                                 { $remove: [note.uuid]})}})}
+                                               // ,()=>{console.log(_this.state.notebook);}
+                                              );
                             });
                 },
                 

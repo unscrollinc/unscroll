@@ -2,10 +2,13 @@ import React from 'react';
 import 'react-virtualized/styles.css';
 //import {DateTime, Interval} from 'luxon';
 import cachios from 'cachios';
+import axios from 'axios';
 import AppContext from '../AppContext';
 import TimelistEvent from './TimelistEvent';
+import TimelistTitleEditor from './TimelistTitleEditor';
 
 const API='http://127.0.0.1:8000/events/';
+const SCROLL_API='http://127.0.0.1:8000/scrolls/';
 
 class Timelist extends React.Component {
 
@@ -14,16 +17,18 @@ class Timelist extends React.Component {
         this.state = {
             search:{},
             events:[],
+            scroll:{},
             doGetNext:false,
+            isSaved:true,
             fetchUrl:undefined,
-            nextUrl:undefined,
-	    ...props
+            nextUrl:undefined
         };
-	console.log(props);
-	console.log('GOT ALL INSTANTIATED AGAIN');
-	
     }
 
+    scrollChange(k, v) {
+        this.setState({[k]:v, isSaved:false}, ()=>{console.log(this.state);});
+    }
+    
     makeEls(data) {
         return data.results.map((e, i)=> {
             return (<TimelistEvent
@@ -33,13 +38,14 @@ class Timelist extends React.Component {
         });
     }
     
+
     getSpan(url) {
         const _this = this;
 	cachios.get(url)
 	    .then(resp => {
                 const _els = _this.makeEls(resp.data);
                 _this.setState(prevState => ({
-		    events: _this.state.events.concat(_els),
+		    events: prevState.events.concat(_els),
                     nextUrl: resp.data.next,
                     doGetNext: false
                 }));
@@ -78,19 +84,20 @@ class Timelist extends React.Component {
     }
 
     kickoff() {
-	const url = this.state.uuid
-	      ? `${API}?in_scroll=${this.state.uuid}&`
+	const url = this.props.uuid
+	      ? `${API}?in_scroll=${this.props.uuid}&`
 	      : `${API}?`;
         this.setState(prevState => ({events:[]}),
                       this.getSpan(`${url}q=&limit=20&offset=0`));
     }
+    
     componentDidMount() {
 	this.kickoff();
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-	if (this.state.uuid !== this.props.uuid) {
-	    this.setState({uuid:this.props.uuid}, this.kickoff);
+	if (this.props.uuid !== prevProps.uuid) {
+            this.kickoff();
 	}
     }
     
@@ -107,26 +114,40 @@ class Timelist extends React.Component {
             }
         }
     }
-    
+
     render() {
         return(
-            <div className="Timelist" onScroll={this.handleScroll.bind(this)}>
+            <div 
+              className="Timelist"
+              key={this.props.uuid}
+              onScroll={this.handleScroll.bind(this)}>
               <div>
                 <AppContext.Consumer>
-                  {(context)=>this.manageSearch(context)}
-		</AppContext.Consumer>
-		<table className="timelist">
-		  <tbody>
-                    {this.state.events}
-		  </tbody>
-		</table>
+                  {(context)=> {
+                      this.manageSearch(context);
+                      return (
+                          <div className="timelist-editor">
 
-              </div>
-            </div>
+                            <TimelistTitleEditor {...this.props}/>
+                            
+                            <table className="timelist">
+		              <tbody>
+                                {this.state.events}
+   		              </tbody>
+		            </table>
+                          </div>
+                      );
+                  }
+                  }
+	    </AppContext.Consumer>
+           </div>
+          </div>
         );
     }
 }
 
-export default Timelist;
-
-
+export default props => (
+  <AppContext.Consumer>
+    {context => <Timelist {...props} context={context} />}
+  </AppContext.Consumer>
+);

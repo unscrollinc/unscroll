@@ -1,4 +1,9 @@
 import React from 'react';
+import Nav from './Nav';
+import Profile from './Profile';
+import About from './About';
+import News from './News';
+
 import Timeline from './Timeline/Timeline';
 import Timelist from './Timeline/Timelist';
 import TimelineList from './Timeline/TimelineList';
@@ -7,49 +12,63 @@ import NotebookList from './Notebook/NotebookList';
 // import TimelineEventEditor from './Timeline/TimelineEventEditor';
 import {AppProvider} from './AppContext';
 import { Route } from 'react-router-dom' ;
-import Nav from './Nav';
+
 
 import '../index.css';
 
 const routes = [
     { path: '/',
       exact: true,
-      left: () => <Timeline/>,
-      right: () => null
+      Research: () => <Timeline/>,
+      Workbook: () => <News/>
+    },
+
+    { path: '/about',
+      exact: true,
+      Research: () => <Timeline/>,
+      Workbook: () => <About/>
     },
     
+    { path: '/my/profile',
+      exact: true,      
+      Research: () => <Timeline/>,
+      Workbook: () => <Profile/>
+    },    
+
     { path: '/timelines',
       exact: true,
-      left: () => <Timeline/>,
-      right: () => <TimelineList/>
+      Research: () => <Timeline/>,
+      Workbook: () => <TimelineList/>
     },
     
     { path: '/my/timelines',
       exact: true,      
-      left: () => <Timeline/>,
-      right: () => <TimelineList my={true}/>
+      Research: () => <Timeline/>,
+      Workbook: () => <TimelineList my={true}/>
     },    
 
     { path: '/timelines/:uuid',
-      left: (props) => <Timelist {...props.match.params}/>,
-      right: (props) => <TimelineList {...props.match.params}/>
+      exact: true,            
+      Research: (props) => <Timelist {...props.match.params}/>,
+      Workbook: (props) => <TimelineList {...props.match.params}/>
     },        
 
     { path: '/notebooks',
       exact: true,      
-      left: () => <Timelist/>,
-      right: () => <NotebookList/>
+      Research: () => <Timelist/>,
+      Workbook: () => <NotebookList/>
     },
 
     { path: '/my/notebooks',
       exact: true,
-      left: () => <Timelist/>,
-      right: () => <NotebookList my={true}/>
+      Research: () => <Timelist/>,
+      Workbook: () => <NotebookList my={true}/>
     },
 
-    { path: '/notebook/:uuid',
-      left: (props) => <Timelist {...props.match.params}/>,
-      right: (props) => <Notebook {...props.match.params}/>
+    { path: '/notebooks/:uuid',
+      exact: true,
+      Research: (props) => <Timelist {...props.match.params}/>,
+      Workbook: (props) => <Notebook {...props.match.params}/>
     }    
 ];
 
@@ -65,34 +84,28 @@ class App extends React.Component {
     
     render() {
         return (
-                <AppProvider>
-	        <div className="App">
-		
+            <AppProvider>
+	      <div className="App">
 		<Nav/>
-		
 		{routes.map((route, index) => (
-		    <React.Fragment>
+                    <React.Fragment key={index}>
 		      <Route
-			key={'left-' + index}
 			path={route.path}
-			exact={route.exact}
-			component={route.left}
-			/>
+		        exact={route.exact}
+		        component={route.Research}
+		        />
 		      <Route
-			key={'right-' + index}
-			path={route.path}
-			exact={route.exact}
-			component={route.right}
-			/>
-		    </React.Fragment>
+		        path={route.path}
+		        exact={route.exact}
+		        component={route.Workbook}
+		        />
+                    </React.Fragment>
 		))}
-            </div>
-	 </AppProvider>	      
-
+              </div>
+	    </AppProvider>	      
         );
     }
 }
 
 
 export default App;
-

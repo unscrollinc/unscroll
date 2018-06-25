@@ -377,7 +377,10 @@ class ScrollSerializer(serializers.HyperlinkedModelSerializer):
             'when_created',
             'when_modified',            
             'title',
+            'link',
+            'citation',                        
             'is_public',
+            'is_fiction',            
             'description',
             'with_thumbnail',)
         depth = 0

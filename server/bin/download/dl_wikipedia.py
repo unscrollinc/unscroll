@@ -8,6 +8,7 @@ import random
 from unscroll import UnscrollClient
 import argparse
 
+
 MONTH_NAMES = 'January|February|March|April|May|June|July|'\
               'August|September|October|November|December'
 
@@ -80,6 +81,7 @@ class WikipediaText():
 
         title = None
         subject = None
+
         if len(filtered) == 0:
             title = " ".join(unlinked.split(" ")[0:4]) + '...'
         else:
@@ -92,7 +94,8 @@ class WikipediaText():
             image_d  = self.unscroll_client.fetch_wiki_thumbnail_data(title=subject)
             image_url = image_d.get('url') if image_d is not None else None
             if image_url is not None:
-                thumbnail_d = self.unscroll_client.cache_thumbnail(image_url)
+                thumbnail_local = self.unscroll_client.cache_local(image_url)                
+                thumbnail_d = self.unscroll_client.post_thumbnail(thumbnail_local)
                 if thumbnail_d is not None:
                     thumbnail = thumbnail_d['url']
 

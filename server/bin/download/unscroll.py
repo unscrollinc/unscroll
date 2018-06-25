@@ -10,6 +10,8 @@ import config
 import favicon
 from urllib.parse import quote_plus
 import pprint
+import re
+import pathlib
 
 class UnscrollClient():
     authentication_header = None
@@ -135,7 +137,34 @@ class UnscrollClient():
                           headers=self.authentication_header,
                           files={'file': open(file_name, 'rb')})
         return r.json()
+
+    def cache_local(self, url):
+        image = re.sub(r'https?://','',url)
+        local = 'cache/image/{}'.format(image)
+
+        found = False
         
+        try:
+            f = open(local, 'r')
+            f.close()
+            found = True
+            return local
+        
+        except FileNotFoundError as e:
+            try:
+                r = requests.get(url)
+                p = pathlib.Path(local)
+                p.parent.mkdir(parents=True, exist_ok=True) 
+                f = open(local, 'wb')
+                f.write(r.content)
+                f.close()
+                return local
+            
+            except ConnectionError as e:
+                print('[unscroll.py] ConnectionError: {}'.format(e,))
+
+        
+
     def cache_thumbnail(self, url):
         r = requests.post(self.api + '/thumbnails/cache/',
                           headers=self.authentication_header,

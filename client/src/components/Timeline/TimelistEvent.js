@@ -2,6 +2,7 @@ import React from 'react';
 import 'react-virtualized/styles.css';
 import {DateTime, Interval} from 'luxon';
 import EventNoteButton from '../Event/EventNoteButton';
+import EventEditButton from '../Event/EventEditButton';
 
 
 class TimelistEvent extends React.Component {
@@ -41,8 +42,9 @@ class TimelistEvent extends React.Component {
         if (e.with_thumbnail || e.scroll_with_thumbnail) {
             return(
                 <a href={e.content_url} target="_blank">
-                  <img className="timelist-image"
-                       src={this.getImage(e)}/>
+                    <img alt=''
+                         className="timelist-image"
+                         src={this.getImage(e)}/>
                 </a>
             );
         }
@@ -79,7 +81,6 @@ class TimelistEvent extends React.Component {
                     <div className="author">
                       <a className="title" href={`/search/?by:${e.username}`}>@{e.username}</a>
                     </div>
-
                     
                   </div>
                   
@@ -87,7 +88,9 @@ class TimelistEvent extends React.Component {
 	    
 		<td className="content">
                   <div className="eventNoteButton">
-                    <EventNoteButton event={this.props.event}/></div>
+                    <EventNoteButton event={this.props.event}/>
+                    <EventEditButton event={this.props.event}/>
+                  </div>                
                   
                   <div className="dt">{this.makeWhen(e)}</div>
                   

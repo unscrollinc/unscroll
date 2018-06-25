@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import { Link } from 'react-router-dom' ;
 import AppContext from '../AppContext.js';
 import { DateTime } from 'luxon';
@@ -20,6 +19,7 @@ class TimelineList extends React.Component {
 
 	return(
             <tr key={key}>
+              
               <td>
                 {formatDate(scroll.when_created)}
               </td>
@@ -27,12 +27,15 @@ class TimelineList extends React.Component {
               <td className="timeline-list-title">
 	        <Link to={'/timelines/' + scroll.uuid}>{scroll.title}</Link>
               </td >
+
               <td>
 	        <button onClick={()=>{context.deleteScroll(scroll.uuid);}}>Del</button>
               </td>              
+
               <td>
 		{scroll.is_public ? 'Published' : 'Private'}
               </td>
+              
             </tr>
 	);
     }
@@ -44,16 +47,18 @@ class TimelineList extends React.Component {
               <AppContext.Consumer>
 		{(context) => {
                     return (
+                        
                         <React.Fragment>
-			  <table className="notebook-header">
+
+                          <table className="notebook-header">
                             <tbody>
                               <tr>
                                 <td>Timelines</td>
                                 <td>
 	                          <button onClick={context.addScroll}>+ New</button>
                                 </td>
-                                <td><Link to="/user/timelines/">Mine</Link></td>
-                                <td><Link to="/timelines/">All</Link></td>
+                                <td><Link to="/my/timelines">Mine</Link></td>
+                                <td><Link to="/timelines">All</Link></td>
                               </tr>
                             </tbody>
                           </table>

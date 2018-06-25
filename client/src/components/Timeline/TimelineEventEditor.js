@@ -2,11 +2,8 @@ import React from 'react';
 import AppContext from '../AppContext';
 
 class TimelineEventEditor extends React.Component {
-    constructor(props, context) {
-        super(props, context);
-        this.state = {props};
-        this.closeWindow = () => this.setState({isVisible:false});
-        this.saveEvent = () => console.log('saving');
+    constructor(props) {
+        super(props);
     }
     
     makeEditor(context) {

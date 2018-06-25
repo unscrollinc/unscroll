@@ -2,7 +2,7 @@ import React from 'react';
 import Column from './TimelinePanelColumn.js';
 import Event from './TimelinePanelEvent.js';
 
-import { DateTime, Interval } from 'luxon';
+import { DateTime } from 'luxon';
 import axios from 'axios';
 import cachios from 'cachios';
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";

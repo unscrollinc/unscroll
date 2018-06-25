@@ -1,10 +1,6 @@
 import React from 'react';
 import { AppContext } from '../AppContext';
 class EventNoteButton extends React.Component {
-    constructor(props, context) {
-        super(props, context);
-    }
-
     render() {
         return (
             <AppContext.Consumer>

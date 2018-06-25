@@ -25,6 +25,7 @@ class Timeline extends React.Component {
                     let beginYear = 1000 * Math.floor(dt.year()/1000, 10);
                     let endYear = beginYear + 1000 - 1;
                     let span = `start=${beginYear}-01-01T00:00:00&before=${endYear}-12-31T23:59:59`;
+                    return span;
                 },
 
                 getColumnCount:()=>{
@@ -35,6 +36,7 @@ class Timeline extends React.Component {
                     let beginYear = begin + (ct * 100); // years;
                     let endYear = beginYear + 99;
                     let span = `start=${beginYear}-01-01T00:00:00&before=${endYear}-12-31T23:59:59`;
+                    return span;
                 },
 
                 getInterval:(dt) => {

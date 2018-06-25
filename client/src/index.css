@@ -427,3 +427,16 @@ div.search-ruby {
 form.search {
     display:inline;
 }
+.About {
+    overflow:auto;
+    line-height:150%;
+    height:100%;
+    padding:1em;
+    color:#888;
+}
+
+.About h1, .About h2, .About h3 {
+    color:#4A2;
+    font-weight:bold;
+    padding:1em 0 0em 0;
+}

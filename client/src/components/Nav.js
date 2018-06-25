@@ -25,7 +25,7 @@ class Nav extends React.Component {
         if (context.state.user.hasAuth) {
             return(
                 <div className="login">
-                  <a href="/profile">{context.state.user.username}</a>
+		    <Link to="/my/profile">{context.state.user.username}</Link>
                   <button className="logout" onClick={context.doLogout}>Log out</button>
                 </div>
             );

@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import { Link } from 'react-router-dom' ;
 import AppContext from '../AppContext.js';
 import { DateTime } from 'luxon';
@@ -43,7 +42,6 @@ class NotebookList extends React.Component {
 	      
               <AppContext.Consumer>
 		{(context) => {
-		    console.log(context);
                     return (
                         <React.Fragment>
                           <table className="notebook-header">
