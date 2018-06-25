@@ -12,7 +12,6 @@ class Column extends React.Component {
                  }}
                  >
                 <a href={'/whatever-' + (this.props.count)}>{this.props.count}</a>
-                <NewEventButton time={this}/>
             </div>
         );
     }
