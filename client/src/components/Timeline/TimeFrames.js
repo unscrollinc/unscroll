@@ -136,24 +136,82 @@ const frames =
                 },
                     
 		getTitle:(interval)=>{
-		    return interval.start.toFormat('MMMM kk');
+		    return interval.start.toFormat('MMMM kkkk');
 		}
 	    },
 	    'day': {
                 name:'day',                
                 narrow:'hour',
                 broaden:'month',
-		getColumnCount:()=>{
-		    return 24;
-		},                                                              
+                
+		getAdjustedDt:(interval) => {
+		    const i = Interval.fromDateTimes(
+			interval.start.startOf('day'),
+			interval.start.endOf('day'));
+		    return i;
+		},
+		
+		offset:(interval, num) => {
+		    const start = interval.start.plus({days: num});
+		    const end = interval.end.plus({days: num});
+		    const adjustedInterval = Interval.fromDateTimes(start, end);
+		    const title = frames['day'].getTitle(adjustedInterval);
+		    return {title:title, interval:adjustedInterval};
+		},
+		
+		getColumnCount:(interval)=>{
+                    return 24;
+		},
+
+                getColumnLink:(i, offset)=>{
+                    const start = i.start.plus({hours:offset});
+                    const end = start.endOf('hour');
+                    const interval = Interval.fromDateTimes(start, end);
+                    const span = toSpan(interval);
+                    const title = start.toFormat('ha');
+                    return {span:span, interval:interval, title:title};
+                },
+                    
+		getTitle:(interval)=>{
+		    return interval.start.toFormat('DDDD');
+		}
+                
 	    },
 	    'hour': {
                 name:'hour',                                
                 narrow:'minute',
                 broaden:'day',
-		getColumnCount:()=>{
-		    return 12;
-		},                                                              
+		getAdjustedDt:(interval) => {
+		    const i = Interval.fromDateTimes(
+			interval.start.startOf('hour'),
+			interval.start.endOf('hour'));
+		    return i;
+		},
+		
+		offset:(interval, num) => {
+		    const start = interval.start.plus({hours: num});
+		    const end = interval.end.plus({hours: num});
+		    const adjustedInterval = Interval.fromDateTimes(start, end);
+		    const title = frames['hour'].getTitle(adjustedInterval);
+		    return {title:title, interval:adjustedInterval};
+		},
+		
+		getColumnCount:(interval)=>{
+                    return 12;
+		},
+
+                getColumnLink:(i, offset)=>{
+                    const start = i.start.plus({minutes:offset * 5 });
+                    const end = start.plus({minutes:5+(offset*5)}).endOf('minute');
+                    const interval = Interval.fromDateTimes(start, end);
+                    const span = toSpan(interval);
+                    const title = start.toFormat('m');
+                    return {span:span, interval:interval, title:title};
+                },
+                    
+		getTitle:(interval)=>{
+		    return interval.start.toFormat('DDDD hma');
+		}                
 	    },
 	    'minute': {
                 name:'minute',                                                
@@ -169,6 +227,7 @@ const frames =
 
 class TimeFrames {
     constructor(interval) {
+        console.log(interval);
 	this.interval = interval;
 	this.seconds = interval.length('seconds');
 	this.frame = this.getTimeFrameObject();
@@ -184,8 +243,8 @@ class TimeFrames {
 	if (this.seconds > (YEAR)) return 'decade';
 	if (this.seconds > (YEAR/12)) return 'year';
 	if (this.seconds > (YEAR/365)) return 'month';
-	if (this.seconds > (YEAR/365 * 60)) return 'day';
-	if (this.seconds > (YEAR/365 * 60 * 60)) return 'hour';
+	if (this.seconds > (YEAR/(365 * 24))) return 'day';
+	if (this.seconds > (YEAR/(365 * 24 * 60))) return 'hour';
 	return 'minute';    
     }
 }

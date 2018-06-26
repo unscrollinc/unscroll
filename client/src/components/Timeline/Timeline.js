@@ -6,18 +6,24 @@ import TimeFrames from './TimeFrames';
 
 class Timeline extends React.Component {
     constructor(props, context) {
-
 	super(props, context);
-        this.state = this.initialize(props);
-    }
+        console.log('PROPS', props);
+        const start = props.start
+              ? DateTime.fromISO(props.start)
+              : DateTime.local().startOf('month');
 
-    initialize(props) {
-	const start = DateTime.fromISO(props.start);
-        const end = DateTime.fromISO(props.before);
-	const interval = Interval.fromDateTimes(start, end);
+        const before = props.start
+              ? DateTime.fromISO(props.before)
+              : DateTime.local().endOf('month');        
+        
+        this.state = this.initialize(start, before);
+        }
+    
+    initialize(start, before) {
+	const interval = Interval.fromDateTimes(start, before);
         const timeframes = new TimeFrames(interval);
         const frame = timeframes.getTimeFrameObject();
-        console.log(frame);
+        console.log('Frame', frame);
 	const adjusted = frame.getAdjustedDt(interval);
         const title = frame.getTitle(adjusted);
         return {
@@ -36,10 +42,9 @@ class Timeline extends React.Component {
     }
     
     handleMouseMove(e) {
-        // console.log('EEEEEEEEEEEEEEEEEEE',e);
         if (e.buttons > 0) {
-            let delta = this.getXPercentage() - this.state.atMouseDown;
-            let center = 0 - Math.round(this.state.offset/100);
+            const delta = this.getXPercentage() - this.state.atMouseDown;
+            const center = 0 - Math.round(this.state.offset/100);
             this.setState({
                 offset:this.state.offset + (50 * delta),
                 center:(center !== this.state.center) ? center : this.state.center
