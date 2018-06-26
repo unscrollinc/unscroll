@@ -15,12 +15,12 @@ class Timeline extends React.Component {
         const before = props.start
               ? DateTime.fromISO(props.before)
               : DateTime.local().endOf('month');        
-        
-        this.state = this.initialize(start, before);
+        console.log('START, EBEFORE', start, before);
+	const interval = Interval.fromDateTimes(start, before);
+        this.state = this.initialize(interval);
         }
     
-    initialize(start, before) {
-	const interval = Interval.fromDateTimes(start, before);
+    initialize(interval) {
         const timeframes = new TimeFrames(interval);
         const frame = timeframes.getTimeFrameObject();
         console.log('Frame', frame);
@@ -128,7 +128,12 @@ class Timeline extends React.Component {
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.start !== this.props.start
             && prevProps.before !== this.props.before) {
-            this.setState(this.initialize(this.props));
+
+	
+	    const start = DateTime.fromISO(this.props.start);
+	    const before = DateTime.fromISO(this.props.before);
+            const interval = Interval.fromDateTimes(start, before);
+            this.setState(this.initialize(interval));
 
         }
     }

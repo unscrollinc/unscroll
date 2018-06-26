@@ -4,8 +4,8 @@ class About extends React.Component {
     
     render() {
         return (
-            <div class="Editor">
-              <div class="About">
+            <div className="Editor">
+              <div className="About">
                 
                 <h1>Frequently Anticipated Anxieties and Objections</h1>
                 

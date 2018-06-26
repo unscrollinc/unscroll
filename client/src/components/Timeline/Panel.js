@@ -217,12 +217,19 @@ class Panel extends React.Component {
         }
         
         const left = `${((this.props.center * 100) + this.props.offset)}%`;
-        
+
+	const mapped = this.props.title.map((o, i, a) => {
+	    const breadSpacer = ((i+1)<a.length) ? ' ▶ ' : '';
+
+	    return (<span key={o.timeSpan} ><Link to={`/timelines?${o.timeSpan}`}>{o.title}</Link>{breadSpacer}</span>)});
+	
         return (
             <div className="Panel"
                  id={this.props.center}
-                 style={{left:left}}>
-                <h1><Link to={`/timelines?${this.props.timeSpan}`}>{title}</Link></h1>
+            style={{left:left}}>
+		<h1>
+		{mapped}
+		 </h1>
               {columns}
               {this.state.events}
             </div>

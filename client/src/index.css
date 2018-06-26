@@ -67,11 +67,18 @@ body {
     position:absolute;
     width:100%;
 }
+
 .Panel h1 {
     font-size:11.5pt;
     padding:0.5em 1em 0.5em 1em;
     font-weight:bold;
+    left:0.25em;
 }
+.Panel h1 a {
+    font-weight:bold;
+    display:inline;
+}
+
 .Editor {
     width:50%;
     background:white;
@@ -104,12 +111,20 @@ h1 a {
 
 .column {
     box-sizing:border-box;
-    border-left:1px solid black;
+    border-left:1px solid #ccc;
     min-height:96%;
-    float:left; 
+    float:left;
+    font-size:11.5pt;
+    text-align:center;
 }
 
+.column a {
+    text-decoration:none;
+    display:block;
+    width:100%;    
+}
 .column a:hover {
+
     background:black;
     color:white;
 }
@@ -449,7 +464,8 @@ form.search {
 }
 
 .About h1, .About h2, .About h3 {
-    color:#4A2;
-    font-weight:bold;
+    color:#06b;
+    line-height:150%;
+    font-weight:normal;
     padding:1em 0 0em 0;
 }
