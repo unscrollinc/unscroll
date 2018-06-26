@@ -8,16 +8,22 @@ class Timeline extends React.Component {
     constructor(props, context) {
 
 	super(props, context);
-	
-	let dt = DateTime.local();
-	this.interval = Interval.fromDateTimes(dt, dt.plus({months:5}));
-	this.timeframe = new TimeFrames(this.interval);
-        this.frame = this.timeframe.getTimeFrameObject();
-	this.adjusted = this.frame.getAdjustedDt(this.interval);
-	console.log('TIMEFRAME IS', this.timeframe, this.frame, this.adjusted);
-        this.state = {
-            title:this.frame.getTitle(this.adjusted),
-            span:this.frame.adjusted,
+        this.state = this.initialize(props);
+    }
+
+    initialize(props) {
+	const start = DateTime.fromISO(props.start);
+        const end = DateTime.fromISO(props.before);
+	const interval = Interval.fromDateTimes(start, end);
+        const timeframes = new TimeFrames(interval);
+        const frame = timeframes.getTimeFrameObject();
+        console.log(frame);
+	const adjusted = frame.getAdjustedDt(interval);
+        const title = frame.getTitle(adjusted);
+        return {
+            title:title,
+            frame:frame,
+            span:adjusted,
             offset:0,
             center:0,
             atMouseDown:undefined,
@@ -69,11 +75,13 @@ class Timeline extends React.Component {
     
     toProps(num) {
 	const newCenter = this.state.center + num;
-        const {title, interval} = this.frame.offset(this.adjusted, newCenter);
+        const {title, interval} = this.state.frame.offset(this.state.span, newCenter);
         const props = {
+            columnCount:this.state.frame.getColumnCount(interval),
             center:newCenter,
-            frame:this.frame,
+            frame:this.state.frame,
             title:title,
+            interval:interval,
             timeSpan:this.toSpan(interval),
             offset:this.state.offset
         };
@@ -112,6 +120,14 @@ class Timeline extends React.Component {
         );
     }
 
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevProps.start !== this.props.start
+            && prevProps.before !== this.props.before) {
+            this.setState(this.initialize(this.props));
+
+        }
+    }
+    
     componentDidMount() {
         // console.log('Did mount', this);
     }

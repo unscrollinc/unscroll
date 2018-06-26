@@ -32,13 +32,14 @@ class Panel extends React.Component {
 
     }
     
-    renderColumn(parent, span, i) {
+    renderColumn(i) {
+        const { span, interval, title } = this.props.frame.getColumnLink(this.props.interval, i);
         return(
-            <Column
-              count={i}
-	      span={span}
-              parent={parent}
-              key={parent + '-' + i}/>
+                <Column
+                  columnCount={this.props.columnCount} 
+	          span={span}
+                  title={title}
+                  key={title + '-' + i}/>
         );
     }
 
@@ -209,21 +210,18 @@ class Panel extends React.Component {
 
     render() {
         const title = this.props.title;
+        
         let columns = [];
-        for (var i=1;i<13;i++) {
-	    const span = '?span-TODO';
-            columns.push(this.renderColumn(title, span, i));
+        for (var i=0;i<this.props.columnCount;i++) {
+            columns.push(this.renderColumn(i));
         }
+        
         const left = `${((this.props.center * 100) + this.props.offset)}%`;
+        
         return (
             <div className="Panel"
                  id={this.props.center}
-                 style={{
-                     float:'left',
-                     position:'absolute',
-                     width:'100%',
-                     left:left
-                 }}>
+                 style={{left:left}}>
                 <h1><Link to={`/timelines?${this.props.timeSpan}`}>{title}</Link></h1>
               {columns}
               {this.state.events}
