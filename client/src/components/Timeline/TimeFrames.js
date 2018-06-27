@@ -6,8 +6,7 @@ const toSpan = (interval) => {
     return `start=${interval.start.toISO()}&before=${interval.end.toISO()}`;
 }
 
-const frames = 
-	this.frames = {
+const frames = {
 	    'millennium': {
                 narrow:'century',
                 broaden:'millennium',
@@ -16,25 +15,28 @@ const frames =
 		getAdjustedDt:(interval) => {
 		    const beginYear = 1000 * Math.floor(interval.start.year/1000, 10);
 		    const endYear = beginYear + 999;
-                    const by = DateTime.fromISO(beginYear).startOf('year');
-                    const ey = DateTime.fromISO(endYear).endOf('year');
+                    const by = DateTime.fromObject({year:beginYear}).startOf('year');
+                    const ey = DateTime.fromObject({year:endYear}).endOf('year');
 		    const i = Interval.fromDateTimes(by, ey);
 		    return i;
 		},
 
 		format(interval) {
-		    const c = Math.floor(interval.start.year/1000);
-		    const first = c.toString().split('')[0]
+		    const c = Math.floor(interval.start.year/1000) + 1;
+		    const adjusted = c < 1 ? c - 1 : c;
+		    const label = adjusted > 0 ? 'A.D.' : 'B.C.';
+		    const mil = Math.abs(adjusted);
+		    const first = adjusted.toString().split('')[0]
 		    if (first === '1') {
-			return c+'st millennium';
+			return mil + 'st millennium ' + label;
 		    }
 		    if (first === '2') {
-			return c+'nd millennium';
+			return mil + 'nd millennium ' + label ;
 		    }
 		    if (first === '3') {
-			return c+'rd millennium';
+			return mil + 'rd millennium ' + label;
 		    }
-		    return c+'th millennium';
+		    return mil + 'th millennium ' + label;
 		},
                     
 		offset:(interval, num) => {
@@ -42,7 +44,7 @@ const frames =
 		    const end = interval.end.plus({years: 1000 * num});
 		    const adjustedInterval = Interval.fromDateTimes(start, end);
 		    const title = frames.century.getTitle(adjustedInterval);
-		    return {title:['A'],
+		    return {title:title,
                             interval:adjustedInterval};
 		},
 
@@ -61,7 +63,7 @@ const frames =
 		getTitle:(interval)=>{
 		    const adj = frames.millennium.getAdjustedDt(interval);
 		    return [{title:frames.millennium.format(interval),
-                             timeSpan:adj}];
+                             timeSpan:toSpan(adj)}];
 		}
 
 	    },
@@ -74,8 +76,8 @@ const frames =
 		    const beginYear = 100 * Math.floor(interval.start.year/100, 10);
 		    const endYear = beginYear + 99;
 		    const i = Interval.fromDateTimes(
-                        DateTime.fromISO(beginYear).startOf('year'),
-                        DateTime.fromISO(endYear).endOf('year'));
+                        DateTime.fromObject({year:beginYear}).startOf('year'),
+                        DateTime.fromObject({year:endYear}).endOf('year'));
 		    return i;
 		},
 		offset:(interval, num) => {
@@ -115,7 +117,7 @@ const frames =
 
 		getTitle:(interval)=>{
 		    const i1 = frames.century.getAdjustedDt(interval);
-		    return frames['millennium'].getTitle(interval)
+		    return frames.millennium.getTitle(interval)
 			.concat(
 			    {title:frames.century.format(interval),
 			     timeSpan:toSpan(i1)});
@@ -366,11 +368,12 @@ class TimeFrames {
 	if (this.seconds > (YEAR/(365 * 24 * 60))) return 'hour';
 	return 'minute';    
     }
+
 }
 // The above but `key`ed by `frame`.
 // const frames = this.timeFrames.reduce(function(allFrames, frame) {
 //    allFrames[frame.frame]=frame;
 //    return allFrames;
 //},{});
-
+export { frames };
 export default TimeFrames;

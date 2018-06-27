@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { DateTime } from 'luxon';
 import axios from 'axios';
 import cachios from 'cachios';
+import { frames } from './TimeFrames';
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.withCredentials = true;
@@ -13,46 +14,51 @@ class Panel extends React.Component {
 
     constructor(props, context) {
         super(props, context);
-        this.buffer = document.getElementById('buffer');        
-        
-        this.state = {
-            grid:{
-                width:12,
-                height:10
-            },
-            events:[]
-        };
-        
-        this.bitsGrid = this.makeGrid();
-
-        this.state.cell = {
-            width:100/this.state.grid.width,
-            height:100/this.state.grid.height
-        };
+        this.buffer = document.getElementById('buffer');
+	this.state = this.initialize(props);
 
     }
     
-    renderColumn(i) {
-        const { span, interval, title } = this.props.frame.getColumnLink(this.props.interval, i);
-        return(
-                <Column
-                  columnCount={this.props.columnCount} 
-	          span={span}
-                  title={title}
-                  key={title + '-' + i}/>
-        );
+    initialize(props) {
+	console.log('PROPS', props, frames);
+        const {title, interval} = frames[props.frame].offset(props.span, props.center);	
+        return {
+	    grid:{
+                width:props.width,
+                height:props.height
+	    },
+	    frame:props.frame,
+	    columns:[...Array(props.columnCount).keys()].map(this.makeColumn.bind(this)),
+	    title:title.map((o, i, a) => {
+		const breadSpacer = ((i+1)<a.length) ? ' ▶ ' : '';
+		return (
+		    <span key={i}>
+		      <Link to={`/timelines?${o.timeSpan}`}>
+			{o.title}
+		      </Link>
+		      {breadSpacer}
+		    </span>);
+	    }),
+	    interval:interval,
+	    events:[],
+	    cell: {
+		width:100/props.width,
+		height:100/props.height
+	    },
+	    grid:this.makeGrid(props.width, props.height)
+	};
     }
-
-    makeGrid() {
+    
+    makeGrid(w, h) {
 
         // Makes an associative array of false values that is
 	// `this.state.grid.height` long and each value is an array
 	// `this.state.grid.height` wide. I.e. a 2D bitmap.
         
-	var grid = new Array(this.state.grid.height);
-	for (var i = 0; i < this.state.grid.height; i++) {
+	var grid = new Array(h);
+	for (var i = 0; i < h; i++) {
 	    var row = [];
-	    for (var j = 0; j < this.state.grid.width; j++) {
+	    for (var j = 0; j < w; j++) {
 		    row.push(false);
 	    }
 	    grid[i] = row;
@@ -157,7 +163,7 @@ class Panel extends React.Component {
             if (res.success) {
                 let el = (
                     <Event
-                      key={Math.random()}
+                      key={event.uuid}
 		      
                       width={res.w * this.state.cell.width + '%'}
                       left={(-1 + res.x) * this.state.cell.width + '%'}
@@ -195,7 +201,7 @@ class Panel extends React.Component {
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.timeSpan !== this.props.timeSpan) {
-            this.bitsGrid = this.makeGrid();
+	    this.setState(this.initialize(this.props));
             this.getSpan();
         }
     }
@@ -208,30 +214,28 @@ class Panel extends React.Component {
         };
     }
 
+
+    makeColumn(i) {
+	console.log('MakeColumn', this.props);
+        const { span, interval, title } = this.props.frame.getColumnLink(this.props.interval, i);
+        return(
+                <Column
+                  columnCount={this.props.columnCount} 
+	          span={span}
+                  title={title}
+                  key={i}/>
+        );
+    }
+
     render() {
-        const title = this.props.title;
-        
-        let columns = [];
-        for (var i=0;i<this.props.columnCount;i++) {
-            columns.push(this.renderColumn(i));
-        }
-        
+	console.log('rendering Panel');
         const left = `${((this.props.center * 100) + this.props.offset)}%`;
 
-	const mapped = this.props.title.map((o, i, a) => {
-	    const breadSpacer = ((i+1)<a.length) ? ' ▶ ' : '';
-
-	    return (<span key={i} ><Link to={`/timelines?${o.timeSpan}`}>{o.title}</Link>{breadSpacer}</span>)});
-	
         return (
-            <div className="Panel"
-                 id={this.props.center}
-            style={{left:left}}>
-		<h1>
-		{mapped}
-		 </h1>
-              {columns}
-              {this.state.events}
+            <div className="Panel" id={this.props.center} style={{left:left}}>
+		<h1>{this.state.title}</h1>
+		{this.state.columns}
+                {this.state.events}
             </div>
         );
     }

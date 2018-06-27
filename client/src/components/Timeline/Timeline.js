@@ -7,7 +7,6 @@ import TimeFrames from './TimeFrames';
 class Timeline extends React.Component {
     constructor(props, context) {
 	super(props, context);
-        console.log('PROPS', props);
         const start = props.start
               ? DateTime.fromISO(props.start)
               : DateTime.local().startOf('month');
@@ -15,21 +14,24 @@ class Timeline extends React.Component {
         const before = props.start
               ? DateTime.fromISO(props.before)
               : DateTime.local().endOf('month');        
-        console.log('START, EBEFORE', start, before);
 	const interval = Interval.fromDateTimes(start, before);
-        this.state = this.initialize(interval);
+
+	this.state = this.initialize(interval);
+	
         }
     
     initialize(interval) {
         const timeframes = new TimeFrames(interval);
         const frame = timeframes.getTimeFrameObject();
-        console.log('Frame', frame);
 	const adjusted = frame.getAdjustedDt(interval);
         const title = frame.getTitle(adjusted);
+	const width = frame.getColumnCount(interval);
         return {
             title:title,
             frame:frame,
             span:adjusted,
+	    width:width,
+	    height:6,	    
             offset:0,
             center:0,
             atMouseDown:undefined,
@@ -75,10 +77,20 @@ class Timeline extends React.Component {
     }
 
     toSpan(interval) {
+	console.log('calling toSPan');
 	return `start=${interval.start.toISO()}&before=${interval.end.toISO()}`;
     }
-    
+
     toProps(num) {
+	return {center:this.state.center + num,
+		span:this.state.span,
+		frame:this.state.frame,
+		width:this.state.width,
+		height:this.state.height,
+		offset:this.state.offset};
+    }
+    
+    toProps2(num) {
 	const newCenter = this.state.center + num;
         const {title, interval} = this.state.frame.offset(this.state.span, newCenter);
         const props = {
@@ -86,13 +98,41 @@ class Timeline extends React.Component {
             center:newCenter,
             frame:this.state.frame,
             title:title,
+	    width:this.state.width,
+	    height:this.state.height,	    
             interval:interval,
             timeSpan:this.toSpan(interval),
             offset:this.state.offset
         };
 	return props;
     }
+
+
+    shouldComponentUpdate(nextProps, nextState) {
+	const s = this.state.mouseDown;
+	return s;
+    }    
+
     
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevProps.start !== this.props.start
+            && prevProps.before !== this.props.before) {
+	    const start = DateTime.fromISO(this.props.start);
+	    const before = DateTime.fromISO(this.props.before);
+            const interval = Interval.fromDateTimes(start, before);
+            this.setState(this.initialize(interval));
+
+        }
+    }
+    
+    componentDidMount() {
+        // console.log('Did mount', this);
+    }
+
+    componentWillUnmount() {
+        WheelReact.clearTimeout();
+    }
+
     render() {
         WheelReact.config({
             left: (e) => {
@@ -117,34 +157,14 @@ class Timeline extends React.Component {
                    onMouseMove={this.handleMouseMove.bind(this)}
                    >            
                 <div id="Panels">
-                  <Panel {...this.toProps(-1)} />
-                  <Panel {...this.toProps(0)} />
-                  <Panel {...this.toProps(1)} />
+                <Panel key={this.state.center - 1} {...this.toProps(-1)} />
+                <Panel key={this.state.center} {...this.toProps(0)} />
+                <Panel key={this.state.center + 1} {...this.toProps(1)} />
                 </div>
               </div>
         );
     }
-
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        if (prevProps.start !== this.props.start
-            && prevProps.before !== this.props.before) {
-
-	
-	    const start = DateTime.fromISO(this.props.start);
-	    const before = DateTime.fromISO(this.props.before);
-            const interval = Interval.fromDateTimes(start, before);
-            this.setState(this.initialize(interval));
-
-        }
-    }
     
-    componentDidMount() {
-        // console.log('Did mount', this);
-    }
-
-    componentWillUnmount() {
-        WheelReact.clearTimeout();
-    }    
 }
 
 export default Timeline;

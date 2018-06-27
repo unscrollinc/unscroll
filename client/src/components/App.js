@@ -24,7 +24,7 @@ const tl = (params) => {
 	  ? queryString.parse(params.location.search)
 	  : {};
     return (<ReactCursorPosition>
-	    <Timeline {...qs}/>
+	    <Timeline key={qs.start + '&' + qs.before} {...qs}/>
 	    </ReactCursorPosition>);
 }
 
