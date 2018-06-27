@@ -16,18 +16,34 @@ const frames =
 		getAdjustedDt:(interval) => {
 		    const beginYear = 1000 * Math.floor(interval.start.year/1000, 10);
 		    const endYear = beginYear + 999;
-		    const i = Interval.fromDateTimes(
-                        DateTime.fromISO(beginYear).startOf('year'),
-                        DateTime.fromISO(endYear).endOf('year'));
+                    const by = DateTime.fromISO(beginYear).startOf('year');
+                    const ey = DateTime.fromISO(endYear).endOf('year');
+		    const i = Interval.fromDateTimes(by, ey);
 		    return i;
 		},
-		
+
+		format(interval) {
+		    const c = Math.floor(interval.start.year/1000);
+		    const first = c.toString().split('')[0]
+		    if (first === '1') {
+			return c+'st millennium';
+		    }
+		    if (first === '2') {
+			return c+'nd millennium';
+		    }
+		    if (first === '3') {
+			return c+'rd millennium';
+		    }
+		    return c+'th millennium';
+		},
+                    
 		offset:(interval, num) => {
 		    const start = interval.start.plus({years: 1000 * num});
 		    const end = interval.end.plus({years: 1000 * num});
 		    const adjustedInterval = Interval.fromDateTimes(start, end);
-		    const title = frames['millennium'].getTitle(adjustedInterval);
-		    return {title:title, interval:adjustedInterval};
+		    const title = frames.century.getTitle(adjustedInterval);
+		    return {title:['A'],
+                            interval:adjustedInterval};
 		},
 
 		getColumnCount:()=>{
@@ -36,21 +52,20 @@ const frames =
 
                 getColumnLink:(i, offset)=>{
                     const start = i.start.plus({years:100*offset});
-                    const end = start.endOf('century');
+                    const end = i.start.plus({years:(100*offset) + 99}).endOf('year');
                     const interval = Interval.fromDateTimes(start, end);
                     const span = toSpan(interval);
-                    const title = start.toFormat('MMMM');
+                    const title = start.toFormat('kkkk');
                     return {span:span, interval:interval, title:title};
                 },
-		getLink:(interval)=>{
-		    const adj = frames['millennium'].getAdjustedDt(interval);
-		    return [{title:adj.start.year, span:adj}];
-		},
 		getTitle:(interval)=>{
-		    return frames['millennium'].getLink(interval);
+		    const adj = frames.millennium.getAdjustedDt(interval);
+		    return [{title:frames.millennium.format(interval),
+                             timeSpan:adj}];
 		}
 
 	    },
+            
 	    'century': {
                 name:'century',
                 narrow:'decade',
@@ -67,7 +82,7 @@ const frames =
 		    const start = interval.start.plus({years: 100 * num});
 		    const end = interval.end.plus({years: 100 * num});
 		    const adjustedInterval = Interval.fromDateTimes(start, end);
-		    const title = frames['century'].getTitle(adjustedInterval);
+		    const title = frames.century.getTitle(adjustedInterval);
 		    return {title:title, interval:adjustedInterval};
 		},
 		format(interval) {
@@ -99,16 +114,15 @@ const frames =
                 },
 
 		getTitle:(interval)=>{
-		    const i1 = Interval.fromDateTimes(
-			interval.start.startOf('year'),
-			interval.start.endOf('year'));
-		    return  frames['millennium'].getTitle(interval)
+		    const i1 = frames.century.getAdjustedDt(interval);
+		    return frames['millennium'].getTitle(interval)
 			.concat(
 			    {title:frames.century.format(interval),
 			     timeSpan:toSpan(i1)});
 		}		
 		
 	    },
+            
 	    'decade': {
                 name:'decade',
                 narrow:'year',
@@ -145,16 +159,13 @@ const frames =
                 },
 
 		getTitle:(interval)=>{
-
-		    const i1 = Interval.fromDateTimes(
-			interval.start.startOf('year'),
-			interval.start.endOf('year'));
-
+		    const i1 = frames.decade.getAdjustedDt(interval);
 		    return frames['century'].getTitle(interval).concat(
 			{title:frames.decade.format(interval),
 			 timeSpan:toSpan(i1)});
 		}		
 	    },
+            
 	    'year': {
                 name:'year',                
                 narrow:'month',
@@ -190,15 +201,14 @@ const frames =
                 },
 
 		getTitle:(interval)=>{
-		    const i1 = Interval.fromDateTimes(
-			interval.start.startOf('year'),
-			interval.start.endOf('year'));
+		    const i1 = frames.year.getAdjustedDt(interval);                    
 		    return frames['decade'].getTitle(interval)
 			.concat({title:interval.start.year,
 				 timeSpan:toSpan(i1)});
 		}
 
 	    },
+            
 	    'month': {
                 name:'month',
                 narrow:'day',
@@ -235,8 +245,10 @@ const frames =
                 },
                     
 		getTitle:(interval)=>{
-		    const i1 = Interval.fromDateTimes(interval.start.startOf('year'), interval.start.endOf('year'));
-		    return frames['year'].getTitle(interval).concat({title:interval.start.toFormat('MMMM'), timeSpan:toSpan(i1)})
+		    const i1 = frames.month.getAdjustedDt(interval);      
+		    return frames.year.getTitle(interval).concat(
+                        {title:interval.start.toFormat('MMMM'),
+                         timeSpan:toSpan(i1)})
 		}
 	    },
 	    'day': {
@@ -273,7 +285,9 @@ const frames =
                 },
                     
 		getTitle:(interval)=>{
-		    return interval.start.toFormat('DDDD');
+		    return frames['month'].getTitle(interval).concat(
+                        {title:interval.start.toFormat('DDDD'),
+                         timeSpan:toSpan(interval)});
 		}
                 
 	    },
@@ -308,9 +322,11 @@ const frames =
                     const title = start.toFormat('m');
                     return {span:span, interval:interval, title:title};
                 },
-                    
+
 		getTitle:(interval)=>{
-		    return interval.start.toFormat('DDDD hma');
+		return frames['month'].getTitle(interval).concat(
+                    {title:interval.start.toFormat('DDDD hma'),
+                     timeSpan:toSpan(interval)});                
 		}
 		
 	    },
@@ -331,7 +347,6 @@ class TimeFrames {
     // Give me a luxon Interval and I'll pick a timeframe for you.
     
     constructor(interval) {
-        console.log(interval);
 	this.interval = interval;
 	this.seconds = interval.length('seconds');
 	this.frame = this.getTimeFrameObject();

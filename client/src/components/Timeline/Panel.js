@@ -221,7 +221,7 @@ class Panel extends React.Component {
 	const mapped = this.props.title.map((o, i, a) => {
 	    const breadSpacer = ((i+1)<a.length) ? ' ▶ ' : '';
 
-	    return (<span key={o.timeSpan} ><Link to={`/timelines?${o.timeSpan}`}>{o.title}</Link>{breadSpacer}</span>)});
+	    return (<span key={i} ><Link to={`/timelines?${o.timeSpan}`}>{o.title}</Link>{breadSpacer}</span>)});
 	
         return (
             <div className="Panel"
