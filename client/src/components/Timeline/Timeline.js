@@ -9,11 +9,11 @@ class Timeline extends React.Component {
 	super(props, context);
         const start = props.start
               ? DateTime.fromISO(props.start)
-              : DateTime.local().startOf('month');
+              : DateTime.fromObject({year:1984}).startOf('year');
 
         const before = props.start
               ? DateTime.fromISO(props.before)
-              : DateTime.local().endOf('month');        
+              : DateTime.fromObject({year:1984}).endOf('year');
 	const interval = Interval.fromDateTimes(start, before);
 
 	this.state = this.initialize(interval);
@@ -76,11 +76,6 @@ class Timeline extends React.Component {
         console.log('+1 timeframe');        
     }
 
-    toSpan(interval) {
-	console.log('calling toSPan');
-	return `start=${interval.start.toISO()}&before=${interval.end.toISO()}`;
-    }
-
     toProps(num) {
 	return {center:this.state.center + num,
 		span:this.state.span,
@@ -90,22 +85,6 @@ class Timeline extends React.Component {
 		offset:this.state.offset};
     }
     
-    toProps2(num) {
-	const newCenter = this.state.center + num;
-        const {title, interval} = this.state.frame.offset(this.state.span, newCenter);
-        const props = {
-            columnCount:this.state.frame.getColumnCount(interval),
-            center:newCenter,
-            frame:this.state.frame,
-            title:title,
-	    width:this.state.width,
-	    height:this.state.height,	    
-            interval:interval,
-            timeSpan:this.toSpan(interval),
-            offset:this.state.offset
-        };
-	return props;
-    }
 
 
     shouldComponentUpdate(nextProps, nextState) {

@@ -4,7 +4,6 @@ import {DateTime, Interval} from 'luxon';
 import EventNoteButton from '../Event/EventNoteButton';
 import EventEditButton from '../Event/EventEditButton';
 
-
 class TimelistEvent extends React.Component {
 
     constructor(props) {

@@ -277,6 +277,15 @@ tr.timelist td {
     vertical-align:top;
 }
 
+.timeline-image {
+    width:15%;
+    float:left;
+    margin:0 1em 1em 0;
+    border:1px solid #ccc;
+    max-height:200px;
+}
+
+
 .timelist-image {
     width:100%;
     max-height:200px;

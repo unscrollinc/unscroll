@@ -32,7 +32,7 @@ const routes = [
     { path: '/',
       exact: true,
       Research: (props) => tl(props),
-      Workbook: () => <News/>
+      Workbook: () => null
     },
 
     { path: '/user/register',

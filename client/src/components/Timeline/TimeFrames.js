@@ -144,9 +144,15 @@ const frames = {
 		    const title = frames['decade'].getTitle(adjustedInterval);
 		    return {title:title, interval:adjustedInterval};
 		},
+
+                elOffset:(dt) => {
+                    return dt.year - (10 * Math.floor(dt.year/10, 10));
+                },
+                
 		format(interval) {
 		    return Math.floor(interval.start.year/10) * 10 + 's';
 		},
+                
 		getColumnCount:()=>{
 		    return 10;
 		},

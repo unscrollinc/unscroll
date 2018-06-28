@@ -12,24 +12,18 @@ axios.defaults.withCredentials = true;
 
 class Panel extends React.Component {
 
+    // THERE IS A BIG GLOBAL VARIABLE IN HERE CALLED GRID.
+
     constructor(props, context) {
         super(props, context);
         this.buffer = document.getElementById('buffer');
+        this.grid = this.makeGrid();
 	this.state = this.initialize(props);
-
     }
     
     initialize(props) {
-	console.log('PROPS', props, frames);
-        const {title, interval} = frames[props.frame].offset(props.span, props.center);	
-        return {
-	    grid:{
-                width:props.width,
-                height:props.height
-	    },
-	    frame:props.frame,
-	    columns:[...Array(props.columnCount).keys()].map(this.makeColumn.bind(this)),
-	    title:title.map((o, i, a) => {
+        const {title, interval} = props.frame.offset(props.span, props.center);
+        const breadcrumbTitle = title.map((o, i, a) => {
 		const breadSpacer = ((i+1)<a.length) ? ' ▶ ' : '';
 		return (
 		    <span key={i}>
@@ -38,19 +32,32 @@ class Panel extends React.Component {
 		      </Link>
 		      {breadSpacer}
 		    </span>);
-	    }),
+	});
+        const columns= [...Array(props.width).keys()].map((ct)=>this.makeColumn.bind(this)(ct, interval));
+        return {
+	    grid:{
+                width:props.width,
+                height:props.height
+	    },
+	    frame:props.frame,
+	    title:breadcrumbTitle,
 	    interval:interval,
 	    events:[],
 	    cell: {
 		width:100/props.width,
 		height:100/props.height
 	    },
-	    grid:this.makeGrid(props.width, props.height)
+            columns:columns
 	};
     }
-    
-    makeGrid(w, h) {
 
+    toSpan(interval) {
+	return `start=${interval.start.toISO()}&before=${interval.end.toISO()}`;
+    }
+    
+    makeGrid() {
+        const w = this.props.width;
+        const h = this.props.height;
         // Makes an associative array of false values that is
 	// `this.state.grid.height` long and each value is an array
 	// `this.state.grid.height` wide. I.e. a 2D bitmap.
@@ -80,7 +87,7 @@ class Panel extends React.Component {
 	for (let _y = y; _y < y + h; _y++) {
 	    for (let _x = x; _x < x + w; _x++) {
 		if (_y < ymax && _x < xmax) {
-		    if (this.bitsGrid[_y][_x]) {
+		    if (this.grid[_y][_x]) {
 			return this.doReservation(x, y + 1, w, h);
 		    }
 		    else {
@@ -96,7 +103,7 @@ class Panel extends React.Component {
 	if (success) {
 	    for (let _y = y; _y < y + h; _y++) {
 		for (let _x = x; _x < x + w; _x++) {
-                    this.bitsGrid[_y][_x] = true;
+                    this.grid[_y][_x] = true;
 		}
 	    }
 	}
@@ -121,20 +128,19 @@ class Panel extends React.Component {
         // buffer to get its real sizing.
         //
         // Then we re-make it virtually.
-
         let d = document.createElement('div');
         d.className='event';
         d.innerHTML = `<button>Note</button><button>Edit</button>
                        <h3>${month}/${event.title}</h3>
                        <p>${event.text}</p>
                        `;
-                         
-        d.style.width = (3 * this.state.cell.width) + '%';        
+        
+        d.style.width = (2 * this.state.cell.width) + '%';
         this.buffer.append(d);
         var b = window.innerHeight;
         var r = d.getBoundingClientRect();
         var h = Math.ceil(((r.height/b) * 100) / this.state.cell.height, 10);
-        var w = 3;
+        var w = 2;
         this.buffer.removeChild(d);
         return {
             width:w,
@@ -143,22 +149,30 @@ class Panel extends React.Component {
     }
     
     makeEls(data) {
+        const shuffle = (a) => {
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        };
+        
         let els = [];
-        for (var i=0;i<data.results.length;i++) {
-	    let event = data.results[i];
+        const jels = shuffle(data.results);
+        for (var i=0;i<jels.length;i++) {
+	    let event = jels[i];
 	    let dt = DateTime.fromISO(event.when_happened);
-            let month = dt.month;
-
-            let buffered =
-                this.bufferEl(event, dt, month);
+            let left = this.state.frame.elOffset(dt);
             
-            let res =
-                this.doReservation(
-                    month,
-                    0,
-                    buffered.width,
-                    buffered.height
-                );
+
+            let buffered = this.bufferEl(event, dt, left);
+
+            let res = this.doReservation(
+                left,
+                0,
+                buffered.width,
+                buffered.height
+            );
 
             if (res.success) {
                 let el = (
@@ -166,12 +180,11 @@ class Panel extends React.Component {
                       key={event.uuid}
 		      
                       width={res.w * this.state.cell.width + '%'}
-                      left={(-1 + res.x) * this.state.cell.width + '%'}
-		      
                       height={res.h * this.state.cell.height + '%'}
-                      top={10 + res.y * this.state.cell.height + '%'}
-		      
-                      month={month}
+
+                      left={(res.x) * this.state.cell.width + '%'}
+                      top={10 + (0.9 * (res.y * this.state.cell.height)) + '%'}
+
                       dt={dt}
 		      event={event}
 		      title={event.title}
@@ -180,18 +193,23 @@ class Panel extends React.Component {
                 els.push(el);
             }
         }
+        
+        console.log ('FOUND',els.length,  'out of', data.results.length);
         return els;
     }
 
     getSpan() {
         let _this = this;
-	cachios.get(`http://127.0.0.1:8000/events/?${_this.props.timeSpan}`)
+        _this.grid = this.makeGrid();
+        
+	cachios.get('http://127.0.0.1:8000/events/?'+this.toSpan(this.state.interval))
 	    .then(resp => {
+                const els = _this.makeEls(resp.data);
                 _this.setState(prevState => ({
-		    events: _this.makeEls(resp.data)
+		    events: els
                 }));
 	    }).catch(err => {
-	        console.log('Error', err.response.status);
+	        console.log('Error', err);
 	    });
     }
     
@@ -201,35 +219,26 @@ class Panel extends React.Component {
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.timeSpan !== this.props.timeSpan) {
-	    this.setState(this.initialize(this.props));
-            this.getSpan();
+	    this.setState(this.initialize(this.props), this.getSpan);
         }
+
+
+        
     }
     
-    static getDerivedStateFromProps(nextProps, prevState) {
-        return {
-	    center: nextProps.center,
-	    offset: nextProps.offset,
-            timeSpan: nextProps.timeSpan
-        };
-    }
-
-
-    makeColumn(i) {
-	console.log('MakeColumn', this.props);
-        const { span, interval, title } = this.props.frame.getColumnLink(this.props.interval, i);
+    makeColumn(ct, interval) {
+        const { span, _interval, title } = this.props.frame.getColumnLink(interval, ct);
         return(
                 <Column
-                  columnCount={this.props.columnCount} 
+                  width={100/this.props.width + '%'} 
 	          span={span}
                   title={title}
-                  key={i}/>
+                  key={ct}/>
         );
     }
 
     render() {
-	console.log('rendering Panel');
-        const left = `${((this.props.center * 100) + this.props.offset)}%`;
+        const left = (this.props.center * 100) + this.props.offset + '%';
 
         return (
             <div className="Panel" id={this.props.center} style={{left:left}}>

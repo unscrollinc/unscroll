@@ -5,7 +5,7 @@ class Column extends React.Component {
     render() {
         return (
                 <div className="column"
-                 style={{width:100/this.props.columnCount + '%'}}
+                 style={{width:this.props.width}}
                 >
                 <Link to={`/timelines?${this.props.span}`}>{this.props.title}</Link>
             </div>
