@@ -147,7 +147,8 @@ class Panel extends React.Component {
             height:h
         };
     }
-    
+
+    // Figure out how to do this with https://www.npmjs.com/package/html-react-parser    
     makeEls(data) {
         const shuffle = (a) => {
             for (let i = a.length - 1; i > 0; i--) {

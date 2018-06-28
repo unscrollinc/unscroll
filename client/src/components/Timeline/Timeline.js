@@ -44,7 +44,7 @@ class Timeline extends React.Component {
     }
     
     handleMouseMove(e) {
-        if (e.buttons > 0) {
+        if (this.state.mouseDown) {
             const delta = this.getXPercentage() - this.state.atMouseDown;
             const center = 0 - Math.round(this.state.offset/100);
             this.setState({
@@ -128,17 +128,17 @@ class Timeline extends React.Component {
             }
         });
         return (
-		<div className="Timeline"
+		<div key="TimelineWrapper" className="Timeline"
                    style={{position:'fixed'}}
                    {...WheelReact.events}
                    onMouseDown={this.handleMouseDown.bind(this)}
                    onMouseUp={this.handleMouseUp.bind(this)}                 
                    onMouseMove={this.handleMouseMove.bind(this)}
                    >            
-                <div id="Panels">
-                <Panel key={this.state.center - 1} {...this.toProps(-1)} />
-                <Panel key={this.state.center} {...this.toProps(0)} />
-                <Panel key={this.state.center + 1} {...this.toProps(1)} />
+                <div key="Timeline" id="Panels">
+                  <Panel key={this.state.center - 1} {...this.toProps(-1)} />
+                  <Panel key={this.state.center} {...this.toProps(0)} />
+                  <Panel key={this.state.center + 1} {...this.toProps(1)} />
                 </div>
               </div>
         );
