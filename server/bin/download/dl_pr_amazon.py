@@ -3,8 +3,9 @@ import requests
 import re
 from unscroll import UnscrollClient
 from unscrolldate import UnscrollDate
+import random
 
-def get_blogspot_releases(api):
+def get_releases(api, scroll):
     urls = ["http://phx.corporate-ir.net/phoenix.zhtml?c=176060&p=irol-news&nyo={}".format(o)
             for o in range(25)]
 
@@ -28,7 +29,7 @@ def get_blogspot_releases(api):
                     'title':title,
                     'text':None,
                     'resolution':ud.resolution,
-                    'ranking':0,
+                    'ranking':random.random(),
                     'content_url':content_url,
                     'with_thumbnail':None,
                     'source_name':'Amazon PR Page',
@@ -38,19 +39,28 @@ def get_blogspot_releases(api):
                 }
                 print (ud.when_happened, title, content_url)
                 
-                e = api.create_event(d)
+                e = api.create_event(d, scroll)
                 print(e.content)
             except IndexError as e:
                 print('[dl_pr_google.py] IndexError: {}'.format(e,))
 
 def __main__():
 
-    c = UnscrollClient(api='http://127.0.0.1:8000',
-                       username='ford',
-                       password='***REMOVED***')
-    c.login()
-    c.create_or_retrieve_scroll('Amazon PR')
-    get_blogspot_releases(c)
+    c = UnscrollClient()
+    c.login()    
+    c.delete_scroll_with_title('Amazon PR')
+
+    thumbnail = 'http://media.corporate-ir.net/media_files/IROL/17/176060/img/logos/amazon_logo_RGB.jpg'
+    favthumb = c.cache_thumbnail(thumbnail)
+
+    scroll = c.create_or_retrieve_scroll('Amazon PR',
+                                         description='A set of press releases from the Amazon Press Room.',
+                                         link='http://phx.corporate-ir.net/phoenix.zhtml?c=176060&p=irol-news&nyo=0',
+                                         citation='Amazon Press Room',
+                                         with_thumbnail=favthumb.get('url'))
+    print(scroll)
+
+    get_releases(c, scroll)
 
 __main__()
 

@@ -60,6 +60,7 @@ const frames = {
                     const title = start.toFormat('kkkk');
                     return {span:span, interval:interval, title:title};
                 },
+		
 		getTitle:(interval)=>{
 		    const adj = frames.millennium.getAdjustedDt(interval);
 		    return [{title:frames.millennium.format(interval),
@@ -69,9 +70,13 @@ const frames = {
 	    },
             
 	    'century': {
-                name:'century',
-                narrow:'decade',
-                broaden:'millennium',
+
+		name:'century',
+
+		narrow:'decade',
+
+		broaden:'millennium',
+
 		getAdjustedDt:(interval) => {
 		    const beginYear = 100 * Math.floor(interval.start.year/100, 10);
 		    const endYear = beginYear + 99;
@@ -80,6 +85,7 @@ const frames = {
                         DateTime.fromObject({year:endYear}).endOf('year'));
 		    return i;
 		},
+
 		offset:(interval, num) => {
 		    const start = interval.start.plus({years: 100 * num});
 		    const end = interval.end.plus({years: 100 * num});
@@ -87,6 +93,7 @@ const frames = {
 		    const title = frames.century.getTitle(adjustedInterval);
 		    return {title:title, interval:adjustedInterval};
 		},
+		
 		format(interval) {
 		    const c = Math.floor(interval.start.year/100) + 1;
 		    const last = c.toString().split('').pop();
@@ -101,10 +108,15 @@ const frames = {
 		    }
 		    return c+'th century';
 		},
+
+                elOffset:(dt) => {
+                    return (dt.year - (100 * Math.floor(dt.year/100, 10)))/10;
+                },
 		
 		getColumnCount:()=>{
 		    return 10;
 		},
+	
 
                 getColumnLink:(i, offset)=>{
                     const start = i.start.plus({years:offset});
@@ -194,6 +206,10 @@ const frames = {
 		    const title = frames['year'].getTitle(adjustedInterval);
 		    return {title:title, interval:adjustedInterval};
 		},
+
+                elOffset:(dt) => {
+                    return dt.month;
+                },		
 		
 		getColumnCount:()=>{
 		    return 12;
@@ -241,6 +257,10 @@ const frames = {
 		    return interval.start.endOf('month').day;
 		},
 
+                elOffset:(dt) => {
+                    return dt.day;
+                },				
+
                 getColumnLink:(i, offset)=>{
                     const start = i.start.plus({days:offset});
                     const end = start.endOf('day');
@@ -259,6 +279,7 @@ const frames = {
                          timeSpan:toSpan(i1)})
 		}
 	    },
+    
 	    'day': {
                 name:'day',                
                 narrow:'hour',
@@ -297,8 +318,8 @@ const frames = {
                         {title:interval.start.toFormat('DDDD'),
                          timeSpan:toSpan(interval)});
 		}
-                
-	    },
+      	    },
+    
 	    'hour': {
                 name:'hour',                                
                 narrow:'minute',

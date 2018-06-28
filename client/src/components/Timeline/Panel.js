@@ -159,7 +159,7 @@ class Panel extends React.Component {
         };
         
         let els = [];
-        const jels = shuffle(data.results);
+        const jels = data.results;
         for (var i=0;i<jels.length;i++) {
 	    let event = jels[i];
 	    let dt = DateTime.fromISO(event.when_happened);
@@ -203,7 +203,7 @@ class Panel extends React.Component {
         let _this = this;
         _this.grid = this.makeGrid();
         
-	cachios.get('http://127.0.0.1:8000/events/?'+this.toSpan(this.state.interval))
+	cachios.get('http://127.0.0.1:8000/events/?limit=50&'+this.toSpan(this.state.interval))
 	    .then(resp => {
                 const els = _this.makeEls(resp.data);
                 _this.setState(prevState => ({

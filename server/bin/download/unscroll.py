@@ -33,7 +33,8 @@ class UnscrollClient():
 
         if (scroll_title is not None):
             self.login()
-            scroll = self.create_or_retrieve_scroll(scroll_title, thumbnail=thumbnail)
+            scroll = self.create_or_retrieve_scroll(scroll_title,
+                                                    with_thumbnail=thumbnail)
             for event in events:
                 event['in_scroll'] = scroll
             chunks = [events[x:x+500] for x in range(0, len(events), 500)]
@@ -55,25 +56,31 @@ class UnscrollClient():
     def create_or_retrieve_scroll(self,
                                   title,
                                   public=True,
-                                  subtitle='',
                                   description='',
-                                  thumbnail=None):
+                                  link='',
+                                  citation='',
+                                  with_thumbnail=None):
 
         r = requests.post(self.api + '/scrolls/',
                           headers=self.authentication_header,
                           json={'title': title,
                                 'is_public': public,
-                                'subtitle': subtitle,
+                                'citation': citation,
+                                'link': link,
                                 'description': description,
-                                'with_thumbnail': thumbnail})
+                                'with_thumbnail': with_thumbnail})
         
         if r.status_code == 200:
             scroll_d = dict(r.json())
             return scroll_d['url']
+
         else:
+            print(r.json())
+            
             r = requests.get(self.api + '/scrolls/?title=' + quote_plus(title),
                              headers=self.authentication_header,)
             results = r.json()['results']
+            
             if (len(results) > 0):
                 scroll_d = dict(results[0])
                 return scroll_d['url']
@@ -83,9 +90,10 @@ class UnscrollClient():
                              headers=self.authentication_header,)        
         
         if r.status_code == 200:
-            j = r.json()['results'][0]
-            r = requests.delete(j['url'],
-                                headers=self.authentication_header)
+            rj = r.json()
+            if len(rj['results']) > 0:
+                j = rj['results'][0]
+                r = requests.delete(j['url'], headers=self.authentication_header)
             
             return True
 
@@ -106,6 +114,7 @@ class UnscrollClient():
 
     def create_event(self, event, scroll):
         event['in_scroll'] = scroll
+        print(event)
         r = requests.post(self.api + '/events/',
                           headers=self.authentication_header,
                           data=event)
