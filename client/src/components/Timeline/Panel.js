@@ -194,8 +194,6 @@ class Panel extends React.Component {
                 els.push(el);
             }
         }
-        
-        console.log ('FOUND',els.length,  'out of', data.results.length);
         return els;
     }
 
@@ -222,9 +220,6 @@ class Panel extends React.Component {
         if (prevProps.timeSpan !== this.props.timeSpan) {
 	    this.setState(this.initialize(this.props), this.getSpan);
         }
-
-
-        
     }
     
     makeColumn(ct, interval) {

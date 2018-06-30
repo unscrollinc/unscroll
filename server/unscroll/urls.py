@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.conf.urls.static import static
 from django.db import IntegrityError
+from django.db.models import Q
 import django_filters
 from django.db.models import Max, Min, Count
 from rest_framework import pagination, generics, serializers, viewsets, routers, response, status
@@ -402,12 +403,50 @@ class ScrollSerializer(serializers.HyperlinkedModelSerializer):
 class ScrollViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = ScrollSerializer
-    queryset = Scroll.objects.select_related('by_user')\
-                             .filter(is_public=True)\
-                             .annotate(
-                                 event_count=Count('events'),
-                                 first_event=Min('events__when_happened'),
-                                 last_event=Max('events__when_happened'))
+    queryset = Scroll.objects.select_related('by_user')
+        
+    def list(self, request):
+        queryset = Scroll.objects.select_related('by_user')
+
+        uuid = request.query_params.get('uuid')
+        if uuid:
+            queryset = Scroll.objects.select_related('by_user').filter(uuid=uuid)
+            
+        query = (Q(is_public=True))
+        if request.user.is_authenticated:
+            query = (Q(by_user=request.user) or Q(is_public=True))
+                
+        qs = queryset\
+            .filter(query)\
+            .annotate(
+                event_count=Count('events'),
+                first_event=Min('events__when_happened'),
+                last_event=Max('events__when_happened'))
+
+        serializer = ScrollSerializer(
+            qs,
+            many=True,
+            context={'request': request})
+
+        return Response(serializer.data)
+        
+
+
+    def retrieve(self, request, pk):
+        user = request.user
+        q = Q(is_public=True)
+        if user.is_authenticated:
+            q = (Q(is_public=True)|Q(by_user=user))        
+        queryset = Scroll.objects\
+                         .select_related('by_user')\
+                         .filter(q)\
+                         .get(pk=pk)
+        serializer = ScrollSerializer(queryset,
+                                      many=False,
+                                      context={'request': request})
+        return Response(serializer.data)
+
+    
     filter_class = ScrollFilter
 
 
@@ -446,7 +485,8 @@ class NotebookSerializer(serializers.HyperlinkedModelSerializer):
 
 class NotebookNotesSerializer(NotebookSerializer):
     full_notes = NoteEventSerializer(read_only=True, many=True)
-    
+
+
 class NotebookViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = NotebookSerializer

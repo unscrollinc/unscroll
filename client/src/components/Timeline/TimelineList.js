@@ -19,23 +19,19 @@ class TimelineList extends React.Component {
 
 	return(
             <tr key={key}>
-              
+              <td>
+		{scroll.is_public ? 'X' : '-'}
+             </td>
+                
               <td>
                 {formatDate(scroll.when_created)}
               </td>
               
               <td className="timeline-list-title">
-	        <Link to={'/timelines/' + scroll.uuid}>{scroll.title}</Link>
+	        <Link to={'/timelines/' + scroll.uuid + '/edit'}>{scroll.title}</Link>
+                <div className="description">{scroll.description}</div>
               </td >
 
-              <td>
-	        <button onClick={()=>{context.deleteScroll(scroll.uuid);}}>Del</button>
-              </td>              
-
-              <td>
-		{scroll.is_public ? 'Published' : 'Private'}
-              </td>
-              
             </tr>
 	);
     }
@@ -47,7 +43,6 @@ class TimelineList extends React.Component {
               <AppContext.Consumer>
 		{(context) => {
                     return (
-                        
                         <React.Fragment>
 
                           <table className="notebook-header">
@@ -66,10 +61,10 @@ class TimelineList extends React.Component {
 			  <table className="timeline-list">
                             <tbody>
                               <tr>
-                                <th>Date</th>
-                                <th>Title</th>
-                                <th>Delete</th>
-                                <th>Public?</th>                                          
+                            <th>Public?</th>
+                            <th>Date</th>
+                            <th>Title</th>
+
                               </tr>
                               {Array.from(context.state.user.scrollList).map(this.makeScroll.bind(context))}
                             </tbody>

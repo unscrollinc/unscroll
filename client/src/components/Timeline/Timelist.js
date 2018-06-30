@@ -40,8 +40,14 @@ class Timelist extends React.Component {
     
 
     getSpan(url) {
+        console.log(this);
         const _this = this;
-	cachios.get(url)
+        console.log('AUUUUUUUTH',url, this.props.context.getAuthHeaderFromCookie());
+	axios({
+            method:'get',
+            url:url,
+	    headers:this.props.context.getAuthHeaderFromCookie()
+        })
 	    .then(resp => {
                 const _els = _this.makeEls(resp.data);
                 _this.setState(prevState => ({
@@ -116,6 +122,7 @@ class Timelist extends React.Component {
     }
 
     render() {
+        console.log('TIMELIST', this.props);
         return(
             <div 
               className="Timelist"

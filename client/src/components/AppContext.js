@@ -13,6 +13,10 @@ const API = 'http://127.0.0.1:8000/';
 
 export const AppContext = React.createContext();
 
+const randomString = () => {
+    return Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 6);
+}
+
 export class AppProvider extends React.Component {
     constructor(state, context) {
         super(state, context);
@@ -157,8 +161,7 @@ export class AppProvider extends React.Component {
 	    url:this.state.notebook.url,
 	    headers:this.makeAuthHeader(this.state.user.authToken),
 	    data:update(this.state.notebook,
-			{
-			    $unset: ['notes', 'isOnServer', 'isSaved']})
+			{$unset: ['notes', 'isOnServer', 'isSaved']})
 	})
             .then(function(resp) {
                 _this.loadNotebookList();
@@ -175,6 +178,30 @@ export class AppProvider extends React.Component {
             });
     }
 
+    saveScroll() {
+        const _this = this;
+        axios({
+	    method:'post',
+	    url:API+'scrolls/',
+	    headers:this.makeAuthHeader(this.state.user.authToken),
+	    data:update(this.state.scroll, {$unset: ['events']})
+	})
+            .then(function(resp) {
+		_this.setState(
+		    {scroll: update(
+			_this.state.scroll, {$merge: {
+		            isSaved: true,
+		            events:new Map(),
+		            ...resp.data}})
+		    },
+                    _this.loadScrollList);
+            })
+            .catch(error => {
+                console.log(`saveScroll: There is already a scroll by you with that name! Your scrolls each need their own name. ${error}`);
+            });
+    }
+
+    
     loadScrollList() {
         const _this = this;	
         axios({method:'get',
@@ -308,7 +335,10 @@ export class AppProvider extends React.Component {
     }
     
     makeAuthHeader(token) {
-        return {Authorization: `Token ${token}`};
+        if (token) {
+            return {Authorization: `Token ${token}`};
+        }
+        return null;
     }
     
     render() {
@@ -316,6 +346,14 @@ export class AppProvider extends React.Component {
             <AppContext.Provider value={{
 
                 state:this.state,
+
+                getAuthHeaderFromCookie:() => {
+                    const c = cookie.get();
+	            const hasAuth = (c && c.authToken && c.username);
+                    const authToken = hasAuth ? c.authToken : null;
+                    const username = hasAuth ? c.username : null;
+                    return this.makeAuthHeader(authToken);
+                },
                 
                 handleUsernameUpdate:(event) => {
                     this.setState({user: update(this.state.user, {username: {$set: event.target.value}})});
@@ -384,7 +422,7 @@ export class AppProvider extends React.Component {
                         on:true,
 			isSaved:false,
                         title:'Untitled-'
-                            + Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 6),
+                            + randomString(),
                         subtitle:'Un-subtitled',
                         description:'Un-summarized',
                         uuid: uuidv4(),
@@ -427,7 +465,7 @@ export class AppProvider extends React.Component {
                                              isSaved:false,
                                              [field]: value}})});
                 },
-                
+
                 addNote:(event) => {
 		    console.log('[@addNote(event)]', event);
                     const newNote = {
@@ -492,15 +530,6 @@ export class AppProvider extends React.Component {
                                                                           notes: _resequenced}})});
                 },
                 
-                doEventSearch:(e, searchTerm) => {
-                    e.preventDefault();
-                    this.setState({timeline:
-                                   update(this.state.timeline,
-                                          {$merge: {search:
-                                                    update(this.state.timeline.search, {$merge: {q:searchTerm}})}})},
-                                  ()=>{console.log(this.state.timeline.search)});
-                },
-                
                 updateNote:(newState) => {
                     const nb = this.state.notebook;
                     this.setState({
@@ -540,6 +569,16 @@ export class AppProvider extends React.Component {
                             });
                 },
                 
+                
+                doEventSearch:(e, searchTerm) => {
+                    e.preventDefault();
+                    this.setState({timeline:
+                                   update(this.state.timeline,
+                                          {$merge: {search:
+                                                    update(this.state.timeline.search, {$merge: {q:searchTerm}})}})},
+                                  ()=>{console.log(this.state.timeline.search)});
+                },
+
                 editEvent:(e) => {
                     this.setState({
                         eventEditor:{on:true, event:e}
@@ -552,6 +591,19 @@ export class AppProvider extends React.Component {
                     });
                 },                                
 
+                addScroll:() => {
+                    console.log('OKAY', this);
+                    this.setState({scroll: {
+                        on:true,
+			isSaved:false,
+                        title:'Untitled-' + randomString(),
+                        description:'Un-summarized',
+                        uuid: uuidv4(),
+                        events:[]
+                    }}, this.saveScroll);
+                },
+
+                
                 eventWindowClose:() => {
                     this.setState({eventEditor:{on:false, event:undefined}});
                 }

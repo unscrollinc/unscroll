@@ -2,44 +2,81 @@
 * DONE Know who a person is
 * DONE TKTK
 
-* TODO User [0/5]:
-  * [ ] Create account
-  * [ ] Register
-  * [ ] Reset password
-  * [ ] Confirm
-  * [ ] Edit profile
+* Announcement
 
-* Timelines [0/2]
-  * [ ] Refactor all "Scroll" stuff to be Timeline
-  * [ ] Vertical view
+I have a side project: A web-based, timeline-driven writing tool that helps you fact-check your work, called Unscroll. I work on it when @PostlightStudio is calm and the kids are in bed. I built it for myself but believe it's worth sharing. https://unscroll.com
 
-* Timelist [0/7]
-  * [ ] Reverse chronological
-  * [ ] Create new timeline
-  * [ ] Add event
-  * [ ] Delete event
-  * [ ] Edit event
-  * [ ] 
-  * [ ] 
+The idea is as simple as grade school index cards: write notes about events in a notebook, then arrange the notes into essays. Using it reduces my anxiety.
+
+Here are some timelines:
+
+- Events from Wikipedia year pages
+- Black history
+- LGBTQ history
+- Cooper Hewitt
+- Corporate press releases
+- Thousands of radio programs
+- Lots of technology stuff
+- Books
+- My tweets
+- A few github repositories
+
+Here are some essays I've written using it:
+
+- Hello, World: https://unscroll.com/user/ford/notebooks/hello-world
+- On Top of the World: https://unscroll.com/user/ford/notebooks/things-atop
+- As I Went About My Merry Way (song)
+- A Transition in Technological Joy (how we went from everyone getting access to no one getting access)
+
+And here is an FAQ:
+
+I look forward to your thoughts.
+
+
+* TODO User [3/7]:
+  - [X] Create account
+  - [ ] Register
+  - [ ] Reset password
+  - [ ] Confirm
+  - [ ] Edit profile
+  - [X] Login
+  - [X] Logout
+
+* Timelines [1/5]
+  - [X] Vertical view buttons
+  - [ ] Refactor all "Scroll" stuff to be Timeline
+  - [ ] Timeline search results
+  - [ ] No direct editing on Timelines at launch?
+  - [ ] Use HTML->React module for sizing, then placing events
+
+* Timelist [1/6]
+  - [X] Create new timeline
+  - [ ] Max # of timelines per scroll?
+  - [ ] Add event
+  - [ ] Delete event
+  - [ ] Edit event
+  - [ ] Reverse chronological
 
 * Notebooks
-  * [ ] Rich text in title editor
-  * [ ] Different kinds of notes
-    * [ ] paragraph break
-    * [ ] image/upload
-  * [ ] 
-  * [ ] 
-  * [ ] 
+  - [ ] Rich text in title editor
+
+* Events
+  - [ ] paragraph break
+  - [ ] image upload
+  - [ ] Link
 
 * Design
-
-  * [ ] Overall simple color scheme
-  * [ ] Overall simple grid
-  * [ ] Overall simple colors for backgrounds and events
+  - [ ] Overall simple color scheme
+  - [ ] Overall grid
+  - [ ] Overall colors for backgrounds and events
 
 * API
-  * [ ] Refactor all "Scroll" stuff to be Timeline
-  * [ ] "My" views differentiated from other views
+  - [ ] Read through endpoints and make them either public, private, or admin with no variability.
+  - [ ] Refactor all "Scroll" stuff to be Timeline
+  - [ ] "My" views differentiated from other views
 
 * Nice to have
-  * [ ] Snake case JSON
+  - [ ] Snake case JSON
+  - [ ] Write five piecess
+
+* Release

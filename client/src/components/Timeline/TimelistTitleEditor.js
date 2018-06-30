@@ -1,6 +1,8 @@
 import React from 'react';
 import { Form, Text, TextArea, Checkbox } from 'react-form';
 import axios from 'axios';
+import { DateTime } from 'luxon';
+import AppContext from '../AppContext';
 import update from 'immutability-helper';
 const SCROLL_API='http://127.0.0.1:8000/scrolls/';
 
@@ -15,16 +17,12 @@ class TimelistTitleEditor extends React.Component {
         this.state = {
             isEditing:false,
             isSaved:true,
-            isSaving:false,            
-            scroll:undefined
+            isSaving:false,
         };
-        console.log('EDITOR', props);
-
+        
 	this.sweep = () => {
             const _this = this;
-            console.log('sweeping');
             if (!this.state.isSaved) {
-                console.log('not saved!', this);
                 // save it. Set the saved State to 
                 this.setState(
                     {isSaving:true},
@@ -58,11 +56,14 @@ class TimelistTitleEditor extends React.Component {
         if (this.props.uuid) {
             const _this = this;
             const url = SCROLL_API + '?uuid=' + this.props.uuid;
-	    axios.get(url)
+	    axios({
+                method:'get',
+                url:url,
+                headers:this.props.context.getAuthHeaderFromCookie()})
 	        .then(resp => {
-                    _this.setState({scroll:resp.data.results[0]}, ()=>{console.log(this.state);});
+                    _this.setState({scroll:resp.data[0]}, ()=>{console.log('LOGGING IT', this.state);});
 	        }).catch(err => {
-	        console.log('Error', err.response.status);
+	        console.log('Error', err);
 	        });
         }
     }
@@ -71,16 +72,20 @@ class TimelistTitleEditor extends React.Component {
         this.getScroll();
     }
 
+    quickDate(iso) {
+        return DateTime.fromISO(iso).toFormat('d MMM kkkk');
+    }
+    
     makeTitle() {
+        const s = this.state.scroll;
         return (
-            <div>
-              <h1>{this.state.scroll.title}</h1>
-              <p>Created: {this.state.scroll.when_created}</p>
-              <p>Modified: {this.state.scroll.when_modified}</p>              
-              <p>By: {this.state.scroll.by_user}</p>
-              <p>{this.state.scroll.link}</p>
-              <p>{this.state.scroll.citation}</p>
-              <p>{this.state.scroll.description}</p>
+            <div key={s.uuid}>
+              <div className="citation">
+                <a href={s.link} target="_new">{s.citation}</a>, {this.quickDate(s.first_event)}&ndash;{this.quickDate(s.last_event)}.                
+              </div>
+              <h1><a href={'/timelines/' + s.uuid}>{s.title}</a></h1>
+              <p>{s.description}</p>
+              <p>Created by <a href={'/users/' + s.user_username}>{s.user_username}</a> ({this.quickDate(s.when_created)}, changed {this.quickDate(s.when_modified)}.)</p>
             </div>
         );
     }
@@ -119,7 +124,8 @@ class TimelistTitleEditor extends React.Component {
                             onChange={(e)=>this.scrollChange('description', e)}
                             placeholder='Description' />
                         </div>
-                        <div key='public'>Public?
+                        
+                        <div key='is_public'>Published?
                           <Checkbox
                             field="is_public"
                             onChange={(e)=>this.scrollChange('is_public', e)}
@@ -144,16 +150,19 @@ class TimelistTitleEditor extends React.Component {
         );
     }
     render() {
-        
-        if (this.state.scroll && this.state.isEditing) {
-            return [this.editButton(), this.makeForm()];
-        }
-        else if (this.state.scroll) {
+        console.log('RENDERING', this.state.scroll);
+        if (this.state.scroll) {
+            if (this.props.edit) {
+                return [this.editButton(), this.makeForm()];
+            }
             return [this.editButton(), this.makeTitle()];
         }
-        return null;
+        return (<div>Loading...</div>);
     }
 }
 
-
-export default TimelistTitleEditor;
+export default props => (
+  <AppContext.Consumer>
+    {context => <TimelistTitleEditor {...props} context={context} />}
+  </AppContext.Consumer>
+);
