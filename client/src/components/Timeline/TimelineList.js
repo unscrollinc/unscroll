@@ -1,24 +1,24 @@
 import React from 'react';
 import { Link } from 'react-router-dom' ;
 import { DateTime } from 'luxon';
-
+import axios from 'axios';
 import AppContext from '../AppContext.js';
 
 class TimelineList extends React.Component {
+    constructor(props, context) {
+        super(props);
+        this.state = {timelines:[],
+                      auth:this.props.context.getAuthHeaderFromCookie};
+    }
     
-    makeScroll(scrollEntry, i) {
-
-	const context = this;
-	
+    makeScroll(scroll) {
         const formatDate = (dt) => {
             const luxonDt = DateTime.fromISO(dt);
             return luxonDt.toLocaleString(DateTime.DATE_SHORT);
         };
         
-        const [key, scroll] = scrollEntry;
-
 	return(
-            <tr key={key}>
+            <tr key={scroll.uuid}>
               <td>
 		{scroll.is_public ? 'X' : '-'}
              </td>
@@ -28,12 +28,33 @@ class TimelineList extends React.Component {
               </td>
               
               <td className="timeline-list-title">
-	        <Link to={'/timelines/' + scroll.uuid + '/edit'}>{scroll.title}</Link>
+	        <Link to={'/timelines/' + scroll.uuid}>{scroll.title}</Link>
                 <div className="description">{scroll.description}</div>
               </td >
 
             </tr>
 	);
+    }
+
+    getTimelines() {
+
+        const _this = this;
+        console.log('called getTimelines');
+        axios({
+            method:'get',
+            url:'http://localhost:8000/scrolls/',
+            header:this.state.auth
+        })
+            .then(resp => {
+                _this.setState({timelines:resp.data});
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    }
+
+    componentDidMount() {
+        this.getTimelines();
     }
     
     render() {
@@ -66,7 +87,7 @@ class TimelineList extends React.Component {
                             <th>Title</th>
 
                               </tr>
-                              {Array.from(context.state.user.scrollList).map(this.makeScroll.bind(context))}
+                              {this.state.timelines.map(this.makeScroll.bind(context))}
                             </tbody>
                           </table>
 			  
@@ -79,5 +100,11 @@ class TimelineList extends React.Component {
     }
 }
 
-export default TimelineList;
+
+export default props => (
+  <AppContext.Consumer>
+    {context => <TimelineList {...props} context={context} />}
+  </AppContext.Consumer>
+);
+
 
