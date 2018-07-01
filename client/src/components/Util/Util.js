@@ -1,7 +1,7 @@
 import cookie from 'js-cookie';
 
 // Functions that take no arguments and return either null or
-// something.
+// something and that are usually bad/global/messy.
 
 const util = {
     getAuthHeaderFromCookie: () => {
