@@ -8,6 +8,8 @@ from django.conf.urls.static import static
 from django.db import IntegrityError
 from django.db.models import Q
 import django_filters
+from django_filters import rest_framework as filters
+
 from django.db.models import Max, Min, Count
 from rest_framework import pagination, generics, serializers, viewsets, routers, response, status
 from rest_framework.decorators import action
@@ -404,51 +406,25 @@ class ScrollViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = ScrollSerializer
     queryset = Scroll.objects.select_related('by_user')
-        
-    def list(self, request):
-        queryset = Scroll.objects.select_related('by_user')
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    filter_class = ScrollFilter
 
-        uuid = request.query_params.get('uuid')
-        if uuid:
-            queryset = Scroll.objects.select_related('by_user').filter(uuid=uuid)
-            
-        query = (Q(is_public=True))
-        if request.user.is_authenticated:
-            query = (Q(by_user=request.user) or Q(is_public=True))
-                
-        qs = queryset\
+    def get_queryset(self):
+        user = self.request.user
+
+        # Check if authed
+        query = Q(is_public=True)        
+        if user.is_authenticated:
+            query = (Q(by_user=user) or Q(is_public=True))
+
+        qsfinal = self.queryset\
             .filter(query)\
             .annotate(
                 event_count=Count('events'),
                 first_event=Min('events__when_happened'),
                 last_event=Max('events__when_happened'))
 
-        serializer = ScrollSerializer(
-            qs,
-            many=True,
-            context={'request': request})
-
-        return Response(serializer.data)
-        
-
-
-    def retrieve(self, request, pk):
-        user = request.user
-        q = Q(is_public=True)
-        if user.is_authenticated:
-            q = (Q(is_public=True)|Q(by_user=user))        
-        queryset = Scroll.objects\
-                         .select_related('by_user')\
-                         .filter(q)\
-                         .get(pk=pk)
-        serializer = ScrollSerializer(queryset,
-                                      many=False,
-                                      context={'request': request})
-        return Response(serializer.data)
-
-    
-    filter_class = ScrollFilter
-
+        return qsfinal
 
 class NotebookFilter(django_filters.rest_framework.FilterSet):
     class Meta:

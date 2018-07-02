@@ -3,12 +3,15 @@ import { Link } from 'react-router-dom' ;
 import { DateTime } from 'luxon';
 import axios from 'axios';
 import AppContext from '../AppContext.js';
+import util from '../Util/Util.js';
 
 class TimelineList extends React.Component {
+
     constructor(props, context) {
         super(props);
         this.state = {timelines:[],
-                      auth:this.props.context.getAuthHeaderFromCookie};
+                      myTimelines:[],
+                      auth:util.getAuthHeaderFromCookie()};
     }
     
     makeScroll(scroll) {
@@ -19,16 +22,18 @@ class TimelineList extends React.Component {
         
 	return(
             <tr key={scroll.uuid}>
+              
               <td>
 		{scroll.is_public ? 'X' : '-'}
              </td>
-                
+
               <td>
                 {formatDate(scroll.when_created)}
               </td>
               
               <td className="timeline-list-title">
 	        <Link to={'/timelines/' + scroll.uuid}>{scroll.title}</Link>
+                By <Link to={'/timelines/by/' + scroll.user_username}>{scroll.user_username}</Link>
                 <div className="description">{scroll.description}</div>
               </td >
 
@@ -37,16 +42,17 @@ class TimelineList extends React.Component {
     }
 
     getTimelines() {
-
         const _this = this;
         console.log('called getTimelines');
         axios({
             method:'get',
-            url:'http://localhost:8000/scrolls/',
+            url:(this.props.my === true)
+                ? 'http://localhost:8000/scrolls/?by_user__username=ford'
+                : 'http://localhost:8000/scrolls/',
             header:this.state.auth
         })
             .then(resp => {
-                _this.setState({timelines:resp.data});
+                _this.setState({timelines:resp.data.results});
             })
             .catch(err => {
                 console.log(err);
@@ -82,12 +88,14 @@ class TimelineList extends React.Component {
 			  <table className="timeline-list">
                             <tbody>
                               <tr>
-                            <th>Public?</th>
-                            <th>Date</th>
-                            <th>Title</th>
+                                <th>Public?</th>
+                                <th>Date</th>
+                                <th>Timeline</th>
 
                               </tr>
-                              {this.state.timelines.map(this.makeScroll.bind(context))}
+                              
+                              {this.state.timelines.map(this.makeScroll)}
+                              
                             </tbody>
                           </table>
 			  

@@ -16,6 +16,7 @@ export const AppContext = React.createContext();
 const randomString = () => {
     return Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 6);
 }
+      
 
 export class AppProvider extends React.Component {
     constructor(state, context) {
@@ -617,3 +618,4 @@ export class AppProvider extends React.Component {
 }
 
 export default AppContext;
+

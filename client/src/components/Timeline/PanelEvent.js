@@ -42,7 +42,7 @@ class Event extends React.Component {
                 <EventNoteButton event={this.props.event}/>
                 {this.makeImage(this.props.event)}
                 <div>{this.props.event.when_happened}</div>
-	      <h3><a href={this.props.event.content_url} target="_blank">{this.props.month}/{this.props.title}</a></h3>
+	      <h3><a href={this.props.event.content_url} target="_blank">{this.props.title}</a></h3>
               <p>{this.props.text}</p>
             </div>
         );
