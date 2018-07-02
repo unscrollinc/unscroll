@@ -40,7 +40,6 @@ class Timelist extends React.Component {
     
 
     getSpan(url) {
-        console.log(this);
         const _this = this;
 	axios({
             method:'get',
@@ -55,7 +54,7 @@ class Timelist extends React.Component {
                     doGetNext: false
                 }));
 	    }).catch(err => {
-	        console.log('Error', err.response.status);
+	        console.log('Error', err);
 	    });
     }
 
@@ -75,8 +74,6 @@ class Timelist extends React.Component {
 	// (TODO there are some ways to read context as props.)
         
         if (q && this.state.search.q!==q) {
-	    console.log('made it to manageSearch comparison');
-	    
             this.setState(prevState =>
                           ({events:[],
                             nextUrl:undefined,
@@ -121,7 +118,6 @@ class Timelist extends React.Component {
     }
 
     render() {
-        console.log('TIMELIST', this.props);
         return(
             <div 
               className="Timelist"

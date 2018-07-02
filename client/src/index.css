@@ -491,3 +491,19 @@ form.search {
     font-weight:normal;
     padding:1em 0 0em 0;
 }
+
+
+div.loading {
+    width:100%;
+    padding:3em 0 0 0;
+    text-align:center;
+    opacity: 1;
+    animation: fade 0.5s linear;
+}
+
+
+@keyframes fade {
+  0%,100% { opacity: 0 }
+  50% { opacity: 1 }
+}
+

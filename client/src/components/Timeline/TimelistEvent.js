@@ -2,13 +2,13 @@ import React from 'react';
 import 'react-virtualized/styles.css';
 import {DateTime, Interval} from 'luxon';
 import EventNoteButton from '../Event/EventNoteButton';
-import EventEditButton from '../Event/EventEditButton';
 
 class TimelistEvent extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = props;
+        this.state = {edit:false};
+        
     }
 
     showWhenHappened(then, now) {
@@ -58,12 +58,35 @@ class TimelistEvent extends React.Component {
         return e.when_happened;
     }
 
-    render() {
-        let e = this.state.event;
+    
+    renderEditor() {
+        const e = this.props.event;
+        return (
+	    <tr className="timelist">
+	      <td colspan="2">
+		{this.makeImage(e)}
+                <input type="file"/>
+
+                {e.scroll_title}
+                
+                <div className="eventNoteButton">
+                  <button onClick={()=>this.setState({edit:false})}>Done</button>                  
+                </div>                
+                <div>url <input type="text" value={e.content_url}/></div>
+                <div>title <input type="text" value={e.title}/></div>
+                <div>text <textarea>{e.text}</textarea></div>
+
+	      </td>
+	    </tr>
+        );
+    }
+    
+    renderEvent() {
+        const e = this.props.event;
         return(
 	    <React.Fragment>
 
-	      {this.showWhenHappened(this.state.lastTime, e.when_happened)}
+	      {this.showWhenHappened(this.props.lastTime, e.when_happened)}
 	      
 	      <tr className="timelist">
                 
@@ -72,7 +95,7 @@ class TimelistEvent extends React.Component {
 		  <div className="collection">
                     
                     <div className="scroll-title">
-                      <a className="title" href={`/search/?scroll:${e.scroll_title}`}>
+                      <a className="title" href={`/search/?scroll:${e.scroll_uuid}`}>
                         {e.scroll_title}
 	              </a>
                     </div>
@@ -88,7 +111,7 @@ class TimelistEvent extends React.Component {
 		<td className="content">
                   <div className="eventNoteButton">
                     <EventNoteButton event={this.props.event}/>
-                    <EventEditButton event={this.props.event}/>
+                    <button onClick={()=>this.setState({edit:true})}>Edit</button>
                   </div>                
                   
                   <div className="dt">{this.makeWhen(e)}</div>
@@ -103,6 +126,12 @@ class TimelistEvent extends React.Component {
 	    </React.Fragment>
 
         );
+    }
+    render() {
+        if (this.state.edit === true) {
+            return this.renderEditor();            
+        }
+        return this.renderEvent();
     }
 }
 

@@ -43,7 +43,6 @@ class TimelineList extends React.Component {
 
     getTimelines() {
         const _this = this;
-        console.log('called getTimelines');
         axios({
             method:'get',
             url:(this.props.my === true)

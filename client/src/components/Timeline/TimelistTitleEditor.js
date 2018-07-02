@@ -61,7 +61,8 @@ class TimelistTitleEditor extends React.Component {
                 url:url,
                 headers:this.props.context.getAuthHeaderFromCookie()})
 	        .then(resp => {
-                    _this.setState({scroll:resp.data[0]}, ()=>{console.log('LOGGING IT', this.state);});
+                    console.log(resp);
+                    _this.setState({scroll:resp.data.results[0]}, ()=>{});
 	        }).catch(err => {
 	        console.log('Error', err);
 	        });
@@ -100,6 +101,7 @@ class TimelistTitleEditor extends React.Component {
                         
                         <div key='title'>
                           Title: <Text
+                                   key='title_field'                                                                                                           
                                    field="title"
                                    onChange={(e)=>this.scrollChange('title', e)}
                             placeholder='Title' />
@@ -107,12 +109,14 @@ class TimelistTitleEditor extends React.Component {
                         
                         <div key='citation'>
                           Citation: <Text
+                                      key='citation_field'                                                                        
                                       field="citation"
                                       onChange={(e)=>this.scrollChange('citation', e)}
                             placeholder='Citation' />
                         </div>
                         <div key='link'>
                           Link: <Text
+                                  key='link_field'                                  
                                   field="link"
                                   onChange={(e)=>this.scrollChange('link', e)}
                             placeholder='Link' />
@@ -120,6 +124,7 @@ class TimelistTitleEditor extends React.Component {
                         <div key='description'>
                           Description:
                           <TextArea
+                            key='decription_field'
                             field="description"
                             onChange={(e)=>this.scrollChange('description', e)}
                             placeholder='Description' />
@@ -127,6 +132,7 @@ class TimelistTitleEditor extends React.Component {
                         
                         <div key='is_public'>Published?
                           <Checkbox
+                            key='is_public_checkbox'
                             field="is_public"
                             onChange={(e)=>this.scrollChange('is_public', e)}
                             />
@@ -150,19 +156,22 @@ class TimelistTitleEditor extends React.Component {
         );
     }
     render() {
-        console.log('RENDERING', this.state.scroll);
         if (this.state.scroll) {
             if (this.props.edit) {
                 return [this.editButton(), this.makeForm()];
             }
             return [this.editButton(), this.makeTitle()];
         }
-        return (<div>Loading...</div>);
+        return (<div className='loading'
+                key='loading'>Loading...</div>);
     }
 }
 
 export default props => (
   <AppContext.Consumer>
-    {context => <TimelistTitleEditor {...props} context={context} />}
+    {context => <TimelistTitleEditor
+                     key='title-editor'
+                     {...props}
+                     context={context} />}
   </AppContext.Consumer>
 );
