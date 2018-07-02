@@ -63,7 +63,7 @@ class TimelistEvent extends React.Component {
         const e = this.props.event;
         return (
 	    <tr className="timelist">
-	      <td colspan="2">
+	      <td colSpan="2">
 		{this.makeImage(e)}
                 <input type="file"/>
 
