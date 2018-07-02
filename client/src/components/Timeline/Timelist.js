@@ -42,10 +42,9 @@ class Timelist extends React.Component {
     getSpan(url) {
         console.log(this);
         const _this = this;
-        console.log('AUUUUUUUTH',url, this.props.context.getAuthHeaderFromCookie());
 	axios({
             method:'get',
-            url:url,
+            url:url + '&order=when_happened',
 	    headers:this.props.context.getAuthHeaderFromCookie()
         })
 	    .then(resp => {

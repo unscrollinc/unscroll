@@ -163,6 +163,13 @@ class EventFilter(django_filters.rest_framework.FilterSet):
     in_scroll = django_filters.UUIDFilter(
         name="in_scroll__uuid")
 
+    order = django_filters.OrderingFilter(
+        # tuple-mapping retains order
+        fields = ['when_happened', 'ranking'])
+
+
+    
+    
     q = django_filters.CharFilter(method='filter_by_q', distinct=True)
 
     # TODO THIS THING IS FRANKLY REAL DODGY

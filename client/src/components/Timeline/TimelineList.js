@@ -109,10 +109,5 @@ class TimelineList extends React.Component {
 }
 
 
-export default props => (
-  <AppContext.Consumer>
-    {context => <TimelineList {...props} context={context} />}
-  </AppContext.Consumer>
-);
-
-
+export default TimelineList;
+    
