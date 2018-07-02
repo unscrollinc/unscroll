@@ -10,7 +10,6 @@ class TimelineList extends React.Component {
     constructor(props, context) {
         super(props);
         this.state = {timelines:[],
-                      myTimelines:[],
                       auth:util.getAuthHeaderFromCookie()};
     }
     
@@ -24,7 +23,7 @@ class TimelineList extends React.Component {
             <tr key={scroll.uuid}>
               
               <td>
-		{scroll.is_public ? 'X' : '-'}
+		{scroll.is_public ? 'Public' : 'Private'}
              </td>
 
               <td>
@@ -32,8 +31,8 @@ class TimelineList extends React.Component {
               </td>
               
               <td className="timeline-list-title">
-	        <Link to={'/timelines/' + scroll.uuid}>{scroll.title}</Link>
-                By <Link to={'/timelines/by/' + scroll.user_username}>{scroll.user_username}</Link>
+	        <div><Link to={'/timelines/' + scroll.uuid}>{scroll.title}</Link></div>
+                <div>By <Link to={'/timelines/by/' + scroll.user_username}>{scroll.user_username}</Link></div>
                 <div className="description">{scroll.description}</div>
               </td >
 
@@ -45,10 +44,10 @@ class TimelineList extends React.Component {
         const _this = this;
         axios({
             method:'get',
+            headers:this.state.auth,
             url:(this.props.my === true)
-                ? 'http://localhost:8000/scrolls/?by_user__username=ford'
-                : 'http://localhost:8000/scrolls/',
-            header:this.state.auth
+                ? 'http://127.0.0.1:8000/scrolls/?by_user__username=ford'
+                : 'http://127.0.0.1:8000/scrolls/'
         })
             .then(resp => {
                 _this.setState({timelines:resp.data.results});

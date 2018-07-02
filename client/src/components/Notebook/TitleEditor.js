@@ -19,19 +19,19 @@ class TitleEditor extends React.Component {
                                       <div>
                                         <Text
                                           field="title"
-                                          onChange={(e)=>context.notebookTextFieldChange('title', e)}
+                                          onChange={(e)=>context.notebookChange('title', e)}
                                           placeholder='Title' />
                                       </div>
                                       <div>
                                         <Text
                                           field="subtitle"
-                                          onChange={(e)=>context.notebookTextFieldChange('subtitle', e)}
+                                          onChange={(e)=>context.notebookChange('subtitle', e)}
                                           placeholder='Subtitle' />
                                       </div>
                                       <div>
                                         <TextArea
                                           field="description"
-                                          onChange={(e)=>context.notebookTextFieldChange('description', e)}
+                                          onChange={(e)=>context.notebookChange('description', e)}
                                           placeholder='Description' />
                                       </div>
                                       <div>Public?

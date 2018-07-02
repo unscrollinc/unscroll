@@ -154,21 +154,21 @@ class ThumbnailViewSet(viewsets.ModelViewSet):
 # Events
 # ##############################
 class EventFilter(django_filters.rest_framework.FilterSet):
+
     start = django_filters.IsoDateTimeFilter(
         name='when_happened',
         lookup_expr='gte')
+
     before = django_filters.IsoDateTimeFilter(
         name='when_happened',
         lookup_expr='lt')
+    
     in_scroll = django_filters.UUIDFilter(
         name="in_scroll__uuid")
 
     order = django_filters.OrderingFilter(
         # tuple-mapping retains order
         fields = ['when_happened', 'ranking'])
-
-
-    
     
     q = django_filters.CharFilter(method='filter_by_q', distinct=True)
 
@@ -270,12 +270,24 @@ class BulkEventSerializer(BulkSerializerMixin,
 class BulkEventViewSet(BulkModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Event.objects.select_related('in_scroll',
-                                            'by_user')\
-                            .filter(in_scroll__is_public=True)
+                                            'by_user')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     filter_class = EventFilter
     serializer_class = BulkEventSerializer
 
+    def get_queryset(self):
+        user = self.request.user
+
+        # Check if authed
+        query = Q(in_scroll__is_public=True)        
+        if user.is_authenticated:
+            query = (Q(by_user=user) or Q(in_scroll__is_public=True))
+
+        qsfinal = self.queryset\
+            .filter(query)
+
+        return qsfinal
+    
     @action(detail=True)
     def maxmin(self, request):
         filtered = EventFilter(request.GET,
@@ -302,6 +314,7 @@ class NoteSerializer(serializers.HyperlinkedModelSerializer):
             'order',            
             'uuid',
             'in_notebook',
+            'in_notebook',            
             'by_user',
             'with_event',
             'kind',
@@ -317,6 +330,10 @@ class NoteSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class NoteEventSerializer(serializers.HyperlinkedModelSerializer):
+    user_username = serializers.CharField(
+        read_only=True,
+        source="by_user.username")
+
     event = EventSerializer(
         source='with_event',
         many=False,
@@ -331,6 +348,7 @@ class NoteEventSerializer(serializers.HyperlinkedModelSerializer):
             'uuid',
             'in_notebook',
             'by_user',
+            'user_username',
             'event',
             'kind',            
             'when_created',
@@ -345,6 +363,20 @@ class NoteViewSet(viewsets.ModelViewSet):
     serializer_class = NoteSerializer
     ordering_fields = ('order',)
     ordering = ('order',)
+
+
+    
+    def get_queryset(self):
+        user = self.request.user
+
+        # Check if authed
+        query = Q(in_notebook__is_public=True)        
+        if user.is_authenticated:
+            query = (Q(by_user=user) or Q(in_notebook__is_public=True))
+        qsfinal = self.queryset.filter(query)
+
+        return qsfinal
+    
 
 class NoteFilter(django_filters.rest_framework.FilterSet):
     in_notebook = django_filters.UUIDFilter(
@@ -474,31 +506,44 @@ class NotebookViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = NotebookSerializer
     filter_class = NotebookFilter
-    queryset = Notebook.objects.filter(is_public=True)
+    queryset = Notebook.objects.all()
+
+    def get_queryset(self):
+        user = self.request.user
+
+        # Check if authed
+        query = Q(is_public=True)        
+        if user.is_authenticated:
+            query = (Q(by_user=user) or Q(is_public=True))
+        qsfinal = self.queryset.filter(query)
+
+        return qsfinal
+
+
     
-    # Need to override only-public filter here so we use a custom destroy    
-    def destroy(self, request, *args, **kwargs):
-        self.queryset = Notebook.objects.all()    
-        instance = self.get_object()
-        if instance.by_user == request.user:
-            self.perform_destroy(instance)
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(status=status.HTTP_404_NOT_FOUND)        
+    # # Need to override only-public filter here so we use a custom destroy    
+    # def destroy(self, request, *args, **kwargs):
+    #     self.queryset = Notebook.objects.all()    
+    #     instance = self.get_object()
+    #     if instance.by_user == request.user:
+    #         self.perform_destroy(instance)
+    #         return Response(status=status.HTTP_204_NO_CONTENT)
+    #     return Response(status=status.HTTP_404_NOT_FOUND)        
 
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        self.queryset = Notebook.objects.all()           
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
+    # def update(self, request, *args, **kwargs):
+    #     partial = kwargs.pop('partial', False)
+    #     self.queryset = Notebook.objects.all()           
+    #     instance = self.get_object()
+    #     serializer = self.get_serializer(instance, data=request.data, partial=partial)
+    #     serializer.is_valid(raise_exception=True)
+    #     self.perform_update(serializer)
 
-        if getattr(instance, '_prefetched_objects_cache', None):
-            # If 'prefetch_related' has been applied to a queryset, we need to
-            # forcibly invalidate the prefetch cache on the instance.
-            instance._prefetched_objects_cache = {}
+    #     if getattr(instance, '_prefetched_objects_cache', None):
+    #         # If 'prefetch_related' has been applied to a queryset, we need to
+    #         # forcibly invalidate the prefetch cache on the instance.
+    #         instance._prefetched_objects_cache = {}
 
-        return Response(serializer.data)
+    #     return Response(serializer.data)
    
     @action(detail=True)
     def notes(self, request, pk=None):

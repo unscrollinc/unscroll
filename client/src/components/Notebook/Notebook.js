@@ -4,40 +4,12 @@ import TitleEditor from './TitleEditor';
 import Manuscript from './Manuscript';
 import AppContext from '../AppContext';
 
-/*
-  if (x) show (y)
-  /notebooks/?by=ford    // Notebook listing mine
-  /notebooks/            // Notebook listing all
-  /notebooks/{id}/edit   // Notebook edit
-  /notebooks/{id}/read   // Notebook read
-
-  /scrolls/?by=ford      // Scroll listing mine
-  /scrolls/              // Scroll listing all
-  /scrolls/{id}?view=edit     // Scroll edit
-  /scrolls/{id}?view=read     // Scroll read
-
-  /events/{id}
-
-  /notes/{id}
-
-  /events?
-     q={q}&vh={vertical|horizontal}
-    &start={dt}
-    &end={dt}
-    &res={1|2|3|4|5|6|7|8|9|10|11|12}
-    &scroll={txt}
-    &topic={txt}
-    &medium={txt}
-    &by={txt}
-    
-*/
 class Notebook extends React.Component {
 
     constructor(props, context) {
         super(props, context);
         this.state = props;
     }
-    
 
     makeAddNoteButton(context) {
         if (context.state.notebook.uuid !== undefined) {

@@ -5,6 +5,12 @@ import { DateTime } from 'luxon';
 
 class NotebookList extends React.Component {
 
+    constructor(props, context) {
+	super(props);
+	this.state = {
+	    notebooks:null
+	};
+    }
     
     makeNotebook(notebookEntry, i) {
 
@@ -19,19 +25,23 @@ class NotebookList extends React.Component {
 
 	return(
             <tr key={key}>
+	      
               <td>
                 {formatDate(notebook.when_created)}
               </td>
               
               <td className="notebook-list-title">
-	        <Link to={'/notebooks/'+notebook.uuid}>{notebook.title}</Link>
-              </td >
-              <td>
-	        <button onClick={()=>{context.deleteNotebook(notebook.uuid);}}>Del</button>
-              </td>              
+	        <div className='list-object-title'><Link to={'/notebooks/'+notebook.uuid}>{notebook.title}</Link></div>
+		<div>
+		  <span className='list-object-byline'>By <Link to={'/users/' + notebook.user_username}>{notebook.user_username}</Link>.</span>
+		  <span className='list-object-description'>{notebook.description}</span>
+		</div>
+	      </td>
+	      
               <td>
 		{notebook.is_public ? 'Published' : 'Private'}
               </td>
+	      
             </tr>
 	);
     }
@@ -45,30 +55,41 @@ class NotebookList extends React.Component {
                     return (
                         <React.Fragment>
                           <table className="notebook-header">
-                            <tbody>
-                              <tr>
-                                <td>Notebooks</td>
-                                <td>
+
+			    <tbody>
+
+			      <tr>
+
+				<td>Notebooks</td>
+
+				<td><Link to='/my/notebooks'>Mine</Link></td>
+
+				<td><Link to='/notebooks'>All</Link></td>
+
+				<td>
 	                          <button onClick={context.addNotebook}>+ New</button>
                                 </td>
-                                <td><Link to='/notebook'>Mine</Link></td>
-                                <td><Link to='/notebook/all'>All</Link></td>
+				
                               </tr>
-                            </tbody>
+
+			    </tbody>
+			    
                           </table>
                           
 			  <table className="notebook-list">
-                            <tbody>
+
+			    <tbody>
+			      
                               <tr>
                                 <th>Date</th>
                                 <th>Title</th>
-                                <th>Delete</th>
                                 <th>Public?</th>                                          
                               </tr>
-
+			      
                               {Array.from(context.state.user.notebookList).map(this.makeNotebook.bind(context))}
                               
                             </tbody>
+			    
                           </table>
                         </React.Fragment>                        
                     );

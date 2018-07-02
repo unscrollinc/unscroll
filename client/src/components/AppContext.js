@@ -24,11 +24,8 @@ export class AppProvider extends React.Component {
         const c = cookie.get();        
 
         this.state = this.makeState(c);
-
-        if (this.state.user.authToken) {
-            this.loadNotebookList();
-            this.loadScrollList();
-        }
+        this.loadNotebookList();
+        // this.loadScrollList();
 
 	this.sweep = () => {
 	    if (this.state.user.notebookCurrent && !this.state.notebook.isSaved) {
@@ -65,10 +62,53 @@ export class AppProvider extends React.Component {
 	setInterval(this.sweep, 1000 * SWEEP_DURATION_SECONDS);
     }
 
-    modifyNote(uuid, o) {
-        console.log('[@modifyNote(uuid,o,this.state.notebook.notes)]', uuid, o, this.state.notebook.notes);
-        console.log('[@modifyNote:note by uuid]', this.state.notebook.notes.get(uuid));        
+    makeState(c) {
+	const hasAuth = (c && c.authToken && c.username);
+        const authToken = hasAuth ? c.authToken : null;
+        const username = hasAuth ? c.username : null; 	
         
+        return {
+	    user: {
+                hasAuth:hasAuth,
+                id:undefined,
+                authToken:authToken,
+                username:username,
+                password:undefined,
+                profile:undefined,
+                notebookCurrent:undefined,
+                notebookList:[],
+                scrollCurrent:undefined,                
+                scrollList:[]
+	    },
+	    notebook: {
+                moveFrom:undefined,
+                targetNote:undefined,
+		notes:new Map(),
+                noteCurrent:undefined
+	    },
+	    scroll: {},
+	    eventEditor: {
+                on:false,
+                currentEvent:{}
+	    },
+	    timeline: {
+                isHorizontal:true,
+                search: {
+                    q:undefined,
+		    from:undefined,
+		    to:undefined,
+		    creator:undefined,
+		    scroll:undefined,
+		    topic:undefined
+                },
+                frame:undefined,
+                span:undefined,
+                position:undefined
+	    }
+        }
+    }
+    
+    modifyNote(uuid, o) {
         // const _this = this;
 	this.setState(
             {notebook:
@@ -104,7 +144,7 @@ export class AppProvider extends React.Component {
                 _this.modifyNote(note.uuid, {isSaved:true});
 	    })
             .catch(error => {
-                console.log(error, _this.state);
+                console.log('[!patchNote()]', error, _this.state);
             });
         
     }
@@ -194,8 +234,9 @@ export class AppProvider extends React.Component {
 		            isSaved: true,
 		            events:new Map(),
 		            ...resp.data}})
-		    },
-                    _this.loadScrollList);
+		    }
+		    // , _this.loadScrollList
+		);
             })
             .catch(error => {
                 console.log(`saveScroll: There is already a scroll by you with that name! Your scrolls each need their own name. ${error}`);
@@ -206,7 +247,7 @@ export class AppProvider extends React.Component {
     loadScrollList() {
         const _this = this;	
         axios({method:'get',
-	       url:API+'users/scrolls/',
+	       url:API+'scrolls/',
                headers: this.makeAuthHeader(_this.state.user.authToken)
 	      })
 	    .then(function(response) {
@@ -224,15 +265,15 @@ export class AppProvider extends React.Component {
     loadNotebookList() {
         const _this = this;	
         axios({method:'get',
-	       url:API+'users/notebooks/',
-               headers: this.makeAuthHeader(_this.state.user.authToken)
+	       url:API+'notebooks/',
+               headers:this.makeAuthHeader(_this.state.user.authToken)
 	      })
 	    .then(function(response) {
 		_this.setState(
                     {user: update(_this.state.user,
                                   {$merge:
-                                   {notebookList:new Map(response.data.map((n)=>[n.uuid, n]))}})}
-		    //,()=>{console.log('[@loadNotebookList() logged in user]',_this.state.user);}
+                                   {notebookList:new Map(response.data.results.map((n)=>[n.uuid, n]))}})}
+		    ,()=>{console.log('[@loadNotebookList() logged in user]',_this.state.user);}
 		);
 	    });
     }
@@ -259,52 +300,7 @@ export class AppProvider extends React.Component {
                 console.log("ERROR!!!!!", error);
             });
     }
-    makeState(c) {
-
-	const hasAuth = (c && c.authToken && c.username);
-        const authToken = hasAuth ? c.authToken : null;
-        const username = hasAuth ? c.username : null; 	
-        
-        return {
-            user: {
-                hasAuth:hasAuth,
-                id:undefined,
-                authToken:authToken,
-                username:username,
-                password:undefined,
-                profile:undefined,
-                notebookCurrent:undefined,
-                notebookList:[],
-                scrollCurrent:undefined,                
-                scrollList:[]
-            },
-            notebook: {
-                moveFrom:undefined,
-                targetNote:undefined,
-		notes:new Map(),
-                noteCurrent:undefined
-	    },
-            scroll: {},
-            eventEditor: {
-                on:false,
-                currentEvent:{}
-            },
-            timeline: {
-                isHorizontal:true,
-                search: {
-                    q:undefined,
-                    from:undefined,
-                    to:undefined,
-                    creator:undefined,
-                    scroll:undefined,
-                    topic:undefined
-                },
-                frame:undefined,
-                span:undefined,
-                position:undefined
-            }
-        }
-    }
+    
     
     sequenceNotes(notes) {
         console.log('[@sequenceNotes:notes]', notes);
@@ -368,10 +364,11 @@ export class AppProvider extends React.Component {
                 
                 doLogout:() => {
                     const _this = this;
-                    axios({method:'post',
-                           url:API+'auth/logout/',
-                           headers: this.makeAuthHeader(this.state.user.authToken)
-                          })
+                    axios(
+			{method:'post',
+                         url:API+'auth/logout/',
+                         headers: this.makeAuthHeader(this.state.user.authToken)
+                        })
                         .then(function(response) {
                             _this.setState(_this.makeState());
                         })

@@ -507,3 +507,13 @@ div.loading {
   50% { opacity: 1 }
 }
 
+
+.list-object-title {
+    font-weight:bold;
+}
+.list-object-byline {
+    margin-right:1em;
+}
+.list-object-description {
+    font-style:Italic;
+}

@@ -2,13 +2,21 @@ import React from 'react';
 import 'react-virtualized/styles.css';
 import {DateTime, Interval} from 'luxon';
 import EventNoteButton from '../Event/EventNoteButton';
+import update from 'immutability-helper';
+import axios from 'axios';
+import util from '../Util/Util.js';
+import RichTextEditor from '../Editor/RichTextEditor';
+import { Form, Text, TextArea, Checkbox } from 'react-form';
 
 class TimelistEvent extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {edit:false};
-        
+	// We go ahead and put props into the event because we're
+	// gonna change it on edit and we want to reflect that.
+        this.state = {edit:false,
+		      event:this.props.event,
+		      edits:{}};
     }
 
     showWhenHappened(then, now) {
@@ -21,7 +29,7 @@ class TimelistEvent extends React.Component {
                 return(<tr className="dtsince"><td colSpan="3">+ {ct} months </td></tr>);
             }
         }
-        return undefined;
+        return null;
     }
 
     getImage(e) {
@@ -30,11 +38,8 @@ class TimelistEvent extends React.Component {
         }
         if (e.scroll_with_thumbnail) {
             return 'http://localhost/'+ e.scroll_with_thumbnail;
-        }        
-    }
-
-    getImageUrl(e) {
-        return 'url('+ this.getImage(e) + ')';
+        }
+	return null;
     }
 
     makeImage(e) {
@@ -47,9 +52,7 @@ class TimelistEvent extends React.Component {
                 </a>
             );
         }
-        else {
-            return undefined;
-        }
+        return null;
     }
     makeWhen(e) {
         if (e.when_original) {
@@ -58,31 +61,112 @@ class TimelistEvent extends React.Component {
         return e.when_happened;
     }
 
+    save() {
+	const url = this.state.event.url;
+	const _this = this;
+	
+	if (Object.keys(this.state.edits).length === 0
+	    && this.state.edits.constructor === Object) {
+	    console.log('No changes, not saving.');
+	    _this.setState({edit:false});
+	    return null;
+	}
+	else {
+	    axios(
+		{method:'patch',
+		 url:url,
+		 headers:util.getAuthHeaderFromCookie(),
+		 data:this.state.edits})
+		.then(resp=>{
+		    _this.setState({edit:false});		
+		})
+		.catch(err=>{
+	    });
+	}
+	return null;
+    }
+
+    edit(key, value) {
+	this.setState(
+	    {event:update(this.state.event, {$merge: {[key]: value}}),
+	     edits:update(this.state.edits, {$merge: {[key]: value}})});
+    }
     
+
     renderEditor() {
-        const e = this.props.event;
+        const e = this.state.event;
+
+
         return (
-	    <tr className="timelist">
-	      <td colSpan="2">
-		{this.makeImage(e)}
-                <input type="file"/>
+            <Form defaultValues={this.state.event}>	    
+              {(form) => {
+                  return (<tr className="timelist">
+			  <td colSpan="3">
+                   	  <form>
+				<div>
+				  <div>Title</div>
+				      <RichTextEditor
+					    field='title'
+					    upEdit={this.edit.bind(this)}
+					    event={e}/>
+				</div>
+				      
+  				{this.makeImage(e)}
+   			        <input type="file"/>
+			        {e.scroll_title}
+			        <div className="eventNoteButton">
+			          <button onClick={this.save.bind(this)}>Done</button>                  
+			        </div>
 
-                {e.scroll_title}
-                
-                <div className="eventNoteButton">
-                  <button onClick={()=>this.setState({edit:false})}>Done</button>                  
-                </div>                
-                <div>url <input type="text" value={e.content_url}/></div>
-                <div>title <input type="text" value={e.title}/></div>
-                <div>text <textarea>{e.text}</textarea></div>
+				<div>
+				  <div>Datetime</div>
+				  <Text
+					field="when_happened"
+					onChange={(e)=>this.edit('when_happened', e)}
+					placeholder='when' />
+				    </div>
 
-	      </td>
-	    </tr>
-        );
+				<div>
+				  <div>URL</div>
+				  <Text
+					field="url"
+					onChange={(e)=>this.edit('url', e)}
+					placeholder='when' />
+				</div>				    
+
+				<div>
+				  <div>Resolution</div>
+				  <Text
+					field='resolution'
+					onChange={(e)=>this.edit('resolution', e)}
+					placeholder='res' />
+				</div>				    
+
+				<div>
+				  <div>Description</div>
+				  <RichTextEditor
+					field='text'
+					upEdit={this.edit.bind(this)}
+					event={e}/>
+			            </div>
+			      </form>
+			      </td>
+			  </tr>
+			 );
+	      }
+	      }
+	    </Form>);
+	}
+	    
+	    renderText(text) {
+	if (text!=='') {
+            return (<div className="text" dangerouslySetInnerHTML={{ __html: text }}/>);
+	}
+	return null;
     }
     
     renderEvent() {
-        const e = this.props.event;
+        const e = this.state.event;
         return(
 	    <React.Fragment>
 
@@ -95,13 +179,13 @@ class TimelistEvent extends React.Component {
 		  <div className="collection">
                     
                     <div className="scroll-title">
-                      <a className="title" href={`/search/?scroll:${e.scroll_uuid}`}>
+                      <a className="title" href={`/timelines/${e.scroll_uuid}`}>
                         {e.scroll_title}
 	              </a>
                     </div>
                     
                     <div className="author">
-                      <a className="title" href={`/search/?by:${e.username}`}>@{e.username}</a>
+                      <a className="title" href={`/by/${e.username}`}>@{e.username}</a>
                     </div>
                     
                   </div>
@@ -110,16 +194,16 @@ class TimelistEvent extends React.Component {
 	    
 		<td className="content">
                   <div className="eventNoteButton">
-                    <EventNoteButton event={this.props.event}/>
+                    <EventNoteButton event={this.state.event}/>
                     <button onClick={()=>this.setState({edit:true})}>Edit</button>
                   </div>                
                   
                   <div className="dt">{this.makeWhen(e)}</div>
                   
                   <a href={e.content_url} target="_blank">
-		    <div className="event-title" dangerouslySetInnerHTML={{__html: e.title}}/>
+		    <div className="event-title" dangerouslySetInnerHTML={{ __html: e.title }}/>
                   </a>
-                  <div className="text" dangerouslySetInnerHTML={{__html: e.text}}/>
+		  {this.renderText(e.text)}
 
 		</td>
 	      </tr>

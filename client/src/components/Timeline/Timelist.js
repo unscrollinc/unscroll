@@ -38,12 +38,13 @@ class Timelist extends React.Component {
         });
     }
     
-
     getSpan(url) {
         const _this = this;
+	const order = '&order=when_happened';
+	const ordering_url = url.includes(order) ? url : url + order;
 	axios({
             method:'get',
-            url:url + '&order=when_happened',
+            url:ordering_url,
 	    headers:this.props.context.getAuthHeaderFromCookie()
         })
 	    .then(resp => {
