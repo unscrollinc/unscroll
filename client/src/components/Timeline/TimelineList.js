@@ -18,25 +18,30 @@ class TimelineList extends React.Component {
             const luxonDt = DateTime.fromISO(dt);
             return luxonDt.toLocaleString(DateTime.DATE_SHORT);
         };
+
+        const privacy = scroll.is_public ? 'Public' : 'Private';
         
 	return(
-            <tr key={scroll.uuid}>
-              
-              <td>
-		{scroll.is_public ? 'Public' : 'Private'}
-             </td>
+            <tr className="list-object-tr" key={scroll.uuid}>
 
-              <td>
+                <td className="list-object-date-td">
+
                 {formatDate(scroll.when_created)}
               </td>
               
-              <td className="timeline-list-title">
-	        <div><Link to={'/timelines/' + scroll.uuid}>{scroll.title}</Link></div>
+              <td className="list-object-meta-td">
+	        <div className="list-object-title"><Link to={'/timelines/' + scroll.uuid}>{scroll.title}</Link></div>
                 <div>By <Link to={'/timelines/by/' + scroll.user_username}>{scroll.user_username}</Link></div>
-                <div className="description">{scroll.description}</div>
-              </td >
+                <div className="list-object-description">{scroll.description}</div>
+              </td>
+              
+                <td className={`list-object-published-td`}>
+		<div className={`list-object-published-${privacy}`}>{privacy}</div>
+             </td>
 
             </tr>
+
+            
 	);
     }
 
@@ -68,36 +73,28 @@ class TimelineList extends React.Component {
               <AppContext.Consumer>
 		{(context) => {
                     return (
-                        <React.Fragment>
-
-                          <table className="notebook-header">
-                            <tbody>
-                              <tr>
-                                <td>Timelines</td>
-                                <td>
-	                          <button onClick={context.addScroll}>+ New</button>
-                                </td>
-                                <td><Link to="/my/timelines">Mine</Link></td>
-                                <td><Link to="/timelines">All</Link></td>
-                              </tr>
-                            </tbody>
-                          </table>
-                          
-			  <table className="timeline-list">
-                            <tbody>
-                              <tr>
-                                <th>Public?</th>
-                                <th>Date</th>
-                                <th>Timeline</th>
-
-                              </tr>
+                        <div className="list-object">
+                          <div className="list-object-header">
+                            <h1>Timelines</h1>
+                            <Link className="list-object-button" to="/my/timelines">Mine</Link>
+                            <Link className="list-object-button" to="/timelines">All</Link>
+	                    <button onClick={context.addScroll}>+ New</button>
+                            
+                            
+			    <table className="list-object-table">
+                              <tbody>
+                                <tr className="list-object-tr">
+                                  <th className='list-object-date-th'>Date</th>
+                                  <th className='list-object-meta-th'>Timeline</th>
+                                  <th className='list-object-published-th'>Published</th>
+                                </tr>
                               
-                              {this.state.timelines.map(this.makeScroll)}
-                              
-                            </tbody>
-                          </table>
-			  
-                        </React.Fragment>                        
+                                {this.state.timelines.map(this.makeScroll)}
+                                
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>                        
                     );
 		}}
                 </AppContext.Consumer>

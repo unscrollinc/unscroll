@@ -1,9 +1,25 @@
 import React from 'react';
-import AppContext from '../AppContext.js';
+import update from 'immutability-helper';
+import RichTextEditor from '../Editor/RichTextEditor';
 import { Form, Text, TextArea, Checkbox } from 'react-form';
+import AppContext from '../AppContext.js';
 
 
 class TitleEditor extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            notebook:{},
+            edits:{}
+        };
+    }
+
+    edit(key, value) {
+        console.log(key, value);
+	this.setState(
+	    {notebook:update(this.state.notebook, {$merge: {[key]: value}}),
+	     edits:update(this.state.edits, {$merge: {[key]: value}})});
+    }
 
     render() {
 	return (
@@ -16,24 +32,29 @@ class TitleEditor extends React.Component {
                             {(form) => {
                                 return (
                                     <form>
-                                      <div>
-                                        <Text
-                                          field="title"
-                                          onChange={(e)=>context.notebookChange('title', e)}
-                                          placeholder='Title' />
-                                      </div>
-                                      <div>
-                                        <Text
-                                          field="subtitle"
-                                          onChange={(e)=>context.notebookChange('subtitle', e)}
-                                          placeholder='Subtitle' />
-                                      </div>
-                                      <div>
-                                        <TextArea
-                                          field="description"
-                                          onChange={(e)=>context.notebookChange('description', e)}
-                                          placeholder='Description' />
-                                      </div>
+				      <div>
+				        <div>Title</div>
+				        <RichTextEditor
+				          field='title'
+                                          content={nb.title}
+					  upEdit={this.edit.bind(this)}/>
+				      </div>
+
+				      <div>
+				        <div>Subtitle</div>
+				        <RichTextEditor
+				          field='subtitle'
+                                          content={nb.subtitle}
+					  upEdit={this.edit.bind(this)}/>
+				      </div>
+
+				      <div>
+				        <div>Description</div>
+				        <RichTextEditor
+				          field='description'
+                                          content={nb.description}
+					  upEdit={this.edit.bind(this)}/>
+				      </div>
                                       <div>Public?
                                         <Checkbox
                                           field="is_public"

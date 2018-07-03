@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom' ;
 import { Form, Text, TextArea, Checkbox } from 'react-form';
 import axios from 'axios';
 import { DateTime } from 'luxon';
-import AppContext from '../AppContext';
 import update from 'immutability-helper';
+import AppContext from '../AppContext';
 const SCROLL_API='http://127.0.0.1:8000/scrolls/';
 
 // This is kind of an experiment in re-localizing some remote state
@@ -50,7 +50,9 @@ class TimelistTitleEditor extends React.Component {
     }
 
     scrollChange(k, v) {
-        this.setState({isSaved:false, scroll:update(this.state.scroll, {$merge: {[k]:v}})}, ()=>{console.log(this.state);});
+        this.setState({isSaved:false,
+                       scroll:update(this.state.scroll, {$merge: {[k]:v}})},
+                      ()=>{console.log(this.state);});
     }
 
     getScroll() {
@@ -82,6 +84,7 @@ class TimelistTitleEditor extends React.Component {
         const s = this.state.scroll;
 
         return (
+            <div className='timelist-title'>            
 	    <div key={s.uuid}>
 	      <Link to={`/timelines/${this.props.uuid}/edit`}>Edit</Link>	
 		<div className="citation">
@@ -94,11 +97,13 @@ class TimelistTitleEditor extends React.Component {
 		({this.quickDate(s.when_created)}, changed {this.quickDate(s.when_modified)}.)
     	        </p>
 		</div>
+                </div>
         );
     }
     
     renderForm() {
         return (
+            <div className='timelist-title'>
             <Form key={'form-' + this.props.uuid} defaultValues={this.state.scroll}>
               {(form) => {
                   // title, description, is_public, is_fiction, is_deleted, citation, link, with_thumbnail
@@ -151,6 +156,7 @@ class TimelistTitleEditor extends React.Component {
                   );
               }}
             </Form>
+                </div>
         );
     }
 

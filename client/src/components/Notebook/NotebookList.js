@@ -22,15 +22,15 @@ class NotebookList extends React.Component {
         };
         
         const [key, notebook] = notebookEntry;
-
+        const privacy = notebook.is_public ? 'Public' : 'Private';
 	return(
-            <tr key={key}>
+            <tr className='list-object-tr' key={key}>
 	      
-              <td>
+              <td className='list-object-date-td'>
                 {formatDate(notebook.when_created)}
               </td>
               
-              <td className="notebook-list-title">
+              <td className='list-object-meta-td'>
 	        <div className='list-object-title'><Link to={'/notebooks/'+notebook.uuid}>{notebook.title}</Link></div>
 		<div>
 		  <span className='list-object-byline'>By <Link to={'/users/' + notebook.user_username}>{notebook.user_username}</Link>.</span>
@@ -38,8 +38,8 @@ class NotebookList extends React.Component {
 		</div>
 	      </td>
 	      
-              <td>
-		{notebook.is_public ? 'Published' : 'Private'}
+              <td className='list-object-published-td'>
+		<div className={`list-object-published-${privacy}`}>{privacy}</div>                
               </td>
 	      
             </tr>
@@ -53,45 +53,31 @@ class NotebookList extends React.Component {
               <AppContext.Consumer>
 		{(context) => {
                     return (
-                        <React.Fragment>
-                          <table className="notebook-header">
-
-			    <tbody>
-
-			      <tr>
-
-				<td>Notebooks</td>
-
-				<td><Link to='/my/notebooks'>Mine</Link></td>
-
-				<td><Link to='/notebooks'>All</Link></td>
-
-				<td>
-	                          <button onClick={context.addNotebook}>+ New</button>
-                                </td>
-				
-                              </tr>
-
-			    </tbody>
-			    
-                          </table>
-                          
-			  <table className="notebook-list">
-
-			    <tbody>
-			      
-                              <tr>
-                                <th>Date</th>
-                                <th>Title</th>
-                                <th>Public?</th>                                          
-                              </tr>
-			      
-                              {Array.from(context.state.user.notebookList).map(this.makeNotebook.bind(context))}
+                        <div class="list-object">
+                          <div className="notebook-header">
+                            <div className="list-object-header">
+			      <h1>Notebooks</h1>
                               
-                            </tbody>
-			    
-                          </table>
-                        </React.Fragment>                        
+			      <Link className="list-object-button" to='/my/notebooks'>Mine</Link>
+			      <Link className="list-object-button" to='/notebooks'>All</Link>
+	                      <button onClick={context.addNotebook}>+ New</button>
+                            </div>
+                            
+			    <table className="list-object-table">
+			      <tbody>
+                                
+                                <tr className='list-object-tr'>
+                                  <th className='list-object-date-th'>Date</th>
+                                  <th className='list-object-meta-th'>Notebook</th>
+                                  <th className='list-object-published-th'>Published</th>                                          
+                                </tr>
+
+                                {Array.from(context.state.user.notebookList).map(this.makeNotebook.bind(context))}
+                                
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
                     );
 		}}
                 </AppContext.Consumer>

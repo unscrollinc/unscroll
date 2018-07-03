@@ -10,11 +10,10 @@ class RichTextEditor extends React.Component {
     constructor(props) {
         super(props);
 	this.state = {
-	    event:this.props.event,
 	    edited:null,
-	    editorState:EditorState.createWithContent(stateFromHTML(this.props.event[props.field]))}
+	    editorState:EditorState.createWithContent(
+                stateFromHTML(this.props.content))}
     }
-    
     
     onChange(key, event) {
 	const es = this.state.editorState;

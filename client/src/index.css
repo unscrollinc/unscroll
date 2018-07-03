@@ -6,10 +6,35 @@ body {
     font-family: 'IBM Plex Sans', sans-serif;
 
 }
+
+h1, h2, h3, h4, h5, h6, h7 {
+    text-align:left;
+    margin:0;
+    padding:0;
+    font-weight:normal;
+}
+
+h1 {
+    font-size:200%;
+}
+
+h1 a:hover {
+    background:black;
+    color:white;
+}
+
+h1 a {
+    text-decoration:none;
+    color:black;
+    width:100%;
+    display:block;
+}
+
 .input, th, td {
     font-family: 'IBM Plex Sans', sans-serif;
-    line-height:150%;
+    line-height:125%;
 }
+
 .App {
     width:100%;
     height:100%;
@@ -41,11 +66,11 @@ body {
 .Nav .logo {
     font-weight:bold;
     color:black;
-
 }
 .Nav a:hover {
     text-decoration:underline;
 }
+
 .Timeline, .Editor {
     top:5%;
     height:95%;
@@ -84,29 +109,7 @@ body {
     background:white;
     left:50%;
     border-left:1px solid black;
-    opacity:1;
-}
-
-h1, h2, h3, h4, h5, h6, h7 {
-    text-align:left;
-    margin:0;
-    padding:0;
-    font-weight:normal;
-}
-h1 {
-    font-size:200%;
-}
-
-h1 a:hover {
-    background:black;
-    color:white;
-}
-
-h1 a {
-    text-decoration:none;
-    color:black;
-    width:100%;
-    display:block;
+    overflow:auto;
 }
 
 .column {
@@ -142,6 +145,7 @@ h1 a {
     float:right;
     display:inline;
 }
+
 #buffer {
     position:fixed;
     top:100%;
@@ -153,40 +157,15 @@ h1 a {
     width:100%;
 }
 
-table.notebook-list, table.timeline-list {
-    width:100%;
-    border-collapse:collapse;
-}
-
-table.notebook-list tr, table.timeline-list tr {
-}
-
-table.notebook-list th, table.timeline-list th {
-    font-weight:bold;
-    vertical-align:bottom;
-    text-align:left;
-    padding:0.5em 0 0 0;
-    font-size:11pt;    
-}
-table.notebook-list td, table.timeline-list td {
-    vertical-align:top;
-    padding:0.5em 0 0 0;
-    font-size:11pt;
-}
-.notebook-list-title, .timeline-list-title {
-    text-align:left;
-}
-
 .notebook-event-list {
-    overflow:auto;
+    overflow-y:auto;
     width:50%;
-    height:70%;
+    height:95%;
     margin-bottom:500px;
-    width:100%;
+    width:50%;
 }
 
 .note {
-    width:47%;
     font-size:10pt;
     font-family:sans-serif;
     background:white;
@@ -197,6 +176,7 @@ table.notebook-list td, table.timeline-list td {
     margin:0.5em;
     line-height:149%;
 }
+
 .note-event a {
     color:#0077ee73;
     text-decoration:none;
@@ -219,10 +199,9 @@ table.notebook-list td, table.timeline-list td {
     font-family:serif;
     font-size:10pt;
     border:1px dotted #ccc;
-    background:#0077ee73;
+    background:#CEF;
     font-family: 'IBM Plex Sans', monospace;
-    width:100%;
-    
+    width:90%;
 }
 
 .public-DraftEditor-content:focus {
@@ -365,18 +344,22 @@ div.title {
 }
 
 
-.button, button, input.inputButton {
+.list-object-button, .button, button, input.inputButton {
     color:black;
-    font-size:8pt;
+    font-size:11pt;
     background:white;
     color:black;
-    border:1px solid black;
-    margin:-3px 0px 0px 1px;
+    margin:0 0.5em 0 0;
+    padding:0 0.5em 0 0.5em;
+    background:#CDE;
+    border:1px solid #ABC;
     border-radius:4px;
     vertical-align:middle; 
     cursor:pointer;
+    text-decoration:none;
 }
 
+.list-object-button:active, .list-object-button:hover,
 .button:active, .button:hover,
 button:active, button:hover,
 input.inputButton:active {
@@ -507,13 +490,66 @@ div.loading {
   50% { opacity: 1 }
 }
 
+/* 
+   Listings of timelines and notebooks.
+*/
 
-.list-object-title {
+.list-object {
+    padding:1em;
+}
+
+table.list-object-table {
+    margin:1em 0 0 0;
+    width:100%;
+    border-collapse:collapse;
+}
+
+tr.list-object-tr {
+}
+
+table.list-object-table th {
+    font-weight:bold;
+    vertical-align:bottom;
+}
+
+table.list-object-table td {
+    vertical-align:top;
+}
+table.list-object-table td,
+table.list-object-table th {
+    font-size:11pt;
+}
+td.list-object-date-td,
+th.list-object-date-th {
+    width:15%;
+    padding:0 1em 1em 1em;
+    text-align:right;
+}
+td.list-object-meta-td,
+th.list-object-meta-th {
+    width:70%;    
+    padding:0 1em 1em 1em;
+    text-align:left;
+}
+td.list-object-published-td,
+th.list-object-published-th {
+    width:15%;        
+    padding:0 1em 1em 1em;
+    text-align:left;
+}
+div.list-object-title {
     font-weight:bold;
 }
-.list-object-byline {
+div.list-object-byline {
     margin-right:1em;
 }
-.list-object-description {
+div.list-object-description {
     font-style:Italic;
 }
+div.list-object-published-Public {
+    font-weight:bold;
+}
+div.list-object-published-Private {
+    font-weight:normal;
+}
+
