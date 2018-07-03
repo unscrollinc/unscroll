@@ -52,14 +52,14 @@ h1 a {
     display: table;    
     font-size:80%;
     border-bottom:px solid #07e;
-    color:#07e;    
+    color:#E61D9E;
     box-shadow: inset 0px -1px #ccc;
 }
 .Nav > table {
     height:100%;
 }
 .Nav a {
-    color:#06b;
+    color:#E61D9E;
     text-decoration:none;
     padding-right:0.5em;
 }
