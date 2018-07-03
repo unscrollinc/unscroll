@@ -106,7 +106,7 @@ h1 a {
 
 .Editor {
     width:50%;
-    background:white;
+    background:#faffff;
     left:50%;
     border-left:1px solid black;
     overflow:auto;
