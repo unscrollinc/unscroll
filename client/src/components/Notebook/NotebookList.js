@@ -48,12 +48,12 @@ class NotebookList extends React.Component {
     
     render() {
 	return (
-	    <div className="Editor">
+	    <div className="NotebookList">
 	      
               <AppContext.Consumer>
 		{(context) => {
                     return (
-                        <div class="list-object">
+                        <div className="list-object">
                           <div className="notebook-header">
                             <div className="list-object-header">
 			      <h1>Notebooks</h1>

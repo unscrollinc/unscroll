@@ -8,7 +8,8 @@ class Notebook extends React.Component {
 
     constructor(props, context) {
         super(props, context);
-        this.state = props;
+	console.log('NOTEBOOK', props);
+	this.state = {};
     }
 
     makeAddNoteButton(context) {
@@ -30,11 +31,17 @@ class Notebook extends React.Component {
             </span>
         );
     }
-
+    
     componentDidMount() {
-        this.props.context.loadNotebook(this.state);        
+        this.props.context.loadNotebook(this.props);        
     }
 
+    componentDidUpdate(prevProps) {    
+	if (this.props.uuid !== prevProps.uuid) {
+            this.props.context.loadNotebook(this.props);
+	}
+    }
+    
 
     render() {
         return (
@@ -42,7 +49,7 @@ class Notebook extends React.Component {
               {(context) => {
                   return (
 		      <div className="Editor">
-			
+			  
 		        
                         <div className="notebook-event-list">
                           <span>

@@ -18,7 +18,8 @@ class RichTextEditor extends React.Component {
     onChange(key, event) {
 	const es = this.state.editorState;
 	const value = stateToHTML(es.getCurrentContent(), {defaultBlockTag:null});
-	this.setState({editorState:event}, ()=>this.edit(key, value));
+	this.setState({editorState:event},
+		      ()=>this.edit(key, value));
     }
 
     tidy(html) {

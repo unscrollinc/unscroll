@@ -23,6 +23,7 @@ const tl = (params) => {
     const qs = (params && params.location && params.location.search)
 	  ? queryString.parse(params.location.search)
 	  : {};
+    
     return (<ReactCursorPosition>
 	    <Timeline key={qs.start + '&' + qs.before} {...qs}/>
 	    </ReactCursorPosition>);
@@ -31,73 +32,73 @@ const tl = (params) => {
 const routes = [
     { path: '/',
       exact: true,
-      Research: (props) => tl(props),
+      Listing: () => null,
       Workbook: () => null
     },
 
     { path: '/user/register',
       exact: true,
-      Research: () => tl(),
+      Listing: () => null,
       Workbook: () => <Register/>
     },
 
     { path: '/user/confirm/:key',
       exact: true,
-      Research: () => tl(),
+      Listing: () => null,
       Workbook: (props) => <Confirm {...props.match.params}/>
     },
     
     { path: '/about',
       exact: true,
-      Research: () => tl(),
+      Listing: () => null,
       Workbook: () => <About/>
     },
     
     { path: '/my/profile',
       exact: true,      
-      Research: () => tl(),
+      Listing: () => null,
       Workbook: () => <Profile/>
     },    
 
     { path: '/timelines',
       exact: true,
-      Research: (props) => tl(props),
-      Workbook: () => <TimelineList/>
+      Listing: () => <TimelineList/>,
+      Workbook: () => null
     },
     
     { path: '/my/timelines',
       exact: true,      
-      Research: () => tl(),
-      Workbook: () => <TimelineList my={true}/>
+      Listing: () => <TimelineList my={true}/>,
+      Workbook: () => null
     },    
 
     { path: '/timelines/:uuid',
       exact: true,
-      Research: (props) => <Timelist {...props.match.params}/>,
+      Listing: (props) => <Timelist {...props.match.params}/>,
       Workbook: (props) => <TimelineList {...props.match.params}/>
     },        
 
     { path: '/timelines/:uuid/edit',
       exact: true,
-      Research: (props) => <Timelist {...props.match.params} edit={true}/>,
+      Listing: (props) => <Timelist {...props.match.params} edit={true}/>,
       Workbook: (props) => <TimelineList {...props.match.params}/>
     },        
 
     { path: '/notebooks',
       exact: true,      
-      Research: () => <Timelist/>,
+      Listing: () => null,
       Workbook: () => <NotebookList/>
     },
 
     { path: '/my/notebooks',
       exact: true,
-      Research: () => <Timelist/>,
+      Listing: () => null,
       Workbook: () => <NotebookList my={true}/>
     },
 
     { path: '/notebooks/:uuid/:edit?',
       exact: true,
-      Research: (props) => <Timelist {...props.match.params}/>,
+      Listing: (props) => <NotebookList {...props.match.params}/>,
       Workbook: (props) => <Notebook {...props.match.params}/>
     }        
 ];
@@ -117,19 +118,23 @@ class App extends React.Component {
             <AppProvider>
 	      <div className="App">
 		<Nav/>
+		<ReactCursorPosition>		
+		  <Timeline/>
+		</ReactCursorPosition>
 		{routes.map((route, index) => (
-                    <React.Fragment key={index}>
-		      <Route
-			path={route.path}
-		        exact={route.exact}
-		        component={route.Research}
-		        />
-		      <Route
-		        path={route.path}
-		        exact={route.exact}
-		        component={route.Workbook}
-		        />
-                    </React.Fragment>
+		    <React.Fragment key={index}>
+
+			  <Route
+		            path={route.path}
+		            exact={route.exact}
+		            component={route.Listing}
+		            />
+			  <Route
+		            path={route.path}
+		            exact={route.exact}
+		            component={route.Workbook}
+		            />
+			</React.Fragment>
 		))}
               </div>
 	    </AppProvider>	      

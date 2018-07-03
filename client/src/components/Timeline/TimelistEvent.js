@@ -61,7 +61,8 @@ class TimelistEvent extends React.Component {
         return e.when_happened;
     }
 
-    save() {
+    save(e) {
+	e.preventDefault();
 	const url = this.state.event.url;
 	const _this = this;
 	
@@ -72,6 +73,7 @@ class TimelistEvent extends React.Component {
 	    return null;
 	}
 	else {
+	    console.log('IN ELSE', this.state);
 	    axios(
 		{method:'patch',
 		 url:url,
@@ -81,6 +83,7 @@ class TimelistEvent extends React.Component {
 		    _this.setState({edit:false});		
 		})
 		.catch(err=>{
+		    console.log('ERROR', err);
 	    });
 	}
 	return null;
@@ -95,25 +98,26 @@ class TimelistEvent extends React.Component {
 
     renderEditor() {
         const e = this.state.event;
-
-
         return (
             <Form defaultValues={this.state.event}>	    
               {(form) => {
                   return (<tr className="timelist">
 			  <td colSpan="3">
                    	  <form>
-				<div>
+			  <div>
+			  <div>{e.scroll_title}</div>
+
 				  <div>Title</div>
 				      <RichTextEditor
 					    field='title'
 					    upEdit={this.edit.bind(this)}
-					    event={e}/>
+					    content={e.title}/>
 				</div>
 				      
   				{this.makeImage(e)}
-   			        <input type="file"/>
-			        {e.scroll_title}
+
+			        <input type="file"/>
+
 			        <div className="eventNoteButton">
 			          <button onClick={this.save.bind(this)}>Done</button>                  
 			        </div>
@@ -147,7 +151,7 @@ class TimelistEvent extends React.Component {
 				  <RichTextEditor
 					field='text'
 					upEdit={this.edit.bind(this)}
-					event={e}/>
+					content={e.text}/>
 			            </div>
 			      </form>
 			      </td>

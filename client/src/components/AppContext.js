@@ -17,7 +17,6 @@ const randomString = () => {
     return Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 6);
 }
       
-
 export class AppProvider extends React.Component {
     constructor(state, context) {
         super(state, context);
@@ -119,7 +118,7 @@ export class AppProvider extends React.Component {
 				     update(this.state.notebook.notes.get(uuid),
 					    {$merge: o})]]})}})},
 		    () => {
-                        console.log('[@modifyNote:uuid,o]', uuid, o);
+                        //console.log('[@modifyNote:uuid,o]', uuid, o);
                     }
 		);        
     }
@@ -140,7 +139,7 @@ export class AppProvider extends React.Component {
                   kind:note.kind}
 	})
             .then(function(resp) {
-		console.log("[@patchNote()]", resp.data);
+		//console.log("[@patchNote()]", resp.data);
                 _this.modifyNote(note.uuid, {isSaved:true});
 	    })
             .catch(error => {
@@ -251,11 +250,11 @@ export class AppProvider extends React.Component {
                headers: this.makeAuthHeader(_this.state.user.authToken)
 	      })
 	    .then(function(response) {
-		// console.log("Load scroll list", response);
+		console.log("Load scroll list", response);
 		_this.setState(
                     {user: update(_this.state.user,
                                   {$merge:
-                                   {scrollList:new Map(response.data.map((n)=>[n.uuid, n]))}})}
+                                   {scrollList:new Map(response.data.results.map((n)=>[n.uuid, n]))}})}
 //                   , ()=>{console.log(_this.state.user);}
 		);
 	    });
@@ -273,7 +272,7 @@ export class AppProvider extends React.Component {
                     {user: update(_this.state.user,
                                   {$merge:
                                    {notebookList:new Map(response.data.results.map((n)=>[n.uuid, n]))}})}
-		    ,()=>{console.log('[@loadNotebookList() logged in user]',_this.state.user);}
+		    //,()=>{console.log('[@loadNotebookList() logged in user]',_this.state.user);}
 		);
 	    });
     }
@@ -436,7 +435,7 @@ export class AppProvider extends React.Component {
                           }).then((response) => {
                               this.setState({user: update(this.state.user,
                                                           {$merge: {notebookCurrent: notebook.uuid}})});
-                              console.log('[@response]', response);
+                              console.log('[@loadNotebook.response()]', response);
                               this.setState({notebook:
                                              {...response.data,
                                               movingNote:undefined,                                                 
@@ -600,12 +599,7 @@ export class AppProvider extends React.Component {
                         events:[]
                     }}, this.saveScroll);
                 },
-
-                
-                eventWindowClose:() => {
-                    this.setState({eventEditor:{on:false, event:undefined}});
-                }
-                
+                               
             }}>
             {this.props.children}
             </AppContext.Provider>

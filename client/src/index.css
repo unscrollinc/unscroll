@@ -71,10 +71,11 @@ h1 a {
     text-decoration:underline;
 }
 
-.Timeline, .Editor {
+.Timeline, .Editor, .NotebookList {
     top:5%;
     height:95%;
-    position:absolute;    
+    position:absolute;
+    background-color:white;
 }
 
 .Timeline {
@@ -104,12 +105,17 @@ h1 a {
     display:inline;
 }
 
-.Editor {
+.Editor, .NotebookList {
     width:50%;
     background:#faffff;
     left:50%;
     border-left:1px solid black;
     overflow:auto;
+}
+
+.NotebookList {
+    left:0%;
+    border-right:1px solid black;    
 }
 
 .column {
