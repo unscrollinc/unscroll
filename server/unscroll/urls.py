@@ -7,6 +7,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.db import IntegrityError
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
 import django_filters
 from django_filters import rest_framework as filters
 
@@ -34,24 +35,9 @@ from rest_framework_bulk import (
     ListBulkCreateUpdateDestroyAPIView,
 )
 
-# Scrolls, Events, Notebooks, Notes
-# User
-# User lists their SENNs
-# 
-
 # ##############################
 # Thumbnails
 # ##############################
-
-
-# class CreateListModelMixin(object):
-
-#     def get_serializer(self, *args, **kwargs):
-#         """ if an array is passed, set serializer to many """
-#         if isinstance(kwargs.get('data', {}), list):
-#             kwargs['many'] = True
-#         return super(CreateListModelMixin, self).get_serializer(*args, **kwargs)
-
 
 class ThumbnailSerializer(serializers.HyperlinkedModelSerializer):
     image = serializers.ImageField(
@@ -154,18 +140,16 @@ class ThumbnailViewSet(viewsets.ModelViewSet):
 # Events
 # ##############################
 class EventFilter(django_filters.rest_framework.FilterSet):
-
     start = django_filters.IsoDateTimeFilter(
         name='when_happened',
         lookup_expr='gte')
-
     before = django_filters.IsoDateTimeFilter(
         name='when_happened',
         lookup_expr='lt')
-    
-    in_scroll = django_filters.UUIDFilter(
+    in_scroll_uuid = django_filters.UUIDFilter(
         name="in_scroll__uuid")
-
+    in_scroll = django_filters.NumberFilter(
+        name="in_scroll__id")    
     order = django_filters.OrderingFilter(
         # tuple-mapping retains order
         fields = ['when_happened', 'ranking'])
@@ -185,10 +169,16 @@ class EventFilter(django_filters.rest_framework.FilterSet):
 
 
 class EventSerializer(serializers.HyperlinkedModelSerializer):
-    user_username = serializers.CharField(
-        read_only=True,
-        source="by_user.username")
-    
+    user_username = serializers.CharField(read_only=True,
+                                          source="by_user.username")
+    scroll_uuid = serializers.CharField(read_only=True,
+                                        source="in_scroll.uuid")
+    scroll_title = serializers.CharField(read_only=True,
+                                         source="in_scroll.title")
+    scroll_user_username = serializers.CharField(read_only=True,
+                                                 source="in_scroll.by_user.username")
+    scroll_is_public = serializers.CharField(read_only=True,
+                                             source="in_scroll.is_public")
     class Meta:
         model = Event
         depth = 0
@@ -201,53 +191,22 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
         
 class BulkEventSerializer(BulkSerializerMixin,
                           serializers.HyperlinkedModelSerializer):
-    scroll_title = serializers.CharField(
-        read_only=True,
-        source="in_scroll.title")
-    scroll_uuid = serializers.UUIDField(
-        read_only=True,
-        source="in_scroll.uuid")
-    username = serializers.CharField(
-        read_only=True,
-        source="by_user.username")
-    is_public = serializers.BooleanField(
-        read_only=True,
-        source="in_scroll.is_public")
-
-    with_thumbnail = serializers.CharField(
-        read_only=True,
-        source="with_thumbnail.image")
-
-    scroll_with_thumbnail = serializers.CharField(
-        read_only=True,
-        source="in_scroll.with_thumbnail.image")
-
+    scroll_title = serializers.CharField(read_only=True,
+                                         source="in_scroll.title")
+    scroll_uuid = serializers.UUIDField(read_only=True,
+                                        source="in_scroll.uuid")
+    username = serializers.CharField(read_only=True,
+                                     source="by_user.username")
+    is_public = serializers.BooleanField(read_only=True,
+                                         source="in_scroll.is_public")
+    with_thumbnail = serializers.CharField(read_only=True,
+                                           source="with_thumbnail.image")
+    scroll_with_thumbnail = serializers.CharField(read_only=True,
+                                                  source="in_scroll.with_thumbnail.image")
 
     class Meta:
         model = Event
-        fields = (
-            'url',
-            'uuid',
-            'by_user',
-            'username',
-            'in_scroll',
-            'scroll_uuid',
-            'scroll_title',
-            'is_public',
-            'with_thumbnail',
-            'scroll_with_thumbnail',            
-            'when_created',
-            'title',
-            'text',
-            'ranking',
-            'media_type',
-            'content_type',
-            'resolution',
-            'when_happened',
-            'when_original',            
-            'content_url',
-            'source_name',
-            'source_url')
+        fields = '__all__'
         read_only_fields = ('uuid', 'by_user',)
         list_serializer_class = BulkListSerializer
 
@@ -302,25 +261,14 @@ class BulkEventViewSet(BulkModelViewSet):
     
 
 # ##############################
-# NOTES
+# Notes
 # ##############################
+
 class NoteSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Note
-        fields = (
-            'id',
-            'url',
-            'order',            
-            'uuid',
-            'in_notebook',
-            'in_notebook',            
-            'by_user',
-            'with_event',
-            'kind',
-            'when_created',
-            'when_modified',
-            'text',)
+        fields = '__all__'
 
     def create(self, validated_data):
         validated_data['by_user'] = self.context['request'].user
@@ -328,8 +276,15 @@ class NoteSerializer(serializers.HyperlinkedModelSerializer):
         s.save()
         return s
 
-
 class NoteEventSerializer(serializers.HyperlinkedModelSerializer):
+    in_notebook_uuid = serializers.UUIDField(
+        read_only=True,
+        source="in_notebook.uuid")        
+
+    in_notebook_is_public = serializers.BooleanField(
+        read_only=True,
+        source="in_notebook.is_public")        
+    
     user_username = serializers.CharField(
         read_only=True,
         source="by_user.username")
@@ -341,50 +296,64 @@ class NoteEventSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Note
-        fields = (
-            'id',
-            'url',            
-            'order',
-            'uuid',
-            'in_notebook',
-            'by_user',
-            'user_username',
-            'event',
-            'kind',            
-            'when_created',
-            'when_modified',
-            'text',)
-
-
+        fields = '__all__'
 
 class NoteViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticatedOrReadOnly]    
-    queryset = Note.objects.all()
-    serializer_class = NoteSerializer
-    ordering_fields = ('order',)
-    ordering = ('order',)
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    queryset = Note.objects.all()    
+    serializer_class = NoteEventSerializer
+    
+    def remove_private_events(self, data):
+        username = self.request.user.username
+        _data = []
+        for n in data:
+            e = n.get('event')
+            # NOTE STRING COMPARISON WITH TRUE, this is happening post-serialization
+            if (e and (
+                    (e.get('scroll_is_public') == 'True')
+                    or
+                    (e.get('user_username') == username))
+            ):
+                _data.append(n)
+            else:
+                del n['event']
+                _data.append(n)
 
+        return _data
 
+    def list(self, request):
+        serializer = NoteEventSerializer(self.queryset,
+                                         many=True,
+                                         context={'request': request})
+        notes = self.remove_private_events(serializer.data)
+        return Response(notes)
+
+    def retrieve(self, request):
+        filter_class = self.filter_class        
+        serializer = NoteEventSerializer(self.queryset,
+                                         many=False,
+                                         context={'request': request})
+        notes = self.remove_private_events(serializer.data)
+        return Response(notes)
+    
     
     def get_queryset(self):
+        queryset = Note.objects.all()
+        filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+        filter_fields = ('in_notebook__id','in_notebook__uuid')    
+        ordering_fields = ('order',)
+        ordering = ('order',)
+        
         user = self.request.user
 
         # Check if authed
         query = Q(in_notebook__is_public=True)        
         if user.is_authenticated:
             query = (Q(by_user=user) or Q(in_notebook__is_public=True))
-        qsfinal = self.queryset.filter(query)
+        qsfinal = queryset.filter(query)
 
         return qsfinal
     
-
-class NoteFilter(django_filters.rest_framework.FilterSet):
-    in_notebook = django_filters.UUIDFilter(
-        name="notebook__uuid")
-    
-    class Meta:
-        model = Note
-        fields = ['in_notebook', ]
 
 ##############################
 # Scrolls
@@ -408,23 +377,7 @@ class ScrollSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Scroll
-        fields = (
-            'uuid',
-            'url',
-            'by_user',
-            'user_username',
-            'event_count',
-            'first_event',
-            'last_event',
-            'when_created',
-            'when_modified',            
-            'title',
-            'link',
-            'citation',                        
-            'is_public',
-            'is_fiction',            
-            'description',
-            'with_thumbnail',)
+        fields = '__all__'
         depth = 0
         read_only_fields = (
             'uuid',
@@ -465,6 +418,10 @@ class ScrollViewSet(viewsets.ModelViewSet):
 
         return qsfinal
 
+########################################
+# Notebook
+########################################
+
 class NotebookFilter(django_filters.rest_framework.FilterSet):
     class Meta:
         model = Notebook
@@ -476,6 +433,9 @@ class NotebookSerializer(serializers.HyperlinkedModelSerializer):
         read_only=True,
         source="by_user.username")
 
+    note_count = serializers.IntegerField(
+        read_only=True)
+    
     id = serializers.IntegerField(
         read_only=True)
     
@@ -485,6 +445,8 @@ class NotebookSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
         read_only_fields = (
             'uuid',
+            'id',
+            'note_count',
             'by_user',
             'user_username',)
         
@@ -498,29 +460,27 @@ class NotebookSerializer(serializers.HyperlinkedModelSerializer):
             raise APIException(str(e))        
 
 
-class NotebookNotesSerializer(NotebookSerializer):
-    full_notes = NoteEventSerializer(read_only=True, many=True)
-
-
 class NotebookViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
-    serializer_class = NotebookSerializer
     filter_class = NotebookFilter
     queryset = Notebook.objects.all()
+    serializer_class = NotebookSerializer
 
     def get_queryset(self):
         user = self.request.user
 
         # Check if authed
-        query = Q(is_public=True)        
+        query = Q(is_public=True)     
+
         if user.is_authenticated:
             query = (Q(by_user=user) or Q(is_public=True))
-        qsfinal = self.queryset.filter(query)
-
+            
+        qsfinal = self.queryset\
+                      .filter(query)\
+                      .annotate(note_count=Count('notes'))        
         return qsfinal
 
 
-    
     # # Need to override only-public filter here so we use a custom destroy    
     # def destroy(self, request, *args, **kwargs):
     #     self.queryset = Notebook.objects.all()    
