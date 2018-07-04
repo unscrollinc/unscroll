@@ -25,7 +25,6 @@ class Notebook extends React.Component {
     }
     
     makeNote(note, i) {
-        console.log(note, i)
         return (<Note key={note[0]} {...note[1]}/>);
     }
 
@@ -39,31 +38,32 @@ class Notebook extends React.Component {
 
     loadNotebook() {
         const _this = this;
+        
         axios(
             {method:'GET',
              url:'http://127.0.0.1:8000/notes/?in_notebook__id=' + this.props.id,
              headers:Util.getAuthHeaderFromCookie()})
             .then(resp => {
                 this.setState({notes:resp.data.results},
-                              ()=>{console.log(_this)}
+                              ()=>{console.log(_this);}
                              );
             })
-            .catch(err=>{console.log(err)});
+            .catch(err=>{console.log(err);});
+
         axios(
             {method:'GET',
              url:'http://127.0.0.1:8000/notebooks/' + this.props.id,
              headers:Util.getAuthHeaderFromCookie()})
             .then(resp => {
-                console.log('WHOOPITY DOOOO', resp);
                 this.setState({notebook:resp.data},
-                              ()=>{console.log(_this)}
+                              ()=>{console.log(_this);}
                              );
             })
-            .catch(err=>{console.log(err)});
+            .catch(err=>{console.log(err);});
     }
     
     componentDidMount() {
-        this.loadNotebook();        
+        this.loadNotebook();
     }
 
     componentDidUpdate(prevProps) {    
@@ -75,24 +75,27 @@ class Notebook extends React.Component {
     renderManuscript() {
         if (this.state.notebook) {
             return(
-                <div className="Manuscript">
+                <React.Fragment>
                   <h1>{this.state.notebook.title}</h1>
                   <h2>{this.state.notebook.subtitle}</h2>
                   <div className="description">{this.state.notebook.description}</div>   
                   {Array.from(this.state.notes).map(this.makeManuscriptText)}
-                </div>);
+                </React.Fragment>);
         }
         return null;
     }
-
+    
     render() {
+        if (!this.props.edit)  {
+            return (<div className='Manuscript preview'>
+                    {this.renderManuscript()}
+                    </div>);
+        }
         return (
             <AppContext.Consumer>
               {(context) => {
                   return (
 		      <div className="Editor">
-			  
-		        
                         <div className="notebook-event-list">
                           <span>
                             <span className={'status '
@@ -108,7 +111,9 @@ class Notebook extends React.Component {
                           
                           {Array.from(this.state.notes).map(this.makeNote)}
                         </div>
-                        {this.renderManuscript()}
+                        <div className='Manuscript'>
+                          {this.renderManuscript()}
+                        </div>
                       </div>);
 	      }}
             </AppContext.Consumer>                  

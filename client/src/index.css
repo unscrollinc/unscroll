@@ -97,17 +97,17 @@ h1 a {
 .Panel h1 {
     font-size:11.5pt;
     padding:0.5em 1em 0.5em 1em;
-    font-weight:bold;
+    font-weight:normal;
     left:0.25em;
 }
 .Panel h1 a {
-    font-weight:bold;
+    font-weight:normal;
     display:inline;
 }
 
 .Editor, .NotebookList {
     width:50%;
-    background:#faffff;
+    background:#40ffff;
     left:50%;
     border-left:1px solid black;
     overflow:auto;
@@ -215,22 +215,42 @@ h1 a {
 }
 
 .Manuscript {
-    width:49%;
-    margin-left:50%;
+    width:50%;
+    left:50%;
     background:#fff;
     border-left:1px dotted black;
     height:100%;
     top:0;
     position:absolute;
-font-family: 'IBM Plex Serif', serif;    
+    font-family: 'IBM Plex Serif', serif;
+    overflow:auto;
+}
 
+.preview {
+    top:5%;
+    height:95%;
+    padding:1em 0 0 0;
+    line-height:150%;
+    overflow:auto;
+}
+.preview h1 {
+    text-align:center;
+    line-height:150%;
+}
+.preview h2 {
+    text-align:center;
+    line-height:150%;
+}
+.preview .description {
+    padding-top:0.5em;
+    text-align:center;
+    font-style:Italic;
 }
 
 .active-true {
     background:black;
     color:white;
 }
-
 
 textarea {
     width:95%;
@@ -278,7 +298,6 @@ tr.timelist td {
     max-height:200px;
 }
 
-
 .timelist-image {
     width:100%;
     max-height:200px;
@@ -295,10 +314,10 @@ td.meta {
 div.collection {
     text-align:right;
 }
+
 div.collection div {
     margin-bottom:0.5em;
 }
-
 
 td.content {
     width:75%;
@@ -307,8 +326,8 @@ td.content {
     color:#444;
     font-size:11pt;
     padding:0.5em 0.5em 1.5em 1em;
-    
 }
+
 td.content .event-title {
     font-weight:bold;
     font-family: 'IBM Plex Serif', serif;
@@ -318,11 +337,12 @@ font-family: 'IBM Plex Sans Condensed', sans-serif;
 font-family: 'IBM Plex Serif', serif;
 font-family: 'IBM Plex Mono', monospace;
 */
-    
 }
+
 td.image {
     height:100%;
 }
+
 td a {
     text-decoration:none;
     color:#06d;
@@ -352,12 +372,12 @@ div.title {
 
 .list-object-button, .button, button, input.inputButton {
     color:black;
-    font-size:11pt;
+    font-size:10pt;
     background:white;
     color:black;
     margin:0 0.5em 0 0;
     padding:0 0.5em 0 0.5em;
-    background:#CDE;
+    background:white;
     border:1px solid #ABC;
     border-radius:4px;
     vertical-align:middle; 
@@ -527,30 +547,35 @@ table.list-object-table th {
 }
 td.list-object-date-td,
 th.list-object-date-th {
-    width:15%;
-    padding:0 1em 1em 1em;
-    text-align:right;
+    width:10%;
+    padding:0 0.5em 0.5em 0.5em;
+    text-align:left;
+}
+td.list-object-creator-td,
+th.list-object-creator-th {
+    width:10%;
+    padding:0 0.5em 0.5em 0.5em;
+    text-align:left;
 }
 td.list-object-meta-td,
 th.list-object-meta-th {
     width:70%;    
-    padding:0 1em 1em 1em;
+    padding:0 0.5em 0.5em 0.5em;
     text-align:left;
 }
 td.list-object-published-td,
 th.list-object-published-th {
     width:15%;        
-    padding:0 1em 1em 1em;
+    padding:0 0.5em 0.5em 0.5em;
     text-align:left;
 }
 div.list-object-title {
     font-weight:bold;
 }
 div.list-object-byline {
-    margin-right:1em;
 }
 div.list-object-description {
-    font-style:Italic;
+    font-variant:Italic;
 }
 div.list-object-published-Public {
     font-weight:bold;

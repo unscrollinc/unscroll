@@ -96,7 +96,7 @@ const routes = [
       Workbook: () => <NotebookList my={true}/>
     },
 
-    { path: '/notebooks/:id/:edit?',
+    { path: '/notebooks/:user/:id/:edit?',
       exact: true,
       Listing: (props) => <NotebookList {...props.match.params}/>,
       Workbook: (props) => <Notebook {...props.match.params}/>
