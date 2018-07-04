@@ -10,13 +10,13 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 import django_filters
 from django_filters import rest_framework as filters
-
 from django.db.models import Max, Min, Count
 from rest_framework import pagination, generics, serializers, viewsets, routers, response, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.exceptions import APIException
+from rest_framework.pagination import LimitOffsetPagination
 from scrolls.models import User, Scroll, Event, Notebook, Note, Media, Thumbnail
 from unscroll.thumbnail import InboundThumbnail
 from rest_framework_swagger.views import get_swagger_view
@@ -67,7 +67,7 @@ class ThumbnailSerializer(serializers.HyperlinkedModelSerializer):
 class ThumbnailViewSet(viewsets.ModelViewSet):
     queryset = Thumbnail.objects.all()
     serializer_class = ThumbnailSerializer
-    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    filter_backends = (filters.DjangoFilterBackend,)
     filter_fields = ('source_url',)
 
     @action(detail=False, methods=['post'])
@@ -139,7 +139,7 @@ class ThumbnailViewSet(viewsets.ModelViewSet):
 # ##############################
 # Events
 # ##############################
-class EventFilter(django_filters.rest_framework.FilterSet):
+class EventFilter(filters.FilterSet):
     start = django_filters.IsoDateTimeFilter(
         name='when_happened',
         lookup_expr='gte')
@@ -165,20 +165,29 @@ class EventFilter(django_filters.rest_framework.FilterSet):
 
     class Meta:
         model = Event
-        fields = ['start', 'before', 'in_scroll', ]
+        fields = ['start', 'before', 'in_scroll', 'in_scroll_uuid']
 
 
 class EventSerializer(serializers.HyperlinkedModelSerializer):
-    user_username = serializers.CharField(read_only=True,
-                                          source="by_user.username")
-    scroll_uuid = serializers.CharField(read_only=True,
-                                        source="in_scroll.uuid")
-    scroll_title = serializers.CharField(read_only=True,
-                                         source="in_scroll.title")
-    scroll_user_username = serializers.CharField(read_only=True,
-                                                 source="in_scroll.by_user.username")
-    scroll_is_public = serializers.CharField(read_only=True,
-                                             source="in_scroll.is_public")
+    user_username = serializers.CharField(
+        read_only=True,
+        source="by_user.username")
+    scroll_uuid = serializers.CharField(
+        read_only=True,
+        source="in_scroll.uuid")
+    scroll_title = serializers.CharField(
+        read_only=True,
+        source="in_scroll.title")
+    scroll_user_username = serializers.CharField(
+        read_only=True,
+        source="in_scroll.by_user.username")
+    scroll_is_public = serializers.CharField(
+        read_only=True,
+        source="in_scroll.is_public")
+    with_thumbnail = serializers.CharField(
+        read_only=True,
+        source="with_thumbnail.image")    
+    
     class Meta:
         model = Event
         depth = 0
@@ -191,18 +200,25 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
         
 class BulkEventSerializer(BulkSerializerMixin,
                           serializers.HyperlinkedModelSerializer):
-    scroll_title = serializers.CharField(read_only=True,
-                                         source="in_scroll.title")
-    scroll_uuid = serializers.UUIDField(read_only=True,
-                                        source="in_scroll.uuid")
-    username = serializers.CharField(read_only=True,
-                                     source="by_user.username")
-    is_public = serializers.BooleanField(read_only=True,
-                                         source="in_scroll.is_public")
-    with_thumbnail = serializers.CharField(read_only=True,
-                                           source="with_thumbnail.image")
-    scroll_with_thumbnail = serializers.CharField(read_only=True,
-                                                  source="in_scroll.with_thumbnail.image")
+    
+    scroll_title = serializers.CharField(
+        read_only=True,
+        source="in_scroll.title")
+    scroll_uuid = serializers.UUIDField(
+        read_only=True,
+        source="in_scroll.uuid")
+    username = serializers.CharField(
+        read_only=True,
+        source="by_user.username")
+    is_public = serializers.BooleanField(
+        read_only=True,
+        source="in_scroll.is_public")
+    with_thumbnail = serializers.CharField(
+        read_only=True,
+        source="with_thumbnail.image")
+    scroll_with_thumbnail = serializers.CharField(
+        read_only=True,
+        source="in_scroll.with_thumbnail.image")
 
     class Meta:
         model = Event
@@ -230,7 +246,7 @@ class BulkEventViewSet(BulkModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Event.objects.select_related('in_scroll',
                                             'by_user')
-    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    filter_backends = (filters.DjangoFilterBackend,)
     filter_class = EventFilter
     serializer_class = BulkEventSerializer
 
@@ -246,24 +262,18 @@ class BulkEventViewSet(BulkModelViewSet):
             .filter(query)
 
         return qsfinal
-    
-    @action(detail=True)
-    def maxmin(self, request):
-        filtered = EventFilter(request.GET,
-                               queryset=Event.objects)
-        qs = filtered.qs\
-                     .filter(scroll__public=True)\
-                     .aggregate(
-                         count=Count('*'),
-                         last_event=Max('when_happened'),
-                         first_event=Min('when_happened'))
-        return Response(qs)
-    
+        
 
 # ##############################
 # Notes
 # ##############################
 
+class NoteFilter(filters.FilterSet):
+    class Meta:
+        model = Note
+        fields = ['in_notebook__id',]
+
+        
 class NoteSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
@@ -279,11 +289,11 @@ class NoteSerializer(serializers.HyperlinkedModelSerializer):
 class NoteEventSerializer(serializers.HyperlinkedModelSerializer):
     in_notebook_uuid = serializers.UUIDField(
         read_only=True,
-        source="in_notebook.uuid")        
-
+        source="in_notebook.uuid")
+    
     in_notebook_is_public = serializers.BooleanField(
         read_only=True,
-        source="in_notebook.is_public")        
+        source="in_notebook.is_public")
     
     user_username = serializers.CharField(
         read_only=True,
@@ -303,47 +313,49 @@ class NoteViewSet(viewsets.ModelViewSet):
     queryset = Note.objects.all()    
     serializer_class = NoteEventSerializer
     
-    def remove_private_events(self, data):
-        username = self.request.user.username
-        _data = []
-        for n in data:
-            e = n.get('event')
-            # NOTE STRING COMPARISON WITH TRUE, this is happening post-serialization
-            if (e and (
-                    (e.get('scroll_is_public') == 'True')
-                    or
-                    (e.get('user_username') == username))
-            ):
-                _data.append(n)
-            else:
-                del n['event']
-                _data.append(n)
 
-        return _data
+    def remove_private_event(self, note):
+        username = self.request.user.username        
+        e = note.get('event')
+        # NOTE STRING COMPARISON WITH TRUE, this is happening post-serialization
+        if (e and ((e.get('scroll_is_public') == 'True')
+                 or (e.get('user_username') == username))):
+            return note
+        else:
+            del note['event']
+            return note
 
     def list(self, request):
-        serializer = NoteEventSerializer(self.queryset,
-                                         many=True,
-                                         context={'request': request})
-        notes = self.remove_private_events(serializer.data)
-        return Response(notes)
+        pagination_class = LimitOffsetPagination
+        paginator = pagination_class()
+        page = paginator.paginate_queryset(
+            self.get_queryset(),
+            request)
 
-    def retrieve(self, request):
-        filter_class = self.filter_class        
-        serializer = NoteEventSerializer(self.queryset,
-                                         many=False,
-                                         context={'request': request})
-        notes = self.remove_private_events(serializer.data)
-        return Response(notes)
+        serializer = NoteEventSerializer(
+            page,
+            many=True,
+            context={'request': request})
+        notes = [self.remove_private_event(note) for note in serializer.data]
+        return paginator.get_paginated_response(notes)
+
+    def retrieve(self, request, pk=None):
+        note = get_object_or_404(
+            self.get_queryset(),
+            pk=pk)
+        serializer = NoteEventSerializer(
+            note,
+            many=False,
+            context={'request': request})
+        note = self.remove_private_event(serializer.data)
+        return Response(note)
     
     
     def get_queryset(self):
-        queryset = Note.objects.all()
-        filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
-        filter_fields = ('in_notebook__id','in_notebook__uuid')    
-        ordering_fields = ('order',)
-        ordering = ('order',)
-        
+        filtered = NoteFilter(self.request.GET,
+                              queryset=Note.objects)        
+        queryset = filtered.qs
+
         user = self.request.user
 
         # Check if authed
@@ -352,6 +364,7 @@ class NoteViewSet(viewsets.ModelViewSet):
             query = (Q(by_user=user) or Q(in_notebook__is_public=True))
         qsfinal = queryset.filter(query)
 
+
         return qsfinal
     
 
@@ -359,7 +372,7 @@ class NoteViewSet(viewsets.ModelViewSet):
 # Scrolls
 ##############################
 
-class ScrollFilter(django_filters.rest_framework.FilterSet):
+class ScrollFilter(filters.FilterSet):
     class Meta:
         model = Scroll
         fields = ['uuid', 'title', 'by_user__username']
@@ -398,7 +411,7 @@ class ScrollViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = ScrollSerializer
     queryset = Scroll.objects.select_related('by_user')
-    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    filter_backends = (filters.DjangoFilterBackend,)
     filter_class = ScrollFilter
 
     def get_queryset(self):
@@ -422,7 +435,7 @@ class ScrollViewSet(viewsets.ModelViewSet):
 # Notebook
 ########################################
 
-class NotebookFilter(django_filters.rest_framework.FilterSet):
+class NotebookFilter(filters.FilterSet):
     class Meta:
         model = Notebook
         fields = ['uuid', 'title', 'by_user__username']
@@ -462,10 +475,9 @@ class NotebookSerializer(serializers.HyperlinkedModelSerializer):
 
 class NotebookViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
-    filter_class = NotebookFilter
-    queryset = Notebook.objects.all()
     serializer_class = NotebookSerializer
-
+    queryset = Notebook.objects.all()
+    
     def get_queryset(self):
         user = self.request.user
 
