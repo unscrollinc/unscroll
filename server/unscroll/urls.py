@@ -271,7 +271,7 @@ class BulkEventViewSet(BulkModelViewSet):
 class NoteFilter(filters.FilterSet):
     class Meta:
         model = Note
-        fields = ['in_notebook__id',]
+        fields = ['in_notebook__id','in_notebook__uuid',]
 
         
 class NoteSerializer(serializers.HyperlinkedModelSerializer):
@@ -312,7 +312,7 @@ class NoteViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Note.objects.all()    
     serializer_class = NoteEventSerializer
-    
+    filter_class=NoteFilter
 
     def remove_private_event(self, note):
         username = self.request.user.username        
@@ -353,7 +353,7 @@ class NoteViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         filtered = NoteFilter(self.request.GET,
-                              queryset=Note.objects)        
+                              queryset=Note.objects)
         queryset = filtered.qs
 
         user = self.request.user
@@ -438,10 +438,15 @@ class ScrollViewSet(viewsets.ModelViewSet):
 class NotebookFilter(filters.FilterSet):
     class Meta:
         model = Notebook
-        fields = ['uuid', 'title', 'by_user__username']
+        fields = ['uuid', 'by_user__username']
 
 
 class NotebookSerializer(serializers.HyperlinkedModelSerializer):
+    whatever = serializers.PrimaryKeyRelatedField(
+        pk_field=serializers.UUIDField(format='hex'),        
+        many=False,
+        read_only=True)
+    
     user_username = serializers.CharField(
         read_only=True,
         source="by_user.username")
@@ -477,8 +482,12 @@ class NotebookViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = NotebookSerializer
     queryset = Notebook.objects.all()
+    filter_class = NotebookFilter
     
     def get_queryset(self):
+        filtered = NotebookFilter(self.request.GET,
+                                  queryset=Notebook.objects)
+        queryset = filtered.qs        
         user = self.request.user
 
         # Check if authed
@@ -487,7 +496,7 @@ class NotebookViewSet(viewsets.ModelViewSet):
         if user.is_authenticated:
             query = (Q(by_user=user) or Q(is_public=True))
             
-        qsfinal = self.queryset\
+        qsfinal = queryset\
                       .filter(query)\
                       .annotate(note_count=Count('notes'))        
         return qsfinal
@@ -548,48 +557,48 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     permission_classes = [IsAuthenticated]
 
-    @action(detail=False)
-    def scrolls(self, request):
-        user = self.request.user
-        scrolls = Scroll.objects\
-                        .select_related('by_user')\
-                        .filter(by_user__id=user.id)\
-                        .annotate(
-                            event_count=Count('events'),
-                            first_event=Min('events__when_happened'),
-                            last_event=Max('events__when_happened'))
-        serializer = ScrollSerializer(
-            scrolls,
-            context={'request': request},
-            many=True)
-        return Response(serializer.data)
+    # @action(detail=False)
+    # def scrolls(self, request):
+    #     user = self.request.user
+    #     scrolls = Scroll.objects\
+    #                     .select_related('by_user')\
+    #                     .filter(by_user__id=user.id)\
+    #                     .annotate(
+    #                         event_count=Count('events'),
+    #                         first_event=Min('events__when_happened'),
+    #                         last_event=Max('events__when_happened'))
+    #     serializer = ScrollSerializer(
+    #         scrolls,
+    #         context={'request': request},
+    #         many=True)
+    #     return Response(serializer.data)
 
-    @action(detail=False)
-    def notebooks(self, request):
-        user = self.request.user
-        notebooks = Notebook.objects\
-                          .select_related('by_user')\
-                          .filter(by_user__id=user.id)\
-                          .annotate(note_count=Count('notes'))
-        serializer = NotebookSerializer(
-            notebooks,
-            context={'request': request},
-            many=True)
-        return Response(serializer.data)
+    # @action(detail=False)
+    # def notebooks(self, request):
+    #     user = self.request.user
+    #     notebooks = Notebook.objects\
+    #                       .select_related('by_user')\
+    #                       .filter(by_user__id=user.id)\
+    #                       .annotate(note_count=Count('notes'))
+    #     serializer = NotebookSerializer(
+    #         notebooks,
+    #         context={'request': request},
+    #         many=True)
+    #     return Response(serializer.data)
 
-    @action(detail=True)
-    def notebook(self, request, pk=None):
-        user = self.request.user
-        notebook = Notebook.objects.get(uuid=str(pk))
-        notes = Note.objects\
-                          .select_related('with_event')\
-                          .filter(by_user__id=user.id)\
-                          .filter(in_notebook=notebook.id)
-        serializer = NotebookNotesSerializer(
-            notebook,
-            context={'request': request},
-            many=False)
-        return Response(serializer.data)
+    # @action(detail=True)
+    # def notebook(self, request, pk=None):
+    #     user = self.request.user
+    #     notebook = Notebook.objects.get(uuid=str(pk))
+    #     notes = Note.objects\
+    #                       .select_related('with_event')\
+    #                       .filter(by_user__id=user.id)\
+    #                       .filter(in_notebook=notebook.id)
+    #     serializer = NotebookNotesSerializer(
+    #         notebook,
+    #         context={'request': request},
+    #         many=False)
+    #     return Response(serializer.data)
 
 # Routers provide a way of automatically determining the URL conf.
 router = BulkRouter()

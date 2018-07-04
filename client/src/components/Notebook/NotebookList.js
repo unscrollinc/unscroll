@@ -31,7 +31,9 @@ class NotebookList extends React.Component {
               </td>
               
               <td className='list-object-meta-td'>
-	        <div className='list-object-title'><Link to={'/notebooks/'+notebook.uuid}>{notebook.title}</Link></div>
+	        <div className='list-object-title'>
+                  <Link to={'/notebooks/'+notebook.id}>{notebook.title}</Link>
+                </div>
 		<div>
 		  <span className='list-object-byline'>By <Link to={'/users/' + notebook.user_username}>{notebook.user_username}</Link>.</span>
 		  <span className='list-object-description'>{notebook.description}</span>

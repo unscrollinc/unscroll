@@ -5,7 +5,6 @@ class NotebookManuscriptText extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state = this.props.note[1];
-        this.state['uuid'] = this.props.note[0];
     }
 
     getText(text) {
@@ -22,7 +21,7 @@ class NotebookManuscriptText extends React.Component {
     makeManuscriptText(context) {
         return(
 	    <span className='manuscript-text'
-		  dangerouslySetInnerHTML={{__html:context.state.notebook.notes.get(this.state.uuid).text}}/>
+		  dangerouslySetInnerHTML={{__html:this.props.text}}/>
         );
     }
     render() {
