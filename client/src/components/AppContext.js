@@ -16,7 +16,9 @@ export const AppContext = React.createContext();
 const randomString = () => {
     return Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 6);
 }
-      
+
+// web(this, 'get', 'scrolls', {}, 'timelines')
+
 export class AppProvider extends React.Component {
     constructor(state, context) {
         super(state, context);
@@ -27,7 +29,7 @@ export class AppProvider extends React.Component {
         // this.loadScrollList();
 
 	this.sweep = () => {
-	    if (this.state.user.notebookCurrent && !this.state.notebook.isSaved) {
+	    if (this.state.notebookCurrent && !this.state.notebook.isSaved) {
 		if (this.state.notebook.url)  {
 		    this.putNotebook();
 		}
@@ -35,7 +37,7 @@ export class AppProvider extends React.Component {
 		    this.saveNotebook();
 		}
 	    }
-	    this.state.notebook.notes.forEach((v,k,m) => {
+	    this.state.notebookNotes.forEach((v,k,m) => {
 		if (!v.isSaved) {
 		    if (!v.url) {
 		        this.saveNote(v);
@@ -46,7 +48,7 @@ export class AppProvider extends React.Component {
 		}
 	    });
 
-	    if (this.state.user.notebookCurrent && !this.state.notebook.isSaved) {
+	    if (this.state.notebookCurrent && !this.state.notebook.isSaved) {
 		if (this.state.notebook.url)  {
 		    this.putNotebook();
 		}
@@ -67,43 +69,13 @@ export class AppProvider extends React.Component {
         const username = hasAuth ? c.username : null; 	
         
         return {
-	    user: {
-                hasAuth:hasAuth,
-                id:undefined,
-                authToken:authToken,
-                username:username,
-                password:undefined,
-                profile:undefined,
-                notebookCurrent:undefined,
-                notebookList:[],
-                scrollCurrent:undefined,                
-                scrollList:[]
-	    },
-	    notebook: {
-                moveFrom:undefined,
-                targetNote:undefined,
-		notes:new Map(),
-                noteCurrent:undefined
-	    },
-	    scroll: {},
-	    eventEditor: {
-                on:false,
-                currentEvent:{}
-	    },
-	    timeline: {
-                isHorizontal:true,
-                search: {
-                    q:undefined,
-		    from:undefined,
-		    to:undefined,
-		    creator:undefined,
-		    scroll:undefined,
-		    topic:undefined
-                },
-                frame:undefined,
-                span:undefined,
-                position:undefined
-	    }
+            username:username,
+            authToken:authToken,
+            notebook:null,
+            notebookNotes:[],
+            moveFrom:undefined,
+            targetNote:undefined,            
+            events:[]
         }
     }
     
@@ -113,9 +85,9 @@ export class AppProvider extends React.Component {
             {notebook:
 	     update(this.state.notebook,
 		    {$merge: {                        notes: update(
-                            this.state.notebook.notes,
+                            this.state.notebookNotes,
 			    {$add: [[uuid,
-				     update(this.state.notebook.notes.get(uuid),
+				     update(this.state.notebookNotes.get(uuid),
 					    {$merge: o})]]})}})},
 		    () => {
                         //console.log('[@modifyNote:uuid,o]', uuid, o);
@@ -124,7 +96,7 @@ export class AppProvider extends React.Component {
     }
 
     cutNotes(from, to, targetBefore) {
-        const _notes = this.state.notebook.notes;
+        const _notes = this.state.notebookNotes;
         return _notes;
     }
     
@@ -133,7 +105,7 @@ export class AppProvider extends React.Component {
         axios({
 	    method:'patch',
 	    url:note.url,
-	    headers:this.makeAuthHeader(this.state.user.authToken),
+	    headers:this.makeAuthHeader(this.state.authToken),
 	    data:{text:note.text,
                   order:note.order,
                   kind:note.kind}
@@ -155,7 +127,7 @@ export class AppProvider extends React.Component {
 	    method:'post',
 	    in_notebook:this.state.notebook.url,
 	    url:API+'notes/',
-	    headers:this.makeAuthHeader(this.state.user.authToken),
+	    headers:this.makeAuthHeader(this.state.authToken),
 	    data:note
 	})
             .then(function(resp) {
@@ -175,7 +147,7 @@ export class AppProvider extends React.Component {
         axios({
 	    method:'post',
 	    url:API+'notebooks/',
-	    headers:this.makeAuthHeader(this.state.user.authToken),
+	    headers:this.makeAuthHeader(this.state.authToken),
 	    data:update(this.state.notebook, {$unset: ['notes']})
 	})
             .then(function(resp) {
@@ -199,7 +171,7 @@ export class AppProvider extends React.Component {
         axios({
 	    method:'put',
 	    url:this.state.notebook.url,
-	    headers:this.makeAuthHeader(this.state.user.authToken),
+	    headers:this.makeAuthHeader(this.state.authToken),
 	    data:update(this.state.notebook,
 			{$unset: ['notes', 'isOnServer', 'isSaved']})
 	})
@@ -223,7 +195,7 @@ export class AppProvider extends React.Component {
         axios({
 	    method:'post',
 	    url:API+'scrolls/',
-	    headers:this.makeAuthHeader(this.state.user.authToken),
+	    headers:this.makeAuthHeader(this.state.authToken),
 	    data:update(this.state.scroll, {$unset: ['events']})
 	})
             .then(function(resp) {
@@ -247,14 +219,12 @@ export class AppProvider extends React.Component {
         const _this = this;	
         axios({method:'get',
 	       url:API+'scrolls/',
-               headers: this.makeAuthHeader(_this.state.user.authToken)
+               headers: this.makeAuthHeader(_this.state.authToken)
 	      })
 	    .then(function(response) {
 		console.log("Load scroll list", response);
 		_this.setState(
-                    {user: update(_this.state.user,
-                                  {$merge:
-                                   {scrollList:new Map(response.data.results.map((n)=>[n.uuid, n]))}})}
+                    {scrollList: new Map(response.data.results.map((n)=>[n.uuid, n]))}
 //                   , ()=>{console.log(_this.state.user);}
 		);
 	    });
@@ -265,13 +235,11 @@ export class AppProvider extends React.Component {
         const _this = this;	
         axios({method:'get',
 	       url:API+'notebooks/',
-               headers:this.makeAuthHeader(_this.state.user.authToken)
+               headers:this.makeAuthHeader(_this.state.authToken)
 	      })
 	    .then(function(response) {
 		_this.setState(
-                    {user: update(_this.state.user,
-                                  {$merge:
-                                   {notebookList:new Map(response.data.results.map((n)=>[n.uuid, n]))}})}
+                    {notebookList:new Map(response.data.results.map((n)=>[n.uuid, n]))}
 		    //,()=>{console.log('[@loadNotebookList() logged in user]',_this.state.user);}
 		);
 	    });
@@ -279,11 +247,11 @@ export class AppProvider extends React.Component {
 
     deleteNotebook(uuid) {
         console.log('[@deleteNotebook:uuid]', uuid);
-        const nb = this.state.user.notebookList.get(uuid);
+        const nb = this.state.notebookList.get(uuid);
         console.log(nb);
         axios({method:'delete',
                url:nb.url,
-               headers: this.makeAuthHeader(this.state.user.authToken)               
+               headers: this.makeAuthHeader(this.state.authToken)               
               })
             .then(response=>{
                 this.setState({
@@ -291,7 +259,7 @@ export class AppProvider extends React.Component {
                       update(this.state.user,
                              {$merge:
                               {notebookList:
-                               update(this.state.user.notebookList,
+                               update(this.state.notebookList,
                                       {$remove:
                                        [uuid]})                                                             
                               }})}, ()=>console.log(this.state.user))})
@@ -366,7 +334,7 @@ export class AppProvider extends React.Component {
                     axios(
 			{method:'post',
                          url:API+'auth/logout/',
-                         headers: this.makeAuthHeader(this.state.user.authToken)
+                         headers: this.makeAuthHeader(this.state.authToken)
                         })
                         .then(function(response) {
                             _this.setState(_this.makeState());
@@ -390,8 +358,8 @@ export class AppProvider extends React.Component {
                     axios.post(
                         API + 'auth/login/',
                         {
-                            username: this.state.user.username,
-                            password: this.state.user.password
+                            username: this.state.username,
+                            password: this.state.password
                         })
                         .then(function(response) {
                             const u1 = update(_this.state.user, {
@@ -402,7 +370,7 @@ export class AppProvider extends React.Component {
                                     hasAuth: true
 				}});
                             cookie.set('authToken', response.data.auth_token);
-                            cookie.set('username', _this.state.user.username);
+                            cookie.set('username', _this.state.username);
                             _this.setState({user: u1},
                                            () => {
                                                _this.loadNotebookList();
@@ -430,7 +398,7 @@ export class AppProvider extends React.Component {
                 loadNotebook:(notebook)=>{
                     const _this = this;
                     axios({method:'get',
-	                   headers:this.makeAuthHeader(this.state.user.authToken),
+	                   headers:this.makeAuthHeader(this.state.authToken),
                            url:`${API}users/${notebook.uuid}/notebook`
                           }).then((response) => {
                               this.setState({user: update(this.state.user,
@@ -473,7 +441,7 @@ export class AppProvider extends React.Component {
                         event:event.uuid ? event : undefined,
 			with_event:event.url
                     };
-                    const _notes = update(this.state.notebook.notes, {$add: [[newNote.uuid, newNote]]});
+                    const _notes = update(this.state.notebookNotes, {$add: [[newNote.uuid, newNote]]});
                     const _sorted = new Map(this.sequenceNotes(Array.from(_notes).map(([k,v])=>v)));
 		    console.log('[@addNote:_sorted]', _sorted);                    
                     this.setState({
@@ -552,15 +520,11 @@ export class AppProvider extends React.Component {
                     axios({
                         method:'delete',
                         url:note.url,
-	                headers:this.makeAuthHeader(this.state.user.authToken)})
+	                headers:this.makeAuthHeader(this.state.authToken)})
                         .then(
                             (response)=> {
-                                _this.setState({notebook:
-                                               update(_this.state.notebook,
-                                                      { $merge:
-                                                        { notes:
-                                                          update(_this.state.notebook.notes,
-                                                                 { $remove: [note.uuid]})}})}
+                                _this.setState({notebookNotes: update(_this.state.notebookNotes,
+                                                                      { $remove: [note.uuid]})}
                                                // ,()=>{console.log(_this.state.notebook);}
                                               );
                             });

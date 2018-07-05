@@ -17,9 +17,9 @@ class Notebook extends React.Component {
         };
     }
 
-    makeAddNoteButton(context) {
-        if (context.state.notebook.id !== undefined) {
-            return(<button onClick={context.addNote}>+ Note</button>);
+    makeAddNoteButton() {
+        if (this.props.context.state.notebook !== undefined) {
+            return(<button onClick={this.props.context.addNote}>+ Note</button>);
         }
         return undefined;
     }
@@ -104,7 +104,7 @@ class Notebook extends React.Component {
                                   : 'unsaved')}>●</span>
 			  </span>
 			
-			  {this.makeAddNoteButton(context)}
+			  {/* this.makeAddNoteButton(context) */}
 			
                           
 			  <TitleEditor/>

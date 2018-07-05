@@ -17,7 +17,7 @@ class NotebookList extends React.Component {
         if (notebook.user_username===this.state.username) {
             return (<Link
                     className="button"
-                    to={'/notebooks/' + notebook.id + '/edit'}>Edit</Link>);
+                    to={'/notebooks/' + notebook.user_username + '/' + notebook.id + '/edit'}>Edit</Link>);
         }
         return null;
     }

@@ -22,10 +22,10 @@ class Nav extends React.Component {
 
     renderLoginForm(context) {
 
-        if (context.state.user.hasAuth) {
+        if (context.state.authToken) {
             return(
                 <div className="login">
-		    <Link to="/my/profile">{context.state.user.username}</Link>
+		    <Link to="/my/profile">{context.state.username}</Link>
                   <button className="logout" onClick={context.doLogout}>Log out</button>
                 </div>
             );

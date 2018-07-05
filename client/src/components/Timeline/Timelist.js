@@ -60,7 +60,7 @@ class Timelist extends React.Component {
     }
 
     manageSearch(context) {
-        const q = context.state.timeline.search.q;
+        const q = context.state.search;
 
         // I want to assign local state from the App `context`.
         

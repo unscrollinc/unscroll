@@ -1,4 +1,5 @@
 import cookie from 'js-cookie';
+import axios from 'axios';
 
 // Functions that take no arguments and return either null or
 // something and that are usually bad/global/messy.
@@ -27,6 +28,23 @@ const util = {
     },
     getAPI:(noun) => {
         return `${API}${noun}`;
+    },
+    web: (that, method, endpoint, params, key) => {
+        axios({
+            method:method,
+            url:`${API}/${endpoint}/`,
+            headers:util.getAuthHeaderFromCookie(),
+            data:params
+        }).then((resp)=> {
+            if (resp.data && resp.data.results) {
+                that.setState({[key]:resp.data.results});
+            }
+            else {
+                that.setState({[key]:resp.data});            
+            }
+        })
+            .catch((err)=>{console.log(`[Error] ${method} against ${endpoint}`,
+                                      {params:params, err:err})});
     }
 };
 

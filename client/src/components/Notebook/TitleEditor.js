@@ -25,7 +25,7 @@ class TitleEditor extends React.Component {
 	return (
             <AppContext.Consumer>
               {(context) => {
-                  const nb = context.state.notebook;
+                  const nb = this.state.notebook;
                   if (nb.title!==undefined) {
                       return(
                           <Form defaultValues={context.state.notebook}>
