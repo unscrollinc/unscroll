@@ -5,14 +5,28 @@ import { Link } from 'react-router-dom';
 import { DateTime } from 'luxon';
 import axios from 'axios';
 import cachios from 'cachios';
-import { frames } from './TimeFrames';
+// import { frames } from './TimeFrames';
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.withCredentials = true;
 
-class Panel extends React.Component {
+/*
 
-    // THERE IS A BIG GLOBAL VARIABLE IN HERE CALLED GRID.
+THERE IS A BIG BAD GLOBAL VARIABLE IN HERE CALLED GRID.
+            _     _
+  __ _ _ __(_) __| |
+ / _` | '__| |/ _` |
+| (_| | |  | | (_| |
+ \__, |_|  |_|\__,_|
+ |___/
+
+
+I wanted you to know about that.
+
+*/
+
+
+class Panel extends React.Component {
 
     constructor(props, context) {
         super(props, context);
@@ -117,8 +131,18 @@ class Panel extends React.Component {
         };
     }
 
-    bufferEl(event, dt, month) {
+    makeEl(event) {
+        return(
+	    <Event
+              key={event.uuid}
+	      top='0%'
+	      left='0%'	      
+              width={2 * this.state.cell.width + '%'}
+	      event={event}/>);
+    }
 
+    
+    bufferEl(event, dt, month) {
         // This is an ironic function.
         //
         // React uses a virtual DOM and so it can't see the real size
@@ -150,14 +174,6 @@ class Panel extends React.Component {
 
     // Figure out how to do this with https://www.npmjs.com/package/html-react-parser    
     makeEls(data) {
-        const shuffle = (a) => {
-            for (let i = a.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [a[i], a[j]] = [a[j], a[i]];
-            }
-            return a;
-        };
-        
         let els = [];
         const jels = data.results;
         for (var i=0;i<jels.length;i++) {
@@ -223,7 +239,10 @@ class Panel extends React.Component {
     }
     
     makeColumn(ct, interval) {
-        const { span, _interval, title } = this.props.frame.getColumnLink(interval, ct);
+	// Avoiding destructuring to keep ESLint happy.
+	const columnLink = this.props.frame.getColumnLink(interval, ct);
+	const span = columnLink.span;
+	const title = columnLink.title;	
         return(
                 <Column
                   width={100/this.props.width + '%'} 
@@ -237,11 +256,16 @@ class Panel extends React.Component {
         const left = (this.props.center * 100) + this.props.offset + '%';
 
         return (
+	    <React.Fragment>
             <div className="Panel" id={this.props.center} style={{left:left}}>
 		<h1>{this.state.title}</h1>
 		{this.state.columns}
                 {this.state.events}
             </div>
+	    <div id="buffered">
+	      {this.state.buffered}
+	    </div>
+	    </React.Fragment>
         );
     }
 }

@@ -25,15 +25,11 @@ class Notebook extends React.Component {
     }
     
     makeNote(note, i) {
-        return (<Note key={note[0]} {...note[1]}/>);
+        return (<Note key={note.uuid} {...note}/>);
     }
 
     makeManuscriptText(note, i) {
-        return (
-            <span key={note[0]}>
-              <Manuscript key={note[0]} note={note}/>
-            </span>
-        );
+        return (<Manuscript key={note.uuid} {...note}/>);
     }
 
     loadNotebook() {
@@ -44,7 +40,7 @@ class Notebook extends React.Component {
              url:'http://127.0.0.1:8000/notes/?in_notebook__id=' + this.props.id,
              headers:Util.getAuthHeaderFromCookie()})
             .then(resp => {
-                this.setState({notes:resp.data.results},
+                _this.setState({notes:resp.data.results},
                               ()=>{console.log(_this);}
                              );
             })
@@ -55,8 +51,8 @@ class Notebook extends React.Component {
              url:'http://127.0.0.1:8000/notebooks/' + this.props.id,
              headers:Util.getAuthHeaderFromCookie()})
             .then(resp => {
-                this.setState({notebook:resp.data},
-                              ()=>{console.log(_this);}
+                this.setState({notebook:resp.data}
+			      // , ()=>{console.log(_this);}
                              );
             })
             .catch(err=>{console.log(err);});
@@ -75,21 +71,22 @@ class Notebook extends React.Component {
     renderManuscript() {
         if (this.state.notebook) {
             return(
-                <React.Fragment>
+		<div className='manuscript-inner'>
                   <h1>{this.state.notebook.title}</h1>
                   <h2>{this.state.notebook.subtitle}</h2>
                   <div className="description">{this.state.notebook.description}</div>   
                   {Array.from(this.state.notes).map(this.makeManuscriptText)}
-                </React.Fragment>);
+		  </div>);
         }
         return null;
     }
     
     render() {
         if (!this.props.edit)  {
-            return (<div className='Manuscript preview'>
+            return (<div key='manuscript-preview' className='Manuscript preview'>
+
                     {this.renderManuscript()}
-                    </div>);
+		    </div>);
         }
         return (
             <AppContext.Consumer>
@@ -97,17 +94,12 @@ class Notebook extends React.Component {
                   return (
 		      <div className="Editor">
                         <div className="notebook-event-list">
-                          <span>
-                            <span className={'status '
-                                             + (this.state.saved
-                                                ? 'saved'
-                                  : 'unsaved')}>●</span>
-			  </span>
+                          <span className={'status ' + (this.state.saved ? 'saved' : 'unsaved')}>●</span>
 			
 			  {/* this.makeAddNoteButton(context) */}
 			
                           
-			  <TitleEditor/>
+			  <TitleEditor {...this.state.notebook}/>
                           
                           {Array.from(this.state.notes).map(this.makeNote)}
                         </div>
@@ -121,8 +113,4 @@ class Notebook extends React.Component {
     }
 }
 
-export default props => (
-  <AppContext.Consumer>
-    {context => <Notebook {...props} context={context} />}
-  </AppContext.Consumer>
-);
+export default Notebook;

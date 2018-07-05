@@ -35,7 +35,7 @@ class TimelineList extends React.Component {
                 <div className="list-object-description">{scroll.description}</div>
               </td>
               
-                <td className={`list-object-published-td`}>
+              <td className={`list-object-published-td`}>
 		<div className={`list-object-published-${privacy}`}>{privacy}</div>
              </td>
 
@@ -68,7 +68,7 @@ class TimelineList extends React.Component {
     
     render() {
 	return (
-	    <div className="Editor">
+	    <div className="TimelineList">
 	      
               <AppContext.Consumer>
 		{(context) => {

@@ -16,6 +16,7 @@ h1, h2, h3, h4, h5, h6, h7 {
 
 h1 {
     font-size:200%;
+    color:deepskyblue;
 }
 
 h1 a:hover {
@@ -25,7 +26,7 @@ h1 a:hover {
 
 h1 a {
     text-decoration:none;
-    color:black;
+    color:white;
     width:100%;
     display:block;
 }
@@ -49,37 +50,40 @@ h1 a {
     line-height:150%;
     height:5%;
     position:fixed;
-    display: table;    
-    font-size:80%;
-    border-bottom:px solid #07e;
-    color:#E61D9E;
-    box-shadow: inset 0px -1px #ccc;
+    background:white;
+    color:black;
 }
 .Nav > table {
     height:100%;
 }
 .Nav a {
-    color:#E61D9E;
+    color:black;
     text-decoration:none;
     padding-right:0.5em;
 }
 .Nav .logo {
     font-weight:bold;
-    color:black;
+    color:deepskyblue;
 }
 .Nav a:hover {
     text-decoration:underline;
 }
 
-.Timeline, .Editor, .NotebookList {
+.Timeline, .Editor, .NotebookList, .Manuscript, .TimelineList {
     top:5%;
     height:95%;
     position:absolute;
     background-color:white;
 }
 
+.TimelineList {
+    width:50%;
+    left:0%;
+
+}
 .Timeline {
     width:100%;
+    height:95%;
     position:fixed;
 }
 
@@ -92,6 +96,8 @@ h1 a {
     float:left;
     position:absolute;
     width:100%;
+    background:deepskyblue;
+    cursor:ew-resize;
 }
 
 .Panel h1 {
@@ -107,30 +113,37 @@ h1 a {
 
 .Editor, .NotebookList {
     width:50%;
-    background:#40ffff;
+    background:white;
     left:50%;
-    border-left:1px solid black;
+    padding:5%;
+    width:39%;
     overflow:auto;
 }
 
 .NotebookList {
     left:0%;
-    border-right:1px solid black;    
+    width:50%;
+    padding:1em;
+    height:93%;
+    
 }
 
 .column {
     box-sizing:border-box;
-    border-left:1px solid #ccc;
+    border-left:1px solid deepskyblue;
     min-height:96%;
     float:left;
     font-size:11.5pt;
     text-align:center;
+    background-color:lightskyblue;
+    height:100%;
 }
 
 .column a {
     text-decoration:none;
     display:block;
-    width:100%;    
+    width:100%;
+    color:white;
 }
 
 .column a:hover {
@@ -140,13 +153,19 @@ h1 a {
 
 .event {
     box-sizing:border-box;
-    border-top:1px solid #00F;
-    border-left:1px solid #00F;    
     position:absolute;
-    background:white;
     font-size:9pt;
+    opacity:0.9;
 }
 
+.event-inner {
+    background:white;
+    margin:1em;
+    padding:1em;
+    border-top:1px solid deepskyblue;
+    border-left:1px solid deepskyblue;
+    border-radius:0.75em;
+}
 .event button {
     float:right;
     display:inline;
@@ -157,10 +176,6 @@ h1 a {
     top:100%;
     width:100%;
     height:95%;
-}
-
-.notebook-header {
-    width:100%;
 }
 
 .notebook-event-list {
@@ -184,14 +199,12 @@ h1 a {
 }
 
 .note-event a {
-    color:#0077ee73;
     text-decoration:none;
     border-bottom:1px solid #662;
     font-weight:bold;
 }
 
 .note-event {
-    color:#0077ee73;
     padding:0.5em;
 }
 
@@ -205,7 +218,7 @@ h1 a {
     font-family:serif;
     font-size:10pt;
     border:1px dotted #ccc;
-    background:#CEF;
+    background:#lightblue;
     font-family: 'IBM Plex Sans', monospace;
     width:90%;
 }
@@ -218,16 +231,19 @@ h1 a {
     width:50%;
     left:50%;
     background:#fff;
-    border-left:1px dotted black;
-    height:100%;
-    top:0;
     position:absolute;
     font-family: 'IBM Plex Serif', serif;
     overflow:auto;
+    padding:3em;
+    border-left:0.05em solid deepskyblue;
+}
+
+div.manuscript-inner {
+    width:80%;
+    margin:10%;
 }
 
 .preview {
-    top:5%;
     height:95%;
     padding:1em 0 0 0;
     line-height:150%;
@@ -252,15 +268,6 @@ h1 a {
     color:white;
 }
 
-textarea {
-    width:95%;
-}
-
-button.new {
-    display:block;
-    float:right;
-}
-
 .EventEditor {
     position:fixed;
     width:50%;
@@ -272,11 +279,14 @@ button.new {
 
 .Timelist {
     width:50%;
+    left:50%;
     height:95%;
     top:5%;
     position:fixed;
+    background:white;
     overflow:auto;
     margin-bottom:1000px;
+    padding:1em;
 }
 
 table {
@@ -323,7 +333,7 @@ td.content {
     width:75%;
     text-align:justify;
     hyphens: auto;
-    color:#444;
+    color:#555;
     font-size:11pt;
     padding:0.5em 0.5em 1.5em 1em;
 }
@@ -345,12 +355,7 @@ td.image {
 
 td a {
     text-decoration:none;
-    color:#06d;
-}
-
-td a:followed {
-    text-decoration:none;
-    color:#66d;
+    color:deepskyblue;    
 }
 
 div.dt {
@@ -364,7 +369,7 @@ div.title {
 }
 
 .dtsince {
-    background:#06d;
+    background:blue;
     color:white;
     padding-left:1em;
 }
@@ -373,7 +378,6 @@ div.title {
 .list-object-button, .button, button, input.inputButton {
     color:black;
     font-size:10pt;
-    background:white;
     color:black;
     margin:0 0.5em 0 0;
     padding:0 0.5em 0 0.5em;
@@ -422,13 +426,6 @@ button.logout {
     font-size:9pt;
 }
 
-input.loginButton {
-    background:red;
-    border:pink;
-    color:white;
-    font-weight:bold;
-}
-
 th {
     font-weight:normal;
 }
@@ -454,13 +451,10 @@ th {
 
 .saved {
     color:darkgreen;
-    text-shadow: 0 0 5px darkgreen;
-    
 }
 
 .unsaved {
     color:red;
-    text-shadow: 0 0 5px red;    
 }
 
 span.status {
@@ -486,6 +480,7 @@ div.search-ruby {
 form.search {
     display:inline;
 }
+
 .About {
     overflow:auto;
     line-height:150%;
@@ -521,16 +516,19 @@ div.loading {
 */
 
 .list-object {
-    padding:1em;
+    padding:5%;
+    background:white;
+    height:100%;
 }
 
 table.list-object-table {
-    margin:1em 0 0 0;
+    margin:1% 0 0 0;
     width:100%;
     border-collapse:collapse;
 }
 
 tr.list-object-tr {
+    border-bottom:1px solid red;
 }
 
 table.list-object-table th {
@@ -544,29 +542,27 @@ table.list-object-table td {
 table.list-object-table td,
 table.list-object-table th {
     font-size:11pt;
+    padding:1.25em 0.5em 1.25em 0;    
+    
 }
 td.list-object-date-td,
 th.list-object-date-th {
     width:10%;
-    padding:0 0.5em 0.5em 0.5em;
     text-align:left;
 }
 td.list-object-creator-td,
 th.list-object-creator-th {
     width:10%;
-    padding:0 0.5em 0.5em 0.5em;
     text-align:left;
 }
 td.list-object-meta-td,
 th.list-object-meta-th {
     width:70%;    
-    padding:0 0.5em 0.5em 0.5em;
     text-align:left;
 }
 td.list-object-published-td,
 th.list-object-published-th {
     width:15%;        
-    padding:0 0.5em 0.5em 0.5em;
     text-align:left;
 }
 div.list-object-title {
@@ -583,4 +579,3 @@ div.list-object-published-Public {
 div.list-object-published-Private {
     font-weight:normal;
 }
-

@@ -7,6 +7,16 @@ import axios from 'axios';
 const API = 'http://127.0.0.1:8000/';
 
 const util = {
+    getCookie: () => {
+        const c = cookie.get();
+	if (c) {
+            return c;
+	}
+	return null;
+    },
+    setCookie: (k,v) => {
+	cookie.set(k,v);	
+    },
     getUsernameFromCookie: () => {
         const c = cookie.get();
         const hasAuth = (c && c.authToken && c.username);
@@ -20,7 +30,6 @@ const util = {
         const c = cookie.get();
         const hasAuth = (c && c.authToken && c.username);
         const authToken = hasAuth ? c.authToken : null;
-        const username = hasAuth ? c.username : null;
         if (authToken) {
             return {'Authorization': `Token ${authToken}`};
         }

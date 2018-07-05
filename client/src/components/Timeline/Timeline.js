@@ -1,5 +1,5 @@
 import React from 'react';
-import { DateTime, Duration, Interval } from 'luxon';
+import { DateTime, Interval } from 'luxon';
 import WheelReact from '../../ext/wheel-react';
 import Panel from './Panel';
 import TimeFrames from './TimeFrames';
@@ -109,6 +109,7 @@ class Timeline extends React.Component {
     }
 
     componentWillUnmount() {
+	// This causes some setState issues that occasionally get flagged.
         WheelReact.clearTimeout();
     }
 

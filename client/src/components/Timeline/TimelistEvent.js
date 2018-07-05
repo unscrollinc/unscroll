@@ -6,7 +6,7 @@ import update from 'immutability-helper';
 import axios from 'axios';
 import util from '../Util/Util.js';
 import RichTextEditor from '../Editor/RichTextEditor';
-import { Form, Text, TextArea, Checkbox } from 'react-form';
+import { Form, Text } from 'react-form';
 
 class TimelistEvent extends React.Component {
 
@@ -73,7 +73,6 @@ class TimelistEvent extends React.Component {
 	    return null;
 	}
 	else {
-	    console.log('IN ELSE', this.state);
 	    axios(
 		{method:'patch',
 		 url:url,

@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactCursorPosition from 'react-cursor-position';
-import queryString from 'query-string';
+// import queryString from 'query-string';
 import Nav from './Nav';
-import News from './News';
+// import News from './News';
 import Profile from './Profile';
 import About from './About';
 import Register from './User/Register';
@@ -18,16 +18,16 @@ import { Route } from 'react-router-dom' ;
 import '../index.css';
 
 // tiny helper function to route URL 
-const tl = (params) => {
+// const tl = (params) => {
     
-    const qs = (params && params.location && params.location.search)
-	  ? queryString.parse(params.location.search)
-	  : {};
+//     const qs = (params && params.location && params.location.search)
+// 	  ? queryString.parse(params.location.search)
+// 	  : {};
     
-    return (<ReactCursorPosition>
-	    <Timeline key={qs.start + '&' + qs.before} {...qs}/>
-	    </ReactCursorPosition>);
-}
+//     return (<ReactCursorPosition>
+// 	    <Timeline key={qs.start + '&' + qs.before} {...qs}/>
+// 	    </ReactCursorPosition>);
+// }
 
 const routes = [
     { path: '/',
@@ -75,13 +75,13 @@ const routes = [
     { path: '/timelines/:uuid',
       exact: true,
       Listing: (props) => <Timelist {...props.match.params}/>,
-      Workbook: (props) => <TimelineList {...props.match.params}/>
+      Workbook: (props) => null
     },        
 
     { path: '/timelines/:uuid/edit',
       exact: true,
       Listing: (props) => <Timelist {...props.match.params} edit={true}/>,
-      Workbook: (props) => <TimelineList {...props.match.params}/>
+      Workbook: (props) => null
     },        
 
     { path: '/notebooks',
@@ -98,7 +98,7 @@ const routes = [
 
     { path: '/notebooks/:user/:id/:edit?',
       exact: true,
-      Listing: (props) => <NotebookList {...props.match.params}/>,
+      Listing: () => null,
       Workbook: (props) => <Notebook {...props.match.params}/>
     }        
 ];

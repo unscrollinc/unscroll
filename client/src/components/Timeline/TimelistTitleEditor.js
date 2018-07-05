@@ -4,7 +4,7 @@ import { Form, Text, TextArea, Checkbox } from 'react-form';
 import axios from 'axios';
 import { DateTime } from 'luxon';
 import update from 'immutability-helper';
-import AppContext from '../AppContext';
+import utils from '../Util/Util';
 const SCROLL_API='http://127.0.0.1:8000/scrolls/';
 
 // This is kind of an experiment in re-localizing some remote state
@@ -18,7 +18,7 @@ class TimelistTitleEditor extends React.Component {
         this.state = {
             isEditing:false,
             isSaved:true,
-            isSaving:false,
+            isSaving:false
         };
         
 	this.sweep = () => {
@@ -62,9 +62,8 @@ class TimelistTitleEditor extends React.Component {
 	    axios({
                 method:'get',
                 url:url,
-                headers:this.props.context.getAuthHeaderFromCookie()})
+                headers:utils.getAuthHeaderFromCookie()})
 	        .then(resp => {
-                    console.log(resp);
                     _this.setState({scroll:resp.data.results[0]}, ()=>{});
 	        }).catch(err => {
 	        console.log('Error', err);
@@ -84,8 +83,8 @@ class TimelistTitleEditor extends React.Component {
         const s = this.state.scroll;
 
         return (
-            <div className='timelist-title'>            
-	    <div key={s.uuid}>
+            <div key={s.uuid} className='timelist-title'>            
+
 	      <Link to={`/timelines/${this.props.uuid}/edit`}>Edit</Link>	
 		<div className="citation">
                   <a href={s.link} target="_new">{s.citation}</a>, {this.quickDate(s.first_event)}&ndash;{this.quickDate(s.last_event)}.                
@@ -95,48 +94,48 @@ class TimelistTitleEditor extends React.Component {
 		<p>
 		Created by <a href={'/users/' + s.user_username}>{s.user_username}</a>
 		({this.quickDate(s.when_created)}, changed {this.quickDate(s.when_modified)}.)
-    	        </p>
-		</div>
+    	    </p>
                 </div>
         );
     }
     
     renderForm() {
         return (
-            <div className='timelist-title'>
             <Form key={'form-' + this.props.uuid} defaultValues={this.state.scroll}>
               {(form) => {
                   // title, description, is_public, is_fiction, is_deleted, citation, link, with_thumbnail
                   return (
-                      <form>
-			  <Link to={`/timelines/${this.props.uuid}`}>Done</Link>
+		      <form key={'form-inner-' + this.props.uuid}>
+			<Link to={`/timelines/${this.props.uuid}`}>Done</Link>
                         <div key='title'>
-                          <div>Title</div>
+                          <div key='title-inner'>Title</div>
 			  <Text
-                                   key='title_field'                                                                                                           
-                                   field="title"
-                                   onChange={(e)=>this.scrollChange('title', e)}
+                            key='title_field'                                                                                                           
+                            field="title"
+                            onChange={(e)=>this.scrollChange('title', e)}
                             placeholder='Title' />
                         </div>
                         
                         <div key='citation'>
-                          <div>Citation</div>
+                          <div key='citation-inner'>Citation</div>
 			  <Text
-                                      key='citation_field'                                                                        
-                                      field="citation"
-                                      onChange={(e)=>this.scrollChange('citation', e)}
+                            key='citation_field'                                                                        
+                            field="citation"
+                            onChange={(e)=>this.scrollChange('citation', e)}
                             placeholder='Citation' />
                         </div>
+			
                         <div key='link'>
-                          <div>Link</div>
+                          <div key='link-inner'>Link</div>			  
 			  <Text
-                                  key='link_field'                                  
-                                  field="link"
-                                  onChange={(e)=>this.scrollChange('link', e)}
+                            key='link_field'                                  
+                            field="link"
+                            onChange={(e)=>this.scrollChange('link', e)}
                             placeholder='Link' />
                         </div>                                                                                                                              
-                        <div key='description'>
-                          <div>Description</div>
+
+			<div key='description'>
+                          <div key='description-inner'>Description</div>
                           <TextArea
                             key='decription_field'
                             field="description"
@@ -144,8 +143,8 @@ class TimelistTitleEditor extends React.Component {
                             placeholder='Description' />
                         </div>
                         
-                          <div key='is_public'>
-			  <div>Published?</div>
+                        <div key='is_public'>
+                          <div key='published-inner'>Published?</div>			  
                           <Checkbox
                             key='is_public_checkbox'
                             field="is_public"
@@ -156,21 +155,22 @@ class TimelistTitleEditor extends React.Component {
                   );
               }}
             </Form>
-                </div>
         );
     }
 
     newEvent() {
         console.log('I am making a new event');
     }
+
     editButton() {
         return (
-            <div>
+            <div key='buttons'>
               <button key='edit' onClick={()=>{this.setState({isEditing:!this.state.isEditing})}}>+ Edit</button>
               <button key='new' onClick={this.newEvent}>+ New</button>              
             </div>
         );
     }
+    
     render() {
         if (this.state.scroll) {
             if (this.props.edit) {
@@ -183,11 +183,4 @@ class TimelistTitleEditor extends React.Component {
     }
 }
 
-export default props => (
-  <AppContext.Consumer>
-    {context => <TimelistTitleEditor
-                     key='title-editor'
-                     {...props}
-                     context={context} />}
-  </AppContext.Consumer>
-);
+export default TimelistTitleEditor;

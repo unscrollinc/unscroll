@@ -1,7 +1,8 @@
 import React from 'react';
-import AppContext from '../AppContext';
-import { Link } from 'react-router-dom' ;
-import { Form, Text, TextArea, Checkbox } from 'react-form';
+// import AppContext from '../AppContext';
+// import { Link } from 'react-router-dom' ;
+// TextArea, Checkbox 
+import { Form, Text } from 'react-form';
 
 class Register extends React.Component {
     

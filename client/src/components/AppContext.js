@@ -20,16 +20,36 @@ const randomString = () => {
 // web(this, 'get', 'scrolls', {}, 'timelines')
 
 export class AppProvider extends React.Component {
+	
+	makeState(c) {
+	    const hasAuth = (c && c.authToken && c.username);
+            const authToken = hasAuth ? c.authToken : null;
+            const username = hasAuth ? c.username : null; 	
+            
+            return {
+		username:username,
+		authToken:authToken,
+		notebook:null,
+		notes:[],
+		moveFrom:undefined,
+		targetNote:undefined,            
+		events:[]
+            }
+	}
+    
     constructor(state, context) {
         super(state, context);
         const c = cookie.get();        
 
-        this.state = this.makeState(c);
+	this.state = this.makeState(c);
+
+
+	
         this.loadNotebookList();
         // this.loadScrollList();
 
 	this.sweep = () => {
-	    if (this.state.notebookCurrent && !this.state.notebook.isSaved) {
+	    if (this.state.notebook && !this.state.notebook.isSaved) {
 		if (this.state.notebook.url)  {
 		    this.putNotebook();
 		}
@@ -37,7 +57,7 @@ export class AppProvider extends React.Component {
 		    this.saveNotebook();
 		}
 	    }
-	    this.state.notebookNotes.forEach((v,k,m) => {
+	    this.state.notes.forEach((v,k,m) => {
 		if (!v.isSaved) {
 		    if (!v.url) {
 		        this.saveNote(v);
@@ -48,7 +68,7 @@ export class AppProvider extends React.Component {
 		}
 	    });
 
-	    if (this.state.notebookCurrent && !this.state.notebook.isSaved) {
+	    if (this.state.notebook && !this.state.notebook.isSaved) {
 		if (this.state.notebook.url)  {
 		    this.putNotebook();
 		}
@@ -61,22 +81,6 @@ export class AppProvider extends React.Component {
         // Periodically (SWEEP_DURATION_SECONDS) sweep the notebook
         // and notes and see what needs to be saved.
 	setInterval(this.sweep, 1000 * SWEEP_DURATION_SECONDS);
-    }
-
-    makeState(c) {
-	const hasAuth = (c && c.authToken && c.username);
-        const authToken = hasAuth ? c.authToken : null;
-        const username = hasAuth ? c.username : null; 	
-        
-        return {
-            username:username,
-            authToken:authToken,
-            notebook:null,
-            notebookNotes:[],
-            moveFrom:undefined,
-            targetNote:undefined,            
-            events:[]
-        }
     }
     
     modifyNote(uuid, o) {
@@ -315,7 +319,6 @@ export class AppProvider extends React.Component {
                     const c = cookie.get();
 	            const hasAuth = (c && c.authToken && c.username);
                     const authToken = hasAuth ? c.authToken : null;
-                    const username = hasAuth ? c.username : null;
                     return this.makeAuthHeader(authToken);
                 },
                 

@@ -1,14 +1,13 @@
 import React from 'react';
 import 'react-virtualized/styles.css';
-//import {DateTime, Interval} from 'luxon';
-import cachios from 'cachios';
+// import {DateTime, Interval} from 'luxon';
+// import cachios from 'cachios';
 import axios from 'axios';
-import AppContext from '../AppContext';
 import TimelistEvent from './TimelistEvent';
 import TimelistTitleEditor from './TimelistTitleEditor';
-
+import utils from '../Util/Util';
 const API='http://127.0.0.1:8000/events/';
-const SCROLL_API='http://127.0.0.1:8000/scrolls/';
+// const SCROLL_API='http://127.0.0.1:8000/scrolls/';
 
 class Timelist extends React.Component {
 
@@ -45,7 +44,7 @@ class Timelist extends React.Component {
 	axios({
             method:'get',
             url:ordering_url,
-	    headers:this.props.context.getAuthHeaderFromCookie()
+	    headers:utils.getAuthHeaderFromCookie()
         })
 	    .then(resp => {
                 const _els = _this.makeEls(resp.data);
@@ -59,8 +58,8 @@ class Timelist extends React.Component {
 	    });
     }
 
-    manageSearch(context) {
-        const q = context.state.search;
+    manageSearch() {
+        const q = this.state.search;
 
         // I want to assign local state from the App `context`.
         
@@ -79,7 +78,7 @@ class Timelist extends React.Component {
                           ({events:[],
                             nextUrl:undefined,
                             doGetNext:false,
-                            search:context.state.timeline.search}),
+                            search:this.state.timeline.search}),
                           this.getSpan(`${API}?q=${q}&limit=50`));
         }
         
@@ -88,7 +87,7 @@ class Timelist extends React.Component {
 
     kickoff() {
 	const url = this.props.uuid
-	      ? `${API}?in_scroll=${this.props.uuid}&`
+	      ? `${API}?in_scroll_uuid=${this.props.uuid}&`
 	      : `${API}?`;
         this.setState(prevState => ({events:[]}),
                       this.getSpan(`${url}q=&limit=20&offset=0`));
@@ -120,37 +119,16 @@ class Timelist extends React.Component {
 
     render() {
         return(
-            <div 
-              className="Timelist"
-              key={this.props.uuid}
-              onScroll={this.handleScroll.bind(this)}>
-              <div>
-                <AppContext.Consumer>
-                  {(context)=> {
-                      this.manageSearch(context);
-                      return (
-                          <div className="timelist-editor">
-
-                            <TimelistTitleEditor {...this.props}/>
-                            
-                            <table className="timelist">
-		              <tbody>
-                                {this.state.events}
-   		              </tbody>
-		            </table>
-                          </div>
-                      );
-                  }
-                  }
-	    </AppContext.Consumer>
-           </div>
-          </div>
+	    <div key="timelist" className="Timelist">
+	      <TimelistTitleEditor key={`tti-${this.props.uuid}`} {...this.props}/>
+              <table key={`ttit-${this.props.uuid}`} className="timelist">
+		<tbody>
+                  {this.state.events}
+   		</tbody>
+	      </table>
+	    </div>
         );
     }
 }
 
-export default props => (
-  <AppContext.Consumer>
-    {context => <Timelist {...props} context={context} />}
-  </AppContext.Consumer>
-);
+export default Timelist;

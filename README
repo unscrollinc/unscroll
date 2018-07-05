@@ -4,8 +4,6 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
-
-
 SERVER
 - Camelcase JSON (camelcase filter)
 - Add filters
@@ -19,9 +17,7 @@ CLIENT
 - Refactor timeline stuff/context stuff into module
 -
 var clean = DOMPurify.sanitize(dirty, {ALLOWED_TAGS: ['b']});
-
 var clean = DOMPurify.sanitize(dirty, {ALLOWED_TAGS: ['b', 'em'], ALLOWED_ATTR: ['style']});
-
 
 DELETE FROM event WHERE id IN (SELECT id FROM (SELECT id, ROW_NUMBER()
 OVER (partition BY title, scroll_id ORDER BY id) AS rnum FROM event) t
@@ -65,8 +61,6 @@ the irony is that they come to me and say, hey do you want to talk to a big room
 i wanted to prove to you all that I am not a fraud
 as to whether I am or not, I have my on opinions, and you are totally free to make up your own mind. thank you.
 
-
-
 - Write four or five essays
   - Looking at books
   - Explain why I'm doing readings
@@ -107,11 +101,7 @@ as to whether I am or not, I have my on opinions, and you are totally free to ma
   - Adding things to the timeline
   - Writing in the timeline
   - Essay
-
-
-
-
-
+  
 * For June 9 Demo
 
 - Final checklisty stuff

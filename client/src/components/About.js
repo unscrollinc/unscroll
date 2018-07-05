@@ -17,27 +17,24 @@ class About extends React.Component {
                 at <a href="https://twitter.com/ftrain">@ftrain</a>;
                 my DMs are open but email is best.</p>
                 
-                <h2>What in the hell is this new stupid thing that I know I will hate?</h2>
+                <h2>What is this new thing?</h2>
                 
-                <p>Unscroll is a tool for writing and exploring lots
-                of information that helps you fact-check your own
-                writing. It's got two things:</p>
+                <p>Unscroll is an experimental tool for writing that helps
+                 you fact-check your own writing. It's got two things:</p>
                 
                 <ol>
                   <li>Timelines filled with Events!</li>
                   <li>Notebooks filled with Notes!</li>
                 </ol>
+
+                <p>..And Notes can be based on Events.</p>
                 
                 <p>That's it, but it leads to a nice new way
                    of writing.</p>
-
-                <p>Because the Events are searchable it's
-                  easy to look through lots of them and do basic
-                  research.</p>
-                
+		
                 <p>You can organize your Notes to produce anything,
                   like essays or articles, or book chapters, and all
-                  the events--footnotes--are always right there.</p>
+                  the events--like living footnotes--are always right there.</p>
                  
                 <p>It gives you a superpower: The power to remember
                   what the hell you are talking about. If you don't
@@ -51,28 +48,20 @@ class About extends React.Component {
                   happy to build it and it helps me be a better writer.</p>
 
 
-            <p>I think
-                  that writing is a service to the reader and that
-                  it's important to get things right. When I get
-                  things wrong I'm depressed for days.</p>
-
                 <p>Also, the publishing industry laid off so many
                   fact-checkers and editors that the responsibility
                   for accuracy now falls very firmly on the shoulders
                   of writers, at the exact moment when the media
-                  industry is utterly besieged by the political
+                  industry is utterly besieged by the new political and social
                   establishment and people are all yelling about Fake
-                  News. We can't all write for the <i>Times</i>.</p>
+                  News.</p>
 
-		<p>Also: When you write online you have to write
-		 defensively. This is a defensive writing tool.</p>
+		<p>This is a defensive writing tool.</p>
 
-                <p>If other people use it that'll be great. Up to
-                  you!</p>
                 
                 <h2>If I use this, who owns my work?</h2>
                 
-                <p>Not clear yet. Mostly YOU, sometimes EVERYONE,
+                <p>Mostly YOU, sometimes EVERYONE,
                 never just ME.</p>
                 
                 <p>I'm still working this out, but here's where I'm
@@ -98,12 +87,11 @@ class About extends React.Component {
                   
                 </ul>
                 
-                <p>Will that work? Let's see what happens. Right now
-                  this thing has ONE user so it's NBD.</p>
+                <p>Will that work? Right now this thing has ONE user. Let's see what happens.</p>
 
 		<h2>What about copyright?</h2>
 
-		<p>On the search engine side, we spider web pages, use open data, and respect robots.txt.</p>
+		<p>On the search engine side, we (I) spider web pages, use open data, and respect robots.txt.</p>
 		
 		<p>Also: DMCA-1026160</p>
 
@@ -116,17 +104,10 @@ class About extends React.Component {
 		   think you would but it makes me feel better to say
 		   it.</p>
 		
-		<p>I use the Django framework and follow its security
-		guidelines. All requests are via HTTPS.</p>
+		<p>I use the Django framework and follow its guidelines. All traffic is via HTTPS.</p>
 
 		<p>Your private events and notes are NOT encrypted on
-		  the server, at least not yet. It's very hard to do
-		  that right.</p>
-
-		<p>Ultimately though what I want is if/when hackers
-	   	  break into this thing they only get a bunch of
-	   	  encrypted passwords, maybe some emails, and a bunch
-	   	  of data from the commons + essays.</p>
+		  the server, at least not yet.</p>
 
                 <h2>Who are you?</h2>
                 
@@ -136,66 +117,10 @@ class About extends React.Component {
                   with my friend Rich, and I'm the CEO there today. We
                   have about 50 employees.</p>
                 
-                <p>I've been coding and managing software projects for
-                  years. I was <a href="http://www.ftrain.com">a very
-                  early blogger</a>, from before the terrible word
-                  "blog." I also used to be an editor
-                  at <a href="http://www.harpers.org/">Harper's
-                  Magazine</a> and built an archive there. I once
-                  wrote <a href="https://www.bloomberg.com/graphics/2015-paul-ford-what-is-code/">an
-                  entire issue of Bloomberg Businessweek about
-                  Code</a> and we
-                  won <a href="http://www.magazine.org/asme/2016-national-magazine-awards">the
-                  National Magazine Award</a> for that. I've written
-                  for a lot of magazines and it's gone pretty well,
-                  but I live in terror of getting things wrong, like
-                  any journalist.</p>
-                
-                <p>I've been working on this thing for years and I
-		  have the resources to keep it running, at least as
-		  as an experiment.</p>
-
-                <h2>Why did you do this?</h2>
-                
-                <p>I'm a CEO. Most of my life is selling services to
-                  Fortune 1000 companies. I love the work but I also
-                  felt an urgent need to stay connected to the work we
-                  do. I love writing and I love programming.</p>
-
-		<p>Also I owe FSG a book about the web and I decided
-   		  to build a CMS first to help me build a better book.
-   		  Classic procrastination mentality.</p>
-                
-                <p>So that's this. I work on it nights and weekends
-                  for an hour or two, after the kids are in bed. Those
-                  hours add up over time.</p>
-                
-                <p>I first registered the URL in February 2010,
-                  although but back then I just wanted to make a bunch
-                  of timelines. Over time I realized what I wanted was
-                  time.</p>
-                
-                <p>I've built it three times over four years, and
-                  presented it twice as part of larger talks. This
-                  version feels solid enough to release so that
-                  everyone can yell at me. Let's see what happens.</p>
-
-                <h2>What do you expect to happen?</h2>
-                
-                <p>I want to help writers be less anxious--and god are
-                  we anxious--so that they can do more thoughtful
-                  work. I wanted to make a tool that helped you write
-                  that wasn't another empty box. I was motivated to do
-                  so because it brought me joy. Mostly, though, I want
-                  to use this thing. Let's see what happens.</p>
-
 		<h2>Writers need fewer, not more, distractions.</h2>
 
-		<p>Use the tool that works for you. This is a tool for
-  		  people who have to put pieces together to make
-  		  something, even in a hurry. I wouldn't write poems
-  		  with it. Let's see what happens.</p>
-		
+                <p>Everyone says they want a distraction-free writing environment but what they really need are deadlines. This is a tool for people who have to turn all their distractions into working prose. It slows you down, if you let it, just enough so that it becomes worthwhile to get things right. If it works you won't get yelled at so much on Twitter, or sued so much by lawyers.</p>
+
                 <h2>It should be free software.</h2>
                 
                 <p>Maybe so! If people use it and care about it, that
@@ -205,10 +130,7 @@ class About extends React.Component {
                 <h2>The data should be open.</h2>
                 
                 <p>The events sure should. Info dumps into the commons
-                  are hard to pull off. Let's see what happens. In a
-                  good world you could just torrent every public
-                  artifact including thumbnails in SQLite and run it
-                  locally with a Datasette API on top.</p>
+                  are hard to pull off. Let's see what happens.</p>
                 
                 <h2>There's no business model.</h2>
                 
@@ -216,8 +138,7 @@ class About extends React.Component {
                   models. Right now it has one user and this thing
 		  would need to get tens of thousands
                   of committed daily users before it cost more than a
-                  couple hundred bucks to run per month. I'm good for
-                  that. Let's see what happens.</p>
+                  couple hundred bucks to run per month. Let's see what happens.</p>
                 
                 <h2>That has nothing to do with the blockchain.</h2>
                 
@@ -257,7 +178,6 @@ class About extends React.Component {
                 <p>Yes, agreed. It's a writing tool that keeps
                   chronology in view. Let's see what happens.</p>
 
-
                 <h2>The events show all kinds of bias.</h2>
                 
                 <p>They sure do. The resources in the commons that I'm
@@ -288,7 +208,7 @@ class About extends React.Component {
                   midnight. Let's see what happens. This is because
                   the problem I've found when writing about things
                   that happened is almost always that you put them too
-                  soon, not too late. So we err on the side of the
+                  soon, not too late. So I err on the side of the
                   last possible moment and keep the original text of
                   the date/time around.</p>
 
@@ -308,13 +228,6 @@ class About extends React.Component {
                 <h2>You've already failed in so many ways!</h2>
                 
                 <p>And there's more to come! Let's see what happens.</p>
-                
-                <h2>What would insane success look like?</h2>
-                
-                <p>I'd be able to use other people's events and
-		   timelines to inform my own writing and
-		   thinking. Someone besides me would write something
-		  and feel good and confident about it.</p>
 
 		<p>Or maybe nothing will happen. It's an
   		  experiment. Social networks rule our world and
@@ -326,7 +239,8 @@ class About extends React.Component {
   		  the world. Let's see what happens.</p>
 
                 <h2>A little postscript for the diligent</h2>
-                <p>Let me tell you give you the real logic: I have an open invitation to write at lots of really well-known magazines. I often get paid multiple dollars per word. Personal essays, technology, whatever I wanted, they'd basically let me do. I don't do much because I've got a company and writing doesn't build equity or increase one's life optionality. And you know what? I write about technology, I've got two kids and a company with dozens of employees, and a lot of the time, and I live in absolute mortal fear that I will make an error of fact, that I'll assume something and put it out there, and it'll be wrong, or I'll get sued. It's not imposter syndrome. It's not fear I'll be found out. I know a lot of stuff. But it's almost impossible to get every shading right, get facts lined up, and know that I'm working directly from my sources in a world of text files, notes, web links, and google docs. And I see other writers, even those with resources, make little errors constantly. Every error I make--and they happen no matter what I do--is days of depression. So that's what I'm trying to do here. I'm trying to reduce the cognitive error rate for idea producers. That's after 20 years. For the first ten years of this I had to learn how to be right and accurate, and I basically taught myself. It's not like we can sit around and wait for the youth to get journalism jobs. I don't think the world wants this at all but I felt a moral imperative to get the idea out of my brain. Also I didn't want to write my book without it. With it, it's fun to write my book because the computer knows things I don't.</p>
+		
+                <p>Let me tell you give you the real logic: I have an open invitation to write at lots of really well-known magazines. I get paid multiple dollars per word. Personal essays, technology, whatever I wanted, they'd basically let me do. I don't do much because I've got a company and writing doesn't build equity or increase one's life optionality. And you know what? I write about technology, I've got two kids and a company with dozens of employees, and a lot of the time, and I live in absolute mortal fear that I will make an error of fact, that I'll assume something and put it out there, and it'll be wrong, or I'll get sued. It's not imposter syndrome. It's not fear I'll be found out. I know a lot of stuff. But it's almost impossible to get every shading right, get facts lined up, and know that I'm working directly from my sources in a world of text files, notes, web links, and google docs. And I see other writers, even those with resources, make little errors constantly. Every error I make--and they happen no matter what I do--is days of depression. So that's what I'm trying to do here. I'm trying to reduce the cognitive error rate for idea producers. That's after 20 years. For the first ten years of this I had to learn how to be right and accurate, and I basically taught myself. It's not like we can sit around and wait for the youth to get journalism jobs. I don't think the world wants this at all but I felt an imperative to get the idea out of my brain. Also I didn't want to write my book without it. With it, it's fun to write my book because the computer knows things I don't.</p>
                 
               </div>
                 

@@ -1,6 +1,6 @@
 import React from 'react';
-import AppContext from '../AppContext';
-import { Link } from 'react-router-dom' ;
+// import AppContext from '../AppContext';
+// import { Link } from 'react-router-dom' ;
 
 
 class Confirm extends React.Component {

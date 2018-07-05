@@ -42,6 +42,9 @@ class NotebookEvent extends React.Component {
         return (<div onClick={(e)=>context.endMove(uuid)} className="move-target">MOVE RIGHT HERE {uuid}</div>);
     }
 
+    startMove() {}
+    deleteNote() {}
+    
     showEvent() {
 	const e = this.props.event;
         function getText() {
@@ -68,10 +71,10 @@ class NotebookEvent extends React.Component {
 		      <button onClick={this.handleFormattingClick.bind(this, 'UNDERLINE', context)}>U</button>		      		      
                 
                       <span className={'button active-'+this.state.statusIsMoving}
-                            onClick={()=>context.startMove(this.props.uuid)}>Move</span>
+                            onClick={()=>this.startMove(this.props.uuid)}>Move</span>
                       
 	              <span className={'button active-'+this.state.statusIsToBeDeleted}
-                            onClick={()=>{context.deleteNote(this.props);}}>Delete</span>                            
+                            onClick={()=>{this.deleteNote(this.props);}}>Delete</span>                            
                       
                       <span className={'order ' + (this.props.isSaved ? 'saved' : 'unsaved')}>
 			{(this.props.order !== 'undefined') ? '●' : 'NO ORDER'}
@@ -86,7 +89,7 @@ class NotebookEvent extends React.Component {
 			    editorState={this.state.editorState}
 			    onChange={(e)=>{return this.onChange(e, context);}}/>
                       
-                      {context.state.notebook.moveFrom ? this.makeTarget(this.props.uuid, context) : undefined}
+                      {this.state.moveFrom ? this.makeTarget(this.props.uuid, context) : undefined}
 		  </div>
 		</div>  
         );
