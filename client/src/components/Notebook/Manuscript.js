@@ -24,6 +24,7 @@ class NotebookManuscriptText extends React.Component {
 		  dangerouslySetInnerHTML={{__html:this.props.text}}/>
         );
     }
+    
     render() {
         return(
             <AppContext.Consumer>
