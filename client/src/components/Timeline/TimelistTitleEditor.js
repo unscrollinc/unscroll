@@ -83,19 +83,28 @@ class TimelistTitleEditor extends React.Component {
         const s = this.state.scroll;
 
         return (
-            <div key={s.uuid} className='timelist-title'>            
+            <div key={s.uuid} className='timelist-meta'>            
+                
+              <h1><Link to={'/timelines/' + s.uuid}>{s.title}</Link></h1>
+              
+              {this.editButton()}
 
-	      <Link to={`/timelines/${this.props.uuid}/edit`}>Edit</Link>	
-		<div className="citation">
-                  <a href={s.link} target="_new">{s.citation}</a>, {this.quickDate(s.first_event)}&ndash;{this.quickDate(s.last_event)}.                
-		</div>
-              <h1><a href={'/timelines/' + s.uuid}>{s.title}</a></h1>
-		<p>{s.description}</p>
-		<p>
-		Created by <a href={'/users/' + s.user_username}>{s.user_username}</a>
-		({this.quickDate(s.when_created)}, changed {this.quickDate(s.when_modified)}.)
-    	    </p>
-                </div>
+              <div className="timelist-meta-content">
+              <table className="meta">
+                  <tbody>
+                    <tr><td colSpan="2"><div className="citation"><a href={s.link} target="_new">{s.citation}</a></div></td></tr>
+                    <tr><th>№ events</th><td>{s.event_count ? s.event_count.toLocaleString() : '-'}</td></tr>                    
+                    <tr><th>1st event</th><td>{this.quickDate(s.first_event)}</td></tr>
+                    <tr><th>Last</th><td>{this.quickDate(s.last_event)}</td></tr>
+                    <tr><th>Creator</th><td><a href={'/users/' + s.user_username}>{s.user_username}</a></td></tr>
+                    <tr><th>Created</th><td>{this.quickDate(s.when_created)}</td></tr>
+                    <tr><th>Modified</th><td>{this.quickDate(s.when_modified)}</td></tr>                    
+                  </tbody>
+              </table>
+              <div class="description">{s.description}</div>
+              </div>
+              
+            </div>
         );
     }
     
@@ -174,9 +183,16 @@ class TimelistTitleEditor extends React.Component {
     render() {
         if (this.state.scroll) {
             if (this.props.edit) {
-                return [this.editButton(), this.renderForm()];
+                return (
+                    <div className="timelist-meta">
+                      {this.renderForm()}
+                      </div>
+                );
             }
-            return [this.editButton(), this.renderMeta()];
+            return (<div className="timelist-meta">
+                    {this.renderMeta()}
+                    </div>);
+                    
         }
         return (<div className='loading'
                 key='loading'>Loading...</div>);

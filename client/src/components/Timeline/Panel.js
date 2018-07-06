@@ -132,100 +132,31 @@ class Panel extends React.Component {
     }
 
     makeEl(event) {
-        return(
-	    <Event
-              key={event.uuid}
-	      top='0%'
-	      left='0%'	      
-              width={2 * this.state.cell.width + '%'}
-	      event={event}/>);
+	const dt = DateTime.fromISO(event.when_happened);
+        const left = this.state.frame.elOffset(dt);
+        return (<Event
+                key={event.uuid}
+                width={2 * this.state.cell.width + '%'}
+                cell={this.state.cell}
+                dt={dt}
+                doReservation={this.doReservation.bind(this)}
+                left={left}
+	        event={event}
+	        />);
     }
-
-    
-    bufferEl(event, dt, month) {
-        // This is an ironic function.
-        //
-        // React uses a virtual DOM and so it can't see the real size
-        // of things.
-        //
-        // This makes a real version and drops it into an offscreen
-        // buffer to get its real sizing.
-        //
-        // Then we re-make it virtually.
-        let d = document.createElement('div');
-        d.className='event';
-        d.innerHTML = `<button>Note</button><button>Edit</button>
-                       <h3>${month}/${event.title}</h3>
-                       <p>${event.text}</p>
-                       `;
-        
-        d.style.width = (2 * this.state.cell.width) + '%';
-        this.buffer.append(d);
-        var b = window.innerHeight;
-        var r = d.getBoundingClientRect();
-        var h = Math.ceil(((r.height/b) * 100) / this.state.cell.height, 10);
-        var w = 2;
-        this.buffer.removeChild(d);
-        return {
-            width:w,
-            height:h
-        };
-    }
-
-    // Figure out how to do this with https://www.npmjs.com/package/html-react-parser    
     makeEls(data) {
-        let els = [];
-        const jels = data.results;
-        for (var i=0;i<jels.length;i++) {
-	    let event = jels[i];
-	    const dt = DateTime.fromISO(event.when_happened);
-            const left = this.state.frame.elOffset(dt);
-            
-
-            let buffered = this.bufferEl(event, dt, left);
-
-            let res = this.doReservation(
-                left,
-                0,
-                buffered.width,
-                buffered.height
-            );
-
-            if (res.success) {
-                let el = (
-                    <Event
-                      key={event.uuid}
-		      
-                      width={res.w * this.state.cell.width + '%'}
-                      height={res.h * this.state.cell.height + '%'}
-
-                      left={(res.x) * this.state.cell.width + '%'}
-                      top={10 + (0.9 * (res.y * this.state.cell.height)) + '%'}
-                      cell={this.state.cell}
-                      dt={dt}
-                      doReservation={this.doReservation.bind(this)}
-                      left={left}
-		      event={event}
-		      title={event.title}
-		      text={event.text}/>);
-		
-                els.push(el);
-            }
-        }
-        return els;
+        return ;
     }
 
     getSpan() {
         let _this = this;
         _this.grid = this.makeGrid();
         
-	cachios.get('http://127.0.0.1:8000/events/?limit=50&'+this.toSpan(this.state.interval))
+	cachios.get('http://127.0.0.1:8000/events/?limit=25&'+this.toSpan(this.state.interval))
 	    .then(resp => {
-                const els = _this.makeEls(resp.data);
-                _this.setState(prevState => ({
-		    events: els
-                }));
-	    }).catch(err => {
+                _this.setState({events: resp.data.results});
+            })
+            .catch(err => {
 	        console.log('Error', err);
 	    });
     }
@@ -258,17 +189,11 @@ class Panel extends React.Component {
         const left = (this.props.center * 100) + this.props.offset + '%';
 
         return (
-	    <React.Fragment>
             <div className="Panel" id={this.props.center} style={{left:left}}>
 		<h1>{this.state.title}</h1>
 		{this.state.columns}
-                {this.state.events}
-            </div>
-	    <div id="buffered">
-	      {this.state.buffered}
-	    </div>
-	    </React.Fragment>
-        );
+                {this.state.events.map(this.makeEl.bind(this))}
+            </div>);
     }
 }
 export default Panel;

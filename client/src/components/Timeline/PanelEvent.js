@@ -6,6 +6,7 @@ class Event extends React.Component {
     constructor(props) {
 	super(props);
         this.state = {
+            mightFit:true,
             top:this.props.top,
             left:this.props.left,
             width:this.props.width,
@@ -55,33 +56,37 @@ class Event extends React.Component {
                 width:res.w * this.props.cell.width + '%',
                 height:res.h * this.props.cell.height + '%',
                 left:res.x * this.props.cell.width + '%',
-                top:10 + (0.9 * (res.y * this.props.cell.height)) + '%'
+                top:7.5 + (0.9 * (res.y * this.props.cell.height)) + '%'
             });
-        }        
-        console.log(wh, res);
-
+        }
+        else {
+            this.setState({mightFit:false});
+        }
     }
 
     render() {
-        return(
-            <div style={{
-                     width:this.props.width,
-                     height:this.props.height,
-                     left:this.props.left,
-                     top:this.props.top}}
-		 ref={this.myRef}
-		 className='event'>
-	      <div className='event-inner'>
-		<TimelinePanelEventEditButton
-		  event={this.props.event}/>
-                <EventNoteButton event={this.props.event}/>
-                {this.makeImage(this.props.event)}
-                <div>{this.props.event.when_happened}</div>
-		<h3><a href={this.props.event.content_url} target="_blank">{this.props.event.title}</a></h3>
-		<p>{this.props.event.text}</p>
-	      </div>
-            </div>
-        );
+        if (this.state.mightFit) {
+            return(
+                <div key={this.props.event.uuid} style={{
+                         width:this.state.width,
+                         height:this.state.height,
+                         left:this.state.left,
+                     top:this.state.top}}
+		     ref={this.myRef}
+		     className='event'>
+	          <div className='event-inner'>
+		    <TimelinePanelEventEditButton
+		      event={this.props.event}/>
+                    <EventNoteButton event={this.props.event}/>
+                    {this.makeImage(this.props.event)}
+                    <div>{this.props.event.when_happened}</div>
+		    <h3><a href={this.props.event.content_url} target="_blank">{this.props.event.title}</a></h3>
+		    <p>{this.props.event.text}</p>
+	          </div>
+                </div>
+            );
+        }
+        return null;
     }
 }
 

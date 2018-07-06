@@ -11,7 +11,7 @@ class EventNoteButton extends React.Component {
                                 context.addNote(this.props.event);
                             }
                         }>
-                        + Note
+                        +
                       </button>)}
             </AppContext.Consumer>);
     }

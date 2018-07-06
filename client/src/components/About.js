@@ -15,7 +15,7 @@ class About extends React.Component {
                 Ford, <a href="mailto:ford@unscroll.com">ford@unscroll.com</a>. Also
                 on twitter
                 at <a href="https://twitter.com/ftrain">@ftrain</a>;
-                my DMs are open but email is best.</p>
+                my DMs are open.</p>
                 
                 <h2>What is this new thing?</h2>
                 
@@ -23,11 +23,11 @@ class About extends React.Component {
                  you fact-check your own writing. It's got two things:</p>
                 
                 <ol>
-                  <li>Timelines filled with Events!</li>
-                  <li>Notebooks filled with Notes!</li>
+                  <li><i>Timelines</i> filled with <i>Events</i>!</li>
+                  <li><i>Notebooks</i> filled with <i>Notes</i>!</li>
                 </ol>
 
-                <p>..And Notes can be based on Events.</p>
+                <p>And <i>Notes</i> can be based on <i>Events</i>.</p>
                 
                 <p>That's it, but it leads to a nice new way
                    of writing.</p>
@@ -237,10 +237,6 @@ class About extends React.Component {
 		<p>It's so good to finally have this thing out of my
   		  brain, where it's been sitting for years, and into
   		  the world. Let's see what happens.</p>
-
-                <h2>A little postscript for the diligent</h2>
-		
-                <p>Let me tell you give you the real logic: I have an open invitation to write at lots of really well-known magazines. I get paid multiple dollars per word. Personal essays, technology, whatever I wanted, they'd basically let me do. I don't do much because I've got a company and writing doesn't build equity or increase one's life optionality. And you know what? I write about technology, I've got two kids and a company with dozens of employees, and a lot of the time, and I live in absolute mortal fear that I will make an error of fact, that I'll assume something and put it out there, and it'll be wrong, or I'll get sued. It's not imposter syndrome. It's not fear I'll be found out. I know a lot of stuff. But it's almost impossible to get every shading right, get facts lined up, and know that I'm working directly from my sources in a world of text files, notes, web links, and google docs. And I see other writers, even those with resources, make little errors constantly. Every error I make--and they happen no matter what I do--is days of depression. So that's what I'm trying to do here. I'm trying to reduce the cognitive error rate for idea producers. That's after 20 years. For the first ten years of this I had to learn how to be right and accurate, and I basically taught myself. It's not like we can sit around and wait for the youth to get journalism jobs. I don't think the world wants this at all but I felt an imperative to get the idea out of my brain. Also I didn't want to write my book without it. With it, it's fun to write my book because the computer knows things I don't.</p>
                 
               </div>
                 

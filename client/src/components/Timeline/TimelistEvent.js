@@ -173,7 +173,7 @@ class TimelistEvent extends React.Component {
         return(
 	    <React.Fragment>
 
-	      {this.showWhenHappened(this.props.lastTime, e.when_happened)}
+	    {/*this.showWhenHappened(this.props.lastTime, e.when_happened)*/}
 	      
 	      <tr className="timelist">
                 

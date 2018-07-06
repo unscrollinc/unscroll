@@ -2,12 +2,13 @@ body {
     margin:0;
     padding:0;
     position:fixed;
-    font-size:13pt;
+    font-size:11.5pt;
     font-family: 'IBM Plex Sans', sans-serif;
 
 }
 
 h1, h2, h3, h4, h5, h6, h7 {
+    color:deepskyblue;
     text-align:left;
     margin:0;
     padding:0;
@@ -20,13 +21,12 @@ h1 {
 }
 
 h1 a:hover {
-    background:black;
-    color:white;
+    color:skyblue;
 }
 
 h1 a {
     text-decoration:none;
-    color:white;
+    color:deepskyblue;    
     width:100%;
     display:block;
 }
@@ -76,16 +76,23 @@ h1 a {
     background-color:white;
 }
 
-.TimelineList {
-    width:50%;
-    left:0%;
-
-}
 .Timeline {
     width:100%;
     height:95%;
     position:fixed;
 }
+
+
+.Editor, .NotebookList, .TimelineList {
+    width:50%;
+    background:white;
+    padding:0% 0% 0% 0%;
+    overflow:auto;
+}
+.NotebookList, .TimelineList {
+    left:0%;
+}
+
 
 #Panels {
     height:100%;
@@ -111,22 +118,6 @@ h1 a {
     display:inline;
 }
 
-.Editor, .NotebookList {
-    width:50%;
-    background:white;
-    left:50%;
-    padding:5%;
-    width:39%;
-    overflow:auto;
-}
-
-.NotebookList {
-    left:0%;
-    width:50%;
-    padding:1em;
-    height:93%;
-    
-}
 
 .column {
     box-sizing:border-box;
@@ -137,6 +128,7 @@ h1 a {
     text-align:center;
     background-color:lightskyblue;
     height:100%;
+    padding-top:0.25%;
 }
 
 .column a {
@@ -155,7 +147,6 @@ h1 a {
     box-sizing:border-box;
     position:absolute;
     font-size:9pt;
-    opacity:0.9;
 }
 
 .event-inner {
@@ -268,18 +259,9 @@ div.manuscript-inner {
     color:white;
 }
 
-.EventEditor {
-    position:fixed;
+div.Timelist {
     width:50%;
-    left:25%;
-    top:25%;
-    background:yellow;
-    opacity:80%;
-}
-
-.Timelist {
-    width:50%;
-    left:50%;
+    left:0%;
     height:95%;
     top:5%;
     position:fixed;
@@ -289,11 +271,73 @@ div.manuscript-inner {
     padding:1em;
 }
 
+.timelist-image {
+    width:100%;
+    max-height:200px;
+}
+
+div.Timelist div.timelist-meta-content {
+    margin-top:4em;
+    margin-bottom:4em;
+
+}
+
+div.Timelist div.citation a {
+    text-decoration:none;
+    color:deepskyblue;
+}
+
+div.Timelist div.timespan {
+    font-style:italic;
+    padding:1em 0 1em 0;
+}
+div.Timelist div.description {
+    padding-top:0.45em;
+    color:#777;
+    font-size:150%;
+    line-height:1.5em;
+    font-style:Italic;
+    text-align:justify;
+    hyphens: auto;    
+}
+
+div.Timelist table.meta {
+    border-left:1px solid red;
+    width:50%;
+    margin-left:2.5%;
+    margin-top:1em;
+    float:right;
+}
+
+div.Timelist table.meta tr {
+}
+
+div.Timelist table.meta th {
+    width:25%;
+    padding-right:0.5em;
+}
+
+div.Timelist table.meta td, div.Timelist table.meta th {
+    padding-left:0.5em;
+    vertical-align:top;
+    line-height:150%;
+}
+
+div.Timelist div.description i, div.Timelist div.description em {
+    padding-top:1em;
+    font-style:normal;
+}
+
+div.Timelist div.meta {
+    padding-top:1em;
+}
+
 table {
     border-collapse:collapse;
 }
+
 tr.timelist {
-    border-bottom:1px solid #000;
+    border-bottom:1px solid red;
     
 }
 tr.timelist td {
@@ -301,26 +345,23 @@ tr.timelist td {
 }
 
 .timeline-image {
-    width:15%;
+    width:5em;
+    max-height:5em;
     float:left;
     margin:0 1em 1em 0;
     border:1px solid #ccc;
     max-height:200px;
 }
 
-.timelist-image {
-    width:100%;
-    max-height:200px;
-}
 
 td.meta {
     text-align:right;
     width:25%;
     font-size:9pt;
-    font-family: 'IBM Plex Sans Condensed', sans-serif;    
     line-height:125%;    
     padding:0.5em 0.5em 1.5em 1em;        
 }
+
 div.collection {
     text-align:right;
 }
@@ -340,7 +381,6 @@ td.content {
 
 td.content .event-title {
     font-weight:bold;
-    font-family: 'IBM Plex Serif', serif;
 /*
     font-family: 'IBM Plex Sans', sans-serif;
 font-family: 'IBM Plex Sans Condensed', sans-serif;
@@ -359,7 +399,6 @@ td a {
 }
 
 div.dt {
-    font-family: 'IBM Plex Serif', serif;
     font-weight:bold;
     color:#444;
 }
@@ -482,18 +521,20 @@ form.search {
 }
 
 .About {
-    overflow:auto;
+    text-align:justify;
+    hyphens: auto;
     line-height:150%;
-    height:100%;
-    padding:1em;
-    color:#888;
+    padding:5% 40% 25% 10%;
 }
 
 .About h1, .About h2, .About h3 {
-    color:#06b;
     line-height:150%;
     font-weight:normal;
-    padding:1em 0 0em 0;
+    padding:1em 0 0 0;
+}
+
+.About h1 {
+    padding:0 0 0.5em 0;    
 }
 
 
@@ -516,7 +557,8 @@ div.loading {
 */
 
 .list-object {
-    padding:5%;
+    padding:5% 10% 0 10%;
+    margin:0 0 10em 0;    
     background:white;
     height:100%;
 }

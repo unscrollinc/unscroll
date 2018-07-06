@@ -51,6 +51,7 @@ class Timelist extends React.Component {
                 _this.setState(prevState => ({
 		    events: prevState.events.concat(_els),
                     nextUrl: resp.data.next,
+                    count: resp.data.count,
                     doGetNext: false
                 }));
 	    }).catch(err => {
@@ -119,13 +120,15 @@ class Timelist extends React.Component {
 
     render() {
         return(
-	    <div key="timelist" className="Timelist">
-	      <TimelistTitleEditor key={`tti-${this.props.uuid}`} {...this.props}/>
-              <table key={`ttit-${this.props.uuid}`} className="timelist">
+	        <div key="timelist" className="Timelist">
+                  <div className="list-object">
+	            <TimelistTitleEditor key={`tti-${this.props.uuid}`} count={this.state.count} {...this.props}/>
+                <table key={`ttit-${this.props.uuid}`} className="list-object-table">
 		<tbody>
                   {this.state.events}
    		</tbody>
-	      </table>
+	        </table>
+                </div>
 	    </div>
         );
     }
