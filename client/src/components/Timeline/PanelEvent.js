@@ -44,7 +44,7 @@ class Event extends React.Component {
 	const r = this.myRef.current.getBoundingClientRect();
         const b = window.innerHeight;        
         const h = Math.ceil(((r.height/b) * 100) / this.props.cell.height, 10);
-        const w = 2;
+        const w = 3;
         
         const wh =  {
             width:w,

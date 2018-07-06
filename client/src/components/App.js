@@ -115,15 +115,15 @@ class App extends React.Component {
     
     render() {
         return (
-            <AppProvider>
-	      <div className="App">
-		<Nav/>
+                <AppProvider>
+                
+	        <div className="App">
+		<Nav/>                
 		<ReactCursorPosition>		
 		  <Timeline/>
 		</ReactCursorPosition>
 		{routes.map((route, index) => (
 		    <React.Fragment key={index}>
-
 			  <Route
 		            path={route.path}
 		            exact={route.exact}
@@ -136,7 +136,9 @@ class App extends React.Component {
 		            />
 			</React.Fragment>
 		))}
-              </div>
+            </div>
+
+                
 	    </AppProvider>	      
         );
     }

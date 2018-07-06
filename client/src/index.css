@@ -21,19 +21,24 @@ h1 {
 }
 
 h1 a:hover {
-    color:skyblue;
+    color:lightskyblue;
 }
 
-h1 a {
+.Panel h1 {
+    color:lightskyblue;
+}
+
+.Panel h1 a {
     text-decoration:none;
-    color:deepskyblue;    
+    color:white;    
     width:100%;
     display:block;
 }
 
 .input, th, td {
     font-family: 'IBM Plex Sans', sans-serif;
-    line-height:125%;
+    line-height:150%;
+    color:#666;
 }
 
 .App {
@@ -48,22 +53,24 @@ h1 a {
     vertical-align: middle;
     line-height:90px;    
     line-height:150%;
-    height:5%;
+    min-height:35px;
+    height:5%;    
     position:fixed;
-    background:white;
-    color:black;
+    background:deepskyblue;
+    color:white;
 }
+
 .Nav > table {
     height:100%;
 }
 .Nav a {
-    color:black;
+    color:white;
     text-decoration:none;
     padding-right:0.5em;
 }
 .Nav .logo {
     font-weight:bold;
-    color:deepskyblue;
+    color:white;
 }
 .Nav a:hover {
     text-decoration:underline;
@@ -72,7 +79,7 @@ h1 a {
 .Timeline, .Editor, .NotebookList, .Manuscript, .TimelineList {
     top:5%;
     height:95%;
-    position:absolute;
+    position:fixed;
     background-color:white;
 }
 
@@ -80,6 +87,7 @@ h1 a {
     width:100%;
     height:95%;
     position:fixed;
+    z-index:0;
 }
 
 
@@ -100,10 +108,10 @@ h1 a {
 
 .Panel {
     height:100%;
+    background:lightskyblue;
     float:left;
     position:absolute;
     width:100%;
-    background:deepskyblue;
     cursor:ew-resize;
 }
 
@@ -112,6 +120,7 @@ h1 a {
     padding:0.5em 1em 0.5em 1em;
     font-weight:normal;
     left:0.25em;
+    border-top:1px solid deepskyblue;
 }
 .Panel h1 a {
     font-weight:normal;
@@ -126,7 +135,6 @@ h1 a {
     float:left;
     font-size:11.5pt;
     text-align:center;
-    background-color:lightskyblue;
     height:100%;
     padding-top:0.25%;
 }
@@ -292,9 +300,8 @@ div.Timelist div.timespan {
     padding:1em 0 1em 0;
 }
 div.Timelist div.description {
-    padding-top:0.45em;
-    color:#777;
-    font-size:150%;
+    color:#666;
+    font-size:100%;
     line-height:1.5em;
     font-style:Italic;
     text-align:justify;
@@ -305,7 +312,6 @@ div.Timelist table.meta {
     border-left:1px solid red;
     width:50%;
     margin-left:2.5%;
-    margin-top:1em;
     float:right;
 }
 
