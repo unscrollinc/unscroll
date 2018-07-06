@@ -5,6 +5,12 @@ import TimelinePanelEventEditButton from './TimelinePanelEventEditButton';
 class Event extends React.Component {
     constructor(props) {
 	super(props);
+        this.state = {
+            top:this.props.top,
+            left:this.props.left,
+            width:this.props.width,
+            height:this.props.height
+        };
 	this.myRef = React.createRef();
     }
     
@@ -34,8 +40,26 @@ class Event extends React.Component {
     }
 
     componentDidMount() {
-	const el = this.myRef;
-	console.log('DIDMOUNT', el.current.getBoundingClientRect());
+	const r = this.myRef.current.getBoundingClientRect();
+        const b = window.innerHeight;        
+        const h = Math.ceil(((r.height/b) * 100) / this.props.cell.height, 10);
+        const w = 2;
+        
+        const wh =  {
+            width:w,
+            height:h
+        };
+        const res = this.props.doReservation(this.props.left,0,w,h);
+        if (res.success) {
+            this.setState({
+                width:res.w * this.props.cell.width + '%',
+                height:res.h * this.props.cell.height + '%',
+                left:res.x * this.props.cell.width + '%',
+                top:10 + (0.9 * (res.y * this.props.cell.height)) + '%'
+            });
+        }        
+        console.log(wh, res);
+
     }
 
     render() {

@@ -178,8 +178,8 @@ class Panel extends React.Component {
         const jels = data.results;
         for (var i=0;i<jels.length;i++) {
 	    let event = jels[i];
-	    let dt = DateTime.fromISO(event.when_happened);
-            let left = this.state.frame.elOffset(dt);
+	    const dt = DateTime.fromISO(event.when_happened);
+            const left = this.state.frame.elOffset(dt);
             
 
             let buffered = this.bufferEl(event, dt, left);
@@ -201,8 +201,10 @@ class Panel extends React.Component {
 
                       left={(res.x) * this.state.cell.width + '%'}
                       top={10 + (0.9 * (res.y * this.state.cell.height)) + '%'}
-
+                      cell={this.state.cell}
                       dt={dt}
+                      doReservation={this.doReservation.bind(this)}
+                      left={left}
 		      event={event}
 		      title={event.title}
 		      text={event.text}/>);
