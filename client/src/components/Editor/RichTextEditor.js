@@ -35,11 +35,13 @@ class RichTextEditor extends React.Component {
     }
 
     handleKeyCommand(key, command) {
-	const es = this.state.editorState;
-	const newState = RichUtils.handleKeyCommand(es, command);
-	if (newState) {
-	    this.onChange(key, newState);
-	    return 'handled';
+	if (!this.props.plain) {
+	    const es = this.state.editorState;
+	    const newState = RichUtils.handleKeyCommand(es, command);
+	    if (newState) {
+		this.onChange(key, newState);
+		return 'handled';
+	    }
 	}
 	return 'not-handled';
     }

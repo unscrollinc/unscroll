@@ -17,17 +17,6 @@ import { Route } from 'react-router-dom' ;
 
 import '../index.css';
 
-// tiny helper function to route URL 
-// const tl = (params) => {
-    
-//     const qs = (params && params.location && params.location.search)
-// 	  ? queryString.parse(params.location.search)
-// 	  : {};
-    
-//     return (<ReactCursorPosition>
-// 	    <Timeline key={qs.start + '&' + qs.before} {...qs}/>
-// 	    </ReactCursorPosition>);
-// }
 
 const routes = [
     { path: '/',
@@ -120,7 +109,7 @@ class App extends React.Component {
 	        <div className="App">
 		<Nav/>                
 		<ReactCursorPosition>		
-		  <Timeline/>
+		   <Timeline/>
 		</ReactCursorPosition>
 		{routes.map((route, index) => (
 		    <React.Fragment key={index}>

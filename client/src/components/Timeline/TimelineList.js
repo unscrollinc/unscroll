@@ -32,7 +32,8 @@ class TimelineList extends React.Component {
               <td className="list-object-meta-td">
 	        <div className="list-object-title"><Link to={'/timelines/' + scroll.uuid}>{scroll.title}</Link></div>
                 <div>By <Link to={'/timelines/by/' + scroll.user_username}>{scroll.user_username}</Link></div>
-                <div className="list-object-description">{scroll.description}</div>
+                <div className="list-object-description"
+			dangerouslySetInnerHTML={{__html:scroll.description}}/>
               </td>
               
               <td className={`list-object-published-td`}>

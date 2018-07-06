@@ -44,12 +44,7 @@ class Event extends React.Component {
 	const r = this.myRef.current.getBoundingClientRect();
         const b = window.innerHeight;        
         const h = Math.ceil(((r.height/b) * 100) / this.props.cell.height, 10);
-        const w = 3;
-        
-        const wh =  {
-            width:w,
-            height:h
-        };
+        const w = 2;
         const res = this.props.doReservation(this.props.left,0,w,h);
         if (res.success) {
             this.setState({

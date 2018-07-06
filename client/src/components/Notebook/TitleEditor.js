@@ -1,68 +1,81 @@
 import React from 'react';
 import update from 'immutability-helper';
 import RichTextEditor from '../Editor/RichTextEditor';
-import { Form, Checkbox } from 'react-form';
-// import AppContext from '../AppContext.js';
+import utils from '../Util/Util';
+import "react-toggle/style.css";
+import Toggle from 'react-toggle';
+
 
 
 class TitleEditor extends React.Component {
     constructor(props) {
+	console.log('PROPS', props);
+	
         super(props);
         this.state = {
-            notebook:{},
+            notebook:props,
             edits:{}
         };
     }
 
     edit(key, value) {
-        console.log(key, value);
 	this.setState(
 	    {notebook:update(this.state.notebook, {$merge: {[key]: value}}),
 	     edits:update(this.state.edits, {$merge: {[key]: value}})});
+    }
+
+    done(e) {
+	const _this = this;
+	//_this.sweep();
+//	_this.setState({edit:false});
     }
 
     render() {
         const nb = this.props;
         if (nb.title!==undefined) {
             return(
-                    <Form defaultValues={this.props.notebook}>
-                    {(form) => {
-                        return (
-                                <form>
-				<div>
-				<div>Title</div>
-				<RichTextEditor
-			    field='title'
-                            content={nb.title}
-			    upEdit={this.edit.bind(this)}/>
-				</div>
-				
-				<div>
-				<div>Subtitle</div>
-				<RichTextEditor
-			    field='subtitle'
-                            content={nb.subtitle}
-			    upEdit={this.edit.bind(this)}/>
-				</div>
-				
-				<div>
-				<div>Description</div>
-				<RichTextEditor
-			    field='description'
-                            content={nb.description}
-			    upEdit={this.edit.bind(this)}/>
-				</div>
-                                <div>Public?
-                                <Checkbox
-                            field="is_public"
-                            onChange={(e)=>this.edit.bind(this)}
-                                />
-                                </div>
-                                </form>
-                        );
-                    }}
-                </Form>
-            );
+	    <div>
+	      <div className="button-nav">
+
+		<div className='is-published-toggle-wrapper'>
+		  <div className='is-published-toggle'>
+		    <button className='timeline-meta-done-button' onClick={this.done.bind(this)}>Done</button>
+		    
+		    <label htmlFor='is-published'>Published: </label>
+		    <Toggle
+		      id='is-published'
+		      defaultChecked={this.state.notebook.is_public}
+		      onChange={(event)=>{this.edit('is_public', event.target.checked);}} />
+		  </div>
+		</div>		
+	      </div>
+	      
+	      <div className="rte-title-editor">
+		<RichTextEditor
+		  field='title'
+		  content={this.state.notebook.title}
+		  upEdit={this.edit.bind(this)}/>
+	      </div>		      
+	      <div className="input-title">Title</div>
+
+	      <div className="rte-subtitle-editor">
+		<RichTextEditor
+		  field='description'
+		  content={this.state.notebook.subtitle}
+		  upEdit={this.edit.bind(this)}/>
+	      </div>
+	      <div className="input-title">Subtitle</div>
+	      
+	      <div className="rte-description-editor">
+		<RichTextEditor
+		  field='description'
+		  content={this.state.notebook.description}
+		  upEdit={this.edit.bind(this)}/>
+	      </div>
+	      <div className="input-title">Description</div>
+	      
+	    </div>
+	    );
         }
 	return null;
     }

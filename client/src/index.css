@@ -25,7 +25,7 @@ h1 a:hover {
 }
 
 .Panel h1 {
-    color:lightskyblue;
+    background-color:deepskyblue;
 }
 
 .Panel h1 a {
@@ -56,21 +56,21 @@ h1 a:hover {
     min-height:35px;
     height:5%;    
     position:fixed;
-    background:deepskyblue;
-    color:white;
+    background:color;
+    color:black;
 }
 
 .Nav > table {
     height:100%;
 }
 .Nav a {
-    color:white;
+    color:666;
     text-decoration:none;
     padding-right:0.5em;
 }
 .Nav .logo {
     font-weight:bold;
-    color:white;
+    color:black;
 }
 .Nav a:hover {
     text-decoration:underline;
@@ -177,19 +177,18 @@ h1 a:hover {
     height:95%;
 }
 
-.notebook-event-list {
+.notebook-main {
     overflow-y:auto;
-    width:50%;
+    width:45%;
     height:95%;
-    margin-bottom:500px;
-    width:50%;
+    padding:2.5%;
+    padding-bottom:500px;
 }
 
 .note {
     font-size:10pt;
     font-family:sans-serif;
     background:white;
-    border-bottom:1px solid #ccc;
 }
 
 .note-inner {
@@ -228,13 +227,12 @@ h1 a:hover {
 
 .Manuscript {
     width:50%;
-    left:50%;
+    left:45%;
     background:#fff;
     position:absolute;
     font-family: 'IBM Plex Serif', serif;
     overflow:auto;
     padding:3em;
-    border-left:0.05em solid deepskyblue;
 }
 
 div.manuscript-inner {
@@ -288,6 +286,11 @@ div.Timelist div.timelist-meta-content {
     margin-top:4em;
     margin-bottom:4em;
 
+}
+
+div.Timelist div.timelist-meta h1 a {
+    text-decoration:none;
+    color:deepskyblue;
 }
 
 div.Timelist div.citation a {
@@ -626,4 +629,53 @@ div.list-object-published-Public {
 }
 div.list-object-published-Private {
     font-weight:normal;
+}
+
+.rte-citation-editor input,
+.rte-link-editor input,
+.public-DraftEditor-content {
+    padding:1em 1em 0.25em 0;
+    margin:0em 1em 0em 0;
+    border:none;
+    width:100%;
+    font-size:13pt;
+    border-bottom:4px dotted deepskyblue;
+    color:black;
+}
+
+div.rte-title-editor .public-DraftStyleDefault-block   {
+    font-size:150%;
+}
+
+.input-title {
+    color:#AAA;
+    font-size:10pt;
+    color:deepskyblue;
+    margin:0.25em 0 2em 0;
+}
+
+div.is-published-toggle label {
+    padding-right:0.5em;
+    color:#444;
+}
+
+div.is-published-toggle {
+    display:flex;
+    align-items: center;
+    width:25%;
+    margin-right:-1em;
+}
+
+button.timeline-meta-done-button {
+    font-size:11.5pt;
+    padding:0.15em 0.5em 0.15em 0.5em;
+    margin:0 1em 0 0;    
+    font-weight:bold;
+    background:red;
+    border:none;
+    color:white;
+    float:left;
+}
+
+span.button-nav {
 }

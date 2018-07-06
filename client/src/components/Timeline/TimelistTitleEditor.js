@@ -1,10 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom' ;
-import { Form, Text, TextArea, Checkbox } from 'react-form';
 import axios from 'axios';
 import { DateTime } from 'luxon';
 import update from 'immutability-helper';
+import RichTextEditor from '../Editor/RichTextEditor';
 import utils from '../Util/Util';
+import "react-toggle/style.css";
+import Toggle from 'react-toggle';
+
+
 const SCROLL_API='http://127.0.0.1:8000/scrolls/';
 
 // This is kind of an experiment in re-localizing some remote state
@@ -16,7 +20,8 @@ class TimelistTitleEditor extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            isEditing:false,
+            edit:false,
+	    edits:{},
             isSaved:true,
             isSaving:false
         };
@@ -24,37 +29,39 @@ class TimelistTitleEditor extends React.Component {
 	this.sweep = () => {
             const _this = this;
             if (!this.state.isSaved) {
-                // save it. Set the saved State to 
-                this.setState(
-                    {isSaving:true},
-                    ()=>{
-                        const s = this.state.scroll;
-                        axios({
-	                    method:'put',
-	                    url:this.state.scroll.url,
-	                    headers:{Authorization: `Token ${this.props.context.state.user.authToken}`},
-	                    data:{title:s.title,
-                                  description:s.description,
-                                  citation:s.citation,
-                                  link:s.link,
-                                  is_public:s.is_public}
-	                })
-	                    .then(resp => {_this.setState({isSaved:true, isSaving:false});})
-                            .catch(err => {console.log(err);});
-                        ;
-                    });
+                this.setState({isSaving:true}, _this.patchScroll);
             }
         };
 
         setInterval(this.sweep, 1000 * 5);
     }
 
-    scrollChange(k, v) {
-        this.setState({isSaved:false,
-                       scroll:update(this.state.scroll, {$merge: {[k]:v}})},
-                      ()=>{console.log(this.state);});
+
+    edit(key, value) {
+	this.setState(
+	    {isSaved:false,
+	     scroll:update(this.state.scroll, {$merge: {[key]: value}}),
+	     edits:update(this.state.edits, {$merge: {[key]: value}})});
     }
 
+    done(e) {
+	const _this = this;
+	_this.sweep();
+	_this.setState({edit:false});
+    }
+    
+    patchScroll() {
+	const _this = this;
+        axios({
+	    method:'patch',
+	    url:this.state.scroll.url,
+	    headers:utils.getAuthHeaderFromCookie(),
+	    data:this.state.edits
+	})
+	    .then(resp => {_this.setState({isSaved:true, isSaving:false});})
+            .catch(err => {console.log(err);});
+    }
+    
     getScroll() {
         if (this.props.uuid) {
             const _this = this;
@@ -78,95 +85,88 @@ class TimelistTitleEditor extends React.Component {
     quickDate(iso) {
         return DateTime.fromISO(iso).toFormat('d MMM kkkk');
     }
-    
+
     renderMeta() {
         const s = this.state.scroll;
-
         return (
             <div key={s.uuid} className='timelist-meta'>            
-                
-              <h1><Link to={'/timelines/' + s.uuid}>{s.title}</Link></h1>
-              
+              <h1><Link to={'/timelines/' + s.uuid}
+			dangerouslySetInnerHTML={{__html:s.title}}/></h1>
               {this.editButton()}
-
               <div className="timelist-meta-content">
-              <table className="meta">
+		<table className="meta">
                   <tbody>
                     <tr><td colSpan="2"><div className="citation"><a href={s.link} target="_new">{s.citation}</a></div></td></tr>
-                    <tr><th>№ events</th><td>{s.event_count ? s.event_count.toLocaleString() : '-'}</td></tr>                    
+                    <tr><th>№ items</th><td>{s.event_count ? s.event_count.toLocaleString() : '-'}</td></tr>                    
                     <tr><th>1st event</th><td>{this.quickDate(s.first_event)}</td></tr>
                     <tr><th>Last</th><td>{this.quickDate(s.last_event)}</td></tr>
                     <tr><th>Creator</th><td><a href={'/users/' + s.user_username}>{s.user_username}</a></td></tr>
                     <tr><th>Created</th><td>{this.quickDate(s.when_created)}</td></tr>
                     <tr><th>Modified</th><td>{this.quickDate(s.when_modified)}</td></tr>                    
                   </tbody>
-              </table>
-              <div class="description">{s.description}</div>
+		</table>
+		<div className="description"
+			dangerouslySetInnerHTML={{__html:s.description}}/>
               </div>
-              
             </div>
         );
     }
     
+    
     renderForm() {
         return (
-            <Form key={'form-' + this.props.uuid} defaultValues={this.state.scroll}>
-              {(form) => {
-                  // title, description, is_public, is_fiction, is_deleted, citation, link, with_thumbnail
-                  return (
-		      <form key={'form-inner-' + this.props.uuid}>
-			<Link to={`/timelines/${this.props.uuid}`}>Done</Link>
-                        <div key='title'>
-                          <div key='title-inner'>Title</div>
-			  <Text
-                            key='title_field'                                                                                                           
-                            field="title"
-                            onChange={(e)=>this.scrollChange('title', e)}
-                            placeholder='Title' />
-                        </div>
-                        
-                        <div key='citation'>
-                          <div key='citation-inner'>Citation</div>
-			  <Text
-                            key='citation_field'                                                                        
-                            field="citation"
-                            onChange={(e)=>this.scrollChange('citation', e)}
-                            placeholder='Citation' />
-                        </div>
-			
-                        <div key='link'>
-                          <div key='link-inner'>Link</div>			  
-			  <Text
-                            key='link_field'                                  
-                            field="link"
-                            onChange={(e)=>this.scrollChange('link', e)}
-                            placeholder='Link' />
-                        </div>                                                                                                                              
+	    <div>
+	      <div className="button-nav">
 
-			<div key='description'>
-                          <div key='description-inner'>Description</div>
-                          <TextArea
-                            key='decription_field'
-                            field="description"
-                            onChange={(e)=>this.scrollChange('description', e)}
-                            placeholder='Description' />
-                        </div>
-                        
-                        <div key='is_public'>
-                          <div key='published-inner'>Published?</div>			  
-                          <Checkbox
-                            key='is_public_checkbox'
-                            field="is_public"
-                            onChange={(e)=>this.scrollChange('is_public', e)}
-                            />
-                        </div>
-                      </form>
-                  );
-              }}
-            </Form>
-        );
+	      <div className='is-published-toggle-wrapper'>
+		<div className='is-published-toggle'>
+		  <button className='timeline-meta-done-button' onClick={this.done.bind(this)}>Done</button>
+		  
+		  <label htmlFor='is-published'>Published: </label>
+		  <Toggle
+		    id='is-published'
+		    defaultChecked={this.state.scroll.is_public}
+		    onChange={(event)=>{this.edit('is_public', event.target.checked);}} />
+		</div>
+	      </div>		
+	      </div>
+	      
+	      <div className="rte-title-editor">
+		<RichTextEditor
+		  field='title'
+		  content={this.state.scroll.title}
+		  upEdit={this.edit.bind(this)}/>
+	      </div>		      
+	      <div className="input-title">Title</div>
+	      
+	      <div className="rte-description-editor">
+		<RichTextEditor
+		  field='description'
+		  content={this.state.scroll.description}
+		  upEdit={this.edit.bind(this)}/>
+	      </div>
+	      <div className="input-title">Description</div>
+	      
+	      <div className="rte-citation-editor">
+		<RichTextEditor
+		  field='citation'
+		  content={this.state.scroll.citation}
+		  upEdit={this.edit.bind(this)}/>
+	      </div>
+	      <div className="input-title">Citation</div>
+	      
+	      <div className="rte-link-editor">
+		<RichTextEditor
+		  field='link'
+		  plain={true}
+		  content={this.state.scroll.link}
+		  upEdit={this.edit.bind(this)}/>
+	      </div>
+	      <div className="input-title">Link</div>
+	    </div>
+	);
     }
-
+    
     newEvent() {
         console.log('I am making a new event');
     }
@@ -174,15 +174,16 @@ class TimelistTitleEditor extends React.Component {
     editButton() {
         return (
             <div key='buttons'>
-              <button key='edit' onClick={()=>{this.setState({isEditing:!this.state.isEditing})}}>+ Edit</button>
-              <button key='new' onClick={this.newEvent}>+ New</button>              
+		<button key='edit' onClick={()=>{
+		  this.setState({edit:!this.state.edit});}}>Edit Timeline</button>
+              <button key='new' onClick={this.newEvent}>+ New Event</button>              
             </div>
         );
     }
     
     render() {
         if (this.state.scroll) {
-            if (this.props.edit) {
+            if (this.state.edit || this.props.edit) {
                 return (
                     <div className="timelist-meta">
                       {this.renderForm()}

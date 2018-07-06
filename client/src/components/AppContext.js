@@ -43,11 +43,6 @@ export class AppProvider extends React.Component {
 
 	this.state = this.makeState(c);
 
-
-	
-        this.loadNotebookList();
-        // this.loadScrollList();
-
 	this.sweep = () => {
 	    if (this.state.notebook && !this.state.notebook.isSaved) {
 		if (this.state.notebook.url)  {
@@ -194,61 +189,6 @@ export class AppProvider extends React.Component {
             });
     }
 
-    saveScroll() {
-        const _this = this;
-        axios({
-	    method:'post',
-	    url:API+'scrolls/',
-	    headers:this.makeAuthHeader(this.state.authToken),
-	    data:update(this.state.scroll, {$unset: ['events']})
-	})
-            .then(function(resp) {
-		_this.setState(
-		    {scroll: update(
-			_this.state.scroll, {$merge: {
-		            isSaved: true,
-		            events:new Map(),
-		            ...resp.data}})
-		    }
-		    // , _this.loadScrollList
-		);
-            })
-            .catch(error => {
-                console.log(`saveScroll: There is already a scroll by you with that name! Your scrolls each need their own name. ${error}`);
-            });
-    }
-
-    
-    loadScrollList() {
-        const _this = this;	
-        axios({method:'get',
-	       url:API+'scrolls/',
-               headers: this.makeAuthHeader(_this.state.authToken)
-	      })
-	    .then(function(response) {
-		console.log("Load scroll list", response);
-		_this.setState(
-                    {scrollList: new Map(response.data.results.map((n)=>[n.uuid, n]))}
-//                   , ()=>{console.log(_this.state.user);}
-		);
-	    });
-    }
-    
-
-    loadNotebookList() {
-        const _this = this;	
-        axios({method:'get',
-	       url:API+'notebooks/',
-               headers:this.makeAuthHeader(_this.state.authToken)
-	      })
-	    .then(function(response) {
-		_this.setState(
-                    {notebookList:new Map(response.data.results.map((n)=>[n.uuid, n]))}
-		    //,()=>{console.log('[@loadNotebookList() logged in user]',_this.state.user);}
-		);
-	    });
-    }
-
     deleteNotebook(uuid) {
         console.log('[@deleteNotebook:uuid]', uuid);
         const nb = this.state.notebookList.get(uuid);
@@ -321,6 +261,10 @@ export class AppProvider extends React.Component {
                     const authToken = hasAuth ? c.authToken : null;
                     return this.makeAuthHeader(authToken);
                 },
+
+		setState:(o, f) => {
+		    this.setState(o, f);
+		},
                 
                 handleUsernameUpdate:(event) => {
                     this.setState({user: update(this.state.user, {username: {$set: event.target.value}})});

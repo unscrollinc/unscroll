@@ -7,9 +7,9 @@ import AppContext from '../AppContext';
 import Util from '../Util/Util';
 class Notebook extends React.Component {
 
-    constructor(props, context) {
-        super(props, context);
-        console.log('NOTEBOOK',props);
+    constructor(props) {
+        super(props);
+	console.log(props);
 	this.state = {
             saved:true,
             notebook:{},
@@ -18,10 +18,7 @@ class Notebook extends React.Component {
     }
 
     makeAddNoteButton() {
-        if (this.props.context.state.notebook !== undefined) {
-            return(<button onClick={this.props.context.addNote}>+ Note</button>);
-        }
-        return undefined;
+        return(<button onClick={this.addNote}>+ Note</button>);
     }
     
     makeNote(note, i) {
@@ -34,14 +31,14 @@ class Notebook extends React.Component {
 
     loadNotebook() {
         const _this = this;
-        
         axios(
             {method:'GET',
              url:'http://127.0.0.1:8000/notes/?in_notebook__id=' + this.props.id,
              headers:Util.getAuthHeaderFromCookie()})
             .then(resp => {
-                _this.setState({notes:resp.data.results},
-                              ()=>{console.log(_this);}
+		console.log('THIS PROPS', _this.props);
+                _this.props.context.setState({notes:resp.data.results},
+					     ()=>{console.log('RIGHT $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$O', _this);}
                              );
             })
             .catch(err=>{console.log(err);});
@@ -52,7 +49,7 @@ class Notebook extends React.Component {
              headers:Util.getAuthHeaderFromCookie()})
             .then(resp => {
                 this.setState({notebook:resp.data}
-			      // , ()=>{console.log(_this);}
+			      , ()=>{console.log('I AM ON FIRE', _this);}
                              );
             })
             .catch(err=>{console.log(err);});
@@ -68,8 +65,9 @@ class Notebook extends React.Component {
 	}
     }
 
+
     renderManuscript() {
-        if (this.state.notebook) {
+        if (this.state.notebook.url) {
             return(
 		<div className='manuscript-inner'>
                   <h1>{this.state.notebook.title}</h1>
@@ -78,7 +76,13 @@ class Notebook extends React.Component {
                   {Array.from(this.state.notes).map(this.makeManuscriptText)}
 		  </div>);
         }
-        return null;
+    }
+
+    renderTitleEditor() {
+	if (this.state.notebook.url) {
+	    return (<TitleEditor {...this.state.notebook}/>);
+	}
+	return (<div>Loading</div>);
     }
     
     render() {
@@ -88,21 +92,22 @@ class Notebook extends React.Component {
                     {this.renderManuscript()}
 		    </div>);
         }
+
         return (
             <AppContext.Consumer>
               {(context) => {
                   return (
 		      <div className="Editor">
-                        <div className="notebook-event-list">
-                          <span className={'status ' + (this.state.saved ? 'saved' : 'unsaved')}>●</span>
-			
-			  {/* this.makeAddNoteButton(context) */}
-			
-                          
-			  <TitleEditor {...this.state.notebook}/>
-                          
-                          {Array.from(this.state.notes).map(this.makeNote)}
-                        </div>
+                          <div className="Notebook">
+                          <div className="notebook-main">			  
+			  
+		      {this.makeAddNoteButton()}
+		      
+                      {this.renderTitleEditor()}
+
+                      {Array.from(context.state.notes).map(this.makeNote)}
+                      </div>
+			  </div>
                         <div className='Manuscript'>
                           {this.renderManuscript()}
                         </div>
@@ -113,4 +118,8 @@ class Notebook extends React.Component {
     }
 }
 
-export default Notebook;
+export default props => (
+	<AppContext.Consumer>
+	  {context => <Notebook {...props} context={context}/>}
+	</AppContext.Consumer>
+);
