@@ -38,23 +38,35 @@ const util = {
     getAPI:(noun) => {
         return `${API}${noun}`;
     },
-    web: (that, method, endpoint, params, key) => {
+    web: (that, method, endpoint, params) => {
+        const dataKey = method==='GET' ? 'params' : 'data' ;
         axios({
             method:method,
-            url:`${API}/${endpoint}/`,
+            url:`${API}${endpoint}/`,
             headers:util.getAuthHeaderFromCookie(),
-            data:params
+            [dataKey]:params
         }).then((resp)=> {
-            if (resp.data && resp.data.results) {
-                that.setState({[key]:resp.data.results});
-            }
-            else {
-                that.setState({[key]:resp.data});            
-            }
+            that.setState({[endpoint]:resp.data.results});
         })
-            .catch((err)=>{console.log(`[Error] ${method} against ${endpoint}`,
-                                      {params:params, err:err})});
-    }
+            .catch((err)=>{console.log('[Error]', {method:method, endpoint:endpoint, params:params, err:err})});
+        return null;
+    },
+    GET: (that, endpoint, params) => {
+        util.web(that, 'GET', endpoint, params);
+    },
+    DELETE: (that, endpoint) => {
+        util.web(that, 'DELETE', endpoint);
+    },
+    POST: (that, endpoint, params) => {
+        util.web(that, 'POST', endpoint, params);
+    },    
+    PATCH: (that, endpoint, params) => {
+        util.web(that, 'PATCH', endpoint, params);
+    },
+    PUT: (that, endpoint, params) => {
+        util.web(that, 'PUT', endpoint, params);
+    },    
+    
 };
 
 export default util;

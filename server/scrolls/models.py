@@ -12,6 +12,15 @@ class User(User):
     class Meta:
         proxy = True
 
+    def full_name(self):
+        if (self.last_name and self.first_name):
+            return "{} {}".format(self.first_name, self.last_name)
+        if (self.first_name and not(self.last_name)):
+            return self.first_name
+        if (self.last_name and not(self.first_name)):
+            return self.last_name
+        return self.username
+    
     def full_scrolls(self):
         return Scroll.objects\
                      .select_related('by_user')\
@@ -82,6 +91,7 @@ class Scroll(models.Model):
         on_delete=models.CASCADE)
     uuid = models.UUIDField(
         default=uuid4,
+        db_index=True,                
         editable=False,
         unique=True)
     title = BleachField()
@@ -130,6 +140,7 @@ class Notebook(models.Model):
         on_delete=models.CASCADE)
     uuid = models.UUIDField(
         default=uuid4,
+        db_index=True,                
         editable=False,
         unique=True)
     title = BleachField()
@@ -202,6 +213,7 @@ class Event(models.Model):
         on_delete=models.CASCADE)
     uuid = models.UUIDField(
         default=uuid4,
+        db_index=True,                
         editable=False,
         unique=True)
     # Typically filtered text/html, could also be text/text, or something else.
@@ -272,6 +284,7 @@ class Note(models.Model):
         related_name="notes",
         on_delete=models.CASCADE)
     uuid = models.UUIDField(
+        db_index=True,        
         default=uuid4,
         editable=True,
         unique=True)

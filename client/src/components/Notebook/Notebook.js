@@ -4,7 +4,7 @@ import axios from 'axios';
 import TitleEditor from './TitleEditor';
 import Manuscript from './Manuscript';
 import AppContext from '../AppContext';
-import Util from '../Util/Util';
+import utils from '../Util/Util';
 class Notebook extends React.Component {
 
     constructor(props) {
@@ -18,7 +18,7 @@ class Notebook extends React.Component {
     }
 
     makeAddNoteButton() {
-        return(<button onClick={this.addNote}>+ Note</button>);
+        return(<button onClick={this.props.context.addNote}>+ Note</button>);
     }
     
     makeNote(note, i) {
@@ -31,10 +31,12 @@ class Notebook extends React.Component {
 
     loadNotebook() {
         const _this = this;
+
+        // Load the notes by UUID
         axios(
             {method:'GET',
              url:'http://127.0.0.1:8000/notes/?in_notebook__id=' + this.props.id,
-             headers:Util.getAuthHeaderFromCookie()})
+             headers:utils.getAuthHeaderFromCookie()})
             .then(resp => {
 		console.log('THIS PROPS', _this.props);
                 _this.props.context.setState({notes:resp.data.results},
@@ -43,10 +45,11 @@ class Notebook extends React.Component {
             })
             .catch(err=>{console.log(err);});
 
+        // Load the notebook by UUID
         axios(
             {method:'GET',
              url:'http://127.0.0.1:8000/notebooks/' + this.props.id,
-             headers:Util.getAuthHeaderFromCookie()})
+             headers:utils.getAuthHeaderFromCookie()})
             .then(resp => {
                 this.setState({notebook:resp.data}
 			      , ()=>{console.log('I AM ON FIRE', _this);}
@@ -105,7 +108,7 @@ class Notebook extends React.Component {
 		      
                       {this.renderTitleEditor()}
 
-                      {Array.from(context.state.notes).map(this.makeNote)}
+                      {context.state.notes.map(this.makeNote)}
                       </div>
 			  </div>
                         <div className='Manuscript'>

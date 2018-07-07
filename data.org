@@ -1,3 +1,10 @@
+
+audio/podcast
+http://feeds.gimletmedia.com/hearreplyall?format=xml
+startup
+crimetown
+https://www.wnyc.org/series/archives-preservation
+
 https://usafacts.org/reports/immigration-history
 
 I guess there's no time like the present.

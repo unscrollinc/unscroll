@@ -1,16 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom' ;
 import { DateTime } from 'luxon';
-import axios from 'axios';
 import AppContext from '../AppContext.js';
-import util from '../Util/Util.js';
+import utils from '../Util/Util.js';
 
 class TimelineList extends React.Component {
 
     constructor(props, context) {
         super(props);
-        this.state = {timelines:[],
-                      auth:util.getAuthHeaderFromCookie()};
+        this.state = {scrolls:[]}
     }
     
     makeScroll(scroll) {
@@ -26,20 +24,20 @@ class TimelineList extends React.Component {
 
                 <td className="list-object-date-td">
 
-                {formatDate(scroll.when_created)}
-              </td>
-              
-              <td className="list-object-meta-td">
-	        <div className="list-object-title"><Link to={'/timelines/' + scroll.uuid}>{scroll.title}</Link></div>
-                <div>By <Link to={'/timelines/by/' + scroll.user_username}>{scroll.user_username}</Link></div>
-                <div className="list-object-description"
-			dangerouslySetInnerHTML={{__html:scroll.description}}/>
-              </td>
-              
+                  <div>{formatDate(scroll.when_created)}</div>
+                  <div><Link to={'/users/' + scroll.user_username}>{scroll.user_full_name}</Link></div>
+                </td>
+                
+                <td className="list-object-meta-td">
+	          <div className="list-object-title"><Link to={'/timelines/' + scroll.uuid}>{scroll.title}</Link></div>
+                  <div className="list-object-description"
+		       dangerouslySetInnerHTML={{__html:scroll.description}}/>
+                </td>
+                
               <td className={`list-object-published-td`}>
 		<div className={`list-object-published-${privacy}`}>{privacy}</div>
-             </td>
-
+              </td>
+              
             </tr>
 
             
@@ -47,20 +45,12 @@ class TimelineList extends React.Component {
     }
 
     getTimelines() {
-        const _this = this;
-        axios({
-            method:'get',
-            headers:this.state.auth,
-            url:(this.props.my === true)
-                ? 'http://127.0.0.1:8000/scrolls/?by_user__username=ford'
-                : 'http://127.0.0.1:8000/scrolls/'
-        })
-            .then(resp => {
-                _this.setState({timelines:resp.data.results});
-            })
-            .catch(err => {
-                console.log(err);
-            });
+        if (this.props.my === true) {
+            utils.GET(this, 'scrolls', {'by_user__username':'ford'});
+        }
+        else {
+            utils.GET(this, 'scrolls', {'is_public':true});
+        }
     }
 
     componentDidMount() {
@@ -90,7 +80,7 @@ class TimelineList extends React.Component {
                                   <th className='list-object-published-th'>Published</th>
                                 </tr>
                               
-                                {this.state.timelines.map(this.makeScroll)}
+                                {this.state.scrolls.map(this.makeScroll)}
                                 
                               </tbody>
                             </table>

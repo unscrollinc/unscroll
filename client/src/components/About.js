@@ -20,33 +20,18 @@ class About extends React.Component {
                 <h2>What is this new thing?</h2>
                 
                 <p>Unscroll is an experimental tool for writing that helps
-                 you fact-check your own writing. It's got two things:</p>
-                
-                <ol>
-                  <li><i>Timelines</i> filled with <i>Events</i>!</li>
-                  <li><i>Notebooks</i> filled with <i>Notes</i>!</li>
-                </ol>
-
-                <p>And <i>Notes</i> can be based on <i>Events</i>.</p>
-                
-                <p>That's it, but it leads to a nice new way
-                   of writing.</p>
-		
-                <p>You can organize your Notes to produce anything,
-                  like essays or articles, or book chapters, and all
-                  the events--like living footnotes--are always right there.</p>
+                 you fact-check your own writing. It sees the worlds in terms of Events and Notes. Events are things that happened and Notes are what people think about them. Events go into Timelines and Notes go into Notebooks. You arrange your notes and that makes an Essay.</p>
                  
-                <p>It gives you a superpower: The power to remember
+                <p>Easy enough, but it gives you a superpower: The power to remember
                   what the hell you are talking about. If you don't
                   need that superpower, more power to you. But I
-                  personally need that superpower.</p>
+                  personally need that superpower more every day.</p>
                 
                 <h2>I don't get why you'd use this instead of [any other one of thousands of software products].</h2>
                 
                 <p>I built this for myself, after decades of looking
                   at and thinking about writing online. It made me 
                   happy to build it and it helps me be a better writer.</p>
-
 
                 <p>Also, the publishing industry laid off so many
                   fact-checkers and editors that the responsibility
@@ -57,7 +42,6 @@ class About extends React.Component {
                   News.</p>
 
 		<p>This is a defensive writing tool.</p>
-
                 
                 <h2>If I use this, who owns my work?</h2>
                 
@@ -101,25 +85,22 @@ class About extends React.Component {
 		   administering the database. In general please don't
 		   put anything super-secret or valuable into this
 		   new, untrusted, experimental web service. I don't
-		   think you would but it makes me feel better to say
-		   it.</p>
+		   think you would, but it makes me feel better to say
+		   that.</p>
 		
 		<p>I use the Django framework and follow its guidelines. All traffic is via HTTPS.</p>
 
 		<p>Your private events and notes are NOT encrypted on
-		  the server, at least not yet.</p>
+		  the server, at least not yet. I'd love to do that.</p>
 
                 <h2>Who are you?</h2>
                 
                 <p>My name is Paul Ford. I'm a writer, programmer, and
-                  entrepreneur. I co-founded a NYC software company
-                  called <a href="https://postlight.com">Postlight</a>
-                  with my friend Rich, and I'm the CEO there today. We
-                  have about 50 employees.</p>
+                  entrepreneur. I co-founded a NYC software company called <a href="https://postlight.com">Postlight</a> with my friend Rich, and I'm the CEO there today. We have about 50 employees. This is a side-project thought, and it pre-dates Postlight. Postlight people are way too busy working for our clients to get roped into my quixotic dreamquests.</p>
                 
 		<h2>Writers need fewer, not more, distractions.</h2>
 
-                <p>Everyone says they want a distraction-free writing environment but what they really need are deadlines. This is a tool for people who have to turn all their distractions into working prose. It slows you down, if you let it, just enough so that it becomes worthwhile to get things right. If it works you won't get yelled at so much on Twitter, or sued so much by lawyers.</p>
+                <p>Everyone says they want a distraction-free writing environment but what they really need are deadlines. This is a tool for people who already have deadlines, but have to turn all their distractions into working prose. It slows you down, if you let it, just enough so that it becomes worthwhile to get things right. This saves time in the long run. It makes writing a particular paragraph much less painful, and if it works you won't get yelled at so much on Twitter, or sued so much by lawyers.</p>
 
                 <h2>It should be free software.</h2>
                 
@@ -132,13 +113,17 @@ class About extends React.Component {
                 <p>The events sure should. Info dumps into the commons
                   are hard to pull off. Let's see what happens.</p>
                 
+                <h2>If I use this and you go out of business or get acquired it'll be another stupid nightmare and you'll dump all the data down the toilet and why should I ever trust you at all?</h2>
+                
+                <p>I simply won't let that happen because I believe passionately in people owning and controlling their own data. I'm a digital advisor to the Library of Congress and good friends and an admirer of Jason Scott. If this thing gathers any steam at all I'll literally write instructions for the disposition of its archives into my will. Let's see what happens.</p>
+
                 <h2>There's no business model.</h2>
                 
                 <p>There are tons of business models and not-business
                   models. Right now it has one user and this thing
-		  would need to get tens of thousands
-                  of committed daily users before it cost more than a
-                  couple hundred bucks to run per month. Let's see what happens.</p>
+                  would need to get many thousands of committed daily
+                  users before it cost more than a couple hundred
+                  bucks to run per month. Let's see what happens.</p>
                 
                 <h2>That has nothing to do with the blockchain.</h2>
                 

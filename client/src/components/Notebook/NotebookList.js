@@ -2,14 +2,14 @@ import React from 'react';
 import { Link } from 'react-router-dom' ;
 import { DateTime } from 'luxon';
 import axios from 'axios';
-import Util from '../Util/Util';
+import utils from '../Util/Util';
 class NotebookList extends React.Component {
 
     constructor(props, context) {
 	super(props);
 	this.state = {
 	    notebooks:[],
-            username:Util.getUsernameFromCookie()
+            username:utils.getUsernameFromCookie()
 	};
     }
 
@@ -22,21 +22,17 @@ class NotebookList extends React.Component {
         return null;
     }
     
-    loadNotebooks() {
-        axios({method:'get',
-               url:Util.getAPI('notebooks'),
-               headers:Util.getAuthHeaderFromCookie()})
-            .then(resp=>{
-                this.setState({notebooks:resp.data.results}
-                              , ()=>{console.log(resp);}
-                             );
-            })
-            .catch(err=>{console.log(err);});
-        return null;
+    getNotebooks() {
+        if (this.props.my === true) {
+            utils.GET(this, 'notebooks', {'by_user__username':'ford'});
+        }
+        else {
+            utils.GET(this, 'notebooks', {'is_public':true});
+        }
     }
 
     componentDidMount() {
-        this.loadNotebooks();
+        this.getNotebooks();
     }
     
     renderNotebook(notebook) {
@@ -52,13 +48,10 @@ class NotebookList extends React.Component {
             <tr className='list-object-tr' key={notebook.uuid}>
 	      
               <td className='list-object-date-td'>
-                {formatDate(notebook.when_created)}
+                <div>{formatDate(notebook.when_created)}</div>
+                <div><Link to={'/users/' + notebook.user_username}>{notebook.user_full_name}</Link></div>
               </td>
               
-              <td className='list-object-creator-td'>
-                <Link to={'/users/' + notebook.user_username}>{notebook.user_username}</Link>
-              </td>
-
               <td className='list-object-meta-td'>
                 
 	        <div className='list-object-title'>
@@ -103,7 +96,6 @@ class NotebookList extends React.Component {
                       
                       <tr className='list-object-tr'>
                         <th className='list-object-date-th'>Date</th>
-                        <th className='list-object-creator-th'>Creator</th>
                         <th className='list-object-meta-th'>Notebook</th>
                         <th className='list-object-published-th'>Published</th>
                       </tr>

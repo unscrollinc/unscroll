@@ -1,8 +1,8 @@
 * Announcement
 
-I have a side project: A web-based, timeline-driven writing tool that helps you fact-check your work, called Unscroll. I work on it when @PostlightStudio is calm and the kids are in bed. I built it for myself but believe it's worth sharing. https://unscroll.com
+I have a side project: A web-based, timeline-driven writing tool that helps you fact-check your work, called Unscroll. I work on it when @PostlightStudio is calm and the kids are in bed. I built it for myself but believe it's worth sharing. https://unscroll.com (also @unscroll)
 
-The idea is as simple: Write notes about events in a notebook, then arrange the notes into essays. Using it reduces my anxiety. This is an early version, as minimal as I could make it.
+The idea is as simple: Write notes about events in a notebook, then arrange the notes into essays. Using it reduces my anxiety. 
 
 Here are some timelines:
 
@@ -24,8 +24,6 @@ Here are some essays I've written using it:
 - As I Went About My Merry Way (music)
 - Technological Joy Transition (how we went from everyone getting access to no one getting access)
 
-Further information is here:
-
 I look forward to your thoughts.
 
 
@@ -38,12 +36,13 @@ I look forward to your thoughts.
   - [X] Login
   - [X] Logout
 
+
 * Timelines [3/5]
   - [X] Vertical view buttons
   - [X] Refactor all "Scroll" stuff to be Timeline # WONTFIX
   - [ ] Timeline search results
   - [X] No direct editing on Timelines at launch? THAT'S RIGHT
-  - [ ] Use HTML->React module for sizing, then placing events
+  - [X] Use HTML->React module for sizing, then placing events
 
 * Timelist [1/6]
   - [X] Create new timeline
@@ -54,7 +53,7 @@ I look forward to your thoughts.
   - [ ] Reverse chronological
 
 * Notebooks
-  - [ ] Rich text in title editor
+  - [X] Rich text in title editor
 
 * Events
   - [ ] paragraph break
@@ -62,12 +61,12 @@ I look forward to your thoughts.
   - [ ] Link
 
 * Design
-  - [ ] Overall simple color scheme
-  - [ ] Overall grid
-  - [ ] Overall colors for backgrounds and events
+  - [X] Overall simple color scheme
+  - [X] Overall grid
+  - [X] Overall colors for backgrounds and events
 
 * API [2/3]
-  - [ ] Read through endpoints and make them either public, private, or admin with no variability.
+  - [X] Read through endpoints and make them either public, private, or admin with no variability.
   - [X] Refactor all "Scroll" stuff to be Timeline # WONTFIX
   - [X] "My" views differentiated from other views # IGNORE
 
@@ -75,6 +74,11 @@ I look forward to your thoughts.
   - [X] Snake case JSON
   - [X] Write five piecess
 
+* DevOps
+  - [ ] Stand up new server
+
 * Release
   - [ ] Publish announcement
   - [ ] Sit back and wait for them to yell at me.
+  - [ ] Email people who signed up
+  - [ ] Tweet out as @Unscroll
