@@ -18,7 +18,7 @@ urllib3.disable_warnings()
 
 
 def cache_collection():
-    for i in range(0,3200):
+    for i in range(248,3201):
         offset = i * 100
         url = "https://www.metmuseum.org/api/collection/collectionlisting?artist=&department=&era=&geolocation=&material=&offset={}&pageSize=0&perPage=100&showOnly=withImage&sortBy=Relevance&sortOrder=asc"\
             .format(offset)

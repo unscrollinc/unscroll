@@ -53,8 +53,9 @@ h1 a:hover {
     vertical-align: middle;
     line-height:90px;    
     line-height:150%;
-    min-height:35px;
-    height:5%;    
+    min-height:5%;
+    max-height:5%;
+    height:5%;        
     position:fixed;
     background:color;
     color:black;
