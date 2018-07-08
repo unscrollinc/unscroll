@@ -19,8 +19,13 @@ class About extends React.Component {
                 
                 <h2>What is this new thing?</h2>
                 
-                <p>Unscroll is an experimental tool for writing that helps
-                 you fact-check your own writing. It sees the worlds in terms of Events and Notes. Events are things that happened and Notes are what people think about them. Events go into Timelines and Notes go into Notebooks. You arrange your notes and that makes an Essay.</p>
+                <p>Unscroll is an experimental tool for writing that
+                 helps you fact-check your own writing. It sees the
+                 worlds in terms of Events and Notes. Events are
+                 things that happened and Notes are what people think
+                 about them. Events go into Timelines and Notes go
+                 into Notebooks. You arrange your notes and that makes
+                 an Essay.</p>
                  
                 <p>Easy enough, but it gives you a superpower: The power to remember
                   what the hell you are talking about. If you don't
@@ -82,11 +87,11 @@ class About extends React.Component {
 		<h2>What about my privacy and security?</h2>
 
 		<p>I won't go snooping but I might see something while
-		   administering the database. In general please don't
-		   put anything super-secret or valuable into this
-		   new, untrusted, experimental web service. I don't
-		   think you would, but it makes me feel better to say
-		   that.</p>
+		  administering the database. In general please don't
+		  put anything super-secret or valuable into this new,
+		  untrusted, experimental web service. I don't think
+		  you would, but it makes me feel better to say
+		  that.</p>
 		
 		<p>I use the Django framework and follow its guidelines. All traffic is via HTTPS.</p>
 
@@ -96,11 +101,28 @@ class About extends React.Component {
                 <h2>Who are you?</h2>
                 
                 <p>My name is Paul Ford. I'm a writer, programmer, and
-                  entrepreneur. I co-founded a NYC software company called <a href="https://postlight.com">Postlight</a> with my friend Rich, and I'm the CEO there today. We have about 50 employees. This is a side-project thought, and it pre-dates Postlight. Postlight people are way too busy working for our clients to get roped into my quixotic dreamquests.</p>
+                  entrepreneur. I co-founded a NYC software company
+                  called <a href="https://postlight.com">Postlight</a>
+                  with my friend Rich, and I'm the CEO there today. We
+                  have about 50 employees. This is a side-project
+                  thought, and it pre-dates Postlight. Postlight
+                  people are way too busy working for our clients to
+                  get roped into my quixotic late-night dreamquests,
+                  plus they have side projects of their own.</p>
                 
 		<h2>Writers need fewer, not more, distractions.</h2>
 
-                <p>Everyone says they want a distraction-free writing environment but what they really need are deadlines. This is a tool for people who already have deadlines, but have to turn all their distractions into working prose. It slows you down, if you let it, just enough so that it becomes worthwhile to get things right. This saves time in the long run. It makes writing a particular paragraph much less painful, and if it works you won't get yelled at so much on Twitter, or sued so much by lawyers.</p>
+                <p>Everyone says they want a distraction-free writing
+                  environment but what they really need are
+                  deadlines. This is a tool for people who already
+                  have deadlines, but have to turn all their
+                  distractions into working prose. It slows you down,
+                  if you let it, just enough so that it becomes
+                  worthwhile to get things right. This saves time in
+                  the long run. It makes writing a particular
+                  paragraph much less painful, and if it works you
+                  won't get yelled at so much on Twitter, or sued so
+                  much by lawyers.</p>
 
                 <h2>It should be free software.</h2>
                 
@@ -115,7 +137,13 @@ class About extends React.Component {
                 
                 <h2>If I use this and you go out of business or get acquired it'll be another stupid nightmare and you'll dump all the data down the toilet and why should I ever trust you at all?</h2>
                 
-                <p>I simply won't let that happen because I believe passionately in people owning and controlling their own data. I'm a digital advisor to the Library of Congress and good friends and an admirer of Jason Scott. If this thing gathers any steam at all I'll literally write instructions for the disposition of its archives into my will. Let's see what happens.</p>
+                <p>I won't let that happen. I believe passionately in
+                  people owning and controlling their own data. I'm a
+                  digital advisor to the Library of Congress and good
+                  friends and an admirer of Jason Scott. If this thing
+                  gathers any steam at all I'll literally write
+                  instructions for the disposition of its archives
+                  into my will. Let's see what happens.</p>
 
                 <h2>There's no business model.</h2>
                 
@@ -134,10 +162,11 @@ class About extends React.Component {
                 
                 <h2>This has nothing to do with machine learning.</h2>
                 
-                <p>I don't know, imagine what you could do with billions
-                  of public events. Let's see what happens.</p>
+                <p>I don't know, imagine what you could do with
+                  billions of public events. Let's see what
+                  happens.</p>
                 
-                <h2>This is just another centralized effort designed to own culture.</h2>
+                <h2>This is just another centralized effort designed to own other people's creative work</h2>
                 
                 <p>Maybe! I don't really want to own time or culture
                   though. I want people to feel safe and protected and
@@ -149,7 +178,7 @@ class About extends React.Component {
                   convenience so maybe a centralized service is
                   best. Most likely there won't be that many users and
                   it won't really matter. Let's see what happens.</p>
-                
+
                 <h2>The approach to date-time parsing and processing is utterly half-assed.</h2>
                 
                 <p>Yes, it's terrible. Extracting a date from, say, a
@@ -202,7 +231,7 @@ class About extends React.Component {
                   would support the community's definition of
                   accuracy. Let's see what happens.</p>
                 
-                <h2>What about griefers/Nazis/etc?</h2>
+                <h2>What about griefers/Nazis/racists/sexists/anti-Semites/goofballs/trolls/men?</h2>
                 
                 <p>Right now I'm the only one here. If exhausting
                   people, bad actors, griefers, and so forth show up

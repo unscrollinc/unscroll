@@ -30,6 +30,7 @@ export class AppProvider extends React.Component {
 		username:username,
 		authToken:authToken,
 		notebook:null,
+                notebookIsSaved:null,
 		notes:[],
 		moveFrom:undefined,
 		targetNote:undefined,            
@@ -44,7 +45,7 @@ export class AppProvider extends React.Component {
 	this.state = this.makeState(c);
 
 	this.sweep = () => {
-	    if (this.state.notebook && !this.state.notebook.isSaved) {
+	    if (this.state.notebook && !this.state.notebookIsSaved) {
 		if (this.state.notebook.url)  {
 		    this.putNotebook();
 		}
@@ -63,7 +64,7 @@ export class AppProvider extends React.Component {
 		}
 	    });
 
-	    if (this.state.notebook && !this.state.notebook.isSaved) {
+	    if (this.state.notebook && !this.state.notebookIsSaved) {
 		if (this.state.notebook.url)  {
 		    this.putNotebook();
 		}
@@ -152,13 +153,10 @@ export class AppProvider extends React.Component {
             .then(function(resp) {
                 
 		_this.setState(
-		    {notebook: update(
-			_this.state.notebook, {$merge: {
-		            isSaved: true,
-		            notes:new Map(),
-		            ...resp.data}})
-		    },
-                    _this.loadNotebookList);
+		    {notebookIsSaved:true,
+                     notebook: update(
+			 _this.state.notebook, {$merge: {...resp.data}})
+		    });
             })
             .catch(error => {
                 console.log(`saveNotebook: There is already a notebook by you with that name! ${error}`);
@@ -175,14 +173,8 @@ export class AppProvider extends React.Component {
 			{$unset: ['notes', 'isOnServer', 'isSaved']})
 	})
             .then(function(resp) {
-                _this.loadNotebookList();
-		_this.setState({notebook: update(
-                    _this.state.notebook, {$merge: {
-		        isSaved: true
-			
-
-		    }})});
-
+		_this.setState({
+                    notebookIsSaved:true})
             })
             .catch(error => {
                 console.log(`saveNotebook: There is already a notebook by you with that name! ${error}`);
@@ -388,12 +380,10 @@ export class AppProvider extends React.Component {
                         event:event.uuid ? event : undefined,
 			with_event:event.url
                     };
-                    const _notes = update(this.state.notebookNotes, {$add: [[newNote.uuid, newNote]]});
-                    const _sorted = new Map(this.sequenceNotes(Array.from(_notes).map(([k,v])=>v)));
-		    console.log('[@addNote:_sorted]', _sorted);                    
-                    this.setState({
-                        notebook:update(this.state.notebook, {$merge: { notes:  _sorted}})
-                    });
+                    const notes = update(this.state.notes, {$unshift: [newNote]});
+                    // const _sorted = new Map(this.sequenceNotes(Array.from(_notes).map(([k,v])=>v)));
+		    // console.log('[@addNote:_sorted]', _sorted);                    
+                    this.setState({notes:notes});
                 },
 
                 doEventEditor:(event) => {

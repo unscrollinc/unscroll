@@ -1,4 +1,21 @@
 
+
+
+
+urls = ["https://www.metmuseum.org/api/collection/collectionlisting?offset={}&perPage=100&sortBy=Date&sortOrder=asc".format(i) for i in range(0,1951)]
+requests.get()
+
+title
+Description
+ + medium
+ + accessionNumber
+ + (galleryInformation)
+url
+image
+date
+
+
+
 audio/podcast
 http://feeds.gimletmedia.com/hearreplyall?format=xml
 startup

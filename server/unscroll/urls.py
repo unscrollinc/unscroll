@@ -15,7 +15,7 @@ from rest_framework import pagination, generics, serializers, viewsets, routers,
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
-from rest_framework.exceptions import APIException
+from rest_framework.exceptions import APIException, ValidationError
 from rest_framework.pagination import LimitOffsetPagination
 from scrolls.models import User, Scroll, Event, Notebook, Note, Media, Thumbnail
 from unscroll.thumbnail import InboundThumbnail
@@ -439,9 +439,11 @@ class ScrollSerializer(serializers.HyperlinkedModelSerializer):
     def create(self, validated_data):
         validated_data['by_user'] = self.context['request'].user
         s = Scroll(**validated_data)
-        s.save()
-        return s
-
+        try:
+            s.save()            
+            return super(ListCreateAPIView,self).create(request, *args, **kwargs)
+        except IntegrityError:
+            raise APIException('[urls.py error] A user cannot have duplicate titles.')
 
 class ScrollViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]

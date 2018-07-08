@@ -13,7 +13,6 @@ class Notebook extends React.Component {
 	this.state = {
             saved:true,
             notebook:{},
-            notes:[]
         };
     }
 
@@ -22,6 +21,8 @@ class Notebook extends React.Component {
     }
     
     makeNote(note, i) {
+        console.log(note, i);
+                            
         return (<Note key={note.uuid} {...note}/>);
     }
 
@@ -39,9 +40,9 @@ class Notebook extends React.Component {
              headers:utils.getAuthHeaderFromCookie()})
             .then(resp => {
 		console.log('THIS PROPS', _this.props);
-                _this.props.context.setState({notes:resp.data.results},
-					     ()=>{console.log('RIGHT $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$O', _this);}
-                             );
+                _this.props.context.setState({notes:resp.data.results}
+                                             //,()=>{console.log('RIGHTO', _this);}
+                                            );
             })
             .catch(err=>{console.log(err);});
 
@@ -51,9 +52,9 @@ class Notebook extends React.Component {
              url:'http://127.0.0.1:8000/notebooks/' + this.props.id,
              headers:utils.getAuthHeaderFromCookie()})
             .then(resp => {
-                this.setState({notebook:resp.data}
-			      , ()=>{console.log('I AM ON FIRE', _this);}
-                             );
+                _this.props.context.setState({notebook:resp.data, notebookIsSaved:true}
+                                             //,()=>{console.log('RIGHTO', _this);}
+                                            );                
             })
             .catch(err=>{console.log(err);});
     }
@@ -70,28 +71,29 @@ class Notebook extends React.Component {
 
 
     renderManuscript() {
-        if (this.state.notebook.url) {
+        if (this.props.context.state.notebook && this.props.context.state.notebook.url) {
             return(
 		<div className='manuscript-inner'>
-                  <h1>{this.state.notebook.title}</h1>
-                  <h2>{this.state.notebook.subtitle}</h2>
-                  <div className="description">{this.state.notebook.description}</div>   
-                  {Array.from(this.state.notes).map(this.makeManuscriptText)}
+                  <h1>{this.props.context.state.notebook.title}</h1>
+                  <h2>{this.props.context.state.notebook.subtitle}</h2>
+                  <div className="description">{this.props.context.state.notebook.description}</div>   
+                  {Array.from(this.props.context.state.notes).map(this.makeManuscriptText)}
 		  </div>);
         }
+        return null;
     }
 
     renderTitleEditor() {
 	if (this.state.notebook.url) {
-	    return (<TitleEditor {...this.state.notebook}/>);
+	    return (<TitleEditor context={this.props.context}/>);
 	}
 	return (<div>Loading</div>);
     }
+
     
     render() {
         if (!this.props.edit)  {
             return (<div key='manuscript-preview' className='Manuscript preview'>
-
                     {this.renderManuscript()}
 		    </div>);
         }

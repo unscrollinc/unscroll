@@ -9,7 +9,7 @@ import Toggle from 'react-toggle';
 
 class TitleEditor extends React.Component {
     constructor(props) {
-	console.log('PROPS', props);
+	console.log('XXXXXXPROPS', props);
 	
         super(props);
         this.state = {

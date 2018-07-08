@@ -75,7 +75,7 @@ class UnscrollClient():
             return scroll_d['url']
 
         else:
-            print(r.json())
+            print(r.content)
             
             r = requests.get(self.api + '/scrolls/?title=' + quote_plus(title),
                              headers=self.authentication_header,)
