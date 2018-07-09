@@ -6,8 +6,7 @@ import axios from 'axios';
 import TimelistEvent from './TimelistEvent';
 import TimelistTitleEditor from './TimelistTitleEditor';
 import utils from '../Util/Util';
-const API='http://127.0.0.1:8000/events/';
-// const SCROLL_API='http://127.0.0.1:8000/scrolls/';
+const API='http://localhost/api/events/';
 
 class Timelist extends React.Component {
 
@@ -37,14 +36,14 @@ class Timelist extends React.Component {
         });
     }
     
-    getSpan(url) {
+    getEvents(url) {
         const _this = this;
 	const order = '&order=when_happened';
 	const ordering_url = url.includes(order) ? url : url + order;
 	axios({
             method:'get',
             url:ordering_url,
-	    headers:utils.getAuthHeaderFromCookie()
+	    headers:utils.getAuthHeaderFromCookie(),
         })
 	    .then(resp => {
                 const _els = _this.makeEls(resp.data);
@@ -80,7 +79,7 @@ class Timelist extends React.Component {
                             nextUrl:undefined,
                             doGetNext:false,
                             search:this.state.timeline.search}),
-                          this.getSpan(`${API}?q=${q}&limit=50`));
+                          this.getEvents(`${API}?q=${q}&limit=50`));
         }
         
         return undefined;
@@ -91,7 +90,7 @@ class Timelist extends React.Component {
 	      ? `${API}?in_scroll_uuid=${this.props.uuid}&`
 	      : `${API}?`;
         this.setState(prevState => ({events:[]}),
-                      this.getSpan(`${url}q=&limit=20&offset=0`));
+                      this.getEvents(`${url}q=&limit=20&offset=0`));
     }
     
     componentDidMount() {
@@ -112,7 +111,7 @@ class Timelist extends React.Component {
             if (!this.state.doGetNext) {
                 _this.setState(
                     prevState => ({doGetNext:true}),
-                    _this.getSpan(this.state.nextUrl)
+                    _this.getEvents(this.state.nextUrl)
                 );
             }
         }

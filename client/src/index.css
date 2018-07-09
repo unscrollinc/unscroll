@@ -202,7 +202,15 @@ h1 a:hover {
 }
 
 .note-event {
-    padding:0.5em;
+    border:1px solid deepskyblue;
+    background:lightskyblue;
+    border-radius:13px;
+    padding:1em;
+    margin:1em 0 1em 0;
+    color:#888;
+    width:85%;
+    max-height:8em;
+    overflow-y:auto;
 }
 
 .note-nav {
