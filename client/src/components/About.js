@@ -31,6 +31,34 @@ class About extends React.Component {
                   what the hell you are talking about. If you don't
                   need that superpower, more power to you. But I
                   personally need that superpower more every day.</p>
+
+                <h2>Why does this exist?</h2>
+
+                <p>Over the last 20 years a large and dedicated cohort
+                  of nerdy librarian-types have done their utmost to
+                  bring archives and public data into the warm light
+                  of the public Internet. They're technical people who
+                  could go get much better-paying jobs, and yet, as
+                  their friends go on exotic backpacking trips, these
+                  very excellent product people, designers, and
+                  engineers go to work each day for hidebound
+                  organizations which must be convinced, every single
+                  month, that "digital" matters and should be
+                  funded. This cohort keeps releasing the data,
+                  against the suspicion of their bosses, because they
+                  believe passionately in getting our shared history
+                  up, out, and onto the Web. All they ask is that
+                  we <i>do something</i> with the things they
+                  make. That's why Unscroll is here. Unscroll exists
+                  so that anyone can show up and start making new
+                  things with archives, right away, no delay. And, if
+                  it works, the people at those organizations will be
+                  able to look at the statistics that, should God will
+                  such statistics be produced, will one day be here to
+                  talk about how each collection is used, and they
+                  will be able to say: <i>Look, high schools students,
+                  journalists, and other people are using our digital
+                  collection. We are fulfilling our mission.</i></p>
                 
                 <h2>I don't get why you'd use this instead of [any other one of thousands of software products].</h2>
                 

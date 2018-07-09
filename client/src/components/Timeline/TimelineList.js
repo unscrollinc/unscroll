@@ -23,7 +23,6 @@ class TimelineList extends React.Component {
             <tr className="list-object-tr" key={scroll.uuid}>
 
                 <td className="list-object-date-td">
-
                   <div>{formatDate(scroll.when_created)}</div>
                   <div><Link to={'/users/' + scroll.user_username}>{scroll.user_full_name}</Link></div>
                 </td>
@@ -33,10 +32,14 @@ class TimelineList extends React.Component {
                   <div className="list-object-description"
 		       dangerouslySetInnerHTML={{__html:scroll.description}}/>
                 </td>
+
+                <td className="list-object-no-events-td">
+                  {scroll.event_count ? scroll.event_count.toLocaleString() : '-'}
+                </td>
                 
-              <td className={`list-object-published-td`}>
-		<div className={`list-object-published-${privacy}`}>{privacy}</div>
-              </td>
+                <td className={`list-object-published-td`}>
+		  <div className={`list-object-published-${privacy}`}>{privacy}</div>
+                </td>
               
             </tr>
 
@@ -77,6 +80,7 @@ class TimelineList extends React.Component {
                                 <tr className="list-object-tr">
                                   <th className='list-object-date-th'>Date</th>
                                   <th className='list-object-meta-th'>Timeline</th>
+                                  <th className='list-object-no-events-th'>No.</th>                                  
                                   <th className='list-object-published-th'>Published</th>
                                 </tr>
                               

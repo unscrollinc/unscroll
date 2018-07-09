@@ -1,5 +1,7 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import EventNoteButton from '../Event/EventNoteButton';
+import {DateTime} from 'luxon';
 import TimelinePanelEventEditButton from './TimelinePanelEventEditButton';
 
 class Event extends React.Component {
@@ -40,10 +42,17 @@ class Event extends React.Component {
         }
     }
 
+    makeWhen(e) {
+        if (e.when_original) {
+            return (<div title={'Date parsed as: ' + e.when_happened}>{e.when_original}</div>);
+        }
+        return DateTime.fromISO(e.when_happened).toFormat('kkkk');
+    }
+
     componentDidMount() {
 	const r = this.myRef.current.getBoundingClientRect();
-        const b = window.innerHeight;        
-        const h = Math.ceil(((r.height/b) * 100) / this.props.cell.height, 10);
+        const b = window.innerHeight;
+        const h = Math.ceil(0.2 + ((r.height/b) * 100) / this.props.cell.height, 10);
         const w = 2;
         const res = this.props.doReservation(this.props.left,0,w,h);
         if (res.success) {
@@ -51,32 +60,57 @@ class Event extends React.Component {
                 width:res.w * this.props.cell.width + '%',
                 height:res.h * this.props.cell.height + '%',
                 left:res.x * this.props.cell.width + '%',
-                top:7.5 + (0.9 * (res.y * this.props.cell.height)) + '%'
+                top:10 + (res.y * this.props.cell.height) + '%'
             });
         }
         else {
             this.setState({mightFit:false});
+            
         }
     }
-
+    renderText(e) {
+        if (e.text) {
+            return(<p>{e.text}</p>);
+        }
+        return null;
+    }
     render() {
         if (this.state.mightFit) {
+            const e = this.props.event;
             return(
-                <div key={this.props.event.uuid} style={{
+                <div key={e.uuid} style={{
                          width:this.state.width,
                          height:this.state.height,
                          left:this.state.left,
-                     top:this.state.top}}
+                         top:this.state.top,
+                     }}
 		     ref={this.myRef}
 		     className='event'>
-	          <div className='event-inner'>
-		    <TimelinePanelEventEditButton
-		      event={this.props.event}/>
-                    <EventNoteButton event={this.props.event}/>
-                    {this.makeImage(this.props.event)}
-                    <div>{this.props.event.when_happened}</div>
-		    <h3><a href={this.props.event.content_url} target="_blank">{this.props.event.title}</a></h3>
-		    <p>{this.props.event.text}</p>
+	          <div
+                    className='event-inner'>
+                    <table className='timeline-event'>
+                      <tbody>
+                        <tr>
+                          <td colSpan="3">
+                            {this.makeImage(e)}
+                            <div>{this.makeWhen(e)}</div>
+		            <h3>
+                              <a href={e.content_url} target="_blank">{e.title}</a>
+                            </h3>
+                        {this.renderText(e)}                            
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td colSpan="3">
+                            <a href={e.source_url} target="_new">{e.source_name}</a> (<Link to={'/users/' + e.username}>{e.username}</Link>)                            
+                            <EventNoteButton event={e}/>                          
+		            <TimelinePanelEventEditButton
+		              event={e}/>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
 	          </div>
                 </div>
             );

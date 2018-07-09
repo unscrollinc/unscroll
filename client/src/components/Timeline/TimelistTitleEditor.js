@@ -5,9 +5,8 @@ import { DateTime } from 'luxon';
 import update from 'immutability-helper';
 import RichTextEditor from '../Editor/RichTextEditor';
 import utils from '../Util/Util';
-import "react-toggle/style.css";
 import Toggle from 'react-toggle';
-
+import "react-toggle/style.css";
 
 const SCROLL_API='http://127.0.0.1:8000/scrolls/';
 
@@ -19,6 +18,7 @@ const SCROLL_API='http://127.0.0.1:8000/scrolls/';
 class TimelistTitleEditor extends React.Component {
     constructor(props) {
         super(props);
+        console.log(props);
         this.state = {
             edit:false,
 	    edits:{},
@@ -33,7 +33,7 @@ class TimelistTitleEditor extends React.Component {
             }
         };
 
-        setInterval(this.sweep, 1000 * 5);
+        setInterval(this.sweep, 1000 * 15);
     }
 
 
@@ -92,12 +92,12 @@ class TimelistTitleEditor extends React.Component {
             <div key={s.uuid} className='timelist-meta'>            
               <h1><Link to={'/timelines/' + s.uuid}
 			dangerouslySetInnerHTML={{__html:s.title}}/></h1>
-              {this.editButton()}
+              {this.editButtons()}
               <div className="timelist-meta-content">
 		<table className="meta">
                   <tbody>
                     <tr><td colSpan="2"><div className="citation"><a href={s.link} target="_new">{s.citation}</a></div></td></tr>
-                    <tr><th>№ items</th><td>{s.event_count ? s.event_count.toLocaleString() : '-'}</td></tr>                    
+                    <tr><th>No. items</th><td>{s.event_count ? s.event_count.toLocaleString() : '-'}</td></tr>                    
                     <tr><th>1st event</th><td>{this.quickDate(s.first_event)}</td></tr>
                     <tr><th>Last</th><td>{this.quickDate(s.last_event)}</td></tr>
                     <tr><th>Creator</th><td><a href={'/users/' + s.user_username}>{s.user_username}</a></td></tr>
@@ -160,7 +160,7 @@ class TimelistTitleEditor extends React.Component {
 		  field='link'
 		  plain={true}
 		  content={this.state.scroll.link}
-		  upEdit={this.edit.bind(this)}/>
+d		  upEdit={this.edit.bind(this)}/>
 	      </div>
 	      <div className="input-title">Link</div>
 	    </div>
@@ -171,14 +171,17 @@ class TimelistTitleEditor extends React.Component {
         console.log('I am making a new event');
     }
 
-    editButton() {
-        return (
-            <div key='buttons'>
-		<button key='edit' onClick={()=>{
-		  this.setState({edit:!this.state.edit});}}>Edit Timeline</button>
-              <button key='new' onClick={this.newEvent}>+ New Event</button>              
-            </div>
-        );
+    editButtons() {
+        if (utils.isAuthed(this.state.scroll.user_username)) {
+            return (
+                <div key='buttons'>
+		  <button key='edit' onClick={()=>{
+		    this.setState({edit:!this.state.edit});}}>Edit Timeline</button>
+                  <button key='new' onClick={this.newEvent}>+ New Event</button>              
+                </div>
+            );
+        }
+        return null;
     }
     
     render() {

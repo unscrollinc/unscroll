@@ -39,14 +39,14 @@ def cache_collection():
 
 
 
-def download():
+def download_images():
 
     #c = UnscrollClient()
     #c.login()
     #scroll = c.create_or_retrieve_scroll('The Met')
 
-    #conn = sqlite3.connect('cache/met.db')
-    #conn.row_factory = sqlite3.Row
+    conn = sqlite3.connect('cache/met.db')
+    conn.row_factory = sqlite3.Row
     
     sqlc = conn.cursor()
 
@@ -56,7 +56,7 @@ def download():
     for row in sqlc.fetchall():
         img = row['image']
         local_img = re.sub(r'https?://images.metmuseum.org/','', img)
-        local_img = re.sub(r'/','__', local_img)        
+        # local_img = re.sub(r'/','__', local_img)        
         
         if img is not None and row['date'] is not None:
             local = 'cache/met-images/{}'.format(local_img,)
@@ -77,6 +77,7 @@ def download():
                     f.write(r.content)
                     f.close()
                     found = True
+                    time.sleep(2)                    
                 except ConnectionError as e:
                     print('[dl_met.py] ConnectionError: {}'.format(e,))
                 except requests.exceptions.MissingSchema as e:
@@ -109,7 +110,8 @@ def download():
                 # # print(d)
     
 def __main__():
-    cache_collection()    
+    # cache_collection()
+    download_images()
     # c = UnscrollClient()
     # c.login()
     # c.create_or_retrieve_scroll('The Met')

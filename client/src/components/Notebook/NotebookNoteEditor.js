@@ -1,6 +1,6 @@
 import React from 'react';
 import AppContext from '../AppContext.js';
-import {Editor, ContentState, EditorState} from 'draft-js';
+import RichTextEditor from '../Editor/RichTextEditor';
 
 
 class MyEditor extends React.Component {

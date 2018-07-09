@@ -31,7 +31,7 @@ class Timeline extends React.Component {
             frame:frame,
             span:adjusted,
 	    width:width,
-	    height:10,	    
+	    height:3,	    
             offset:0,
             center:0,
             atMouseDown:undefined,

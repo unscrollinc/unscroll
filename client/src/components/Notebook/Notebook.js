@@ -23,7 +23,10 @@ class Notebook extends React.Component {
     makeNote(note, i) {
         console.log(note, i);
                             
-        return (<Note key={note.uuid} {...note}/>);
+        return (<Note
+                context={this.props.context}
+                key={note.uuid}
+                {...note}/>);
     }
 
     makeManuscriptText(note, i) {
@@ -84,7 +87,8 @@ class Notebook extends React.Component {
     }
 
     renderTitleEditor() {
-	if (this.state.notebook.url) {
+	if (this.props.context.state.notebook
+            && this.props.context.state.notebook.url) {
 	    return (<TitleEditor context={this.props.context}/>);
 	}
 	return (<div>Loading</div>);
@@ -110,7 +114,7 @@ class Notebook extends React.Component {
 		      
                       {this.renderTitleEditor()}
 
-                      {context.state.notes.map(this.makeNote)}
+                      {Array.from(context.state.notes).map(this.makeNote.bind(this))}
                       </div>
 			  </div>
                         <div className='Manuscript'>

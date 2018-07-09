@@ -1,0 +1,43 @@
+# new ubuntu box on digital ocea
+root> apt-get dist-upgrade
+root> adduser unscroll
+root> password: typhus-beefy-brougham-papaya
+root> usermod -aG sudo unscroll
+root> su - unscroll
+unscroll> mkdir ~/.ssh
+unscroll> chmod 700 ~/.ssh
+unscroll> nano ~/.ssh/authorized_keys
+# [CUT AND PASTE ~/.ssh/unscroll2018.pub from local machine]
+unscroll> chmod 0644 ~/.ssh/authorized_keys
+unscroll> ssh-keygen
+# [add the key to github]
+unscroll> cd
+unscroll> git clone git@github.com:ftrain/unscroll.git
+
+sudo bash
+
+apt-install python3-pip
+sudo -H pip3 install virtualenv
+mkdir ~/env
+virtualenv -ppython3.6 ~/env/unscroll
+source ~/env/unscroll/bin/activate
+cd ~/unscroll/server/
+pip3 install pipenv
+pipenv install
+
+sudo -u postgres createuser -s $(whoami);
+sudo -u postgres -i
+psql
+... create table unscroll
+
+sudo apt-get install nginx-full
+sudo apt-get install npm
+...
+npm install --no-optional
+
+
+mkdir socket # for gunicorn
+
+sudo add-apt-repository ppa:certbot/certbot
+sudo apt update
+sudo apt install python-certbot-nginx

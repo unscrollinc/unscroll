@@ -8,7 +8,7 @@ axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.withCredentials = true;
 
-const SWEEP_DURATION_SECONDS = 5;
+const SWEEP_DURATION_SECONDS = 15;
 const API = 'http://127.0.0.1:8000/';
 
 export const AppContext = React.createContext();
@@ -21,22 +21,24 @@ const randomString = () => {
 
 export class AppProvider extends React.Component {
 	
-	makeState(c) {
-	    const hasAuth = (c && c.authToken && c.username);
-            const authToken = hasAuth ? c.authToken : null;
-            const username = hasAuth ? c.username : null; 	
-            
-            return {
-		username:username,
-		authToken:authToken,
-		notebook:null,
-                notebookIsSaved:null,
-		notes:[],
-		moveFrom:undefined,
-		targetNote:undefined,            
-		events:[]
-            }
-	}
+    makeState(c) {
+	const hasAuth = (c && c.authToken && c.username);
+        const authToken = hasAuth ? c.authToken : null;
+        const username = hasAuth ? c.username : null; 	
+        //Note = uuid, edits, note
+        return {
+	    username:username,
+	    authToken:authToken,
+	    notebook:null,
+            notebookEdits:{},
+            notebookIsSaved:null,
+	    notes:[],
+            // Maybe that's a hash by UUID, IDK.
+	    moveFrom:undefined,
+	    targetNote:undefined,            
+	    events:[]
+        }
+    }
     
     constructor(state, context) {
         super(state, context);
