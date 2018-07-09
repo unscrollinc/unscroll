@@ -98,6 +98,7 @@ lxml = "*"
 django-bleach = "*"
 cryptography = "*"
 pytzdata = "*"
+"psycopg2-binary" = "*"
 
 [dev-packages]
 

@@ -20,7 +20,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['localhost',
                  '127.0.0.1',
-                 '159.203.98.40',
+                 '159.65.184.27',
                  'unscroll.com',
                  'www.unscroll.com']
 
@@ -175,10 +175,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
-STATIC_URL = '/static/'
-
+STATIC_URL = '/django-static/'
+STATIC_ROOT= '/home/unscroll/unscroll/unscroll/scrolls/django-static/'
 THUMBNAIL_SIZE = 300, 300
-THUMBNAIL_DIR = '/home/unscroll/unscroll/unscroll/scrolls/static/scrolls/'
+THUMBNAIL_DIR = '/home/unscroll/unscroll/unscroll/scrolls/img/'
 DATA_UPLOAD_MAX_MEMORY_SIZE=4621440
 
 BLEACH_ALLOWED_TAGS = ['p', 'b', 'i', 'u', 'em', 'strong']

@@ -1,2 +1,2 @@
 source /home/unscroll/env/unscroll/bin/activate
-gunicorn -w 3 -p /home/unscroll/socket/gunicorn.sock --bind 0.0.0.0:8000 unscroll.wsgi:application
+gunicorn -w 6 -p /home/unscroll/socket/gunicorn.sock --log-level DEBUG --bind 127.0.0.1:8000 unscroll.wsgi:application
