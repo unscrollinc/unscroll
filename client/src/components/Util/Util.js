@@ -4,7 +4,7 @@ import axios from 'axios';
 // Functions that take no arguments and return either null or
 // something and that are usually bad/global/messy.
 
-const API = 'http://127.0.0.1:8000/';
+const API = 'http://localhost/api/';
 
 const util = {
     getCookie: () => {
@@ -46,33 +46,44 @@ const util = {
     getAPI:(noun) => {
         return `${API}${noun}`;
     },
-    web: (that, method, endpoint, params) => {
-        const dataKey = method==='GET' ? 'params' : 'data' ;
+    web: (that, method, endpoint, params, id, key) => {
+	const dataKey = method==='GET' ? 'params' : 'data' ;	
+	const API='http://localhost/api/';
+	const url = `${API}${endpoint}/${id?id+'/':''}`;
+	const stateEndpoint = key ? key : endpoint;
         axios({
             method:method,
-            url:`${API}${endpoint}/`,
+            url:url,
             headers:util.getAuthHeaderFromCookie(),
             [dataKey]:params
         }).then((resp)=> {
-            that.setState({[endpoint]:resp.data.results});
+	    const data = resp.data.results ? resp.data.results : resp.data;
+            that.setState({[stateEndpoint]:data},
+			  ()=>{console.log(
+			      'HERE COMES THAT BOI',
+			      url,
+			      stateEndpoint,
+			      data,
+			      that.state
+	    )});
         })
             .catch((err)=>{console.log('[Error]', {method:method, endpoint:endpoint, params:params, err:err})});
         return null;
     },
-    GET: (that, endpoint, params) => {
-        util.web(that, 'GET', endpoint, params);
+    GET: (that, endpoint, params, id, key) => {
+        util.web(that, 'GET', endpoint, params, id, key);
     },
-    DELETE: (that, endpoint) => {
-        util.web(that, 'DELETE', endpoint);
+    DELETE: (that, endpoint, id, key) => {
+        util.web(that, 'DELETE', endpoint, id, key);
     },
-    POST: (that, endpoint, params) => {
+    POST: (that, endpoint, params, id, key) => {
         util.web(that, 'POST', endpoint, params);
     },    
-    PATCH: (that, endpoint, params) => {
-        util.web(that, 'PATCH', endpoint, params);
+    PATCH: (that, endpoint, params, id, key) => {
+        util.web(that, 'PATCH', endpoint, params, id, key);
     },
-    PUT: (that, endpoint, params) => {
-        util.web(that, 'PUT', endpoint, params);
+    PUT: (that, endpoint, params, id, key) => {
+        util.web(that, 'PUT', endpoint, params, id, key);
     },    
     
 };

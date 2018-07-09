@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { DateTime } from 'luxon';
 import axios from 'axios';
 import cachios from 'cachios';
+import utils from '../Util/Util';
 // import { frames } from './TimeFrames';
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.xsrfCookieName = "csrftoken";
@@ -149,16 +150,11 @@ class Panel extends React.Component {
     }
 
     getSpan() {
-        let _this = this;
-        _this.grid = this.makeGrid();
-        
-	cachios.get('http://127.0.0.1:8000/events/?limit=25&'+this.toSpan(this.state.interval))
-	    .then(resp => {
-                _this.setState({events: resp.data.results});
-            })
-            .catch(err => {
-	        console.log('Error', err);
-	    });
+	utils.GET(this, 'events',
+		  {events:25,
+		   start:this.state.interval.start.toISO(),
+		   before:this.state.interval.end.toISO()});
+        this.grid = this.makeGrid();
     }
     
     componentDidMount() {
