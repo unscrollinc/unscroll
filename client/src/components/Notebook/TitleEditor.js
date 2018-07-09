@@ -1,5 +1,7 @@
 import React from 'react';
 import update from 'immutability-helper';
+import { Link } from 'react-router-dom';
+import { Route, Redirect } from 'react-router';
 import RichTextEditor from '../Editor/RichTextEditor';
 // import utils from '../Util/Util';
 import "react-toggle/style.css";
@@ -15,7 +17,6 @@ class TitleEditor extends React.Component {
     }
 
     edit(key, value) {
-        console.log('KEY + VALUE', key, value, this.props.context.state.notebookEdits);
 	this.props.context.setState(
 	    {notebook:update(this.props.context.state.notebook,
                              {$merge: {[key]: value}}),
@@ -24,9 +25,19 @@ class TitleEditor extends React.Component {
     }
 
     done(e) {
-	// const _this = this;
-	//_this.sweep();
-//	_this.setState({edit:false});
+	const nb = this.props.context.state.notebook;
+	return(<Redirect to={`/notebooks/${nb.user_username}/${nb.id}/`}/>);
+    }
+    renderDoneButton() {
+	return(
+	    <Route render={({ history}) => (
+		<button
+		  type='button'
+		  onClick={() => { history.push('/new-location'); }}>
+		  Click Me!
+		</button>)}/>
+	);
+/*	return(<button className='timeline-meta-done-button' onClick={(e)=>}>Done</button>)*/
     }
 
     render() {
@@ -38,7 +49,7 @@ class TitleEditor extends React.Component {
 
 		<div className='is-published-toggle-wrapper'>
 		  <div className='is-published-toggle'>
-		    <button className='timeline-meta-done-button' onClick={this.done.bind(this)}>Done</button>
+		    {this.renderDoneButton()}
 		    
 		    <label htmlFor='is-published'>Published: </label>
 		    <Toggle
@@ -59,7 +70,7 @@ class TitleEditor extends React.Component {
 
 	      <div className="rte-subtitle-editor">
 		<RichTextEditor
-		  field='description'
+		  field='subtitle'
 		  content={nb.subtitle}
 		  upEdit={this.edit.bind(this)}/>
 	      </div>

@@ -6,16 +6,10 @@ import AppContext from '../AppContext';
 import utils from '../Util/Util';
 
 class Notebook extends React.Component {
-
-    constructor(props) {
-        super(props);
-	console.log(props);
-    }
     getNotes() {
-	utils.GET(this.props.context, 'notes', {in_notebook__id:this.props.id});
+	utils.getNotes(this.props.context, this.props.id);
     }
     getNotebook() {
-	console.log('LOADING TITLE EDITOR');
 	utils.GET(this.props.context, 'notebooks', {}, this.props.id, 'notebook');
     }
     componentDidMount() {
@@ -27,38 +21,47 @@ class Notebook extends React.Component {
             this.getNotebook();
             this.getNotes();	
 	}
+//	console.log('UPDATE', this.props.context.state.notes);
     }
-    shouldComponentUpdate(nextProps, nextState) {
-	return (this.props.context.state.notebook !== nextProps.context.state.notebook);
-    }
+//    shouldComponentUpdate(nextProps, nextState) {
+//	return (this.props.context.state.notebook !== nextProps.context.state.notebook);
+//    }
     renderAddNoteButton() {
         return(<button onClick={this.props.context.addNote}>+ Note</button>);
     }
+    
     renderNote(note, i) {
         return (<Note
                 context={this.props.context}
                 key={note.uuid}
+		index={i}
                 {...note}/>);
     }
-    renderManuscriptText(note, i) {
-        return (<Manuscript key={note.uuid} {...note}/>);
-    }
-    renderManuscript() {
-        if (this.props.context.state.notebook
-	    && this.props.context.state.notebook.url
-	    && this.props.context.state.notes) {
+    
+    renderManuscriptTitle() {
+	const nb = this.props.context.state.notebook;
+        if (this.props.context.state.notebook && this.props.context.state.notebook.url) {
             return(
-		<div className='manuscript-inner'>
-                  <h1>{this.props.context.state.notebook.title}</h1>
-                  <h2>{this.props.context.state.notebook.subtitle}</h2>
-                  <div className="description">{this.props.context.state.notebook.description}</div>   
-                  {Array.from(this.props.context.state.notes).map(this.renderManuscriptText)}
-		  </div>);
+		<div className='manuscript-title'>
+                  <h1 dangerouslySetInnerHTML={{__html:nb.title}}/>
+                  <h2 dangerouslySetInnerHTML={{__html:nb.subtitle}}/>
+                  <div className='description' dangerouslySetInnerHTML={{__html:nb.description}}/>
+		</div>);
         }
         return null;
     }
+    renderManuscriptBody() {
+	const notes = this.props.context.state.notes;	
+        return(<div className='manuscript-body'>
+               {Array.from(notes).map(this.renderManuscriptText.bind(this))}
+	       </div>);
+    }
+
+    renderManuscriptText(note, i) {
+        return (<Manuscript key={note.uuid} {...note}/>);
+    }
+
     renderTitleEditor() {
-	console.log('RENDER TITLE EDITOR', this.props.context.state);
 	if (this.props.context.state.notebook
             && this.props.context.state.notebook.url) {
 	    return (<TitleEditor context={this.props.context}/>);
@@ -68,7 +71,8 @@ class Notebook extends React.Component {
     render() {
         if (!this.props.edit)  {
             return (<div key='manuscript-preview' className='Manuscript preview'>
-                    {this.renderManuscript()}
+		    {this.renderManuscriptTitle()}
+		    {this.renderManuscriptBody()}		    
 		    </div>);
         }
         return (<AppContext.Consumer>
@@ -82,8 +86,11 @@ class Notebook extends React.Component {
 			      {Array.from(context.state.notes).map(this.renderNote.bind(this))}
 			    </div>
 			  </div>
-                          <div className='Manuscript'>
-                            {this.renderManuscript()}
+                            <div className='Manuscript'>
+			      <div className='manuscript-inner'>
+				{this.renderManuscriptTitle()}
+				{this.renderManuscriptBody()}
+			      </div>
                           </div>
 			</div>
 		    );

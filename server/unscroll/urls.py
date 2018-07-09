@@ -303,6 +303,7 @@ class NoteSerializer(serializers.HyperlinkedModelSerializer):
 
     def create(self, validated_data):
         validated_data['by_user'] = self.context['request'].user
+        pprint.pprint(validated_data)
         s = Note(**validated_data)
         s.save()
         return s
@@ -332,6 +333,15 @@ class NoteEventSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Note
         fields = '__all__'
+
+    def create(self, validated_data):
+        validated_data['by_user'] = self.context['request'].user
+        pprint.pprint(validated_data)
+        s = Note(**validated_data)
+        s.save()
+        return s
+
+        
 
 class NoteViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]

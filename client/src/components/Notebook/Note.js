@@ -1,8 +1,7 @@
 import React from 'react';
 import AppContext from '../AppContext.js';
 import RichTextEditor from '../Editor/RichTextEditor';
-import {stateToHTML} from 'draft-js-export-html';
-import {stateFromHTML} from 'draft-js-import-html';
+import update from 'immutability-helper';
 
 class NotebookEvent extends React.Component {
     
@@ -12,7 +11,6 @@ class NotebookEvent extends React.Component {
     }
     
     makeTarget(uuid, context) {
-        console.log('OKELY DOKELY');
         return (<div onClick={(e)=>context.endMove(uuid)} className="move-target">MOVE RIGHT HERE {uuid}</div>);
     }
 
@@ -20,9 +18,23 @@ class NotebookEvent extends React.Component {
 
     deleteNote() {}
     
-    edit() {
-        
+    edit(k, v) {
+	const _note = this.props.context.state.notes[this.props.index];
+	if (_note[k]!==v) {
+	    const edits = _note.__edits;
+	    const updatedEdits = update( edits, { $merge: { [k]: v } } );
+	    const note = update(_note,
+				{$merge: {
+				    [k]:v,
+				    __edits:updatedEdits,
+				    __isSaved:false}})
+	    const notes = update(this.props.context.state.notes, {[this.props.index]: {$set: note}})
+	    this.props.context.setState({notes:notes}
+					//, ()=>{console.log('AAAAAAAAAAA', this.props.index, this.props.context.state.notes[this.props.index]);}
+				       );
+	}
     }
+    
     showEvent() {
 	const e = this.props.event;
         function getText() {
@@ -50,30 +62,27 @@ class NotebookEvent extends React.Component {
 		<div key={this.props.uuid} className='note'>
 		  <div className='note-inner'>
                 <div className='note-nav'>
-                {/*
-                      <span className={'button active-'+this.state.statusIsMoving}
+
+                      <span className={'button active-'+this.props.statusIsMoving}
                             onClick={()=>this.startMove(this.props.uuid)}>Move</span>
                       
-	              <span className={'button active-'+this.state.statusIsToBeDeleted}
+	              <span className={'button active-'+this.props.statusIsToBeDeleted}
                             onClick={()=>{this.deleteNote(this.props);}}>Delete</span>                            
                       
-                      <span className={'order ' + (this.props.isSaved ? 'saved' : 'unsaved')}>
+                      <span className={'order ' + (this.props.__isSaved ? 'saved' : 'unsaved')}>
 			{(this.props.order !== 'undefined') ? '●' : 'NO ORDER'}
                       </span>
-                 */}
                     </div>
 		    
 		    {this.showEvent()}
 
-	      <div className="input-title">Text</div>
-	      
 	      <div className="rte-note-text-editor">
 		<RichTextEditor
-		  field='description'
+		  field='text'
 		  content={this.props.text}
 		  upEdit={this.edit.bind(this)}/>
 	      </div>
-	      <div className="input-title">Description</div>
+	      <div className="input-title">Note text</div>
                 {this.renderTarget()}
 	    </div>
 		</div>  

@@ -1,5 +1,11 @@
 import cookie from 'js-cookie';
 import axios from 'axios';
+import update from 'immutability-helper';
+
+axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+axios.defaults.xsrfCookieName = "csrftoken";
+axios.defaults.withCredentials = true;
+
 
 // Functions that take no arguments and return either null or
 // something and that are usually bad/global/messy.
@@ -46,29 +52,42 @@ const util = {
     getAPI:(noun) => {
         return `${API}${noun}`;
     },
-    web: (that, method, endpoint, params, id, key) => {
-	const dataKey = method==='GET' ? 'params' : 'data' ;	
+    webPromise: (that, method, endpoint, params, id, key) => {
+	const dataKey = method==='GET' ? 'params' : 'data' ;
 	const API='http://localhost/api/';
 	const url = `${API}${endpoint}/${id?id+'/':''}`;
-	const stateEndpoint = key ? key : endpoint;
-        axios({
+//	console.log({dataKey:dataKey, params:params, url:url});
+        return axios({
             method:method,
             url:url,
             headers:util.getAuthHeaderFromCookie(),
             [dataKey]:params
-        }).then((resp)=> {
-	    const data = resp.data.results ? resp.data.results : resp.data;
-            that.setState({[stateEndpoint]:data},
-			  ()=>{console.log(
-			      'HERE COMES THAT BOI',
-			      url,
-			      stateEndpoint,
-			      data,
-			      that.state
-	    )});
-        })
+        });
+    },
+    web: (that, method, endpoint, params, id, key) => {
+	const stateEndpoint = key ? key : endpoint;
+	util.webPromise(that, method, endpoint, params, id, key)
+	    .then((resp)=> {
+		const data = resp.data.results ? resp.data.results : resp.data;
+		that.setState({[stateEndpoint]:data}
+			      /*			  , ()=>{console.log(
+							  'HERE COMES THAT BOI',
+							  url,
+							  stateEndpoint,
+							  data,
+							  that.state)}
+			      */
+			     );
+            })
             .catch((err)=>{console.log('[Error]', {method:method, endpoint:endpoint, params:params, err:err})});
         return null;
+    },
+    getNotes: (that, id) => {
+	const addSavedState = (n) =>{return update(n, {$merge: {__isSaved:true, __edits:{}}})};
+	util.webPromise(that, 'GET', 'notes', {in_notebook__id:parseInt(id, 10)})
+	    .then((resp)=>{
+		that.setState({notes:resp.data.results.map(addSavedState)});
+	    });
     },
     GET: (that, endpoint, params, id, key) => {
         util.web(that, 'GET', endpoint, params, id, key);

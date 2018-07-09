@@ -70,7 +70,7 @@ class Event extends React.Component {
     }
     renderText(e) {
         if (e.text) {
-            return(<p>{e.text}</p>);
+            return(<p dangerouslySetInnerHTML={{__html:e.text}}/>);
         }
         return null;
     }

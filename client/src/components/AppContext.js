@@ -3,21 +3,19 @@ import cookie from 'js-cookie';
 import update from 'immutability-helper';
 import uuidv4 from 'uuid/v4';
 import axios from 'axios';
+import utils from './Util/Util';
 
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.withCredentials = true;
 
-const SWEEP_DURATION_SECONDS = 15;
-const API = 'http://127.0.0.1:8000/';
+const SWEEP_DURATION_SECONDS = 10;
 
 export const AppContext = React.createContext();
 
 const randomString = () => {
     return Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 6);
 }
-
-// web(this, 'get', 'scrolls', {}, 'timelines')
 
 export class AppProvider extends React.Component {
 	
@@ -52,28 +50,19 @@ export class AppProvider extends React.Component {
 		    this.putNotebook();
 		}
 		else {
-		    this.saveNotebook();
+		    this.postNotebook();
 		}
 	    }
 	    this.state.notes.forEach((v,k,m) => {
-		if (!v.isSaved) {
+		if (!v.__isSaved) {
 		    if (!v.url) {
-		        this.saveNote(v);
+		        this.postNote(v,k);
                     }
                     else {
-                        this.patchNote(v);
+                        this.patchNote(v,k);
                     }
 		}
 	    });
-
-	    if (this.state.notebook && !this.state.notebookIsSaved) {
-		if (this.state.notebook.url)  {
-		    this.putNotebook();
-		}
-		else {
-		    this.saveNotebook();
-		}
-	    }            
 	}
 
         // Periodically (SWEEP_DURATION_SECONDS) sweep the notebook
@@ -81,20 +70,18 @@ export class AppProvider extends React.Component {
 	setInterval(this.sweep, 1000 * SWEEP_DURATION_SECONDS);
     }
     
-    modifyNote(uuid, o) {
+    markNoteSaved(i) {
         // const _this = this;
-	this.setState(
-            {notebook:
-	     update(this.state.notebook,
-		    {$merge: {                        notes: update(
-                            this.state.notebookNotes,
-			    {$add: [[uuid,
-				     update(this.state.notebookNotes.get(uuid),
-					    {$merge: o})]]})}})},
-		    () => {
-                        //console.log('[@modifyNote:uuid,o]', uuid, o);
-                    }
-		);        
+	const notes = this.state.notes;
+	const note = notes[i];
+	const updatedNote = update(note,
+				   {$merge: {__edits:{},
+					     __isSaved:true}});
+
+	const updatedNotes = update(notes, {[i]: { $set: updatedNote}});
+	    
+	this.setState({notes:updatedNotes});
+
     }
 
     cutNotes(from, to, targetBefore) {
@@ -102,19 +89,18 @@ export class AppProvider extends React.Component {
         return _notes;
     }
     
-    patchNote(note) {
+    patchNote(note, i) {
         const _this = this;
+	console.log(i, this.__edits);
         axios({
 	    method:'patch',
 	    url:note.url,
 	    headers:this.makeAuthHeader(this.state.authToken),
-	    data:{text:note.text,
-                  order:note.order,
-                  kind:note.kind}
+	    data:note.__edits
 	})
             .then(function(resp) {
-		//console.log("[@patchNote()]", resp.data);
-                _this.modifyNote(note.uuid, {isSaved:true});
+		console.log("[@patchNote()]", resp.data);
+                _this.markNoteSaved(i);
 	    })
             .catch(error => {
                 console.log('[!patchNote()]', error, _this.state);
@@ -122,33 +108,27 @@ export class AppProvider extends React.Component {
         
     }
     
-    saveNote(note) {
-        console.log('[@saveNote(note)]',note);
-        const _this = this;
-        axios({
-	    method:'post',
-	    in_notebook:this.state.notebook.url,
-	    url:API+'notes/',
-	    headers:this.makeAuthHeader(this.state.authToken),
-	    data:note
-	})
-            .then(function(resp) {
-		console.log("[@saveNote():resp.data]", resp.data);
-                const _uuid = resp.data.uuid;
-                _this.modifyNote(_uuid, {url:resp.data.url,
-                                         isSaved:true});
+    postNote(note, i) {
+        console.log('[@postNote(note)]',note);
+	const that = this;
+	utils.webPromise(this, 'POST', 'notes', note)
+	    .then(resp=>{
+		const updatedNote = update(note, {$merge: {__isSaved:true,
+							   __edits:{},
+							   ...resp.data}});
+		that.setState({notes:update(that.state.notes, {[i]: {$set: updatedNote}})});
 	    })
             .catch(error => {
-                console.log('[!saveNote()]', error, _this.state);
+                console.log('[!postNote()]', {error:error, note:note, i:i});
             });
 	
     }
     
-    saveNotebook() {
+    postNotebook() {
         const _this = this;
         axios({
 	    method:'post',
-	    url:API+'notebooks/',
+	    url:utils.getAPI('notebooks'),
 	    headers:this.makeAuthHeader(this.state.authToken),
 	    data:update(this.state.notebook, {$unset: ['notes']})
 	})
@@ -161,7 +141,7 @@ export class AppProvider extends React.Component {
 		    });
             })
             .catch(error => {
-                console.log(`saveNotebook: There is already a notebook by you with that name! ${error}`);
+                console.log(`postNotebook: There is already a notebook by you with that name! ${error}`);
             });
     }
 
@@ -179,7 +159,7 @@ export class AppProvider extends React.Component {
                     notebookIsSaved:true})
             })
             .catch(error => {
-                console.log(`saveNotebook: There is already a notebook by you with that name! ${error}`);
+                console.log(`postNotebook: There is already a notebook by you with that name! ${error}`);
             });
     }
 
@@ -249,13 +229,6 @@ export class AppProvider extends React.Component {
 
                 state:this.state,
 
-                getAuthHeaderFromCookie:() => {
-                    const c = cookie.get();
-	            const hasAuth = (c && c.authToken && c.username);
-                    const authToken = hasAuth ? c.authToken : null;
-                    return this.makeAuthHeader(authToken);
-                },
-
 		setState:(o, f) => {
 		    this.setState(o, f);
 		},
@@ -270,59 +243,6 @@ export class AppProvider extends React.Component {
 
                 makeAuthHeader: (token) => { return this.makeAuthHeader(token) } ,
                 
-                doLogout:() => {
-                    const _this = this;
-                    axios(
-			{method:'post',
-                         url:API+'auth/logout/',
-                         headers: this.makeAuthHeader(this.state.authToken)
-                        })
-                        .then(function(response) {
-                            _this.setState(_this.makeState());
-                        })
-                        .catch(function(error) {
-                            console.log(error);
-                        })
-                        .finally(function(x) {
-                            cookie.remove('authToken');
-                            cookie.remove('username');                            
-                            _this.setState(_this.makeState());
-                        });
-
-                    
-                },
-                
-                
-                doLogin:(event) => {
-                    event.preventDefault();
-                    const _this = this;
-                    axios.post(
-                        API + 'auth/login/',
-                        {
-                            username: this.state.username,
-                            password: this.state.password
-                        })
-                        .then(function(response) {
-                            const u1 = update(_this.state.user, {
-				$merge: 
-				{
-				    authToken: response.data.auth_token,
-                                    password: undefined,
-                                    hasAuth: true
-				}});
-                            cookie.set('authToken', response.data.auth_token);
-                            cookie.set('username', _this.state.username);
-                            _this.setState({user: u1},
-                                           () => {
-                                               _this.loadNotebookList();
-                                               _this.loadScrollList();
-                                           });
-                        })
-                        .catch(function(error) {
-                            console.log('ERROR', error);
-                        });
-                },
-                
                 addNotebook:() => {
                     this.setState({notebook: {
                         on:true,
@@ -333,14 +253,14 @@ export class AppProvider extends React.Component {
                         description:'Un-summarized',
                         uuid: uuidv4(),
                         notes:[]
-                    }}, this.saveNotebook);
+                    }}, this.postNotebook);
                 },
 
                 loadNotebook:(notebook)=>{
                     const _this = this;
                     axios({method:'get',
 	                   headers:this.makeAuthHeader(this.state.authToken),
-                           url:`${API}users/${notebook.uuid}/notebook`
+                           url:`FAKE_API`
                           }).then((response) => {
                               this.setState({user: update(this.state.user,
                                                           {$merge: {notebookCurrent: notebook.uuid}})});
@@ -376,10 +296,9 @@ export class AppProvider extends React.Component {
 		    console.log('[@addNote(event)]', event);
                     const newNote = {
                         uuid: uuidv4(),                    
-			text: 'Blank',
-                        order: undefined,
+			text: '',
+                        order: 0,
 			in_notebook: this.state.notebook.url,
-                        event:event.uuid ? event : undefined,
 			with_event:event.url
                     };
                     const notes = update(this.state.notes, {$unshift: [newNote]});

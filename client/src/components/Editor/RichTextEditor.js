@@ -6,7 +6,7 @@ import { stateFromHTML } from 'draft-js-import-html';
 
 
 class RichTextEditor extends React.Component {
-
+    // Pass this an "upEdit" function in props so that when it edits it can do the right thing.
     constructor(props) {
         super(props);
 	this.state = {
@@ -16,10 +16,9 @@ class RichTextEditor extends React.Component {
     }
     
     onChange(key, event) {
-	const es = this.state.editorState;
-	const value = stateToHTML(es.getCurrentContent(), {defaultBlockTag:null});
-	this.setState({editorState:event},
-		      ()=>this.edit(key, value));
+	const value = stateToHTML(event.getCurrentContent(), {defaultBlockTag:null});
+	this.setState({editorState:event});
+	this.edit(key, value);
     }
 
     tidy(html) {
