@@ -619,15 +619,15 @@ schema_view = get_swagger_view(title='Unscroll API')
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
-    url('^$', schema_view),
-    url(r'', include(router.urls)),
-    path('admin/', admin.site.urls),
-    url(r'^auth/', include('djoser.urls')),
-    url(r'^auth/', include('djoser.urls')),
-    url(r'^auth/', include('djoser.urls.authtoken')),
+    url('^api/$', schema_view),
+    url(r'api/', include(router.urls)),
+    path('api/admin/', admin.site.urls),
+    url(r'^api/auth/', include('djoser.urls')),
+    url(r'^api/auth/', include('djoser.urls')),
+    url(r'^api/auth/', include('djoser.urls.authtoken')),
     
 ] + static(settings.STATIC_URL,
            document_root=settings.STATIC_ROOT)
 
-urlpatterns += [url(r'^silk/', include('silk.urls', namespace='silk'))]
+urlpatterns += [url(r'^api/silk/', include('silk.urls', namespace='silk'))]
     
