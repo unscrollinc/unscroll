@@ -109,14 +109,16 @@ export class AppProvider extends React.Component {
     }
     
     postNote(note, i) {
-        console.log('[@postNote(note)]',note);
+        console.log('[@postNote(note)]', note);
 	const that = this;
-	utils.webPromise(this, 'POST', 'notes', note)
+        const noFullEventNote = update(note, {$unset: ['event']});
+	utils.webPromise(this, 'POST', 'notes', noFullEventNote)
 	    .then(resp=>{
 		const updatedNote = update(note, {$merge: {__isSaved:true,
 							   __edits:{},
 							   ...resp.data}});
-		that.setState({notes:update(that.state.notes, {[i]: {$set: updatedNote}})});
+                const manyNotes = update(that.state.notes, {[i]: {$set: updatedNote}});
+		that.setState({notes:manyNotes});
 	    })
             .catch(error => {
                 console.log('[!postNote()]', {error:error, note:note, i:i});
@@ -299,12 +301,22 @@ export class AppProvider extends React.Component {
 			text: '',
                         order: 0,
 			in_notebook: this.state.notebook.url,
-			with_event:event.url
+			event:event,
+                        with_event:event.url,
+                        __isSaved:false,
+                        __edits:{}
                     };
                     const notes = update(this.state.notes, {$unshift: [newNote]});
-                    // const _sorted = new Map(this.sequenceNotes(Array.from(_notes).map(([k,v])=>v)));
-		    // console.log('[@addNote:_sorted]', _sorted);                    
-                    this.setState({notes:notes});
+                    const sorted = notes.map((note, i)=>{
+                        if (note.order!==i) {
+                            const __edits = update(note.__edits, {$merge: {order:i}})
+                            return update(note, {$merge: {order:i,
+                                                          __isSaved:false,
+                                                          __edits:__edits}});
+                        }
+                        return note;
+                    });
+                    this.setState({notes:sorted});
                 },
 
                 doEventEditor:(event) => {

@@ -11,7 +11,8 @@ class NotebookEvent extends React.Component {
     }
     
     makeTarget(uuid, context) {
-        return (<div onClick={(e)=>context.endMove(uuid)} className="move-target">MOVE RIGHT HERE {uuid}</div>);
+        return (<div onClick={(e)=>context.endMove(uuid)}
+                className="move-target">MOVE RIGHT HERE {uuid}</div>);
     }
 
     startMove() {}
