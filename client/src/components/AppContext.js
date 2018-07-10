@@ -9,7 +9,7 @@ axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.withCredentials = true;
 
-const SWEEP_DURATION_SECONDS = 10;
+const SWEEP_DURATION_SECONDS = 4;
 
 export const AppContext = React.createContext();
 
@@ -54,6 +54,7 @@ export class AppProvider extends React.Component {
 		}
 	    }
 	    this.state.notes.forEach((v,k,m) => {
+		console.log(v.__isSaved);
 		if (!v.__isSaved) {
 		    if (!v.url) {
 		        this.postNote(v,k);
@@ -111,7 +112,7 @@ export class AppProvider extends React.Component {
     postNote(note, i) {
         console.log('[@postNote(note)]', note);
 	const that = this;
-        const noFullEventNote = update(note, {$unset: ['event']});
+        const noFullEventNote = update(note, {$unset: ['event', '__edits', '__isSaved']});
 	utils.webPromise(this, 'POST', 'notes', noFullEventNote)
 	    .then(resp=>{
 		const updatedNote = update(note, {$merge: {__isSaved:true,
@@ -189,35 +190,6 @@ export class AppProvider extends React.Component {
     }
     
     
-    sequenceNotes(notes) {
-        console.log('[@sequenceNotes:notes]', notes);
-        return new Map(
-            Array.from(notes).map((v, i) => {
-                if (i!==v.order) {
-                    return [v.uuid, update(v, {$merge: {isSaved:false, order:i}})];
-                }
-                else {
-                    return [v.uuid, update(v, {$merge: {isSaved:true}})];
-                }
-            }));
-    }
-
-    
-    sortNotes(notes) {
-        const _sorted =
-              Array.from(notes)
-              .sort((a,b) => {
-                  if (a.order > b.order) {
-                      return 1;
-                  }
-                  else if (a.order < b.order) {
-                      return -1;
-                  }
-                  return 0;
-              });
-        return _sorted;
-    }
-    
     makeAuthHeader(token) {
         if (token) {
             return {Authorization: `Token ${token}`};
@@ -231,8 +203,8 @@ export class AppProvider extends React.Component {
 
                 state:this.state,
 
-		setState:(o, f) => {
-		    this.setState(o, f);
+		setState:(o) => {
+		    this.setState(o, ()=>{console.log({setStateProxy:this.state})});
 		},
                 
                 handleUsernameUpdate:(event) => {
@@ -247,35 +219,13 @@ export class AppProvider extends React.Component {
                 
                 addNotebook:() => {
                     this.setState({notebook: {
-                        on:true,
 			isSaved:false,
-                        title:'Untitled-'
-                            + randomString(),
-                        subtitle:'Un-subtitled',
-                        description:'Un-summarized',
-                        uuid: uuidv4(),
-                        notes:[]
-                    }}, this.postNotebook);
-                },
-
-                loadNotebook:(notebook)=>{
-                    const _this = this;
-                    axios({method:'get',
-	                   headers:this.makeAuthHeader(this.state.authToken),
-                           url:`FAKE_API`
-                          }).then((response) => {
-                              this.setState({user: update(this.state.user,
-                                                          {$merge: {notebookCurrent: notebook.uuid}})});
-                              console.log('[@loadNotebook.response()]', response);
-                              this.setState({notebook:
-                                             {...response.data,
-                                              movingNote:undefined,                                                 
-                                              isSaved:true,
-                                              isOnServer:true,
-                                              notes:_this.sequenceNotes(_this.sortNotes(response.data.full_notes)),
-                                             }}
-                                            // , ()=>{console.log('[@this.state.notebook]', this.state.notebook)}
-                                           )});
+                        title:'Untitled-' + randomString(),
+			is_public:false,
+                        subtitle:'',
+                        description:'',
+                        uuid: uuidv4()
+		    }}, this.postNotebook);
                 },
 
 		listNotebooks:()=>{
@@ -295,28 +245,25 @@ export class AppProvider extends React.Component {
                 },
 
                 addNote:(event) => {
+		    const _this = this;
 		    console.log('[@addNote(event)]', event);
+		    const following_uuid = _this.state.notes.length > 0
+			  ? _this.state.notes[0].uuid
+			  : null;
                     const newNote = {
                         uuid: uuidv4(),                    
 			text: '',
                         order: 0,
-			in_notebook: this.state.notebook.url,
+			following_uuid:following_uuid,
+			in_notebook: _this.state.notebook.url,
 			event:event,
                         with_event:event.url,
                         __isSaved:false,
                         __edits:{}
                     };
-                    const notes = update(this.state.notes, {$unshift: [newNote]});
-                    const sorted = notes.map((note, i)=>{
-                        if (note.order!==i) {
-                            const __edits = update(note.__edits, {$merge: {order:i}})
-                            return update(note, {$merge: {order:i,
-                                                          __isSaved:false,
-                                                          __edits:__edits}});
-                        }
-                        return note;
-                    });
-                    this.setState({notes:sorted});
+                    const notes = update(_this.state.notes, {$unshift: [newNote]});
+		    const sorted = utils.sortNotes(notes);
+                    _this.setState({notes:sorted});
                 },
 
                 doEventEditor:(event) => {

@@ -158,10 +158,10 @@ class Notebook(models.Model):
     is_public = models.BooleanField(
         default=False)
     is_fiction = models.BooleanField(
-        default=False)    
+        default=False)
     is_deleted = models.BooleanField(
         default=False)
-
+    
     class Meta:
         db_table = 'notebook'
         unique_together = (("title", "by_user"),)
@@ -173,7 +173,6 @@ class Notebook(models.Model):
     def __unicode__(self):
         return '{}'.format(self.title,)
     
-
 class EventQueryset(models.QuerySet):
     def full_text_search(self, text):
         return self.extra(
@@ -288,6 +287,13 @@ class Note(models.Model):
         default=uuid4,
         editable=True,
         unique=True)
+    following_uuid = models.UUIDField(
+        db_index=True,        
+        default=None,
+        editable=True,
+        null=True,
+        blank=True,
+        unique=False)
     in_notebook = models.ForeignKey(
         Notebook,
         null=True,
