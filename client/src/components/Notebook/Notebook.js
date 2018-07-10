@@ -11,7 +11,7 @@ class Notebook extends React.Component {
     }
     getNotebook() {
 	utils.GET(this.props.context, 'notebooks', {}, this.props.id, 'notebook');
-    }
+    }    
     componentDidMount() {
         this.getNotebook();
         this.getNotes();	

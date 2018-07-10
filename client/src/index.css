@@ -703,7 +703,13 @@ table.timeline-event p {
     padding:0;
     margin:0;
 }
-
+.count {
+    display:inline;
+    float:right;
+    background:#FFB400;
+    color:white;
+    font-weight:bold;
+}
 .color-primary-0 { color: #00BFFF }	/* Main Primary color */
 .color-primary-1 { color: #31C9FC }
 .color-primary-2 { color: #08C1FF }

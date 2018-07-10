@@ -46,15 +46,14 @@ export class AppProvider extends React.Component {
 
 	this.sweep = () => {
 	    if (this.state.notebook && !this.state.notebookIsSaved) {
-		if (this.state.notebook.url)  {
-		    this.putNotebook();
+		if (!this.state.notebook.url)  {
+		    this.postNotebook();
 		}
 		else {
-		    this.postNotebook();
+		    this.patchNotebook();
 		}
 	    }
 	    this.state.notes.forEach((v,k,m) => {
-		console.log(v.__isSaved);
 		if (!v.__isSaved) {
 		    if (!v.url) {
 		        this.postNote(v,k);
@@ -126,7 +125,25 @@ export class AppProvider extends React.Component {
             });
 	
     }
+
     
+    patchNotebook() {
+        console.log('[@patchNotebook(note)]', this.state.notebook);	
+        const _this = this;
+        axios({
+	    method:'patch',
+	    url:this.state.notebook.url,
+	    headers:this.makeAuthHeader(this.state.authToken),
+	    data:this.state.notebookEdits
+	})
+            .then(function(resp) {
+		_this.setState({notebookIsSaved:true, notebookEdits:{}})
+            })
+            .catch(error => {
+                console.log({where:'patchNotebook', error:error});
+            });
+    }
+
     postNotebook() {
         const _this = this;
         axios({
@@ -142,24 +159,6 @@ export class AppProvider extends React.Component {
                      notebook: update(
 			 _this.state.notebook, {$merge: {...resp.data}})
 		    });
-            })
-            .catch(error => {
-                console.log(`postNotebook: There is already a notebook by you with that name! ${error}`);
-            });
-    }
-
-    putNotebook() {
-        const _this = this;
-        axios({
-	    method:'put',
-	    url:this.state.notebook.url,
-	    headers:this.makeAuthHeader(this.state.authToken),
-	    data:update(this.state.notebook,
-			{$unset: ['notes', 'isOnServer', 'isSaved']})
-	})
-            .then(function(resp) {
-		_this.setState({
-                    notebookIsSaved:true})
             })
             .catch(error => {
                 console.log(`postNotebook: There is already a notebook by you with that name! ${error}`);
@@ -204,7 +203,7 @@ export class AppProvider extends React.Component {
                 state:this.state,
 
 		setState:(o) => {
-		    this.setState(o, ()=>{console.log({setStateProxy:this.state})});
+		    this.setState(o);
 		},
                 
                 handleUsernameUpdate:(event) => {

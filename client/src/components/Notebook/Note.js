@@ -5,11 +5,6 @@ import update from 'immutability-helper';
 
 class NotebookEvent extends React.Component {
     
-    constructor(props) {
-        super(props);
-
-    }
-    
     makeTarget(uuid, context) {
         return (<div onClick={(e)=>context.endMove(uuid)}
                 className="move-target">MOVE RIGHT HERE {uuid}</div>);
@@ -28,8 +23,8 @@ class NotebookEvent extends React.Component {
 				{$merge: {
 				    [k]:v,
 				    __edits:updatedEdits,
-				    __isSaved:false}})
-	    const notes = update(this.props.context.state.notes, {[this.props.index]: {$set: note}})
+				    __isSaved:false}});
+	    const notes = update(this.props.context.state.notes, {[this.props.index]: {$set: note}});
 	    this.props.context.setState({notes:notes}
 					//, ()=>{console.log('AAAAAAAAAAA', this.props.index, this.props.context.state.notes[this.props.index]);}
 				       );
@@ -64,20 +59,22 @@ class NotebookEvent extends React.Component {
 		  <div className='note-inner'>
                 <div className='note-nav'>
 
-                      <span className={'button active-'+this.props.statusIsMoving}
-                            onClick={()=>this.startMove(this.props.uuid)}>Move</span>
+
                       
-	              <span className={'button active-'+this.props.statusIsToBeDeleted}
-                            onClick={()=>{this.deleteNote(this.props);}}>Delete</span>                            
-                      
-                      <span className={'order ' + (this.props.__isSaved ? 'saved' : 'unsaved')}>
-			{(this.props.order !== 'undefined') ? '●' : 'NO ORDER'}
-                      </span>
                     </div>
 		    
 		    {this.showEvent()}
 
-	      <div className="rte-note-text-editor">
+		<div className="rte-note-text-editor">
+                  <span className={'count button active-'+this.props.statusIsMoving}
+		       onClick={()=>this.startMove(this.props.uuid)}>{this.props.index + 1}</span>
+	          <span className={'button active-'+this.props.statusIsToBeDeleted}
+                        onClick={()=>{this.deleteNote(this.props);}}>Delete</span>                            
+                  
+                  <span className={'order ' + (this.props.__isSaved ? 'saved' : 'unsaved')}>
+		    {(this.props.order !== 'undefined') ? '●' : 'NO ORDER'}
+                      </span>
+		  
 		<RichTextEditor
 		  field='text'
 		  content={this.props.text}

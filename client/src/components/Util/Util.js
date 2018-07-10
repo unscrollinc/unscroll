@@ -161,14 +161,11 @@ const util = {
 		return global;
 	    }
 	    const resorted = sortIt(notes);
-	    console.log('SORTIT>>>>',resorted);
-	    
 	    return resorted.map((uuid)=>{return hashedNotes[uuid]});
 	}
 	const sorted = sortLinkedUUIDs(notes);
 	const updated = sorted.map(
 	    (current, i) => {
-		console.log('SORTING>>>', current, i);
 
 		const next = sorted[i+1];
 		const next_uuid = next ? next.uuid : null;
@@ -206,10 +203,8 @@ const util = {
 	    .then((resp)=>{
 		const addSavedState = (n) =>{return update(n, {$merge: {__isSaved:true, __edits:{}}})};
 		const notes = resp.data.results.map(addSavedState);
-		console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$NOTES', notes);
 		if (notes.length > 0) {
 		    const sorted = util.sortNotes(notes);
-		    console.log({SORTED:sorted});
 		    that.setState({notes:sorted});
 		}
 	    });

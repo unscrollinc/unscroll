@@ -20,6 +20,7 @@ class TitleEditor extends React.Component {
 	this.props.context.setState(
 	    {notebook:update(this.props.context.state.notebook,
                              {$merge: {[key]: value}}),
+	     notebookIsSaved:false,
 	     notebookEdits:update(this.props.context.state.notebookEdits,
                                   {$merge: {[key]: value}})});
     }
