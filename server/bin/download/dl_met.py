@@ -89,7 +89,7 @@ def download_images():
                 try:
                     print('getting image', img)
                     r = s.get(img, headers=headers, cookies=cookies, verify=False)
-                    if r.status_code==200 and r.headers.get('content-type') != 'image/jpeg':
+                    if r.status_code==200 and r.headers.get('content-type') == 'text/html':
                         sys.exit(0)
                     print(r.headers.get('content-type'))
                     p = pathlib.Path(local)
