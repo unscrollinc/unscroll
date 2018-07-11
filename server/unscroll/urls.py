@@ -92,10 +92,10 @@ class ThumbnailViewSet(viewsets.ModelViewSet):
             s = Thumbnail.objects.get(sha1=t.sha1)
             serializer = ThumbnailSerializer(s, context={'request': request})
             return Response(serializer.data)
-        # raise APIException('[urls.py error] {}'.format(e))
-
         except KeyError:
             raise APIException('[urls.py error] Request has no resource file attached')
+        except Exception as e:
+            raise APIException(str(e))
 
     @action(detail=False, methods=['post'])
     def cache(self, request):
@@ -118,11 +118,10 @@ class ThumbnailViewSet(viewsets.ModelViewSet):
             s = Thumbnail.objects.get(sha1=t.sha1)
             serializer = ThumbnailSerializer(s, context={'request': request})
             return Response(serializer.data)
-        # raise APIException('[urls.py error] {}'.format(e))
-
         except KeyError:
             raise APIException('[urls.py error] Request has no resource file attached')        
-        
+        except Exception as e:
+            raise APIException(str(e))        
 
     def perform_create(self, serializer):
         source_url = serializer.initial_data['source_url']
@@ -262,6 +261,9 @@ class BulkEventSerializer(BulkSerializerMixin,
                 title=validated_data['title'],
                 source_url=validated_data['source_url'],)
             return es
+        except Exception as e:
+            raise APIException(str(e))        
+        
 
 class BulkEventViewSet(BulkModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
@@ -521,7 +523,8 @@ class NotebookSerializer(serializers.HyperlinkedModelSerializer):
             return n
         except Exception as e:
             raise APIException(str(e))        
-
+        except Exception as e:
+            raise APIException(str(e))        
 
 class NotebookViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
