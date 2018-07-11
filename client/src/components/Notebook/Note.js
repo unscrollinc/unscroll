@@ -51,30 +51,20 @@ class NotebookEvent extends React.Component {
     renderTarget() {
         // {this.state.moveFrom ? this.makeTarget(this.props.uuid, context) : undefined}        
         return null;
-
+	
     }
     renderNotebookEvent(context) {
         return (
 		<div key={this.props.uuid} className='note'>
 		  <div className='note-inner'>
                 <div className='note-nav'>
-
-
-                      
-                    </div>
-		    
-		    {this.showEvent()}
-
+                  <span className={'count button ' + (this.props.__isSaved ? ' saved' : ' unsaved')}
+			onClick={()=>this.startMove(this.props.uuid)}>{this.props.index + 1}</span>
+	          <button className='delete'
+                          onClick={()=>{this.deleteNote(this.props);}}>Delete</button>
+                </div>
+		{this.showEvent()}
 		<div className="rte-note-text-editor">
-                  <span className={'count button active-'+this.props.statusIsMoving}
-		       onClick={()=>this.startMove(this.props.uuid)}>{this.props.index + 1}</span>
-	          <span className={'button active-'+this.props.statusIsToBeDeleted}
-                        onClick={()=>{this.deleteNote(this.props);}}>Delete</span>                            
-                  
-                  <span className={'order ' + (this.props.__isSaved ? 'saved' : 'unsaved')}>
-		    {(this.props.order !== 'undefined') ? '●' : 'NO ORDER'}
-                      </span>
-		  
 		<RichTextEditor
 		  field='text'
 		  content={this.props.text}

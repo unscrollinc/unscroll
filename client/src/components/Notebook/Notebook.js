@@ -4,6 +4,7 @@ import TitleEditor from './TitleEditor';
 import Manuscript from './Manuscript';
 import AppContext from '../AppContext';
 import utils from '../Util/Util';
+import ScrollArea from 'react-scrollbar';
 
 class Notebook extends React.Component {
     getNotes() {
@@ -21,7 +22,6 @@ class Notebook extends React.Component {
             this.getNotebook();
             this.getNotes();	
 	}
-//	console.log('UPDATE', this.props.context.state.notes);
     }
 //    shouldComponentUpdate(nextProps, nextState) {
 //	return (this.props.context.state.notebook !== nextProps.context.state.notebook);
@@ -37,7 +37,6 @@ class Notebook extends React.Component {
 		index={i}
                 {...note}/>);
     }
-    
     renderManuscriptTitle() {
 	const nb = this.props.context.state.notebook;
         if (this.props.context.state.notebook && this.props.context.state.notebook.url) {
@@ -68,6 +67,7 @@ class Notebook extends React.Component {
 	}
 	return (<div>Loading</div>);
     }
+
     render() {
         if (!this.props.edit)  {
             return (<div key='manuscript-preview' className='Manuscript preview'>
@@ -79,19 +79,24 @@ class Notebook extends React.Component {
 		{(context) => {
                     return (
 			<div className="Editor">
-                          <div className="Notebook">
-                            <div className="notebook-main">			  
+			  <ScrollArea
+			    speed={1}
+			    className="Notebook"
+			    contentClassName="notebook-inner"
+			    horizontal={false}
+			    >
+                            <div className="notebook-inner">			  
 			      {this.renderAddNoteButton()}
 			      {this.renderTitleEditor()}
 			      {Array.from(context.state.notes).map(this.renderNote.bind(this))}
 			    </div>
-			  </div>
+			  </ScrollArea>			      
                             <div className='Manuscript'>
 			      <div className='manuscript-inner'>
 				{this.renderManuscriptTitle()}
 				{this.renderManuscriptBody()}
 			      </div>
-                          </div>
+                            </div>
 			</div>
 		    );
 		}}

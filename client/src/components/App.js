@@ -63,14 +63,14 @@ const routes = [
 
     { path: '/timelines/:uuid',
       exact: true,
-      Listing: (props) => <Timelist {...props.match.params}/>,
-      Workbook: (props) => null
+      Listing: (props) => <TimelineList my={true}/>,
+      Workbook: (props) => <Timelist {...props.match.params}/>
     },        
 
     { path: '/timelines/:uuid/edit',
       exact: true,
-      Listing: (props) => <Timelist {...props.match.params} edit={true}/>,
-      Workbook: (props) => null
+      Listing: (props) => <TimelineList my={true}/>,
+      Workbook: (props) => <Timelist {...props.match.params} edit={true}/>
     },        
 
     { path: '/notebooks',

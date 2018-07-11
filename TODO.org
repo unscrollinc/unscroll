@@ -1,3 +1,10 @@
+* Views
+Timeline
+NotebookList + [Timeline/Timelist]
+Notebook + [Timeline/Timelist]
+Notebook Preview + [Timeline/Timelist]
+Timelist List + [Timeline/Timelist]
+
 * Announcement
 
 I have a side project: A web-based, timeline-driven writing tool that helps you fact-check your work, called Unscroll. I work on it when @PostlightStudio is calm and the kids are in bed. I built it for myself but believe it's worth sharing. https://unscroll.com (also @unscroll)
@@ -26,7 +33,6 @@ Here are some essays I've written using it:
 
 I look forward to your thoughts.
 
-
 * TODO User [3/7]:
   - [X] Create account
   - [ ] Register
@@ -35,7 +41,6 @@ I look forward to your thoughts.
   - [ ] Edit profile
   - [X] Login
   - [X] Logout
-
 
 * Timelines [3/5]
   - [X] Vertical view buttons
@@ -65,7 +70,7 @@ I look forward to your thoughts.
   - [X] Overall grid
   - [X] Overall colors for backgrounds and events
 
-* API [2/3]
+* API [3/3]
   - [X] Read through endpoints and make them either public, private, or admin with no variability.
   - [X] Refactor all "Scroll" stuff to be Timeline # WONTFIX
   - [X] "My" views differentiated from other views # IGNORE
@@ -75,7 +80,7 @@ I look forward to your thoughts.
   - [X] Write five piecess
 
 * DevOps
-  - [ ] Stand up new server
+  - [X] Stand up new server
 
 * Release
   - [ ] Publish announcement

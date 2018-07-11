@@ -4,6 +4,7 @@ import update from 'immutability-helper';
 import uuidv4 from 'uuid/v4';
 import axios from 'axios';
 import utils from './Util/Util';
+import Log from './Util/Log';
 
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.xsrfCookieName = "csrftoken";
@@ -99,11 +100,11 @@ export class AppProvider extends React.Component {
 	    data:note.__edits
 	})
             .then(function(resp) {
-		console.log("[@patchNote()]", resp.data);
+		Log.info(resp.data);
                 _this.markNoteSaved(i);
 	    })
             .catch(error => {
-                console.log('[!patchNote()]', error, _this.state);
+                Log.error(error, _this.state);
             });
         
     }
@@ -140,7 +141,7 @@ export class AppProvider extends React.Component {
 		_this.setState({notebookIsSaved:true, notebookEdits:{}})
             })
             .catch(error => {
-                console.log({where:'patchNotebook', error:error});
+		Log.info(error);		
             });
     }
 
