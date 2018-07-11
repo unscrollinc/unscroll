@@ -18,8 +18,8 @@ class Event extends React.Component {
     }
     
     getImage(e) {
-        if (e.with_thumbnail) {
-            return 'http://localhost/'+ e.with_thumbnail;
+        if (e.with_thumbnail_image) {
+            return 'http://localhost/'+ e.with_thumbnail_image;
         }
         if (e.scroll_with_thumbnail) {
             return 'http://localhost/'+ e.scroll_with_thumbnail;
@@ -28,7 +28,7 @@ class Event extends React.Component {
     }
 
     makeImage(e) {
-        if (e.with_thumbnail || e.scroll_with_thumbnail) {
+        if (e.with_thumbnail_image || e.scroll_with_thumbnail) {
             return(
                 <a href={e.content_url} target="_blank">
                     <img alt=''

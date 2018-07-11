@@ -18,7 +18,7 @@ class UnscrollClient():
     user_url = None
 
     def __init__(self,
-                 api='http://127.0.0.1:8000',
+                 api='http://127.0.0.1:8000/api',
                  username='ford',
                  password='***REMOVED***'):
         self.api = api
@@ -118,6 +118,7 @@ class UnscrollClient():
         r = requests.post(self.api + '/events/',
                           headers=self.authentication_header,
                           data=event)
+        print(r.content)
         return r
 
     def fetch_favicon_url(self, url):

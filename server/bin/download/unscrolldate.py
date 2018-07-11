@@ -15,8 +15,9 @@ class UnscrollDate(object):
     resolution = None
     
     def __init__(self, when_original):
-        self.when_original = when_original.rstrip()
-        self.resolution, self.when_happened = self.init_parse()
+        if when_original is not None:
+            self.when_original = when_original.rstrip()
+            self.resolution, self.when_happened = self.init_parse()
 
     def is_okay(self):
         return self.when_happened is not None

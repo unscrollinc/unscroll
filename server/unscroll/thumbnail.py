@@ -51,7 +51,7 @@ class InboundThumbnail(object):
             self.width, self.height = img.size
             thumb = img
             if self.width > THUMBNAIL_SIZE[0]:
-                thumb = ImageOps.fit(img, THUMBNAIL_SIZE)
+                thumb = ImageOps.fit(img, THUMBNAIL_SIZE, centering=(0.0, 0.5))
                 self.width, self.height = thumb.size
             self.hash_image(thumb.tobytes())
 

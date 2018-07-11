@@ -17,6 +17,7 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthentic
 from rest_framework.response import Response
 from rest_framework.exceptions import APIException, ValidationError
 from rest_framework.pagination import LimitOffsetPagination
+
 from scrolls.models import User, Scroll, Event, Notebook, Note, Media, Thumbnail
 from unscroll.thumbnail import InboundThumbnail
 from rest_framework_swagger.views import get_swagger_view
@@ -232,7 +233,7 @@ class BulkEventSerializer(BulkSerializerMixin,
         read_only=True,
         source="in_scroll.is_public")
 
-    with_thumbnail = serializers.CharField(
+    with_thumbnail_image = serializers.CharField(
         read_only=True,
         source="with_thumbnail.image")
 
@@ -436,10 +437,13 @@ class ScrollSerializer(serializers.HyperlinkedModelSerializer):
         validated_data['by_user'] = self.context['request'].user
         s = Scroll(**validated_data)
         try:
-            s.save()            
-            return super(ListCreateAPIView,self).create(request, *args, **kwargs)
+            s.save()
+            return s
         except IntegrityError:
-            raise APIException('[urls.py error] A user cannot have duplicate titles.')
+            raise APIException('[urls.py error] A user cannot have duplicate titles.')        
+        except Exception as e:
+            raise APIException(str(e))        
+
 
 class ScrollViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]

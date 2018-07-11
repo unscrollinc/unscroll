@@ -33,7 +33,7 @@ class TimelistEvent extends React.Component {
     }
 
     getImage(e) {
-        if (e.with_thumbnail) {
+        if (e.with_thumbnail_image) {
             return 'http://localhost/'+ e.with_thumbnail;
         }
         if (e.scroll_with_thumbnail) {
@@ -43,7 +43,7 @@ class TimelistEvent extends React.Component {
     }
 
     makeImage(e) {
-        if (e.with_thumbnail || e.scroll_with_thumbnail) {
+        if (e.with_thumbnail_image || e.scroll_with_thumbnail_image) {
             return(
                 <a href={e.content_url} target="_blank">
                     <img alt=''
