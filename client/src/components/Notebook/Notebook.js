@@ -78,29 +78,31 @@ class Notebook extends React.Component {
         return (<AppContext.Consumer>
 		{(context) => {
                     return (
-			<div className="Editor">
-                          <Scrollbars
-                            autoHide
-                            style={{ height: '100%' }}>                                                    
-                            <div className="notebook-inner">			  
-			      {this.renderAddNoteButton()}
-			      {this.renderTitleEditor()}
-			      {Array.from(context.state.notes).map(this.renderNote.bind(this))}
-			    </div>
-                          </Scrollbars>
-
-                          <Scrollbars
-                            autoHide
-                            style={{ height: '100%' }}>                                                                              
-                            <div className='Manuscript'>
+			<React.Fragment>
+			  <div className="Editor">
+                            <Scrollbars
+                              autoHide
+                              style={{ height: '100%' }}>                                                    
+                              <div className="notebook-inner">			  
+				{this.renderAddNoteButton()}
+				{this.renderTitleEditor()}
+				{Array.from(context.state.notes).map(this.renderNote.bind(this))}
+			      </div>
+                            </Scrollbars>
+			  </div>
+			  
+                          <div className='Manuscript'>
+                            <Scrollbars
+                              autoHide
+                              style={{ height: '100%' }}>
+			      
 			      <div className='manuscript-inner'>
 				{this.renderManuscriptTitle()}
 				{this.renderManuscriptBody()}
 			      </div>
-                            </div>
-                          </Scrollbars>                            
-                        </div>
-                        
+                            </Scrollbars>			      
+                          </div>
+			</React.Fragment>                        
 		    );
 		}}
 		</AppContext.Consumer>);

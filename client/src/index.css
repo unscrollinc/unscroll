@@ -75,7 +75,7 @@ h1 a:hover {
 }
 
 .Timeline, .Editor, .NotebookList, .Manuscript, .TimelineList, .Meta {
-    border-top:1px solid deepskyblue;
+    border-top:2px solid deepskyblue;
     top:5%;
     height:95%;
     position:fixed;
@@ -116,7 +116,13 @@ h1 a:hover {
     padding:1em;
 }
 .Editor {
-    width:70%;
+    width:33.33%;
+}
+.Manuscript {
+    position:fixed;
+    top:5%;
+    left:33.33%;
+    width:33.33%;
 }
 
 .NotebookList {
@@ -238,18 +244,43 @@ h1 a:hover {
     background:white;
 }
 
-
 div.manuscript-inner {
-    width:50%;
-    left:55%;
-    background:#fff;
+    height:95%;
+/*    background:#31C9FC;
+    background:#08C1FF;
+    background:#0084B0; */
+    background:#006485;
+    color:white;
+
     position:absolute;
     font-family: 'IBM Plex Serif', serif;
     overflow:auto;
-    width:100%;
+    width:70%;
+    padding:15%;
+    text-align:justify;
+    hyphens: auto;
+    padding-bottom:1000px;
+    line-height:200%;
+    
     border:1px solid red;
 }
 
+div.manuscript-inner h1,
+div.manuscript-inner h2,
+div.manuscript-inner .description {
+    text-align:center;
+    padding-top:1em;
+}
+
+div.manuscript-inner h1 {
+    font-size:300%;
+    line-height:120%;
+}
+
+div.manuscript-inner .description {
+    font-style:Italic;
+    padding-bottom:1em;
+}
 .preview {
     top:5%;
     left:50%;
