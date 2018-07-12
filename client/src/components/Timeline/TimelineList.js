@@ -3,12 +3,15 @@ import { Link } from 'react-router-dom' ;
 import { DateTime } from 'luxon';
 import AppContext from '../AppContext.js';
 import utils from '../Util/Util.js';
+import { Scrollbars } from 'react-custom-scrollbars';
+
+
 
 class TimelineList extends React.Component {
 
     constructor(props, context) {
         super(props);
-        this.state = {scrolls:[]}
+        this.state = {scrolls:[]};
     }
     
     makeScroll(scroll) {
@@ -66,38 +69,40 @@ class TimelineList extends React.Component {
     
     render() {
 	return (
-	    <div className="TimelineList">
-	      
-              <AppContext.Consumer>
-		{(context) => {
-                    return (
-                        <div className="list-object">
-                          <div className="list-object-header">
-                            <h1>Timelines</h1>
-                            <Link className="list-object-button" to="/my/timelines">Mine</Link>
-                            <Link className="list-object-button" to="/timelines">All</Link>
-	                    <button onClick={context.addScroll}>+ New</button>
-                            
-                            
-			    <table className="list-object-table">
-                              <tbody>
-                                <tr className="list-object-tr">
-                                  <th className='list-object-date-th'>Date</th>
-                                  <th className='list-object-meta-th'>Timeline</th>
-                                  <th className='list-object-no-events-th'>No.</th>                                  
-                                  <th className='list-object-published-th'>Published</th>
-                                </tr>
-                              
-                                {this.state.scrolls.map(this.makeScroll)}
+            <AppContext.Consumer>
+	      {(context) => {
+                  return (
+	              <div className="TimelineList">
+                        <Scrollbars
+                          autoHide
+                          style={{ height: '100%' }}>                        
+                            <div className="list-object">
+                              <div className="list-object-header">
+                                <h1>Timelines</h1>
+                                <Link className="list-object-button" to="/my/timelines">Mine</Link>
+                                <Link className="list-object-button" to="/timelines">Public</Link>
+	                        <button onClick={context.addScroll}>+ New</button>
                                 
-                              </tbody>
-                            </table>
-                          </div>
-                        </div>                        
-                    );
-		}}
-                </AppContext.Consumer>
-	  </div>
+
+			          <table className="list-object-table">
+                                    <tbody>
+                                      <tr className="list-object-tr">
+                                        <th className='list-object-date-th'>Date</th>
+                                        <th className='list-object-meta-th'>Timeline</th>
+                                        <th className='list-object-no-events-th'>No.</th>                                  
+                                        <th className='list-object-published-th'>Published</th>
+                                      </tr>
+                                      {this.state.scrolls.map(this.makeScroll)}
+                                    </tbody>
+                                  </table>
+                              </div>
+                            </div>
+                        </Scrollbars>                                
+
+	              </div>
+                  );
+	      }}
+            </AppContext.Consumer>
 	);
     }
 }

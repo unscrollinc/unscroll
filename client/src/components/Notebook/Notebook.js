@@ -4,7 +4,7 @@ import TitleEditor from './TitleEditor';
 import Manuscript from './Manuscript';
 import AppContext from '../AppContext';
 import utils from '../Util/Util';
-import ScrollArea from 'react-scrollbar';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 class Notebook extends React.Component {
     getNotes() {
@@ -79,25 +79,28 @@ class Notebook extends React.Component {
 		{(context) => {
                     return (
 			<div className="Editor">
-			  <ScrollArea
-			    speed={1}
-			    className="Notebook"
-			    contentClassName="notebook-inner"
-			    horizontal={false}
-			    >
+                          <Scrollbars
+                            autoHide
+                            style={{ height: '100%' }}>                                                    
                             <div className="notebook-inner">			  
 			      {this.renderAddNoteButton()}
 			      {this.renderTitleEditor()}
 			      {Array.from(context.state.notes).map(this.renderNote.bind(this))}
 			    </div>
-			  </ScrollArea>			      
+                          </Scrollbars>
+
+                          <Scrollbars
+                            autoHide
+                            style={{ height: '100%' }}>                                                                              
                             <div className='Manuscript'>
 			      <div className='manuscript-inner'>
 				{this.renderManuscriptTitle()}
 				{this.renderManuscriptBody()}
 			      </div>
                             </div>
-			</div>
+                          </Scrollbars>                            
+                        </div>
+                        
 		    );
 		}}
 		</AppContext.Consumer>);

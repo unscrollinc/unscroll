@@ -1,7 +1,7 @@
 import cookie from 'js-cookie';
 import axios from 'axios';
 import update from 'immutability-helper';
-
+import Log from './Log';
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.withCredentials = true;
@@ -56,7 +56,6 @@ const util = {
 	const dataKey = method==='GET' ? 'params' : 'data' ;
 	const API='http://localhost/api/';
 	const url = `${API}${endpoint}/${id?id+'/':''}`;
-//	console.log({dataKey:dataKey, params:params, url:url});
         return axios({
             method:method,
             url:url,
@@ -120,7 +119,18 @@ const util = {
 				 return hashes}, {});
 	    
 	    function sortIt(notes) {
-
+                const follows = notes
+                      .map((n)=>n.following_uuid)
+                      .reduce((counts, n)=>{
+                          if (counts[n]) {
+                              counts[n]++;                        
+                          }
+                          else {
+                              counts[n]=1;
+                          }
+                          return counts;
+                      }, {});
+                console.log('HERE ARE THE COUNTS', follows);
 		const hashed = notes.reduce(
 		    (hashes, n) =>
 			{ const fid = n.following_uuid?n.following_uuid:null;
@@ -163,12 +173,14 @@ const util = {
 	    const resorted = sortIt(notes);
 	    return resorted.map((uuid)=>{return hashedNotes[uuid]});
 	}
-	const sorted = sortLinkedUUIDs(notes);
+
+        const sorted = sortLinkedUUIDs(notes);
+        console.log({notes:notes, sorted:sorted});
 	const updated = sorted.map(
 	    (current, i) => {
-
 		const next = sorted[i+1];
 		const next_uuid = next ? next.uuid : null;
+                console.log('CURRENT', current);
 		// This is the last one; it's supposed to be null
 		if (sorted.length === (i + 1)) {
 		    if (current.following_uuid) {
@@ -185,9 +197,9 @@ const util = {
 		else {
 		    if (current.following_uuid!==next_uuid) {
 			const updated = update(current, {$merge:
-						{following_uuid:next.uuid,
+						{following_uuid:next_uuid,
 						 __isSaved:false,						 
-						 __edits:{following_uuid:next.uuid}}});
+						 __edits:{following_uuid:next_uuid}}});
 			return updated;
 			
 		    }
@@ -228,8 +240,11 @@ const util = {
 	return Object.keys(o).map(
 	    (k) => {
 		if (k.substring(0,2)!=='__') {
-		    return {[k]:o[k]}}
-	    });
+		    return {[k]:o[k]}
+                }
+                return null;                
+	    }
+        );
     }
     
 };

@@ -3,8 +3,11 @@ import { Link } from 'react-router-dom' ;
 import { DateTime } from 'luxon';
 // import axios from 'axios';
 import utils from '../Util/Util';
+import { Scrollbars } from 'react-custom-scrollbars';
+
 class NotebookList extends React.Component {
 
+    
     constructor(props, context) {
 	super(props);
 	this.state = {
@@ -80,33 +83,39 @@ class NotebookList extends React.Component {
     
     render() {
         return (
-	    <div className="NotebookList">                
-              <div className="list-object">
-                <div className="notebook-header">
-                  <div className="list-object-header">
-		    <h1>Notebooks</h1>
+	    <div className="NotebookList">
+              <Scrollbars
+                autoHide
+                style={{ height: '100%' }}>                        
+                
+                <div className="list-object">
+                  <div className="notebook-header">
+                    <div className="list-object-header">
+		      <h1>Notebooks</h1>
+                      
+		      <Link className="list-object-button" to='/my/notebooks'>Mine</Link>
+		      <Link className="list-object-button" to='/notebooks'>Public</Link>
+	              <button onClick={this.addNotebook}>+ New</button>
+                    </div>
                     
-		    <Link className="list-object-button" to='/my/notebooks'>Mine</Link>
-		    <Link className="list-object-button" to='/notebooks'>All</Link>
-	            <button onClick={this.addNotebook}>+ New</button>
+		    <table className="list-object-table">
+		      <tbody>
+                        
+                        <tr className='list-object-tr'>
+                          <th className='list-object-date-th'>Date</th>
+                          <th className='list-object-meta-th'>Notebook</th>
+                          <th className='list-object-published-th'>Published</th>
+                        </tr>
+                        
+                        {Array.from(this.state.notebooks).map(this.renderNotebook.bind(this))}
+                        
+                      </tbody>
+                    </table>
                   </div>
-                  
-		  <table className="list-object-table">
-		    <tbody>
-                      
-                      <tr className='list-object-tr'>
-                        <th className='list-object-date-th'>Date</th>
-                        <th className='list-object-meta-th'>Notebook</th>
-                        <th className='list-object-published-th'>Published</th>
-                      </tr>
-                      
-                      {Array.from(this.state.notebooks).map(this.renderNotebook.bind(this))}
-                      
-                    </tbody>
-                  </table>
                 </div>
-              </div>
-            </div>                    
+              </Scrollbars>
+            </div>
+            
         );
     }
 }

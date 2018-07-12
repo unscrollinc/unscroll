@@ -34,10 +34,10 @@ class TimelistEvent extends React.Component {
 
     getImage(e) {
         if (e.with_thumbnail_image) {
-            return 'http://localhost/'+ e.with_thumbnail;
+            return  `http://localhost/${e.with_thumbnail_image}`;
         }
         if (e.scroll_with_thumbnail) {
-            return 'http://localhost/'+ e.scroll_with_thumbnail;
+            return `http://localhost/${e.scroll_with_thumbnail}`;
         }
 	return null;
     }

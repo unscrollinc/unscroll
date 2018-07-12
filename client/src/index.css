@@ -51,9 +51,7 @@ h1 a:hover {
     width:100%;
     vertical-align: middle;
     line-height:150%;
-    min-height:5%;
-    max-height:5%;
-    height:5%;        
+    height:5%;
     position:fixed;
     color:black;
     border-style:1px inset deepskyblue;
@@ -76,7 +74,8 @@ h1 a:hover {
     text-decoration:underline;
 }
 
-.Timeline, .Editor, .NotebookList, .Manuscript, .TimelineList {
+.Timeline, .Editor, .NotebookList, .Manuscript, .TimelineList, .Meta {
+    border-top:1px solid deepskyblue;
     top:5%;
     height:95%;
     position:fixed;
@@ -90,11 +89,19 @@ h1 a:hover {
     z-index:0;
 }
 
-.Editor, .NotebookList, .TimelineList {
+.Editor, .NotebookList, .TimelineList, .Meta {
     width:50%;
     background:white;
     padding:0% 0% 0% 0%;
-    overflow:auto;
+}
+.Meta {
+    border-right:3px solid deepskyblue;
+
+}
+.TimelineList, .NotebookList {
+    width:100%;
+    background:white;
+    padding:0% 0% 0% 0%;    
 }
 
 .Notebook {
@@ -557,6 +564,8 @@ form.search {
     hyphens: auto;
     line-height:150%;
     padding:5% 10% 25% 10%;
+    width:50%;
+    margin:0;
 }
 
 .About h1, .About h2, .About h3 {
