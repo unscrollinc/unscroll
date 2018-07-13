@@ -4,6 +4,7 @@ import Search from './Search';
 import utils from './Util/Util';
 import axios from 'axios';
 import cookie from 'js-cookie';
+import AppContext from './AppContext';
 
 class Nav extends React.Component {
     constructor(props) {
@@ -27,29 +28,6 @@ class Nav extends React.Component {
               {this.state.timelineOn ? 'Horizontally' : 'Vertically'}
             </button>
         );
-    }
-    
-    login(event) {
-        event.preventDefault();
-        const _this = this;
-        axios(
-	    {method:'post',
-	     url:utils.getAPI('auth/login/'),
-	     data:_this.state})
-            .then(function(response) {
-		const token = response.data.auth_token;
-		_this.setState({authToken:token},
-			       ()=>{
-				   cookie.set('authToken', token);
-				   cookie.set('username', _this.state.username);
-			       });
-	    })
-            .catch(err => {console.log(err);})
-	    .finally(()=> {
-		// Keep this tidy in case someone comes along and looks
-		// inside the React state
-		_this.setState({password:null});
-	    });
     }
 
     logout(event) {
@@ -81,15 +59,26 @@ class Nav extends React.Component {
 	return (this.state.authToken !== nextState.authToken);
     }
 
-    renderLoginForm() {
-        if (this.state.authToken) {
+    renderLoginState() {
+        if (this.props.context.state.authToken) {
             return(
                 <div className="login">
-		  <Link to="/my/profile">{this.state.username}</Link>
-                  <button className="logout" onClick={this.logout.bind(this)}>Log out</button>
+		  <Link to="/my/profile">{this.props.context.state.username}</Link>
                 </div>
             );
         }
+	else {
+	    return (
+		<React.Fragment>
+		  <Link to="/user/login">Log in</Link>
+		  <Link to="/user/register">Register</Link>
+		</React.Fragment>
+	    );
+	}
+    }
+
+    
+    renderLoginForm() {
 
         return(
             <form className="login">
@@ -117,40 +106,40 @@ class Nav extends React.Component {
     
     render() {
         return (
-	      <div className="App">
-                <div className="Nav">
-                  <table>
-                    <tbody>
-		      <tr>
-                        <td>
-			  <Link className="logo" to="/">UNSCROLL</Link>
-                        </td>
-                        <td>
-			  <Link to="/about">?</Link>
-                        </td>                
-                        <td>
-			  <Link to="/timelines">Timelines</Link>
-                        </td>
-                        <td>
-			  <Link to="/notebooks">Notebooks</Link>
-                        </td>
-		
-                        <td>
-                          <Search/>
-                        </td>
-                        <td>
-                {this.renderLoginForm()}
-                        </td>
-		      </tr>
-                    </tbody>
-                    </table>
-                  </div>
+	    <div className="App">
+              <div className="Nav">
+                <table>
+                  <tbody>
+		    <tr>
+                      <td>
+			<Link className="logo" to="/">UNSCROLL</Link>
+                      </td>
+                      <td>
+			<Link to="/about">?</Link>
+                      </td>                
+                      <td>
+			<Link to="/timelines">Timelines</Link>
+                      </td>
+                      <td>
+			<Link to="/notebooks">Notebooks</Link>
+                      </td>
+                      <td>
+                        <Search/>
+                      </td>
+                      <td>
+			{this.renderLoginState()}
+                      </td>
+		    </tr>
+                  </tbody>
+                </table>
               </div>
-
-        );
+            </div>
+	);
     }
 }
 
-
-export default Nav;
-
+export default props => (
+    <AppContext.Consumer>
+      {context => <Nav {...props} context={context}/>}
+    </AppContext.Consumer>
+);

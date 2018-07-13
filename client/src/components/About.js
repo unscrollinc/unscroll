@@ -11,10 +11,7 @@ class About extends React.Component {
                 style={{ height: '100%' }}>                          
                 <div className="About">
                   
-                  <h1>Frequently Anticipated Anxieties and Objections
-                    (Which are pretty ridiculous given that this site only has one user)</h1>
-
-
+                  <h1>Frequently Anticipated Objections</h1>
                   
                   <h2>Who can I interrogate, scold, or praise?</h2>
 
@@ -29,20 +26,26 @@ class About extends React.Component {
                   <h2>What is this new thing?</h2>
                   
                   <p>Unscroll is an experimental tool for writing that
-                    helps you fact-check your own writing. It sees the
-                    worlds in terms of Events and Notes. Events are things that
-                    happened and Notes are what people think about
-                    them. Events go into Timelines and Notes go into
-                    Notebooks. You arrange your notes and that makes an
-                    Essay.</p>
+		    helps you fact-check your own writing.</p>
+
+		  <p>It sees the worlds in terms of Events and Notes.</p>
+
+  		  <p>You can put events into a Timeline. Events are
+		    things that happened, or objects from museums, or
+		    issues of magazines, or whatever.</p>
+
+		  <p>Notes are what you think about Events.</p>
+
+  		  <p>Events go into Timelines and Notes go into
+                    Notebooks. You arrange your notes and that makes
+                    an Essay.</p>
                   
                   <p>Easy enough, but it gives you a superpower: The
                     power to remember what the hell you are writing
-                    about so that you don't run your fool mouth
-                    without having index cards in hand. If you don't
-                    need that superpower, more power to you. But I
-                    personally need that superpower more every
-                    day.</p>
+                    about so that you don't run your fool mouth. If
+                    you don't need that superpower, more power to
+                    you. But I personally need that superpower more
+                    every day.</p>
 
                   <h2>Who is it for?</h2>
 
@@ -124,6 +127,7 @@ class About extends React.Component {
                     at:</p>
                   
                   <ul>
+                    <li>Private stuff can only be seen by you.</li>
 
                     <li>Everything--Timelines, Events, Notes, and
                       Events--starts out private.</li>
@@ -134,7 +138,6 @@ class About extends React.Component {
                     <li>Notebooks and their Notes can be private or
                       public.</li>
                     
-                    <li>Private stuff can only be seen by you.</li>
                     
                     <li>When you make Timelines public you're not just
                       making them public but adding them to the commons
@@ -161,10 +164,6 @@ class About extends React.Component {
   	            thumbnails.</p>
                   
                   <p>On the what-people-post side, DMCA-1026160.</p>
-
-                  <h2>What about my GDPR? (Clutching chest) My cookies!</h2>
-
-                  <p></p>
 
                   <h2>What about my privacy and security?</h2>
 

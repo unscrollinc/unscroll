@@ -5,13 +5,19 @@ import Nav from './Nav';
 // import News from './News';
 import Profile from './Profile';
 import About from './About';
+
+import Login from './User/Login';
 import Register from './User/Register';
+import Logout from './User/Logout';
+import Recover from './User/Recover';
+
 import Confirm from './User/Confirm';
 import Timeline from './Timeline/Timeline';
 import Timelist from './Timeline/Timelist';
 import TimelineList from './Timeline/TimelineList';
 import Notebook from './Notebook/Notebook';
 import NotebookList from './Notebook/NotebookList';
+
 import { AppProvider } from './AppContext';
 import { Route } from 'react-router-dom' ;
 
@@ -31,6 +37,24 @@ const routes = [
       Workbook: () => <Register/>
     },
 
+    { path: '/user/login',
+      exact: true,
+      Listing: () => null,
+      Workbook: () => <Login/>
+    },    
+
+    { path: '/user/logout',
+      exact: true,
+      Listing: () => null,
+      Workbook: () => <Logout/>
+    },    
+
+    { path: '/user/recover',
+      exact: true,
+      Listing: () => null,
+      Workbook: () => <Recover/>
+    },    
+    
     { path: '/user/confirm/:key',
       exact: true,
       Listing: () => null,
