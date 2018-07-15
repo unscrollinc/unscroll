@@ -16,20 +16,22 @@ class NotebookList extends React.Component {
 	};
     }
 
-    getEditLink(notebook) {
+    renderEditLink(notebook) {
         if (notebook.user_username===this.state.username) {
             return (<Link
-                    className="button"
+                    className="button edit-link"
                     to={'/notebooks/' + notebook.user_username + '/' + notebook.id + '/edit'}>Edit</Link>);
         }
         return null;
     }
-    
+        
     getNotebooks() {
         if (this.props.my === true) {
+            document.title = 'My Notebooks (Unscroll)';            
             utils.GET(this, 'notebooks', {'by_user__username':'ford'});
         }
         else {
+            document.title = 'Notebooks (Unscroll)';                        
             utils.GET(this, 'notebooks', {'is_public':true});
         }
     }
@@ -62,7 +64,8 @@ class NotebookList extends React.Component {
                             + notebook.user_username
                             + '/'
                             + notebook.id
-                        }>{notebook.title}</Link>
+                           }>{notebook.title}</Link> {this.renderEditLink(notebook)}
+
                 </div>
                 
 		<div>
@@ -74,7 +77,6 @@ class NotebookList extends React.Component {
 
               <td className='list-object-published-td'>
 		<div className={`list-object-published-${privacy}`}>{privacy}</div>
-                {this.getEditLink(notebook)}
               </td>
 	      
             </tr>

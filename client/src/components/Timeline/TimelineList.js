@@ -13,7 +13,7 @@ class TimelineList extends React.Component {
         super(props);
         this.state = {scrolls:[]};
     }
-    
+
     makeScroll(scroll) {
         const formatDate = (dt) => {
             const luxonDt = DateTime.fromISO(dt);
@@ -56,9 +56,11 @@ class TimelineList extends React.Component {
 
     getTimelines() {
         if (this.props.my === true) {
+            document.title = 'My Timelines (Unscroll)';
             utils.GET(this, 'scrolls', {'by_user__username':'ford'});
         }
         else {
+            document.title = 'Timelines (Unscroll)';            
             utils.GET(this, 'scrolls', {'is_public':true});
         }
     }

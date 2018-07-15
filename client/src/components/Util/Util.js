@@ -68,7 +68,8 @@ const util = {
 	util.webPromise(that, method, endpoint, params, id, key)
 	    .then((resp)=> {
 		const data = resp.data.results ? resp.data.results : resp.data;
-		that.setState({[stateEndpoint]:data}
+                const savedData = update(data, {$merge: {__isSaved:true}});
+		that.setState({[stateEndpoint]:savedData}
 			      /*			  , ()=>{console.log(
 							  'HERE COMES THAT BOI',
 							  url,
@@ -85,6 +86,40 @@ const util = {
 					err:err})});
         return null;
     },
+    sequenceNotes: (sorted) => {
+        return sorted.map(
+	    (current, i) => {
+		const next = sorted[i+1];
+		const next_uuid = next ? next.uuid : null;
+		// This is the last one; it's supposed to be null
+		if (sorted.length === (i + 1)) {
+		    if (current.following_uuid) {
+			return update(current, {$merge:
+						{following_uuid:null,
+						 __isSaved:false,
+						 __edits:{following_uuid:null}}});
+		    }
+		    else {
+			return current;
+		    }
+		}
+		// Everything else
+		else {
+		    if (current.following_uuid!==next_uuid) {
+			const updated = update(current, {$merge:
+						{following_uuid:next_uuid,
+						 __isSaved:false,						 
+						 __edits:{following_uuid:next_uuid}}});
+			return updated;
+			
+		    }
+		    else {
+			return current;
+		    }
+		}
+	    });
+    },
+    
     sortNotes: (notes) => {
 	// Sort by linked uuids. notes have uuids and
 	// following_uuids. If a following_uuid is null that's the
@@ -114,100 +149,80 @@ const util = {
 	       I stopped writing here because programming is very
 	       tiring.
 	    */
+            
 	    const hashedNotes = notes.reduce(
 		(hashes, n) => { hashes[n.uuid]=n;
-				 return hashes}, {});
-	    
+				return hashes}, {});
+            
 	    function sortIt(notes) {
-                const follows = notes
-                      .map((n)=>n.following_uuid)
-                      .reduce((counts, n)=>{
-                          if (counts[n]) {
-                              counts[n]++;                        
-                          }
-                          else {
-                              counts[n]=1;
-                          }
-                          return counts;
-                      }, {});
-                console.log('HERE ARE THE COUNTS', follows);
-		const hashed = notes.reduce(
-		    (hashes, n) =>
-			{ const fid = n.following_uuid?n.following_uuid:null;
-			  hashes[n.uuid]=fid;
-			  return hashes}, {});
-		
-		const inverted = Object.keys(hashed).reduce(function(obj,key){
-		    obj[ hashed[key] ] = key;
-		    return obj;
-		},{});
-		
+
+                if (notes.length===0) {
+                    return null;
+                }
+                
+                if (notes.length===1) {
+                    return [notes[0].uuid];
+                }                
+                
 		let global = [];
-		
+               
+
+	        const hasFollowing = notes.filter((n)=>{return n.following_uuid});
+
+                // With various failure states we get no following_uuids,
+                // so for now we grab those and just shove them at the
+                // bottom.
+                
+                const noFollowing = notes.filter((n)=>{return !n.following_uuid;});            
+                const tail = noFollowing.map((n)=>{return n.uuid;});
+                
+	        const hashed = hasFollowing.reduce(
+		    (hashes, n) =>
+		        { hashes[n.uuid] = n.following_uuid;
+		          return hashes; },
+                    {});
+	        
+	        const inverted = Object.keys(hashed).reduce(
+                    (obj,key)=>{
+                        obj[ hashed[key] ] =
+                            obj[ hashed[key] ]
+                            ? obj[ hashed[key] ].add(key)
+                            : new Set([key])
+                        ;
+		        return obj; },
+		    {});
+
+
 		const ks =  Object.keys(hashed);
+                let blanked = new Object(hashed);
+                global.push(ks[0]);
+                blanked[ks[0]] = null;
 		for (let i=0;i<ks.length;i++) {
-		    if (global.length === ks.length) {
-			return global;
-		    }
-		    if (i===0) {
-			global.push(ks[i]);
-		    }
-		    else if (hashed[ks[i]]===null) {
-			global.push(ks[i]);
-		    }
-		    
-		    else {
-			const kfirst = global[0];
-			if (inverted[kfirst]||kfirst==='null') {
-		    	    global.unshift(inverted[kfirst]);
-			}
-			
-			const klast = global[global.length - 1];
-			if (hashed[klast]||hashed[klast]===null) {
-			    global.push(hashed[klast]);	
-			}		    
+		    const kfirst = global[0];
+		    const klast = global[global.length - 1];
+                    
+		    if (inverted[kfirst]) {
+                        inverted[kfirst].forEach(
+                            (k)=>{
+                                blanked[k]=null;
+                                global.unshift(k);
+                            });
+                    }
+		    else if (hashed[klast]) {
+                        const k = hashed[klast];
+                        blanked[hashed[klast]]=null;                        
+			global.push(hashed[klast]);	
 		    }
 		}
-		return global;
+                const rest = Object.keys(blanked).filter((k)=>{return (blanked[k]!==null);})
+                console.log('BLANKED COUNTS', {notes, blanked, rest, global, tail});
+		return global.concat(rest, tail);
 	    }
-	    const resorted = sortIt(notes);
+            const resorted = sortIt(notes);
 	    return resorted.map((uuid)=>{return hashedNotes[uuid]});
 	}
-
         const sorted = sortLinkedUUIDs(notes);
-        console.log({notes:notes, sorted:sorted});
-	const updated = sorted.map(
-	    (current, i) => {
-		const next = sorted[i+1];
-		const next_uuid = next ? next.uuid : null;
-                console.log('CURRENT', current);
-		// This is the last one; it's supposed to be null
-		if (sorted.length === (i + 1)) {
-		    if (current.following_uuid) {
-			return update(current, {$merge:
-						{following_uuid:null,
-						 __isSaved:false,
-						 __edits:{following_uuid:null}}});
-		    }
-		    else {
-			return current;
-		    }
-		}
-		// Everything else
-		else {
-		    if (current.following_uuid!==next_uuid) {
-			const updated = update(current, {$merge:
-						{following_uuid:next_uuid,
-						 __isSaved:false,						 
-						 __edits:{following_uuid:next_uuid}}});
-			return updated;
-			
-		    }
-		    else {
-			return current;
-		    }
-		}
-	    });
+	const updated = util.sequenceNotes(sorted);
 	return updated;
     },
     getNotes: (that, id) => {

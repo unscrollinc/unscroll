@@ -2,7 +2,9 @@ import React from 'react';
 import { Scrollbars } from 'react-custom-scrollbars';
 
 class About extends React.Component {
-
+    componentDidMount() {
+        document.title = 'About This Website (Unscroll)';
+    }
     render() {
         return (
             <div className="Meta">
@@ -14,7 +16,7 @@ class About extends React.Component {
                   <h1>Frequently Anticipated Objections</h1>
                   
                   <h2>Who can I interrogate, scold, or praise?</h2>
-
+                  
                   <p>Site news
                     at <a href="https://twitter.com/unscroll">@unscroll</a>. Bug
                     reports and existential crises to Paul
@@ -26,32 +28,32 @@ class About extends React.Component {
                   <h2>What is this new thing?</h2>
                   
                   <p>Unscroll is an experimental tool for writing that
-		    helps you fact-check your own writing.</p>
+          	    helps you fact-check your own writing.</p>
 
-		  <p>It sees the worlds in terms of Events and Notes.</p>
+		  <p>It sees the worlds in terms of <i>Events</i> and <i>Notes</i>.</p>
 
-  		  <p>You can put events into a Timeline. Events are
-		    things that happened, or objects from museums, or
-		    issues of magazines, or whatever.</p>
+  		  <p>You put <i>Events</i> into a <i>Timeline</i>.</p>
 
-		  <p>Notes are what you think about Events.</p>
+		  <p><i>Notes</i> are just what you think about <i>Events</i>. Or sometimes just random
+		    thoughts. It's a notebook.</p>
 
-  		  <p>Events go into Timelines and Notes go into
-                    Notebooks. You arrange your notes and that makes
-                    an Essay.</p>
+    		  <p>You arrange <i>Notes</i> in <i>Notebooks</i>. Get
+    		    enough notes together and they start to look like
+    		    essays, or book chapters, or blog posts.</p>
                   
-                  <p>Easy enough, but it gives you a superpower: The
-                    power to remember what the hell you are writing
-                    about so that you don't run your fool mouth. If
-                    you don't need that superpower, more power to
-                    you. But I personally need that superpower more
-                    every day.</p>
+                  <p>All easy enough, right? Events in Timelines,
+                    Notes in Notebooks. But in theory this gives you a
+                    superpower: The power to remember what the hell
+                    you are writing about so that you don't run your
+                    fool mouth. If you don't need that superpower,
+                    more power to you. But I personally need that
+                    superpower more every day.</p>
 
                   <h2>Who is it for?</h2>
 
                   <p>People who require accuracy.</p>
 
-                  <p>Also: Something something Fake News.</p>
+                  <p>(Also: Something something Fake News.)</p>
 
                   <p>But really it's for me.</p>
 
@@ -61,18 +63,18 @@ class About extends React.Component {
                     and entrepreneur.</p>
 
                   <p>As a writer I'm best known for taking over an
-                    entire issue of Bloomberg Businessweek to
+                    entire issue of <i>Bloomberg Businessweek</i> to
                     write <a href="https://www.bloomberg.com/graphics/2015-paul-ford-what-is-code/">What
                     Is Code?</a>, which won awards and acclaim, but
                     I've also written a novel for Plume, and was an
                     editor at Harper's Magazine for five years, where
                     I built them an archive and a big web thing. Aside
-                    from Businessweek I've written
+                    from <i>Businessweek</i> I've written
                     for <i>Harper's</i>, the <i>New York Times
-                    Magazine</i>, <i>Wired</i>, and so forth.</p>
+                    Magazine</i>, <i>Wired</i>, <i>Elle</i>, and so forth.</p>
 
                   <p>As a programmer, well, you're looking at it. Also
-                    I've built a lot of CMSes.</p>
+                    I've built a lot of CMSes and archives.</p>
 
                   <p>As an entrepreneur, my friend Rich and I, and
                     many other wonderful people in NYC founded a

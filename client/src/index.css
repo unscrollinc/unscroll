@@ -209,7 +209,11 @@ h1 a:hover {
     height:95%;
 }
 
-.note {
+.Note {
+    margin-top:1em;
+    min-height:15em;
+    border:1px solid skyblue;
+    padding:1em;
     font-size:10pt;
     font-family:sans-serif;
     background:white;
@@ -226,14 +230,15 @@ h1 a:hover {
     font-weight:bold;
 }
 
-.note-event {
+.note-event-scroll {
     border:1px solid deepskyblue;
-    border-radius:13px;
+}
+.note-event {
+
     padding:1em;
-    margin:1em 0 1em 0;
+    margin:0;
     color:#888;
     max-height:8em;
-    overflow-y:auto;
 }
 
 .note-nav {
@@ -481,17 +486,21 @@ button,
 .list-object-button,
 .button,
 input.inputButton {
-    color:black;
     font-size:10pt;
-    color:black;
+    font-weight:normal;
     margin:0 0.5em 0 0;
     padding:0 0.5em 0 0.5em;
     background:white;
-    border:1px solid #ABC;
+    color:black;
+    border:1px solid skyblue;
     border-radius:4px;
-    vertical-align:middle; 
+    vertical-align:top;
     cursor:pointer;
     text-decoration:none;
+}
+
+.edit-link {
+    margin:0 0.5em 0 0.25em;
 }
 
 .list-object-button:active,
@@ -557,14 +566,6 @@ th {
     
 }
 
-.saved {
-    background:deepskyblue;
-    
-}
-
-.unsaved {
-    background:red;
-}
 
 span.status {
     padding-left:0.5em;
@@ -594,8 +595,8 @@ form.search {
     text-align:justify;
     hyphens: auto;
     line-height:150%;
-    padding:5% 10% 25% 10%;
-    width:50%;
+    padding:5% 0% 10% 10%;
+    width:60%;
     margin:0;
 }
 
@@ -699,9 +700,10 @@ div.list-object-published-Private {
 .public-DraftEditor-content {
     padding:0;
     margin:0;
-    padding:1%;
+    padding:1% 0 1% 0;
     border:none;
     font-size:13pt;
+    line-height:150%;
     border-bottom:1px dotted deepskyblue;
     color:black;
     font-family: 'IBM Plex Sans', monospace;
@@ -756,18 +758,34 @@ table.timeline-event p {
     margin:0;
 }
 
-.count {
-    weight:bold;
-    color:white;
-    font-size:200%;
+.note-nav {
+    display:flex;
+    justify-content: space-between;    
+}
+.count, .delete {
+    font-size:150%;
     font-weight:bold;
+    padding:0.25em;
+    margin-left:-0.5em;
+    margin-top:-0.5em;
+    display:block;
+    width:5%;
+    text-align:center;
+    transition: background .5s ease-in;
+    cursor:pointer;
+}
+.count {
+    color:white;
     background:lightskyblue;
     border:1px solid deepskyblue;
 }
 .delete {
-    display:block;
-    float:right;
+    text-align: right; 
+    width:1em;
+    font-size:150%;
+    border:none;
 }
+
 .Auth {
     position:fixed;
     background:white;
@@ -797,3 +815,21 @@ table.timeline-event p {
 .color-secondary-2-3 { color: #FF2800 }
 .color-secondary-2-4 { color: #D52100 }
 
+
+.saved {
+    border:1px solid skyblue;
+    background:deepskyblue;
+}
+
+.unsaved {
+    border:1px solid #FF2800;
+    background:#D52100;
+}
+
+.moving {
+    background-color:gray;
+}
+
+.target {
+    background-color:#FFB400;
+}

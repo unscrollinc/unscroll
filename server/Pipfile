@@ -99,6 +99,8 @@ django-bleach = "*"
 cryptography = "*"
 pytzdata = "*"
 "psycopg2-binary" = "*"
+drf-extensions = "*"
+python-memcached = "*"
 
 [dev-packages]
 

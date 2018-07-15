@@ -2,17 +2,36 @@ import React from 'react';
 import AppContext from '../AppContext.js';
 import RichTextEditor from '../Editor/RichTextEditor';
 import update from 'immutability-helper';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 class NotebookEvent extends React.Component {
-    
-    makeTarget(uuid, context) {
-        return (<div onClick={(e)=>context.endMove(uuid)}
-                className="move-target">MOVE RIGHT HERE {uuid}</div>);
+    constructor(props) {
+        super(props);
+        this.state = {isMoving:false};
     }
 
-    startMove() {}
+    
+    renderCount() {
+        const status = (this.props.__isSaved ? ' saved' : ' unsaved');
+        const ct = this.props.index + 1;
+        const moving = (this.props.context.state.moveFrom!==undefined);
+        if (!moving) {
+            return(<span title={status} className={'count ' + status}
+		   onClick={()=>this.props.context.startMove(this.props)}>{ct}</span>);
+        }
+        else if (moving && (this.props.context.state.moveFrom===this.props.index)) {
+            return(<span title={status} className={'count ' + status + ' moving'}
+		   onClick={()=>this.props.context.forgetMove()}>{ct}</span>);            
+        }
+        else {
+            return(<span title={status} className={'count ' + status + ' target'}
+		   onClick={()=>this.props.context.endMove(this.props)}>{ct}</span>);
+        }
+    }
 
-    deleteNote() {}
+    deleteNote() {
+        this.props.context.deleteNote(this.props);
+    }
     
     edit(k, v) {
 	const _note = this.props.context.state.notes[this.props.index];
@@ -31,56 +50,71 @@ class NotebookEvent extends React.Component {
 	}
     }
     
-    showEvent() {
+    renderEvent() {
 	const e = this.props.event;
         function getText() {
-            return(<div className='note-event-text'>{e.text}</div>);
+            if (e.text) {
+                return(<div className='note-event-text' dangerouslySetInnerHTML={{__html:e.text}}/>);
+            }
+            return null;
         }
 	if (e) {
 	    return(
-		<div className='note-event'>
-		  <div className='note-event-title'><a target="_new" href={e.content_url}>{e.title}</a></div>
-                  {getText()}
-		</div>
+                <Scrollbars
+                  className='note-event-scroll'
+                  style={{ width:'100%', height: '10em' }}
+                  autoHide>
+                  <div className='note-event'>
+		    <div className='note-event-title'><a target="_new" href={e.content_url}>{e.title}</a></div>
+                    {getText()}
+                  </div>
+              </Scrollbars>
+                
 	    );
 	}
 	return undefined;
 
     }
 
-    renderTarget() {
-        // {this.state.moveFrom ? this.makeTarget(this.props.uuid, context) : undefined}        
+
+    renderDelete() {
+        console.log(this.props.context.state.moveFrom);
+        if (this.props.context.state.moveFrom===undefined) {
+            return(
+	        <div className='delete'
+                        onClick={()=>{this.deleteNote(this.props);}}>╳</div>
+            );
+        }
         return null;
-	
     }
+
     renderNotebookEvent(context) {
+        const moving = (this.state.isMoving ? ' moving' : ' not-moving');
+        const status = (this.props.__isSaved ? ' saved' : ' unsaved');
         return (
-		<div key={this.props.uuid} className='note'>
-		  <div className='note-inner'>
+	    <div key={this.props.uuid} className='Note'>
+	      <div className='note-inner'>
                 <div className='note-nav'>
-                  <span className={'count button ' + (this.props.__isSaved ? ' saved' : ' unsaved')}
-			onClick={()=>this.startMove(this.props.uuid)}>{this.props.index + 1}</span>
-	          <button className='delete'
-                          onClick={()=>{this.deleteNote(this.props);}}>Delete</button>
+                  {this.renderCount()}
+                  {this.renderDelete()}
                 </div>
-		{this.showEvent()}
 		<div className="rte-note-text-editor">
-		<RichTextEditor
-		  field='text'
-		  content={this.props.text}
-		  upEdit={this.edit.bind(this)}/>
+		  <RichTextEditor
+		    field='text'
+		    content={this.props.text}
+		    upEdit={this.edit.bind(this)}/>
+	        </div>
+	        <div className="input-title">Note text</div>
+		{this.renderEvent()}
 	      </div>
-	      <div className="input-title">Note text</div>
-                {this.renderTarget()}
-	    </div>
-		</div>  
+	    </div>  
         );
     }
     
     render() {
         return(
             <AppContext.Consumer>
-		{(context) => {
+	      {(context) => {
                   return this.renderNotebookEvent(context);
               }}                
             </AppContext.Consumer>

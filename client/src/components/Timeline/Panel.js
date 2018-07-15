@@ -158,6 +158,7 @@ class Panel extends React.Component {
     }
     
     componentDidMount() {
+        document.title = this.props.center + ' (Unscroll)';
         this.getSpan();
     }
 

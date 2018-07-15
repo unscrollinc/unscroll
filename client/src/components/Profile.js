@@ -7,6 +7,9 @@ class Profile extends React.Component {
 	super(props);
 	this.state = utils.getCookie();
     }
+    componentDidMount() {
+        document.title = 'My Profile (Unscroll)';
+    }    
     render() {
         return (
                 <AppContext.Consumer>

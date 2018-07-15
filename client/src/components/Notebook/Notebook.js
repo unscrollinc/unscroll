@@ -23,11 +23,11 @@ class Notebook extends React.Component {
             this.getNotes();	
 	}
     }
-//    shouldComponentUpdate(nextProps, nextState) {
-//	return (this.props.context.state.notebook !== nextProps.context.state.notebook);
-//    }
+    //    shouldComponentUpdate(nextProps, nextState) {
+    //	return (this.props.context.state.notebook !== nextProps.context.state.notebook);
+    //    }
     renderAddNoteButton() {
-        return(<button onClick={this.props.context.addNote}>+ Note</button>);
+        return(<button onClick={()=>this.props.context.addNote()}>+ Note</button>);
     }
     
     renderNote(note, i) {
@@ -57,7 +57,12 @@ class Notebook extends React.Component {
     }
 
     renderManuscriptText(note, i) {
-        return (<Manuscript key={note.uuid} {...note}/>);
+        return (
+            <React.Fragment key={note.uuid}>
+              <Manuscript {...note}/>
+              <span> </span>
+            </React.Fragment>
+        );
     }
 
     renderTitleEditor() {

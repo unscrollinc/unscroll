@@ -125,6 +125,10 @@ class App extends React.Component {
             editorOn:false
         };
     }
+
+    componentDidMount() {
+        document.title = 'Unscroll';
+    }
     
     render() {
         return (

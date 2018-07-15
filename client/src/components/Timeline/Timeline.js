@@ -104,10 +104,6 @@ class Timeline extends React.Component {
         }
     }
     
-    componentDidMount() {
-        // console.log('Did mount', this);
-    }
-
     componentWillUnmount() {
 	// This causes some setState issues that occasionally get flagged.
         WheelReact.clearTimeout();

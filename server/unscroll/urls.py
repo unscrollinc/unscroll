@@ -1,3 +1,4 @@
+# HOPE YOU LIKE IMPORTS
 from django.contrib import admin
 from django.urls import path
 from django.conf.urls import url, include
@@ -17,6 +18,12 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthentic
 from rest_framework.response import Response
 from rest_framework.exceptions import APIException, ValidationError
 from rest_framework.pagination import LimitOffsetPagination
+
+from rest_framework_extensions.cache.decorators import (cache_response)
+from rest_framework_extensions.key_constructor import bits
+from rest_framework_extensions.key_constructor.constructors import (
+    KeyConstructor
+)
 
 from scrolls.models import User, Scroll, Event, Notebook, Note, Media, Thumbnail
 from unscroll.thumbnail import InboundThumbnail
@@ -39,6 +46,12 @@ from rest_framework_bulk import (
 # ##############################
 # Thumbnails
 # ##############################
+
+def _cache_key(view_instance, view_method,
+                   request, args, kwargs):
+    key = request.build_absolute_uri()
+    print('Cache key: {}'.format(key))
+    return key
 
 class ThumbnailSerializer(serializers.HyperlinkedModelSerializer):
     image = serializers.ImageField(
@@ -198,7 +211,7 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
         read_only=True,
         source="in_scroll.is_public")
 
-    with_thumbnail = serializers.CharField(
+    with_thumbnail_image = serializers.CharField(
         read_only=True,
         source="with_thumbnail.image")    
     
@@ -268,8 +281,8 @@ class BulkEventSerializer(BulkSerializerMixin,
 class BulkEventViewSet(BulkModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Event.objects.select_related('in_scroll',
-                                            'by_user',
-                                            'with_thumbnail')
+                                              'by_user',
+                                              'with_thumbnail')
     filter_backends = (filters.DjangoFilterBackend,)
     filter_class = EventFilter
     serializer_class = BulkEventSerializer
@@ -282,11 +295,26 @@ class BulkEventViewSet(BulkModelViewSet):
         if user.is_authenticated:
             query = (Q(by_user=user) or Q(in_scroll__is_public=True))
 
-        qsfinal = self.queryset\
+        qs = self.queryset\
             .filter(query)
 
-        return qsfinal
+        qsfiltered = self.filter_queryset(qs)
+        return qsfiltered
         
+    @cache_response(key_func=_cache_key)
+    def list(self, request):
+        pagination_class = LimitOffsetPagination
+        paginator = pagination_class()
+
+        page = paginator.paginate_queryset(
+            self.get_queryset(),
+            request)
+
+        serializer = BulkEventSerializer(
+            page,
+            many=True,
+            context={'request': request})
+        return paginator.get_paginated_response(serializer.data)
 
 # ##############################
 # Notes
@@ -349,6 +377,7 @@ class NoteViewSet(viewsets.ModelViewSet):
             del note['event']
             return note
 
+#    @cache_response(key_func=_cache_key)        
     def list(self, request):
         pagination_class = LimitOffsetPagination
         paginator = pagination_class()
@@ -376,9 +405,7 @@ class NoteViewSet(viewsets.ModelViewSet):
     
     
     def get_queryset(self):
-        filtered = NoteFilter(self.request.GET,
-                              queryset=Note.objects)
-        queryset = filtered.qs
+        queryset = self.queryset
 
         user = self.request.user
 
@@ -386,10 +413,9 @@ class NoteViewSet(viewsets.ModelViewSet):
         query = Q(in_notebook__is_public=True)        
         if user.is_authenticated:
             query = (Q(by_user=user) or Q(in_notebook__is_public=True))
-        qsfinal = queryset.filter(query)
-
-
-        return qsfinal
+        qs = queryset.filter(query)
+        qsfiltered = self.filter_queryset(qs)
+        return qsfiltered
     
 
 ##############################
@@ -450,7 +476,7 @@ class ScrollSerializer(serializers.HyperlinkedModelSerializer):
 class ScrollViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = ScrollSerializer
-    queryset = Scroll.objects.select_related('by_user')
+    queryset = Scroll.objects.select_related('by_user', 'with_thumbnail')
     filter_backends = (filters.DjangoFilterBackend,)
     filter_class = ScrollFilter
 
@@ -462,14 +488,30 @@ class ScrollViewSet(viewsets.ModelViewSet):
         if user.is_authenticated:
             query = (Q(by_user=user) or Q(is_public=True))
 
-        qsfinal = self.queryset\
+        qs = self.queryset\
             .filter(query)\
             .annotate(
                 event_count=Count('events'),
                 first_event=Min('events__when_happened'),
                 last_event=Max('events__when_happened'))
 
-        return qsfinal
+        qsfiltered = self.filter_queryset(qs)
+        return qsfiltered
+    
+#    @cache_response(key_func=_cache_key)
+    def list(self, request):
+        pagination_class = LimitOffsetPagination
+        paginator = pagination_class()
+        page = paginator.paginate_queryset(
+            self.get_queryset(),
+            request)
+
+        serializer = ScrollSerializer(
+            page,
+            many=True,
+            context={'request': request})
+        return paginator.get_paginated_response(serializer.data)
+    
 
 ########################################
 # Notebook
@@ -533,59 +575,34 @@ class NotebookViewSet(viewsets.ModelViewSet):
     filter_class = NotebookFilter
     
     def get_queryset(self):
-        filtered = NotebookFilter(self.request.GET,
-                                  queryset=Notebook.objects)
-        queryset = filtered.qs
-        
+        queryset = self.queryset
         user = self.request.user
-
         # Check if authed
         query = Q(is_public=True)     
-
         if user.is_authenticated:
             query = (Q(by_user=user) or Q(is_public=True))
             
-        qsfinal = queryset\
+        qs = queryset\
                       .filter(query)\
-                      .annotate(note_count=Count('notes'))        
-        return qsfinal
+                      .annotate(note_count=Count('notes'))
+        qsfiltered = self.filter_queryset(qs)
+        return qsfiltered
 
+#    @cache_response(key_func=_cache_key)
+    def list(self, request):
+        pagination_class = LimitOffsetPagination
+        paginator = pagination_class()
 
-    # # Need to override only-public filter here so we use a custom destroy    
-    # def destroy(self, request, *args, **kwargs):
-    #     self.queryset = Notebook.objects.all()    
-    #     instance = self.get_object()
-    #     if instance.by_user == request.user:
-    #         self.perform_destroy(instance)
-    #         return Response(status=status.HTTP_204_NO_CONTENT)
-    #     return Response(status=status.HTTP_404_NOT_FOUND)        
+        page = paginator.paginate_queryset(
+            self.get_queryset(),
+            request)
+        serializer = NotebookSerializer(
+            page,
+            many=True,
+            context={'request': request})
+        return paginator.get_paginated_response(serializer.data)
 
-    # def update(self, request, *args, **kwargs):
-    #     partial = kwargs.pop('partial', False)
-    #     self.queryset = Notebook.objects.all()           
-    #     instance = self.get_object()
-    #     serializer = self.get_serializer(instance, data=request.data, partial=partial)
-    #     serializer.is_valid(raise_exception=True)
-    #     self.perform_update(serializer)
-
-    #     if getattr(instance, '_prefetched_objects_cache', None):
-    #         # If 'prefetch_related' has been applied to a queryset, we need to
-    #         # forcibly invalidate the prefetch cache on the instance.
-    #         instance._prefetched_objects_cache = {}
-
-    #     return Response(serializer.data)
-   
-    @action(detail=True)
-    def notes(self, request, pk=None):
-        notes = Note.objects\
-                    .select_related('event')\
-                    .filter(in_notebook=pk)
-        serializer = NoteEventSerializer(
-            notes,
-            context={'request': request},
-            many=True)
-        return Response(serializer.data)
-
+    
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     full_scrolls = ScrollSerializer(User.full_scrolls, many=True)

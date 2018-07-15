@@ -102,6 +102,16 @@ DJOSER = {
     'SERIALIZERS': {},
 }
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '127.0.0.1:11211',
+        'TIMEOUT':120
+    }
+}
+
+
+
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = (
@@ -131,7 +141,6 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'unscroll@unscroll.com'
 EMAIL_HOST_PASSWORD = 'B8Uh1cLXjSkln1vaj'
 EMAIL_USE_TLS = True
-
 
 SITE_ID = 1
 ROOT_URLCONF = 'unscroll.urls'

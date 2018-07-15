@@ -87,3 +87,23 @@ I look forward to your thoughts.
   - [ ] Sit back and wait for them to yell at me.
   - [ ] Email people who signed up
   - [ ] Tweet out as @Unscroll
+
+* Other
+Note sequencing error catches (all null, nome null)
+Correctly spatialize events on tl​
+Scroll wheel on tl 
+In and out on tl
+Move events
+Search in scroll
+Search filter
+By username by scroll 
+Drop-down
+Search on tl
+News
+Login forms and reg
+Import Wikipedia events with preview api
+Import crisis
+Fix met
+Batch met
+Fix bc
+Mention API/swagger
