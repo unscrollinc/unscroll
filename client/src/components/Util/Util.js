@@ -215,7 +215,6 @@ const util = {
 		    }
 		}
                 const rest = Object.keys(blanked).filter((k)=>{return (blanked[k]!==null);})
-                console.log('BLANKED COUNTS', {notes, blanked, rest, global, tail});
 		return global.concat(rest, tail);
 	    }
             const resorted = sortIt(notes);

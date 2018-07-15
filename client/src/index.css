@@ -75,7 +75,7 @@ h1 a:hover {
 }
 
 .Timeline, .Editor, .NotebookList, .Manuscript, .TimelineList, .Meta {
-    border-top:2px solid deepskyblue;
+    border-top:1px solid deepskyblue;
     top:5%;
     height:95%;
     position:fixed;
@@ -105,7 +105,7 @@ h1 a:hover {
 }
 
 .Notebook {
-    border:1px solid blue;
+    border:1px solid deepskyblue;
     width:40%;
     padding-bottom:500px;
     position:fixed;
@@ -117,12 +117,7 @@ h1 a:hover {
 }
 .Editor {
     width:33.33%;
-}
-.Manuscript {
-    position:fixed;
-    top:5%;
-    left:33.33%;
-    width:33.33%;
+    border-right:1px solid deepskyblue;
 }
 
 .NotebookList {
@@ -247,78 +242,6 @@ h1 a:hover {
 
 .public-DraftEditor-content:focus {
     background:white;
-}
-
-div.manuscript-inner {
-    height:95%;
-/*    background:#31C9FC;
-    background:#08C1FF;
-    background:#0084B0; */
-    background:#006485;
-    color:white;
-
-    position:absolute;
-    font-family: 'IBM Plex Serif', serif;
-    overflow:auto;
-    width:70%;
-    padding:15%;
-    text-align:justify;
-    hyphens: auto;
-    padding-bottom:1000px;
-    line-height:200%;
-    
-    border:1px solid red;
-}
-
-div.manuscript-inner h1,
-div.manuscript-inner h2,
-div.manuscript-inner .description {
-    text-align:center;
-    padding-top:1em;
-}
-
-div.manuscript-inner h1 {
-    font-size:300%;
-    line-height:120%;
-}
-
-div.manuscript-inner .description {
-    font-style:Italic;
-    padding-bottom:1em;
-}
-.preview {
-    top:5%;
-    left:50%;
-    height:95%;
-    line-height:150%;
-    overflow:auto;
-    margin:0;
-    text-align:justify;
-    hyphens: auto;        
-    border-top:1px solid deepskyblue;
-    border-left:1px solid deepskyblue;   
-}
-.preview h1 {
-    text-align:center;
-    line-height:150%;
-}
-.preview h2 {
-    padding:0.5em 0 0.5em 0;
-    text-align:center;
-    line-height:150%;
-}
-.preview .description {
-    padding:1em 0 1em 0;
-    text-align:center;
-    font-style:Italic;
-}
-.preview .manuscript-title {
-    padding:5em 5em 0 5em;
-}
-.preview .manuscript-body {
-    padding:1em 5em 10em 5em;
-    line-height:150%;
-    font-size:13pt;
 }
 .active-true {
     background:black;
@@ -832,4 +755,80 @@ table.timeline-event p {
 
 .target {
     background-color:#FFB400;
+}
+
+
+/* MANUSCRIPT */
+
+.Manuscript {
+    position:absolute;
+    top:5%;
+    left:66.6666%;
+    width:33.3333%;
+    border-left:1px solid deepskyblue;
+}
+
+.ManuscriptReader {
+    position:absolute;
+    top:5%;
+    width:100%;
+    border-top:1px solid deepskyblue;
+}
+
+div.manuscript-inner {
+    height:95%;
+/*    background:#31C9FC;
+    background:#08C1FF;
+    background:#0084B0; */
+    background:white;
+    color:black;
+
+    position:absolute;
+    font-family: 'IBM Plex Serif', serif;
+    width:70%;
+    padding:15%;
+    text-align:justify;
+    hyphens: auto;
+    padding-bottom:1000px;
+    line-height:200%;
+}
+
+div.manuscript-inner h1,
+div.manuscript-inner h2,
+div.manuscript-inner .description {
+    text-align:center;
+    padding-top:1em;
+}
+
+div.manuscript-inner h1 {
+    font-size:300%;
+    line-height:120%;
+}
+
+div.manuscript-inner .description {
+    font-style:Italic;
+    padding-bottom:1em;
+}
+
+.reader h1 {
+    text-align:center;
+    line-height:150%;
+}
+.reader h2 {
+    padding:0.5em 0 0.5em 0;
+    text-align:center;
+    line-height:150%;
+}
+.reader .description {
+    padding:1em 0 1em 0;
+    text-align:center;
+    font-style:Italic;
+}
+.reader .manuscript-title {
+    padding:5em 5em 0 5em;
+}
+.reader .manuscript-body {
+    padding:1em 5em 10em 5em;
+    line-height:150%;
+    font-size:13pt;
 }

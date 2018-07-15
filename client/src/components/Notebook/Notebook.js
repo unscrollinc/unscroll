@@ -73,12 +73,29 @@ class Notebook extends React.Component {
 	return (<div>Loading</div>);
     }
 
+    renderManuscriptEvents() {
+        const notes = this.props.context.state.notes;
+        const filtered = notes.filter((n)=>{return (n.with_event!==null);});
+        const mapped = filtered.map((n, i)=>{
+            return (<div key={i}>{n.event.title}</div>);
+        });
+        return (<div className='Sidebar'>{mapped}</div>);
+    }
+    
     render() {
         if (!this.props.edit)  {
-            return (<div key='manuscript-preview' className='Manuscript preview'>
+            return (
+                <Scrollbars
+                  className='ManuscriptReader'
+                  autoHide
+                  style={{ height: '100%' }}>
+                  <div key='manuscript-preview' className='manuscript-inner reader'>
+		    {this.renderManuscriptEvents()}
 		    {this.renderManuscriptTitle()}
-		    {this.renderManuscriptBody()}		    
-		    </div>);
+		    {this.renderManuscriptBody()}
+		  </div>
+                </Scrollbars>
+            );
         }
         return (<AppContext.Consumer>
 		{(context) => {
