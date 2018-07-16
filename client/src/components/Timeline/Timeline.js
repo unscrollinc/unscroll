@@ -5,8 +5,10 @@ import Panel from './Panel';
 import TimeFrames from './TimeFrames';
 
 class Timeline extends React.Component {
-    constructor(props, context) {
-	super(props, context);
+    constructor(props) {
+	super(props);
+        console.log(props);
+        
         const start = props.start
               ? DateTime.fromISO(props.start)
               : DateTime.fromObject({year:1984}).startOf('year');

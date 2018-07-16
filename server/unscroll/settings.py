@@ -94,9 +94,8 @@ SWAGGER_SETTINGS = {
 DJOSER = {
     'DOMAIN': '127.0.0.1',
     'SITE_NAME': 'Unscroll',
-    'PASSWORD_RESET_CONFIRM_URL':
-    '?passwordconfirm=true&uid={uid}&token={token}',
-    'ACTIVATION_URL': '?activate=true&uid={uid}&token={token}',
+    'PASSWORD_RESET_CONFIRM_URL':'/user/confirm/?uid={uid}&token={token}',
+    'ACTIVATION_URL':'/user/activate/?uid={uid}&token={token}',
     'SEND_ACTIVATION_EMAIL': True,
     'PASSWORD_VALIDATORS': [],
     'SERIALIZERS': {},

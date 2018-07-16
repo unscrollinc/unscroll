@@ -7,9 +7,14 @@ Timelist List + [Timeline/Timelist]
 
 * Announcement
 
-I have a side project: A web-based, timeline-driven writing tool that helps you fact-check your work, called Unscroll. I work on it when @PostlightStudio is calm and the kids are in bed. I built it for myself but believe it's worth sharing. https://unscroll.com (also @unscroll)
+I have a side project: A web-based, timeline-driven writing tool that
+helps you fact-check your work, called Unscroll. I work on it when
+@PostlightStudio is calm and the kids are in bed. I built it for
+myself but believe it's worth sharing. https://unscroll.com (also
+@unscroll)
 
-The idea is as simple: Write notes about events in a notebook, then arrange the notes into essays. Using it reduces my anxiety. 
+The idea is: Events in timelines, notes in notebooks. Some notes link
+to events.
 
 Here are some timelines:
 
@@ -59,7 +64,7 @@ I look forward to your thoughts.
 
 * Notebooks
   - [X] Rich text in title editor
-
+  - [X] Note sequencing error catches (all null, nome null)
 * Events
   - [ ] paragraph break
   - [ ] image upload
@@ -87,23 +92,24 @@ I look forward to your thoughts.
   - [ ] Sit back and wait for them to yell at me.
   - [ ] Email people who signed up
   - [ ] Tweet out as @Unscroll
-
-* Other
-Note sequencing error catches (all null, nome null)
-Correctly spatialize events on tl​
-Scroll wheel on tl 
-In and out on tl
-Move events
-Search in scroll
-Search filter
-By username by scroll 
-Drop-down
-Search on tl
-News
-Login forms and reg
-Import Wikipedia events with preview api
-Import crisis
-Fix met
-Batch met
-Fix bc
-Mention API/swagger
+* Other [0/17]
+- [ ] Correctly spatialize events on tl​
+- [ ] Scroll wheel on tl 
+- [ ] In and out on tl
+- [ ] Move events
+- [ ] Search in scroll
+- [ ] Search filter
+- [ ] By username by scroll 
+- [ ] Drop-down
+- [ ] Search on tl
+- [ ] News
+- [ ] Login forms and reg
+- [ ] Import Wikipedia events with preview api
+- [ ] Import crisis
+- [ ] Fix met
+- [ ] Batch met
+- [ ] Fix bc
+- [ ] Mention API/swagger
+* TODO Cache [0/0]
+- [ ] Cache Timelines public
+- [ ] Cache Notebooks public

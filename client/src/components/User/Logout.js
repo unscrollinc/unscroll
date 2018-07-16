@@ -4,9 +4,9 @@ import { Link } from 'react-router-dom' ;
 import utils from '../Util/Util';
 import axios from 'axios';
 import cookie from 'js-cookie';
+import AppContext from '../AppContext';
 
-
-class Login extends React.Component {
+class Logout extends React.Component {
 
     constructor(props) {
 	super(props);
@@ -22,6 +22,7 @@ class Login extends React.Component {
              headers:utils.getAuthHeaderFromCookie()
             })
             .then(resp => {
+                this.props.context.setState({username:null, authToken:null});
 	    })
             .catch(function(error) {
                 console.log(error);
@@ -55,4 +56,11 @@ class Login extends React.Component {
     }
 }
 
-export default Login;
+export default props => (
+    <AppContext.Consumer>
+      {context => <Logout {...props} context={context}/>}
+    </AppContext.Consumer>
+);
+
+
+

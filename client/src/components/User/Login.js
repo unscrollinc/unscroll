@@ -10,7 +10,6 @@ class Login extends React.Component {
 
     constructor(props) {
 	super(props);
-	this.state = utils.getCookie();
     }
     
     edit(key, value) {
@@ -21,30 +20,34 @@ class Login extends React.Component {
 	console.log(event, this.props.context.state);
         event.preventDefault();
         const _this = this;
-	const expire = this.state.expireOnClose ? undefined : {expires:100};
+	const expires = this.state.expireOnClose ? undefined : {expires:100};
         axios(
 	    {method:'post',
 	     url:utils.getAPI('auth/login/'),
 	     data:_this.state})
             .then(function(response) {
 		const token = response.data.auth_token;
-		_this.props.context.setState({authToken:token, username:this.state.username},
-			       ()=>{
-				   cookie.set('authToken', token, expire);
-				   cookie.set('username', _this.state.username, expire);
-			       });
+		_this.props.context.setState(
+                    { authToken:token,
+                      username:_this.state.username},
+		    ()=>{
+                        console.log('setting cookeis', token, expires);
+			cookie.set('authToken', token, expires);
+			cookie.set('username', _this.state.username, expires);
+		        // Keep this tidy in case someone comes along and looks
+		        // inside the React state
+		        _this.setState({password:null});
+		    });
 	    })
             .catch(err => {
 		console.log(err);
 	    })
 	    .finally(()=> {
-		// Keep this tidy in case someone comes along and looks
-		// inside the React state
-		_this.setState({password:null});
 	    });
     }
     componentDidUpdate() {
 	console.log('DID UPDATE');
+        console.log(this.props.context.state);
     }
     renderLoginForm() {
 	return(
@@ -98,8 +101,7 @@ class Login extends React.Component {
     renderLoggedInMessage() {
 	return(
 	    <div class="login-message">
-	      <h1>Welcome back, {this.state.username}</h1>
-	      <p><Link to='/my/profile'>Your profile</Link></p>
+	      <h1>Welcome back, {this.props.context.state.username}</h1>
 	      <p><Link to='/my/timelines'>Your timelines</Link></p>
 	      <p><Link to='/my/notebooks'>Your notebooks</Link></p>
 	      <p><Link to='/user/logout'>Log out</Link></p>

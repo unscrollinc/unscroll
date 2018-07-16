@@ -9,6 +9,8 @@ from unscroll import UnscrollClient
 import argparse
 
 
+PREVIEW_API='https://en.wikipedia.org/api/rest_v1/page/summary/'
+
 MONTH_NAMES = 'January|February|March|April|May|June|July|'\
               'August|September|October|November|December'
 
@@ -44,9 +46,7 @@ class WikipediaText():
         self.wiki_url = 'https://en.wikipedia.org/wiki/{}'.format(year)
         r = requests.get(self.wiki_url)
         self.parsed = BeautifulSoup(r.content, 'html.parser')
-        self.unscroll_client = UnscrollClient(api='http://127.0.0.1:8000',
-                                              username='ford',
-                                              password='***REMOVED***')
+        self.unscroll_client = UnscrollClient()
         self.unscroll_client.login()
         self.scrolls['world event'] = self.unscroll_client.create_or_retrieve_scroll('Wikipedia Years')
         self.scrolls['human birth'] = self.unscroll_client.create_or_retrieve_scroll('Wikipedia Births')

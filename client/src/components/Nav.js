@@ -56,14 +56,14 @@ class Nav extends React.Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-	return (this.state.authToken !== nextState.authToken);
+	return (this.props.context.state.authToken !== nextProps.context.state.authToken);
     }
 
     renderLoginState() {
         if (this.props.context.state.authToken) {
             return(
                 <div className="login">
-		  <Link to="/my/profile">{this.props.context.state.username}</Link>
+		  <Link to="/user/login">{this.props.context.state.username}</Link>
                 </div>
             );
         }

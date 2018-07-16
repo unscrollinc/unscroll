@@ -16,12 +16,13 @@ import pathlib
 class UnscrollClient():
     authentication_header = None
     user_url = None
-
+    
     def __init__(self,
                  api='http://127.0.0.1:8000/api',
                  username='ford',
                  password='***REMOVED***'):
         self.api = api
+        self.session = requests.Session()
         self.username = username
         self.password = password
         self.login()
@@ -127,14 +128,13 @@ class UnscrollClient():
                 'title':url}
     
     def fetch_wiki_thumbnail_data(self, title=None):
-        url = 'https://en.wikipedia.org/w/api.php?action=query'\
-                '&titles={}&prop=pageimages&format=json&pithumbsize={}'\
-                .format(title, config.WIKIPEDIA_THUMBNAIL_SIZE)
-        r = requests.get(url)
+        url = 'https://en.wikipedia.org/api/rest_v1/page/summary/{}'\
+                .format(title)
+        r = self.session.get(url)
         j = r.json()
         try:
-            for k in j['query']['pages'].keys():
-                thumb = j['query']['pages'][k]['thumbnail']
+            if 'thumbnail' in j:
+                thumb = j['thumbnail']
                 return {'url': thumb['source'],
                         'title': title,
                         'width': thumb['width'],

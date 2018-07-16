@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.conf.urls.static import static
-from django.db import IntegrityError
+from django.db.utils import IntegrityError
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 import django_filters
@@ -260,23 +260,25 @@ class BulkEventSerializer(BulkSerializerMixin,
         list_serializer_class = BulkListSerializer
 
     def create(self, validated_data):
-        validated_data['by_user'] = self.context['request'].user
-        s = Event(**validated_data)
         try:
+            validated_data['by_user'] = self.context['request'].user
+            s = Event(**validated_data)
             s.save()
             es = Event.objects.get(id=s.id)
             return es            
-        except IntegrityError as e:
-            # print('[urls.py IntegrityError] {}'.format(e,))
-            es = Event.objects.get(
-                by_user=validated_data['by_user'],
-                in_scroll=validated_data['in_scroll'],
-                title=validated_data['title'],
-                source_url=validated_data['source_url'],)
-            return es
+        # except IntegrityError as e:
+        #     print('[urls.py IntegrityError] {}'.format(e,))
+        #     es = Event.objects.get(
+        #         by_user=validated_data['by_user'],
+        #         in_scroll=validated_data['in_scroll'],
+        #         title=validated_data['title'],
+        #         source_url=validated_data['source_url'],)
+        #     return es
+        #     raise ValidationError(str(e))                        
+        # except DoesNotExist as e:
+        #     raise ValidationError(str(e))            
         except Exception as e:
-            raise APIException(str(e))        
-        
+            raise APIException(str(e))
 
 class BulkEventViewSet(BulkModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]

@@ -200,8 +200,8 @@ export class AppProvider extends React.Component {
 
                 state:this.state,
 
-		setState:(o) => {
-		    this.setState(o);
+		setState:(o, f) => {
+		    this.setState(o, f);
 		},
                 
                 addNotebook:() => {
