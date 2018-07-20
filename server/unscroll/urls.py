@@ -60,7 +60,7 @@ class ThumbnailSerializer(serializers.HyperlinkedModelSerializer):
         use_url=False)
     
     class Meta:
-        
+
         model = Thumbnail
         fields = (
             'url',

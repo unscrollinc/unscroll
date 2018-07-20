@@ -100,7 +100,7 @@ class Scroll(models.Model):
         default="")
     citation = BleachField(
         blank=True,
-        default="true")
+        default="")
     link = models.URLField(
         blank=True,
         null=True)
@@ -146,9 +146,10 @@ class Notebook(models.Model):
     title = BleachField()
     subtitle = BleachField(
         blank=True,
-        null=True)
+        default="")
     description = BleachField(
-        null=True)
+        blank=True,
+        default="")
     when_published = models.DateTimeField(
         null=True)
     when_created = models.DateTimeField(
