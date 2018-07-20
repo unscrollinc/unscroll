@@ -49,7 +49,7 @@ const util = {
     return null;
   },
   getAPI: noun => {
-    return `${API}${noun}`;
+    return `${API}${noun}/`;
   },
   webPromise: (that, method, endpoint, params, id, key) => {
     const dataKey = method === 'GET' ? 'params' : 'data';

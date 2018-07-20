@@ -30,6 +30,10 @@ class NotebookList extends React.Component {
     return null;
   }
 
+  addNotebook() {
+    console.log('ADDING NOTEBOOK');
+  }
+
   getNotebooks() {
     if (this.props.my === true) {
       document.title = 'My Notebooks (Unscroll)';
@@ -102,7 +106,9 @@ class NotebookList extends React.Component {
                 <Link className="list-object-button" to="/notebooks">
                   Public
                 </Link>
-                <button onClick={this.addNotebook}>+ New</button>
+                <Link className="list-object-button" to="/notebooks/new">
+                  + New
+                </Link>
               </div>
 
               <table className="list-object-table">

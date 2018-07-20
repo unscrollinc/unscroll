@@ -47,7 +47,7 @@ export class AppProvider extends React.Component {
     this.state = this.makeState(c);
 
     this.sweep = () => {
-      if (this.state.notebook && !this.state.notebook.__isSaved) {
+      if (this.state.notebook && !this.state.notebookIsSaved) {
         if (!this.state.notebook.url) {
           this.postNotebook();
         } else {
@@ -158,9 +158,7 @@ export class AppProvider extends React.Component {
     })
       .then(function(resp) {
         _this.setState({
-          notebook: update(_this.state.notebook, {
-            $merge: { __isSaved: true }
-          }),
+          notebookIsSaved: true,
           notebookEdits: {}
         });
       })
@@ -170,23 +168,29 @@ export class AppProvider extends React.Component {
   }
 
   postNotebook() {
+    const nb = {
+      title: 'Untitled-' + randomString(),
+      subtitle: '',
+      description: '',
+      isSaved: false,
+      uuid: uuidv4()
+    };
     const _this = this;
     axios({
       method: 'post',
       url: utils.getAPI('notebooks'),
       headers: utils.getAuthHeaderFromCookie(),
-      data: update(this.state.notebook, { $unset: ['notes'] })
+      data: nb
     })
-      .then(function(resp) {
+      .then(resp => {
+        console.log('RESPONSEEEEEEEE', resp);
         _this.setState({
           notebookIsSaved: true,
-          notebook: update(_this.state.notebook, { $merge: { ...resp.data } })
+          notebook: resp.data
         });
       })
       .catch(error => {
-        console.log(
-          `postNotebook: There is already a notebook by you with that name! ${error}`
-        );
+        console.log({ error: error });
       });
   }
 
@@ -228,26 +232,6 @@ export class AppProvider extends React.Component {
             this.setState(o, f);
           },
 
-          addNotebook: () => {
-            this.setState(
-              {
-                notebook: {
-                  isSaved: false,
-                  title: 'Untitled-' + randomString(),
-                  is_public: false,
-                  subtitle: '',
-                  description: '',
-                  uuid: uuidv4()
-                }
-              },
-              this.postNotebook
-            );
-          },
-
-          listNotebooks: () => {
-            this.loadNotebookList();
-          },
-
           deleteNotebook: uuid => {
             this.deleteNotebook(uuid);
           },
@@ -266,7 +250,7 @@ export class AppProvider extends React.Component {
           deleteNote: note => {
             this.deleteNote(note);
           },
-
+          postNotebook: this.postNotebook.bind(this),
           addNote: event => {
             const _this = this;
             console.log('[@addNote(event)]', event);

@@ -107,7 +107,11 @@ const routes = [
     exact: true,
     Workbook: () => <NotebookList my={true} />
   },
-
+  {
+    path: '/notebooks/:new',
+    exact: true,
+    Workbook: props => <Notebook {...props.match.params} />
+  },
   {
     path: '/notebooks/:user/:id/:edit?',
     exact: true,

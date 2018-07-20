@@ -1,21 +1,33 @@
 import React from 'react';
+import { Route, Redirect } from 'react-router';
+import { Scrollbars } from 'react-custom-scrollbars';
+
 import Note from './Note';
 import TitleEditor from './TitleEditor';
 import Manuscript from './Manuscript';
 import AppContext from '../AppContext';
 import utils from '../Util/Util';
-import { Scrollbars } from 'react-custom-scrollbars';
 
 class Notebook extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+    if (this.props.new) {
+      this.props.context.postNotebook();
+    }
+  }
   getNotes() {
     utils.getNotes(this.props.context, this.props.id);
   }
   getNotebook() {
     utils.GET(this.props.context, 'notebooks', {}, this.props.id, 'notebook');
   }
+
   componentDidMount() {
-    this.getNotebook();
-    this.getNotes();
+    if (this.props.id) {
+      this.getNotebook();
+      this.getNotes();
+    }
   }
   componentDidUpdate(prevProps) {
     if (this.props.id !== prevProps.id) {
@@ -23,13 +35,9 @@ class Notebook extends React.Component {
       this.getNotes();
     }
   }
-  //    shouldComponentUpdate(nextProps, nextState) {
-  //	return (this.props.context.state.notebook !== nextProps.context.state.notebook);
-  //    }
   renderAddNoteButton() {
     return <button onClick={() => this.props.context.addNote()}>+ Note</button>;
   }
-
   renderNote(note, i) {
     return (
       <Note context={this.props.context} key={note.uuid} index={i} {...note} />
@@ -94,6 +102,20 @@ class Notebook extends React.Component {
   }
 
   render() {
+    console.log('OKEY', {
+      props: this.props,
+      nb: this.props.context.state.notebook
+    });
+    if (this.props.new && this.props.context.state.notebook) {
+      console.log('OKEY LAUGHINF FACTORY');
+      return (
+        <Redirect
+          to={`/notebooks/${this.props.context.state.username}/${
+            this.props.context.state.notebook.id
+          }/edit`}
+        />
+      );
+    }
     if (!this.props.edit) {
       return (
         <Scrollbars
