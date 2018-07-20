@@ -131,14 +131,14 @@ CORS_ALLOW_METHODS = (
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # Host for sending e-mail.
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST = 'smtp.mailgun.org'
 
 # Port for sending e-mail.
 EMAIL_PORT = 587
 
 # Optional SMTP authentication information for EMAIL_HOST.
-EMAIL_HOST_USER = 'unscroll@unscroll.com'
-EMAIL_HOST_PASSWORD = 'B8Uh1cLXjSkln1vaj'
+EMAIL_HOST_USER = 'postmaster@mail.unscroll.com'
+EMAIL_HOST_PASSWORD = '40059d996780c47afd20e03f9959e7cc-8889127d-9d78525e'
 EMAIL_USE_TLS = True
 
 SITE_ID = 1
