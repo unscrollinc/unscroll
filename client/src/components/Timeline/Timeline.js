@@ -82,7 +82,7 @@ class Timeline extends React.Component {
 
     shouldComponentUpdate(nextProps, nextState) {
         return (
-            this.state.position &&
+            this.state.position !== undefined &&
             this.state.position.x !== nextState.position.x &&
             (this.state.mouseDown || this.state.isTouchDetected)
         );
@@ -93,7 +93,6 @@ class Timeline extends React.Component {
             this.state.mouseDown ||
             (this.state.isTouchDetected && this.state.isActive)
         ) {
-            console.log('MADE IT TO TOUCH UPDATE');
             const w = this.state.elementDimensions.width;
             const delta = this.state.position.x / w - prevState.position.x / w;
             const center = 0 - Math.round(this.state.offset / 100);
