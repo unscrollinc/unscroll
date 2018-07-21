@@ -47,7 +47,7 @@ class Event extends React.Component {
         </div>
       );
     }
-    return DateTime.fromISO(e.when_happened).toFormat('kkkk');
+    return this.props.frame.format(e.when_happened);
   }
 
   componentDidMount() {
@@ -57,7 +57,7 @@ class Event extends React.Component {
       0.2 + ((r.height / b) * 100) / this.props.cell.height,
       10
     );
-    const w = 2;
+    const w = 5;
     const res = this.props.doReservation(this.props.left, 0, w, h);
     if (res.success) {
       this.setState({
@@ -99,9 +99,11 @@ class Event extends React.Component {
                     {this.makeImage(e)}
                     <div>{this.makeWhen(e)}</div>
                     <h3>
-                      <a href={e.content_url} target="_blank">
-                        {e.title}
-                      </a>
+                      <a
+                        href={e.content_url}
+                        target="_blank"
+                        dangerouslySetInnerHTML={{ __html: e.title }}
+                      />
                     </h3>
                     {this.renderText(e)}
                   </td>

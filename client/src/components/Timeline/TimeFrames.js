@@ -217,7 +217,7 @@ const frames = {
     },
 
     elOffset: dt => {
-      return dt.month;
+      return dt.month - 1;
     },
 
     getColumnCount: () => {
@@ -268,7 +268,7 @@ const frames = {
     },
 
     elOffset: dt => {
-      return dt.day;
+      return dt.day - 1;
     },
 
     getColumnLink: (i, offset) => {
@@ -326,7 +326,9 @@ const frames = {
       const title = start.toFormat('ha');
       return { span: span, interval: interval, title: title };
     },
-
+    format: date => {
+      return DateTime.fromISO(date).toFormat('DDDD');
+    },
     getTitle: interval => {
       return frames['month'].getTitle(interval).concat({
         title: interval.start.toFormat('DDDD'),

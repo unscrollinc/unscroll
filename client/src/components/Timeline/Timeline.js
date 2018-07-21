@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactCursorPosition from 'react-cursor-position';
 import { DateTime, Interval } from 'luxon';
 import WheelReact from '../../ext/wheel-react';
 import Panel from './Panel';
@@ -7,15 +8,14 @@ import TimeFrames from './TimeFrames';
 class Timeline extends React.Component {
   constructor(props) {
     super(props);
-    console.log(props);
 
     const start = props.start
       ? DateTime.fromISO(props.start)
-      : DateTime.fromObject({ year: 1984 }).startOf('year');
+      : DateTime.fromObject({ year: 1900, month: 1 }).startOf('month');
 
     const before = props.start
       ? DateTime.fromISO(props.before)
-      : DateTime.fromObject({ year: 1984 }).endOf('year');
+      : DateTime.fromObject({ year: 1900, month: 1 }).endOf('month');
     const interval = Interval.fromDateTimes(start, before);
 
     this.state = this.initialize(interval);
@@ -32,16 +32,21 @@ class Timeline extends React.Component {
       frame: frame,
       span: adjusted,
       width: width,
-      height: 3,
+      height: 5,
       offset: 0,
       center: 0,
       atMouseDown: undefined,
+      atTouchDown: null,
       mouseDown: false
     };
   }
 
   getXPercentage() {
-    return this.props.position.x / this.props.elementDimensions.width;
+    return this.state.position.x / this.state.elementDimensions.width;
+  }
+
+  onPositionChanged(param) {
+    console.log(param);
   }
 
   handleMouseMove(e) {
@@ -89,11 +94,24 @@ class Timeline extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    const s = this.state.mouseDown;
-    return s;
+    return (
+      this.state.position &&
+      this.state.position.x !== nextState.position.x &&
+      (this.state.mouseDown || this.state.isTouchDetected)
+    );
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
+    if (this.state.isTouchDetected && this.state.isActive) {
+      const w = this.state.elementDimensions.width;
+      const delta = this.state.position.x / w - prevState.position.x / w;
+      const center = 0 - Math.round(this.state.offset / 100);
+      this.setState({
+        offset: this.state.offset + delta * 100,
+        center: center !== this.state.center ? center : this.state.center
+      });
+    }
+
     if (
       prevProps.start !== this.props.start &&
       prevProps.before !== this.props.before
@@ -126,21 +144,29 @@ class Timeline extends React.Component {
       }
     });
     return (
-      <div
-        key="TimelineWrapper"
-        className="Timeline"
-        style={{ position: 'fixed' }}
-        {...WheelReact.events}
-        onMouseDown={this.handleMouseDown.bind(this)}
-        onMouseUp={this.handleMouseUp.bind(this)}
-        onMouseMove={this.handleMouseMove.bind(this)}
+      <ReactCursorPosition
+        isActivatedOnTouch
+        {...{
+          onPositionChanged: props => this.setState(props),
+          onDetectedEnvironmentChanged: props => this.setState(props),
+          onActivationChanged: props => this.setState(props)
+        }}
       >
-        <div key="Timeline" id="Panels">
-          <Panel key={this.state.center - 1} {...this.toProps(-1)} />
-          <Panel key={this.state.center} {...this.toProps(0)} />
-          <Panel key={this.state.center + 1} {...this.toProps(1)} />
+        <div
+          key="TimelineWrapper"
+          className="Timeline"
+          {...WheelReact.events}
+          onMouseDown={this.handleMouseDown.bind(this)}
+          onMouseUp={this.handleMouseUp.bind(this)}
+          onMouseMove={this.handleMouseMove.bind(this)}
+        >
+          <div key="Timeline" id="Panels">
+            <Panel key={this.state.center - 1} {...this.toProps(-1)} />
+            <Panel key={this.state.center} {...this.toProps(0)} />
+            <Panel key={this.state.center + 1} {...this.toProps(1)} />
+          </div>
         </div>
-      </div>
+      </ReactCursorPosition>
     );
   }
 }

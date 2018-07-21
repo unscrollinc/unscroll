@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactCursorPosition from 'react-cursor-position';
 import queryString from 'query-string';
 import Nav from './Nav';
 // import News from './News';
@@ -132,15 +131,15 @@ class App extends React.Component {
   componentDidMount() {
     document.title = 'Unscroll';
   }
-
+  onPositionChanged(param) {
+    console.log(param);
+  }
   render() {
     return (
       <AppProvider>
         <div className="App">
           <Nav />
-          <ReactCursorPosition>
-            <Timeline />
-          </ReactCursorPosition>
+          <Timeline />
           {routes.map((route, index) => (
             <Route
               path={route.path}

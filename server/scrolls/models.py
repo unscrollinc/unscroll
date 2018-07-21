@@ -267,7 +267,7 @@ class Event(models.Model):
     class Meta:
         unique_together = (("by_user", "in_scroll", "title", "source_url"),)
         db_table = 'event'
-        ordering = ['ranking']
+        ordering = ['-ranking']
 
     def __unicode__(self):
         return '{}'.format(self.title,)

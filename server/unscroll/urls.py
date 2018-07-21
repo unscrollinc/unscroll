@@ -303,7 +303,7 @@ class BulkEventViewSet(BulkModelViewSet):
         qsfiltered = self.filter_queryset(qs)
         return qsfiltered
         
-    @cache_response(key_func=_cache_key)
+#    @cache_response(key_func=_cache_key)
     def list(self, request):
         pagination_class = LimitOffsetPagination
         paginator = pagination_class()

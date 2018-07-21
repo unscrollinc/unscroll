@@ -6,7 +6,7 @@ import { DateTime } from 'luxon';
 import axios from 'axios';
 import cachios from 'cachios';
 import utils from '../Util/Util';
-// import { frames } from './TimeFrames';
+import { frames } from './TimeFrames';
 axios.defaults.xsrfHeaderName = 'X-CSRFTOKEN';
 axios.defaults.xsrfCookieName = 'csrftoken';
 axios.defaults.withCredentials = true;
@@ -72,7 +72,7 @@ class Panel extends React.Component {
   makeGrid() {
     const w = this.props.width;
     const h = this.props.height;
-    // Makes an associative array of false values that is
+    // Makes an associative array of `false` values that is
     // `this.state.grid.height` long and each value is an array
     // `this.state.grid.height` wide. I.e. a 2D bitmap.
 
@@ -128,23 +128,21 @@ class Panel extends React.Component {
     };
   }
 
-  makeEl(event) {
+  renderEl(event) {
     const dt = DateTime.fromISO(event.when_happened);
     const left = this.state.frame.elOffset(dt);
     return (
       <Event
         key={event.uuid}
-        width={2 * this.state.cell.width + '%'}
+        width={this.state.cell.width + '%'}
         cell={this.state.cell}
         dt={dt}
+        frame={frames[this.state.frame.narrow]}
         doReservation={this.doReservation.bind(this)}
         left={left}
         event={event}
       />
     );
-  }
-  makeEls(data) {
-    return;
   }
 
   getSpan() {
@@ -189,7 +187,7 @@ class Panel extends React.Component {
       <div className="Panel" id={this.props.center} style={{ left: left }}>
         <h1>{this.state.title}</h1>
         {this.state.columns}
-        {this.state.events.map(this.makeEl.bind(this))}
+        {this.state.events.map(this.renderEl.bind(this))}
       </div>
     );
   }
