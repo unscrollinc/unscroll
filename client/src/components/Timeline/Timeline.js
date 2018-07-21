@@ -49,29 +49,15 @@ class Timeline extends React.Component {
         console.log(param);
     }
 
-    handleMouseMove(e) {
-        if (this.state.mouseDown) {
-            const delta = this.getXPercentage() - this.state.atMouseDown;
-            const center = 0 - Math.round(this.state.offset / 100);
-            this.setState({
-                offset: this.state.offset + 50 * delta,
-                center:
-                    center !== this.state.center ? center : this.state.center
-            });
-        }
-    }
-
     handleMouseDown(e) {
         this.setState({
-            mouseDown: true,
-            atMouseDown: this.getXPercentage()
+            mouseDown: true
         });
     }
 
     handleMouseUp(e) {
         this.setState({
-            mouseDown: false,
-            atMouseDown: undefined
+            mouseDown: false
         });
     }
 
@@ -103,8 +89,11 @@ class Timeline extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        console.log(this.state.isTouchDetected, this.state.isActive);
-        if (this.state.isTouchDetected && this.state.isActive) {
+        if (
+            this.state.mouseDown ||
+            (this.state.isTouchDetected && this.state.isActive)
+        ) {
+            console.log('MADE IT TO TOUCH UPDATE');
             const w = this.state.elementDimensions.width;
             const delta = this.state.position.x / w - prevState.position.x / w;
             const center = 0 - Math.round(this.state.offset / 100);
@@ -161,7 +150,6 @@ class Timeline extends React.Component {
                     {...WheelReact.events}
                     onMouseDown={this.handleMouseDown.bind(this)}
                     onMouseUp={this.handleMouseUp.bind(this)}
-                    onMouseMove={this.handleMouseMove.bind(this)}
                 >
                     <div key="Timeline" id="Panels">
                         <Panel
