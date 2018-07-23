@@ -9,7 +9,7 @@ import AppContext from './AppContext';
 class Nav extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { height: 24, ...utils.getCookie() };
+        this.state = { height: 16, ...utils.getCookie() };
         this.myRef = React.createRef();
     }
 
@@ -28,11 +28,9 @@ class Nav extends React.Component {
     renderLoginState() {
         if (this.props.context.state.authToken) {
             return (
-                <div className="login">
-                    <Link to="/user/login">
-                        {this.props.context.state.username}
-                    </Link>
-                </div>
+                <Link to="/user/login">
+                    {this.props.context.state.username}
+                </Link>
             );
         } else {
             return (
@@ -84,8 +82,10 @@ class Nav extends React.Component {
 
     componentDidMount() {
         const br = this.myRef.current.getBoundingClientRect();
-        console.log(br);
-        this.setState({ height: br.height });
+        this.setState({
+            height: br.height,
+            width: br.width
+        });
     }
 
     render() {

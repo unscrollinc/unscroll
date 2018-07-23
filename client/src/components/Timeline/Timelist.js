@@ -45,6 +45,7 @@ class Timelist extends React.Component {
     }
 
     getEvents(url) {
+        console.log('URL', url);
         const _this = this;
         const order = '&order=when_happened';
         const ordering_url = url.includes(order) ? url : url + order;
@@ -124,7 +125,7 @@ class Timelist extends React.Component {
         const d = t.scrollHeight - t.scrollTop;
         console.log(d);
 
-        if (d < 1000) {
+        if (d < 2000) {
             if (!this.state.doGetNext) {
                 _this.setState(
                     prevState => ({ doGetNext: true }),
