@@ -29,7 +29,7 @@ def get_releases(api, scroll):
                     'title':title,
                     'text':None,
                     'resolution':ud.resolution,
-                    'ranking':random.random(),
+                    'ranking':0.1,
                     'content_url':content_url,
                     'with_thumbnail':None,
                     'source_name':'Amazon PR Page',

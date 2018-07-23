@@ -160,7 +160,7 @@ class EventFilter(filters.FilterSet):
 
     before = django_filters.IsoDateTimeFilter(
         name='when_happened',
-        lookup_expr='lt')
+        lookup_expr='lte')
 
     in_scroll_uuid = django_filters.UUIDFilter(
         name="in_scroll__uuid")
@@ -283,8 +283,8 @@ class BulkEventSerializer(BulkSerializerMixin,
 class BulkEventViewSet(BulkModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Event.objects.select_related('in_scroll',
-                                              'by_user',
-                                              'with_thumbnail')
+                                            'by_user',
+                                            'with_thumbnail')
     filter_backends = (filters.DjangoFilterBackend,)
     filter_class = EventFilter
     serializer_class = BulkEventSerializer

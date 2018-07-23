@@ -1,9 +1,9 @@
 body {
-  margin: 0;
-  padding: 0;
-  position: fixed;
-  font-size: 11.5pt;
-  font-family: 'IBM Plex Sans', sans-serif;
+    margin: 0;
+    padding: 0;
+    position: fixed;
+    font-size: 11.5pt;
+    font-family: 'IBM Plex Sans', sans-serif;
 }
 
 h1,
@@ -13,73 +13,68 @@ h4,
 h5,
 h6,
 h7 {
-  color: deepskyblue;
-  text-align: left;
-  margin: 0;
-  padding: 0;
-  font-weight: normal;
+    color: deepskyblue;
+    text-align: left;
+    margin: 0;
+    padding: 0;
+    font-weight: normal;
 }
 
 h1 {
-  font-size: 200%;
-  color: deepskyblue;
+    font-size: 200%;
+    color: lightskyblue;
 }
 
 h1 a:hover {
-  color: lightskyblue;
+    color: lightskyblue;
 }
 
 .Panel h1 {
-  background-color: deepskyblue;
+    background-color: deepskyblue;
 }
 
 .Panel h1 a {
-  text-decoration: none;
-  color: white;
-  width: 100%;
-  display: block;
+    text-decoration: none;
+    color: white;
+    width: 100%;
+    display: block;
 }
 
 .input,
 th,
 td {
-  font-family: 'IBM Plex Sans', sans-serif;
-  line-height: 150%;
-  color: #666;
+    font-family: 'IBM Plex Sans', sans-serif;
+    line-height: 150%;
+    color: #666;
 }
 
 .App {
-  width: 100%;
-  height: 100%;
-  position: fixed;
+    width: 100%;
+    height: 100%;
+    position: fixed;
 }
 
 .Nav {
-  padding-left: 1em;
-  width: 100%;
-  vertical-align: middle;
-  line-height: 150%;
-  min-height: 5%;
-  height: 2em;
-  position: fixed;
-  color: black;
-  border-style: 1px inset deepskyblue;
+    padding-left: 1em;
+    width: 100%;
+    min-height: 5%;
+    position: fixed;
+    color: black;
+    display: flex;
+    justify-content: space-between;
 }
 
-.Nav > table {
-  height: 100%;
-}
 .Nav a {
-  color: 666;
-  text-decoration: none;
-  padding-right: 0.5em;
+    color: #666;
+    text-decoration: none;
+    padding-right: 0.5em;
 }
 .Nav .logo {
-  font-weight: bold;
-  color: black;
+    font-weight: bold;
+    color: black;
 }
 .Nav a:hover {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
 .Timeline,
@@ -89,306 +84,307 @@ td {
 .TimelineList,
 .Timelist,
 .Meta {
-  border-top: 1px solid deepskyblue;
-  top: 5%;
-  height: 95%;
-  position: fixed;
-  background-color: white;
+    border-top: 1px solid deepskyblue;
+    top: 5%;
+    height: 95%;
+    position: fixed;
+    background-color: white;
 }
 
 .Timeline {
-  width: 100%;
-  height: 95%;
-  position: fixed;
-  z-index: 0;
-}
-.Timelist {
-  border-left: 1px solid deepskyblue;
+    width: 100%;
+    height: 95%;
+    position: fixed;
+    z-index: 0;
 }
 
 .Editor,
 .NotebookList,
 .TimelineList,
 .Meta {
-  width: 50%;
-  background: white;
-  padding: 0% 0% 0% 0%;
+    width: 50%;
+    background: white;
+    padding: 0% 0% 0% 0%;
 }
 .Meta {
-  border-right: 3px solid deepskyblue;
+    border-right: 3px solid deepskyblue;
 }
 .TimelineList,
 .NotebookList {
-  width: 100%;
-  background: white;
-  padding: 0% 0% 0% 0%;
+    width: 100%;
+    background: white;
+    padding: 0% 0% 0% 0%;
 }
 
 .Notebook {
-  border: 1px solid deepskyblue;
-  width: 40%;
-  padding-bottom: 500px;
-  position: fixed;
-  top: 5%;
+    border: 1px solid deepskyblue;
+    width: 40%;
+    padding-bottom: 500px;
+    position: fixed;
+    top: 5%;
 }
 .notebook-inner {
-  padding: 1em;
+    padding: 1em;
 }
 .Editor {
-  width: 33.33%;
-  border-right: 1px solid deepskyblue;
+    width: 33.33%;
+    border-right: 1px solid deepskyblue;
 }
 
 .NotebookList {
-  left: 0%;
+    left: 0%;
 }
 
 .TimelineList {
-  left: 0%;
+    left: 0%;
 }
 
 #Panels {
-  height: 100%;
+    height: 100%;
 }
 
 .Panel {
-  height: 100%;
-  background: lightskyblue;
-  float: left;
-  position: absolute;
-  width: 100%;
-  cursor: ew-resize;
+    height: 100%;
+    background: lightskyblue;
+    float: left;
+    position: absolute;
+    width: 100%;
+    cursor: ew-resize;
 }
 
 .Panel h1 {
-  font-size: 11.5pt;
-  padding: 0.5em 1em 0.5em 1em;
-  font-weight: normal;
-  left: 0.25em;
-  border-top: 1px solid deepskyblue;
+    font-size: 11.5pt;
+    padding: 0.5em 1em 0.5em 1em;
+    font-weight: normal;
+    left: 0.25em;
+    border-top: 1px solid deepskyblue;
 }
 .Panel h1 a {
-  font-weight: normal;
-  display: inline;
+    font-weight: normal;
+    display: inline;
 }
 
 .column {
-  box-sizing: border-box;
-  border-left: 1px solid deepskyblue;
-  min-height: 96%;
-  float: left;
-  font-size: 11.5pt;
-  text-align: center;
-  height: 100%;
-  padding-top: 0.25%;
+    box-sizing: border-box;
+    border-left: 1px solid deepskyblue;
+    min-height: 96%;
+    float: left;
+    font-size: 11.5pt;
+    text-align: center;
+    height: 100%;
+    padding-top: 0.25%;
 }
 
 .column a {
-  text-decoration: none;
-  display: block;
-  width: 100%;
-  color: white;
+    text-decoration: none;
+    display: block;
+    width: 100%;
+    color: white;
 }
 
 .column a:hover {
-  background: black;
-  color: white;
+    background: black;
+    color: white;
 }
 
 .event {
-  box-sizing: border-box;
-  position: absolute;
-  font-size: 9pt;
-  padding: 1em;
+    box-sizing: border-box;
+    position: absolute;
+    font-size: 9pt;
 }
 
 .event-inner {
-  background: white;
-  padding: 1em;
-  border-top: 1px solid deepskyblue;
-  border-left: 1px solid deepskyblue;
-  border-radius: 0.75em;
+    background: white;
+    padding: 2.5%;
+    margin: 2.5%;
+    border-top: 1px solid deepskyblue;
+    border-left: 1px solid deepskyblue;
+    border-radius: 0.75em;
 }
+
 .event button {
-  float: right;
-  display: inline;
+    float: right;
+    display: inline;
 }
 
 #buffer {
-  position: fixed;
-  top: 100%;
-  width: 100%;
-  height: 95%;
+    position: fixed;
+    top: 100%;
+    width: 100%;
+    height: 95%;
 }
 
 .Note {
-  margin-top: 1em;
-  min-height: 15em;
-  border: 1px solid skyblue;
-  padding: 1em;
-  font-size: 10pt;
-  font-family: sans-serif;
-  background: white;
+    margin-top: 1em;
+    min-height: 15em;
+    border: 1px solid skyblue;
+    padding: 1em;
+    font-size: 10pt;
+    font-family: sans-serif;
+    background: white;
 }
 
 .note-inner {
-  margin: 0em;
-  line-height: 149%;
+    margin: 0em;
+    line-height: 149%;
 }
 
 .note-event a {
-  text-decoration: none;
-  border-bottom: 1px solid #662;
-  font-weight: bold;
+    text-decoration: none;
+    border-bottom: 1px solid #662;
+    font-weight: bold;
 }
 
 .note-event-scroll {
-  border: 1px solid deepskyblue;
+    border: 1px solid deepskyblue;
 }
 .note-event {
-  padding: 1em;
-  margin: 0;
-  color: #888;
-  max-height: 8em;
+    padding: 1em;
+    margin: 0;
+    color: #888;
+    max-height: 8em;
 }
 
 .note-nav {
-  padding-bottom: 2em;
+    padding-bottom: 2em;
 }
 
 .public-DraftEditor-content:focus {
-  background: white;
+    background: white;
 }
 .active-true {
-  background: black;
-  color: white;
+    background: black;
+    color: white;
 }
 
 div.Timelist {
-  width: 50%;
-  left: 50%;
-  height: 95%;
-  top: 5%;
-  position: fixed;
-  background: white;
-  overflow: auto;
-  margin-bottom: 1000px;
-  padding: 1em;
+    width: 10%;
+    left: 50%;
+    border-left: 1px solid deepskyblue;
+    height: 95%;
+    top: 5%;
+    position: fixed;
+    background: white;
+    padding: 1em;
 }
 
+div.Timelist table {
+    padding-bottom: 1000px;
+}
 .timelist-image {
-  width: 100%;
-  max-height: 200px;
+    width: 100%;
+    max-height: 200px;
 }
 
 div.Timelist div.timelist-meta-content {
-  margin-top: 4em;
-  margin-bottom: 4em;
+    margin-top: 4em;
+    margin-bottom: 4em;
 }
 
 div.Timelist div.timelist-meta h1 a {
-  text-decoration: none;
-  color: deepskyblue;
+    text-decoration: none;
+    color: deepskyblue;
 }
 
 div.Timelist div.citation a {
-  text-decoration: none;
-  color: deepskyblue;
+    text-decoration: none;
+    color: deepskyblue;
 }
 
 div.Timelist div.timespan {
-  font-style: italic;
-  padding: 1em 0 1em 0;
+    font-style: italic;
+    padding: 1em 0 1em 0;
 }
 div.Timelist div.description {
-  color: #666;
-  font-size: 100%;
-  line-height: 1.5em;
-  font-style: Italic;
-  text-align: justify;
-  hyphens: auto;
+    color: #666;
+    font-size: 100%;
+    line-height: 1.5em;
+    font-style: Italic;
+    text-align: justify;
+    hyphens: auto;
 }
 
 div.Timelist table.meta {
-  border-left: 1px solid red;
-  width: 50%;
-  margin-left: 2.5%;
-  float: right;
+    border-left: 1px solid red;
+    width: 50%;
+    margin-left: 2.5%;
+    float: right;
 }
 
 div.Timelist table.meta tr {
 }
 
 div.Timelist table.meta th {
-  width: 25%;
-  padding-right: 0.5em;
+    width: 25%;
+    padding-right: 0.5em;
 }
 
 div.Timelist table.meta td,
 div.Timelist table.meta th {
-  padding-left: 0.5em;
-  vertical-align: top;
-  line-height: 150%;
+    padding-left: 0.5em;
+    vertical-align: top;
+    line-height: 150%;
 }
 
 div.Timelist div.description i,
 div.Timelist div.description em {
-  padding-top: 1em;
-  font-style: normal;
+    padding-top: 1em;
+    font-style: normal;
 }
 
 div.Timelist div.meta {
-  padding-top: 1em;
+    padding-top: 1em;
 }
 
 table {
-  border-collapse: collapse;
+    border-collapse: collapse;
 }
 
 tr.timelist {
-  border-bottom: 1px solid red;
+    border-bottom: 1px solid red;
 }
 tr.timelist td {
-  vertical-align: top;
+    vertical-align: top;
 }
 
 .timeline-image {
-  width: 75px;
-  max-height: 75px;
-  float: left;
-  margin: 0 1em 1em 0;
-  border: 1px solid #ccc;
-  max-height: 200px;
+    width: 75px;
+    max-height: 75px;
+    float: left;
+    margin: 0 1em 1em 0;
+    border: 1px solid #ccc;
+    max-height: 200px;
 }
 
 td.meta {
-  text-align: right;
-  width: 25%;
-  font-size: 9pt;
-  line-height: 125%;
-  padding: 0.5em 0.5em 1.5em 1em;
+    text-align: right;
+    width: 25%;
+    font-size: 9pt;
+    line-height: 125%;
+    padding: 0.5em 0.5em 1.5em 1em;
 }
 
 div.collection {
-  text-align: right;
+    text-align: right;
 }
 
 div.collection div {
-  margin-bottom: 0.5em;
+    margin-bottom: 0.5em;
 }
 
 td.content {
-  width: 75%;
-  text-align: justify;
-  hyphens: auto;
-  color: #555;
-  font-size: 11pt;
-  padding: 0.5em 0.5em 1.5em 1em;
+    width: 75%;
+    text-align: justify;
+    hyphens: auto;
+    color: #555;
+    font-size: 11pt;
+    padding: 0.5em 0.5em 1.5em 1em;
 }
 
 td.content .event-title {
-  font-weight: bold;
-  /*
+    font-weight: normal;
+    color: #555;
+    /*
 font-family: 'IBM Plex Sans', sans-serif;
 font-family: 'IBM Plex Sans Condensed', sans-serif;
 font-family: 'IBM Plex Serif', serif;
@@ -397,48 +393,51 @@ font-family: 'IBM Plex Mono', monospace;
 }
 
 td.image {
-  height: 100%;
+    height: 100%;
 }
 
 td a {
-  text-decoration: none;
-  color: deepskyblue;
+    text-decoration: none;
+    color: deepskyblue;
 }
 
 div.dt {
-  font-weight: bold;
-  color: #444;
+    font-weight: bold;
+    color: #444;
 }
 
 div.title {
-  font-size: 10pt;
+    font-size: 10pt;
 }
 
 .dtsince {
-  background: blue;
-  color: white;
-  padding-left: 1em;
+    background: blue;
+    color: white;
+    padding-left: 1em;
 }
 
 button,
 .list-object-button,
 .button,
 input.inputButton {
-  font-size: 10pt;
-  font-weight: normal;
-  margin: 0 0.5em 0 0;
-  padding: 0 0.5em 0 0.5em;
-  background: white;
-  color: black;
-  border: 1px solid skyblue;
-  border-radius: 4px;
-  vertical-align: top;
-  cursor: pointer;
-  text-decoration: none;
+    font-size: 10pt;
+    font-weight: normal;
+    margin: 0 0.5em 0 0;
+    padding: 0 0.5em 0 0.5em;
+    background: white;
+    color: black;
+    border: 1px solid skyblue;
+    border-radius: 4px;
+    vertical-align: top;
+    cursor: pointer;
+    text-decoration: none;
 }
 
+.list-object-button {
+    font-size: 120%;
+}
 .edit-link {
-  margin: 0 0.5em 0 0.25em;
+    margin: 0 0.5em 0 0.25em;
 }
 
 .list-object-button:active,
@@ -448,121 +447,121 @@ input.inputButton {
 button:active,
 button:hover,
 input.inputButton:active {
-  background: white;
-  color: black;
+    background: white;
+    color: black;
 }
 .login {
-  padding: 0.5em 1em 0 0;
+    padding: 0.5em 1em 0 0;
 
-  font-weight: bold;
-  float: right;
+    font-weight: bold;
+    float: right;
 
-  text-align: right;
+    text-align: right;
 }
 button.logout {
-  margin-left: 1em;
+    margin-left: 1em;
 }
 
 .subsearch {
-  padding-left: 0.5em;
-  width: 20%;
-  font-size: 9pt;
-  line-height: 149%;
+    padding-left: 0.5em;
+    width: 20%;
+    font-size: 9pt;
+    line-height: 149%;
 }
 
 .subsearch input {
-  padding: 0.05em;
-  width: 10%;
-  background: #eee;
-  border: 1px solid gray;
-  padding-left: 0.25em;
-  text-transform: none;
-  font-size: 9pt;
+    padding: 0.05em;
+    width: 10%;
+    background: #eee;
+    border: 1px solid gray;
+    padding-left: 0.25em;
+    text-transform: none;
+    font-size: 9pt;
 }
 
 th {
-  font-weight: normal;
+    font-weight: normal;
 }
 
 .rangeInput {
-  width: 90%;
+    width: 90%;
 }
 
 .move-target {
-  background: yellow;
-  width: 100%;
-  height: 10%;
+    background: yellow;
+    width: 100%;
+    height: 10%;
 }
 
 .order {
-  font-size: 100%;
-  display: block;
-  float: right;
-  margin-right: 0.5em;
+    font-size: 100%;
+    display: block;
+    float: right;
+    margin-right: 0.5em;
 }
 
 span.status {
-  padding-left: 0.5em;
-  text-align: right;
+    padding-left: 0.5em;
+    text-align: right;
 }
 th {
-  text-align: right;
+    text-align: right;
 }
 
 span.search-input {
-  padding-top: 1%;
+    padding-top: 1%;
 }
 div.search-ruby {
-  font-size: 8pt;
-  color: #888;
-  width: 100%;
-  text-align: center;
+    font-size: 8pt;
+    color: #888;
+    width: 100%;
+    text-align: center;
 }
 
 .eventNoteButton {
-  float: right;
+    float: right;
 }
 form.search {
-  display: inline;
+    display: inline;
 }
 
 .About {
-  text-align: justify;
-  hyphens: auto;
-  line-height: 150%;
-  padding: 5% 0% 10% 10%;
-  width: 60%;
-  margin: 0;
+    text-align: justify;
+    hyphens: auto;
+    line-height: 150%;
+    padding: 5% 0% 10% 10%;
+    width: 60%;
+    margin: 0;
 }
 
 .About h1,
 .About h2,
 .About h3 {
-  line-height: 150%;
-  font-weight: normal;
-  padding: 1em 0 0 0;
+    line-height: 150%;
+    font-weight: normal;
+    padding: 1em 0 0 0;
 }
 
 .About h1 {
-  padding: 0 0 0.5em 0;
+    padding: 0 0 0.5em 0;
 }
 
 div.loading {
-  width: 100%;
-  padding: 3em 0 0 0;
-  text-align: center;
-  opacity: 1;
-  animation: fade 0.5s linear;
+    width: 100%;
+    padding: 3em 0 0 0;
+    text-align: center;
+    opacity: 1;
+    animation: fade 0.5s linear;
 }
 
 @keyframes fade {
-  0%,
-  100% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
+    0%,
+    100% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
 }
 
 /* 
@@ -570,116 +569,116 @@ div.loading {
 */
 
 .list-object {
-  padding: 5% 10% 0 10%;
-  margin: 0 0 10em 0;
-  background: white;
-  height: 100%;
+    padding: 5% 10% 0 10%;
+    margin: 0 0 10em 0;
+    background: white;
+    height: 100%;
 }
 
 table.list-object-table {
-  margin: 1% 0 0 0;
-  width: 100%;
-  border-collapse: collapse;
+    margin: 1% 0 0 0;
+    width: 100%;
+    border-collapse: collapse;
 }
 
 tr.list-object-tr {
-  border-bottom: 1px solid red;
+    border-bottom: 1px solid red;
 }
 
 table.list-object-table th {
-  font-weight: bold;
-  vertical-align: bottom;
+    font-weight: bold;
+    vertical-align: bottom;
 }
 
 table.list-object-table td {
-  vertical-align: top;
+    vertical-align: top;
 }
 table.list-object-table td,
 table.list-object-table th {
-  font-size: 11pt;
-  padding: 1.25em 0.5em 1.25em 0;
+    font-size: 11pt;
+    padding: 1.25em 0.5em 1.25em 0;
 }
 td.list-object-date-td,
 th.list-object-date-th {
-  width: 10%;
-  text-align: left;
+    width: 10%;
+    text-align: left;
 }
 td.list-object-creator-td,
 th.list-object-creator-th {
-  width: 10%;
-  text-align: left;
+    width: 10%;
+    text-align: left;
 }
 td.list-object-meta-td,
 th.list-object-meta-th {
-  width: 70%;
-  text-align: left;
+    width: 70%;
+    text-align: left;
 }
 td.list-object-published-td,
 th.list-object-published-th {
-  width: 15%;
-  text-align: left;
+    width: 15%;
+    text-align: left;
 }
 div.list-object-title {
-  font-weight: bold;
+    font-weight: bold;
 }
 div.list-object-byline {
 }
 div.list-object-description {
-  font-variant: Italic;
+    font-variant: Italic;
 }
 div.list-object-published-Public {
-  font-weight: bold;
+    font-weight: bold;
 }
 div.list-object-published-Private {
-  font-weight: normal;
+    font-weight: normal;
 }
 
 .rte-citation-editor input,
 .rte-link-editor input,
 .public-DraftEditor-content {
-  padding: 0;
-  margin: 0;
-  padding: 1% 0 1% 0;
-  border: none;
-  font-size: 13pt;
-  line-height: 150%;
-  border-bottom: 1px dotted deepskyblue;
-  color: black;
-  font-family: 'IBM Plex Sans', monospace;
+    padding: 0;
+    margin: 0;
+    padding: 1% 0 1% 0;
+    border: none;
+    font-size: 13pt;
+    line-height: 150%;
+    border-bottom: 1px dotted deepskyblue;
+    color: black;
+    font-family: 'IBM Plex Sans', monospace;
 }
 
 div.rte-title-editor .public-DraftStyleDefault-block {
-  font-size: 150%;
+    font-size: 150%;
 }
 
 .input-title {
-  color: #aaa;
-  font-size: 10pt;
-  color: deepskyblue;
-  margin: 0.25em 0 2em 0;
+    color: #aaa;
+    font-size: 10pt;
+    color: deepskyblue;
+    margin: 0.25em 0 2em 0;
 }
 
 div.is-published-toggle label {
-  padding-right: 0.5em;
-  color: #444;
+    padding-right: 0.5em;
+    color: #444;
 }
 
 div.is-published-toggle {
-  display: flex;
-  align-items: center;
-  width: 25%;
-  margin-right: -1em;
+    display: flex;
+    align-items: center;
+    width: 25%;
+    margin-right: -1em;
 }
 
 button.timeline-meta-done-button {
-  font-size: 11.5pt;
-  padding: 0.15em 0.5em 0.15em 0.5em;
-  margin: 0 1em 0 0;
-  font-weight: bold;
-  background: red;
-  border: none;
-  color: white;
-  float: left;
+    font-size: 11.5pt;
+    padding: 0.15em 0.5em 0.15em 0.5em;
+    margin: 0 1em 0 0;
+    font-weight: bold;
+    background: red;
+    border: none;
+    color: white;
+    float: left;
 }
 
 span.button-nav {
@@ -687,192 +686,196 @@ span.button-nav {
 
 table.timeline-event td,
 table.timeline-event th {
-  vertical-align: top;
-  background: white;
-  /*    border:1px solid black; */
+    vertical-align: top;
+    background: white;
+    /*    border:1px solid black; */
 }
 
 table.timeline-event p {
-  padding: 0;
-  margin: 0;
+    padding: 0;
+    margin: 0;
 }
 
 .note-nav {
-  display: flex;
-  justify-content: space-between;
+    display: flex;
+    justify-content: space-between;
 }
 .count,
 .delete {
-  font-size: 150%;
-  font-weight: bold;
-  padding: 0.25em;
-  margin-left: -0.5em;
-  margin-top: -0.5em;
-  display: block;
-  width: 5%;
-  text-align: center;
-  transition: background 0.5s ease-in;
-  cursor: pointer;
+    font-size: 150%;
+    font-weight: bold;
+    padding: 0.25em;
+    margin-left: -0.5em;
+    margin-top: -0.5em;
+    display: block;
+    width: 5%;
+    text-align: center;
+    transition: background 0.5s ease-in;
+    cursor: pointer;
 }
 .count {
-  color: white;
-  background: lightskyblue;
-  border: 1px solid deepskyblue;
+    color: white;
+    background: lightskyblue;
+    border: 1px solid deepskyblue;
 }
 .delete {
-  text-align: right;
-  width: 1em;
-  font-size: 150%;
-  border: none;
+    text-align: right;
+    width: 1em;
+    font-size: 150%;
+    border: none;
 }
 
 .Auth {
-  position: fixed;
-  background: white;
-  border-top: 1px solid deepskyblue;
-  padding: 5%;
-  width: 100%;
-  height: 95%;
-  top: 5%;
+    position: fixed;
+    background: white;
+    border-top: 1px solid deepskyblue;
+    padding: 5%;
+    width: 100%;
+    height: 95%;
+    top: 5%;
 }
 
 .color-primary-0 {
-  color: #00bfff;
+    color: #00bfff;
 } /* Main Primary color */
 .color-primary-1 {
-  color: #31c9fc;
+    color: #31c9fc;
 }
 .color-primary-2 {
-  color: #08c1ff;
+    color: #08c1ff;
 }
 .color-primary-3 {
-  color: #0084b0;
+    color: #0084b0;
 }
 .color-primary-4 {
-  color: #006485;
+    color: #006485;
 }
 
 .color-secondary-1-0 {
-  color: #ffb400;
+    color: #ffb400;
 } /* Main Secondary color (1) */
 .color-secondary-1-1 {
-  color: #ffc02a;
+    color: #ffc02a;
 }
 .color-secondary-1-2 {
-  color: #ffb400;
+    color: #ffb400;
 }
 .color-secondary-1-3 {
-  color: #ffb400;
+    color: #ffb400;
 }
 .color-secondary-1-4 {
-  color: #d59600;
+    color: #d59600;
 }
 
 .color-secondary-2-0 {
-  color: #ff2800;
+    color: #ff2800;
 } /* Main Secondary color (2) */
 .color-secondary-2-1 {
-  color: #ff4b2a;
+    color: #ff4b2a;
 }
 .color-secondary-2-2 {
-  color: #ff2800;
+    color: #ff2800;
 }
 .color-secondary-2-3 {
-  color: #ff2800;
+    color: #ff2800;
 }
 .color-secondary-2-4 {
-  color: #d52100;
+    color: #d52100;
 }
 
 .saved {
-  border: 1px solid skyblue;
-  background: deepskyblue;
+    border: 1px solid skyblue;
+    background: deepskyblue;
 }
 
 .unsaved {
-  border: 1px solid #ff2800;
-  background: #d52100;
+    border: 1px solid #ff2800;
+    background: #d52100;
 }
 
 .moving {
-  background-color: gray;
+    background-color: gray;
 }
 
 .target {
-  background-color: #ffb400;
+    background-color: #ffb400;
 }
 
 /* MANUSCRIPT */
 
 .Manuscript {
-  position: absolute;
-  top: 5%;
-  left: 66.6666%;
-  width: 33.3333%;
-  border-left: 1px solid deepskyblue;
+    position: absolute;
+    top: 5%;
+    left: 66.6666%;
+    width: 33.3333%;
+    border-left: 1px solid deepskyblue;
 }
 
 .ManuscriptReader {
-  position: absolute;
-  top: 5%;
-  width: 100%;
-  border-top: 1px solid deepskyblue;
+    position: absolute;
+    top: 5%;
+    width: 100%;
+    border-top: 1px solid deepskyblue;
 }
 
 div.manuscript-inner {
-  height: 95%;
-  /*    background:#31C9FC;
+    height: 95%;
+    /*    background:#31C9FC;
     background:#08C1FF;
     background:#0084B0; */
-  background: white;
-  color: black;
+    background: white;
+    color: black;
 
-  position: absolute;
-  font-family: 'IBM Plex Serif', serif;
-  width: 70%;
-  padding: 15%;
-  text-align: justify;
-  hyphens: auto;
-  padding-bottom: 1000px;
-  line-height: 200%;
+    position: absolute;
+    font-family: 'IBM Plex Serif', serif;
+    width: 70%;
+    padding: 15%;
+    text-align: justify;
+    hyphens: auto;
+    padding-bottom: 1000px;
+    line-height: 200%;
 }
 
 div.manuscript-inner h1,
 div.manuscript-inner h2,
 div.manuscript-inner .description {
-  text-align: center;
-  padding-top: 1em;
+    text-align: center;
+    padding-top: 1em;
 }
 
 div.manuscript-inner h1 {
-  font-size: 300%;
-  line-height: 120%;
+    font-size: 300%;
+    line-height: 120%;
 }
 
 div.manuscript-inner .description {
-  font-style: Italic;
-  padding-bottom: 1em;
+    font-style: Italic;
+    padding-bottom: 1em;
 }
 
 .reader h1 {
-  text-align: center;
-  line-height: 150%;
+    text-align: center;
+    line-height: 150%;
 }
 .reader h2 {
-  padding: 0.5em 0 0.5em 0;
-  text-align: center;
-  line-height: 150%;
+    padding: 0.5em 0 0.5em 0;
+    text-align: center;
+    line-height: 150%;
 }
 .reader .description {
-  padding: 1em 0 1em 0;
-  text-align: center;
-  font-style: Italic;
+    padding: 1em 0 1em 0;
+    text-align: center;
+    font-style: Italic;
 }
 .reader .manuscript-title {
-  padding: 5em 5em 0 5em;
+    padding: 5em 5em 0 5em;
 }
 .reader .manuscript-body {
-  padding: 1em 5em 10em 5em;
-  line-height: 150%;
-  font-size: 13pt;
+    padding: 1em 5em 10em 5em;
+    line-height: 150%;
+    font-size: 13pt;
+}
+
+span.switcher {
+    color: deepskyblue;
 }

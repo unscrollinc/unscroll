@@ -2,7 +2,7 @@ import React from 'react';
 import Column from './Column';
 import Event from './PanelEvent';
 import { Link } from 'react-router-dom';
-import { DateTime } from 'luxon';
+import { Interval, DateTime } from 'luxon';
 import axios from 'axios';
 import cachios from 'cachios';
 import utils from '../Util/Util';
@@ -13,183 +13,188 @@ axios.defaults.withCredentials = true;
 
 /*
 
-THERE IS A BIG BAD GLOBAL VARIABLE IN HERE CALLED GRID.
-            _     _
-  __ _ _ __(_) __| |
- / _` | '__| |/ _` |
-| (_| | |  | | (_| |
- \__, |_|  |_|\__,_|
- |___/
+  THERE IS A BIG BAD GLOBAL VARIABLE IN HERE CALLED GRID.
+             _     _
+   __ _ _ __(_) __| |
+  / _` | '__| |/ _` |
+ | (_| | |  | | (_| |
+  \__, |_|  |_|\__,_|
+  |___/
 
-
-I wanted you to know about that.
+  I wanted you to know about that.
 
 */
 
 class Panel extends React.Component {
-  constructor(props, context) {
-    super(props, context);
-    this.buffer = document.getElementById('buffer');
-    this.grid = this.makeGrid();
-    this.state = this.initialize(props);
-  }
-
-  initialize(props) {
-    const { title, interval } = props.frame.offset(props.span, props.center);
-    const breadcrumbTitle = title.map((o, i, a) => {
-      const breadSpacer = i + 1 < a.length ? ' ▶ ' : '';
-      return (
-        <span key={i}>
-          <Link to={`/timelines?${o.timeSpan}`}>{o.title}</Link>
-          {breadSpacer}
-        </span>
-      );
-    });
-    const columns = [...Array(props.width).keys()].map(ct =>
-      this.makeColumn.bind(this)(ct, interval)
-    );
-    return {
-      grid: {
-        width: props.width,
-        height: props.height
-      },
-      frame: props.frame,
-      title: breadcrumbTitle,
-      interval: interval,
-      events: [],
-      cell: {
-        width: 100 / props.width,
-        height: 100 / props.height
-      },
-      columns: columns
-    };
-  }
-
-  toSpan(interval) {
-    return `start=${interval.start.toISO()}&before=${interval.end.toISO()}`;
-  }
-
-  makeGrid() {
-    const w = this.props.width;
-    const h = this.props.height;
-    // Makes an associative array of `false` values that is
-    // `this.state.grid.height` long and each value is an array
-    // `this.state.grid.height` wide. I.e. a 2D bitmap.
-
-    var grid = new Array(h);
-    for (var i = 0; i < h; i++) {
-      var row = [];
-      for (var j = 0; j < w; j++) {
-        row.push(false);
-      }
-      grid[i] = row;
+    constructor(props) {
+        super(props);
+        this.grid = this.makeGrid();
+        this.state = this.initialize(props);
     }
-    return grid;
-  }
 
-  doReservation(x, y, w, h) {
-    // Answers the question: If I've got an object `w` wide and
-    // `h` high, can you put it (1) on the x axis at position `x`
-    // exactly and (2) position `y` or greater? Lightly recursive.
+    initialize(props) {
+        const breadcrumbTitle = props.title.map((o, i, a) => {
+            const breadSpacer = i + 1 < a.length ? ' ▶ ' : '';
+            return (
+                <span key={i}>
+                    <Link to={`?${o.timeSpan}`}>{o.title}</Link>
+                    {breadSpacer}
+                </span>
+            );
+        });
+        return {
+            grid: {
+                width: props.width,
+                height: props.height
+            },
+            frame: props.frame,
+            title: breadcrumbTitle,
+            interval: props.interval,
+            events: [],
+            cell: {
+                width: 100 / props.width,
+                height: 90 / props.height
+            },
+            columns: [...Array(this.props.width).keys()].map(ct =>
+                this.renderColumn.bind(this)(ct, props.interval)
+            )
+        };
+    }
 
-    let success = undefined;
-    let xmax = this.state.grid.width;
-    let ymax = this.state.grid.height;
+    makeGrid() {
+        const w = this.props.width;
+        const h = this.props.height;
+        // Makes an associative array of `false` values that is
+        // `this.state.grid.height` long and each value is an array
+        // `this.state.grid.height` wide. I.e. a 2D bitmap.
 
-    // measure once
-    for (let _y = y; _y < y + h; _y++) {
-      for (let _x = x; _x < x + w; _x++) {
-        if (_y < ymax && _x < xmax) {
-          if (this.grid[_y][_x]) {
-            return this.doReservation(x, y + 1, w, h);
-          } else {
-            success = true;
-          }
-        } else {
-          success = false;
+        var grid = new Array(h);
+        for (var i = 0; i < h; i++) {
+            var row = [];
+            for (var j = 0; j < w; j++) {
+                row.push(false);
+            }
+            grid[i] = row;
         }
-      }
+        return grid;
     }
 
-    if (success) {
-      for (let _y = y; _y < y + h; _y++) {
-        for (let _x = x; _x < x + w; _x++) {
-          this.grid[_y][_x] = true;
+    doReservation(x, y, w, h) {
+        // Answers the question: If I've got an object `w` wide and
+        // `h` high, can you put it (1) on the x axis at position `x`
+        // exactly and (2) position `y` or greater? Lightly recursive.
+
+        let success = undefined;
+        let xmax = this.state.grid.width;
+        let ymax = this.state.grid.height;
+
+        // measure once
+        for (let _y = y; _y < y + h; _y++) {
+            for (let _x = x; _x < x + w; _x++) {
+                if (_y < ymax && _x < xmax) {
+                    if (this.grid[_y][_x]) {
+                        return this.doReservation(x, y + 1, w, h);
+                    } else {
+                        success = true;
+                    }
+                } else {
+                    success = false;
+                }
+            }
         }
-      }
+
+        if (success) {
+            for (let _y = y; _y < y + h; _y++) {
+                for (let _x = x; _x < x + w; _x++) {
+                    this.grid[_y][_x] = true;
+                }
+            }
+        }
+
+        return {
+            success: success,
+            x: x,
+            y: y,
+            w: w,
+            h: h
+        };
     }
 
-    return {
-      success: success,
-      x: x,
-      y: y,
-      w: w,
-      h: h
-    };
-  }
-
-  renderEl(event) {
-    const dt = DateTime.fromISO(event.when_happened);
-    const left = this.state.frame.elOffset(dt);
-    return (
-      <Event
-        key={event.uuid}
-        width={this.state.cell.width + '%'}
-        cell={this.state.cell}
-        dt={dt}
-        frame={frames[this.state.frame.narrow]}
-        doReservation={this.doReservation.bind(this)}
-        left={left}
-        event={event}
-      />
-    );
-  }
-
-  getSpan() {
-    utils.GET(this, 'events', {
-      events: 25,
-      start: this.state.interval.start.toISO(),
-      before: this.state.interval.end.toISO()
-    });
-    this.grid = this.makeGrid();
-  }
-
-  componentDidMount() {
-    document.title = this.props.center + ' (Unscroll)';
-    this.getSpan();
-  }
-
-  componentDidUpdate(prevProps, prevState, snapshot) {
-    if (prevProps.timeSpan !== this.props.timeSpan) {
-      this.setState(this.initialize(this.props), this.getSpan);
+    renderEvent(event) {
+        const dt = DateTime.fromISO(event.when_happened);
+        const left = this.state.frame.elOffset(dt);
+        return (
+            <Event
+                key={event.uuid}
+                width={this.state.cell.width + '%'}
+                cell={this.state.cell}
+                dt={dt}
+                columnCount={this.state.frame.getColumnCount(
+                    this.state.interval
+                )}
+                whenTitle={this.props.frame.format(
+                    Interval.fromDateTimes(
+                        DateTime.fromISO(event.when_happened),
+                        DateTime.fromISO(event.when_happened)
+                    )
+                )}
+                doReservation={this.doReservation.bind(this)}
+                left={left}
+                event={event}
+            />
+        );
     }
-  }
 
-  makeColumn(ct, interval) {
-    // Avoiding destructuring to keep ESLint happy.
-    const columnLink = this.props.frame.getColumnLink(interval, ct);
-    const span = columnLink.span;
-    const title = columnLink.title;
-    return (
-      <Column
-        width={100 / this.props.width + '%'}
-        span={span}
-        title={title}
-        key={ct}
-      />
-    );
-  }
+    getSpan() {
+        utils.GET(this, 'events', {
+            events: 25,
+            start: this.state.interval.start.toISO(),
+            before: this.state.interval.end.toISO()
+        });
+        this.grid = this.makeGrid();
+    }
 
-  render() {
-    const left = this.props.center * 100 + this.props.offset + '%';
+    componentDidMount() {
+        this.getSpan();
+    }
 
-    return (
-      <div className="Panel" id={this.props.center} style={{ left: left }}>
-        <h1>{this.state.title}</h1>
-        {this.state.columns}
-        {this.state.events.map(this.renderEl.bind(this))}
-      </div>
-    );
-  }
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (!prevProps.interval.equals(this.props.interval)) {
+            this.setState(this.initialize(this.props), this.getSpan);
+        }
+    }
+
+    renderColumn(ct, interval) {
+        // Avoiding destructuring to keep ESLint happy.
+        const columnLink = this.props.frame.getColumnLink(interval, ct);
+        const span = columnLink.span;
+        const title = columnLink.title;
+        return (
+            <Column
+                width={100 / this.props.width + '%'}
+                span={span}
+                title={title}
+                key={ct}
+            />
+        );
+    }
+
+    render() {
+        const left = this.props.center * 100 + this.props.offset + '%';
+
+        return (
+            <div
+                className="Panel"
+                id={this.props.center}
+                key={this.props.interval}
+                style={{ left: left }}
+            >
+                <h1>{this.state.title}</h1>
+                {this.state.columns}
+
+                {this.state.events.map(this.renderEvent.bind(this))}
+            </div>
+        );
+    }
 }
 export default Panel;

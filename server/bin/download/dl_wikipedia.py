@@ -34,13 +34,17 @@ MONTHS_HASH = {'January': 1,
 class WikipediaText():
     year = None
     events = []
+    subject = None
     parsed = None
     unscroll_client = None
     scroll = None
     
-    def __init__(self, year=None):
+    def __init__(self, year=None, subject=None):
         self.year = year
+        self.subject = subject
         self.wiki_url = 'https://en.wikipedia.org/wiki/{}'.format(year)
+        if subject is not None:
+            self.wiki_url = 'https://en.wikipedia.org/wiki/{}_in_{}'.format(year, subject)        
         r = requests.get(self.wiki_url)
         self.parsed = BeautifulSoup(r.content, 'html.parser')
         self.unscroll_client = UnscrollClient()
@@ -49,8 +53,8 @@ class WikipediaText():
         favthumb = self.unscroll_client.cache_thumbnail(THUMBNAIL_URL)
         
         self.scroll = self.unscroll_client.create_or_retrieve_scroll(
-            'WikiYears',
-            description='Events spidered from the English Wikipedia per-year pages.',
+            'Wiki Years in {}'.format(subject),
+            description='Events spidered from the English Wikipedia pages.',
             link='https://en.wikipedia.org/wiki/List_of_years',
             with_thumbnail=favthumb.get('url'))
 
@@ -190,12 +194,24 @@ def __main__(year=None):
     parser = argparse.ArgumentParser(
         description='Get a Wikipedia Year page by year '
         'and turn it into events as well as is possible.')
+
+    
     parser.add_argument('--year',
                         required=True,
                         type=int,
                         help='A year')
+    parser.add_argument('--subject',
+                        required=False,
+                        type=str,
+                        help='A subject that has a cluster of Wikipedia pages, like music')    
     args = parser.parse_args()
-    if (args.year is not None):
+
+    if (args.subject is not None and args.year is not None):
+        wt = WikipediaText(year=args.year, subject=args.subject)
+        events = wt.get_events()
+        return True
+    
+    elif (args.year is not None):
         wt = WikipediaText(args.year)
         events = wt.get_events()
         return True

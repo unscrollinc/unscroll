@@ -7,149 +7,115 @@ import cookie from 'js-cookie';
 import AppContext from './AppContext';
 
 class Nav extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = utils.getCookie();
-  }
-
-  handleNotebookButtonClick = () => {
-    this.setState(prevState => ({
-      editorOn: !prevState.editorOn
-    }));
-  };
-
-  edit(key, event) {
-    this.setState({ [key]: event.target.value });
-  }
-
-  renderNotebooksButton() {
-    return (
-      <button onClick={this.handleViewButtonClick}>
-        {this.state.timelineOn ? 'Horizontally' : 'Vertically'}
-      </button>
-    );
-  }
-
-  logout(event) {
-    event.preventDefault();
-    const _this = this;
-    axios({
-      method: 'post',
-      url: utils.getAPI('auth/logout/'),
-      headers: utils.getAuthHeaderFromCookie()
-    })
-      .then(resp => {})
-      .catch(function(error) {
-        console.log(error);
-      })
-      .finally(function(x) {
-        cookie.remove('authToken');
-        cookie.remove('username');
-        _this.setState({
-          password: null,
-          authToken: null,
-          username: null
-        });
-      });
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    return (
-      this.props.context.state.authToken !== nextProps.context.state.authToken
-    );
-  }
-
-  renderLoginState() {
-    if (this.props.context.state.authToken) {
-      return (
-        <div className="login">
-          <Link to="/user/login">{this.props.context.state.username}</Link>
-        </div>
-      );
-    } else {
-      return (
-        <React.Fragment>
-          <Link to="/user/login">Log in</Link>
-          <Link to="/user/register">Register</Link>
-        </React.Fragment>
-      );
+    constructor(props) {
+        super(props);
+        this.state = { height: 24, ...utils.getCookie() };
+        this.myRef = React.createRef();
     }
-  }
 
-  renderLoginForm() {
-    return (
-      <form className="login">
-        <table>
-          <tbody>
-            <tr>
-              <th>Username</th>
-              <td>
-                <input
-                  name="username"
-                  onChange={e => this.edit('username', e)}
-                  type="text"
-                />
-              </td>
-              <th>Password</th>
-              <td>
-                <input
-                  name="password"
-                  onChange={e => this.edit('password', e)}
-                  type="password"
-                />
-              </td>
-              <td colSpan="2">
-                <input
-                  className="inputButton loginButton"
-                  type="submit"
-                  onClick={this.login.bind(this)}
-                  value="login"
-                />
-                <Link to="/user/register">Create account</Link>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </form>
-    );
-  }
+    edit(key, event) {
+        this.setState({ [key]: event.target.value });
+    }
 
-  render() {
-    return (
-      <div className="App">
-        <div className="Nav">
-          <table>
-            <tbody>
-              <tr>
-                <td>
-                  <Link className="logo" to="/">
+    shouldComponentUpdate(nextProps, nextState) {
+        return (
+            this.state.height !== nextState.height ||
+            this.props.context.state.authToken !==
+                nextProps.context.state.authToken
+        );
+    }
+
+    renderLoginState() {
+        if (this.props.context.state.authToken) {
+            return (
+                <div className="login">
+                    <Link to="/user/login">
+                        {this.props.context.state.username}
+                    </Link>
+                </div>
+            );
+        } else {
+            return (
+                <React.Fragment>
+                    <Link to="/user/login">Log in</Link>
+                    <Link to="/user/register">Register</Link>
+                </React.Fragment>
+            );
+        }
+    }
+
+    renderLoginForm() {
+        return (
+            <form className="login">
+                <table>
+                    <tbody>
+                        <tr>
+                            <th>Username</th>
+                            <td>
+                                <input
+                                    name="username"
+                                    onChange={e => this.edit('username', e)}
+                                    type="text"
+                                />
+                            </td>
+                            <th>Password</th>
+                            <td>
+                                <input
+                                    name="password"
+                                    onChange={e => this.edit('password', e)}
+                                    type="password"
+                                />
+                            </td>
+                            <td colSpan="2">
+                                <input
+                                    className="inputButton loginButton"
+                                    type="submit"
+                                    onClick={this.login.bind(this)}
+                                    value="login"
+                                />
+                                <Link to="/user/register">Create account</Link>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </form>
+        );
+    }
+
+    componentDidMount() {
+        const br = this.myRef.current.getBoundingClientRect();
+        console.log(br);
+        this.setState({ height: br.height });
+    }
+
+    render() {
+        const horizontal = this.state.horizontal ? 'RIGHT' : 'DOWN';
+        console.log('STATE IS', this.state);
+        return (
+            <div
+                style={{
+                    height: this.state.height + 'px',
+                    width: '100%',
+                    fontSize: this.state.height / 1.4 + 'px'
+                }}
+                className="Nav"
+                ref={this.myRef}
+            >
+                <Link className="logo" to="/">
                     UNSCROLL
-                  </Link>
-                </td>
-                <td>
-                  <Link to="/about">?</Link>
-                </td>
-                <td>
-                  <Link to="/timelines">Timelines</Link>
-                </td>
-                <td>
-                  <Link to="/notebooks">Notebooks</Link>
-                </td>
-                <td>
-                  <Search />
-                </td>
-                <td>{this.renderLoginState()}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    );
-  }
+                </Link>
+                <Link to="/about">?</Link>
+                <Link to="/timelines">Timelines</Link>
+                <Link to="/notebooks">Notebooks</Link>
+                <Search />
+                {this.renderLoginState()}
+            </div>
+        );
+    }
 }
 
 export default props => (
-  <AppContext.Consumer>
-    {context => <Nav {...props} context={context} />}
-  </AppContext.Consumer>
+    <AppContext.Consumer>
+        {context => <Nav {...props} context={context} />}
+    </AppContext.Consumer>
 );
