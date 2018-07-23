@@ -22,7 +22,7 @@ class Login extends React.Component {
     const expires = this.state.expireOnClose ? undefined : { expires: 100 };
     axios({
       method: 'post',
-      url: utils.getAPI('auth/login/'),
+      url: utils.getAPI('auth/login'),
       data: _this.state
     })
       .then(function(response) {
