@@ -8,7 +8,8 @@ import AppContext from '../AppContext';
 
 class Login extends React.Component {
   constructor(props) {
-    super(props);
+      super(props);
+      this.state = {errors:null};
   }
 
   edit(key, value) {
@@ -33,7 +34,7 @@ class Login extends React.Component {
             username: _this.state.username
           },
           () => {
-            console.log('setting cookeis', token, expires);
+            console.log('setting cookies', token, expires);
             cookie.set('authToken', token, expires);
             cookie.set('username', _this.state.username, expires);
             // Keep this tidy in case someone comes along and looks
@@ -42,19 +43,31 @@ class Login extends React.Component {
           }
         );
       })
-      .catch(err => {
-        console.log(err);
+	  .catch(err => {
+	      const erd = err.response.data;
+	      console.log(erd);
+	      if (erd.non_field_errors && erd.non_field_errors.length > 0) {
+		  this.setState({errors:erd.non_field_errors});
+	      }
+
       })
       .finally(() => {});
   }
   componentDidUpdate() {
-    console.log('DID UPDATE');
     console.log(this.props.context.state);
   }
+
+    renderErrors() {
+	if (this.state.errors) {
+	    return this.state.errors.map((e)=><div className='error'>{e}</div>);
+	}
+	return null;
+    }
   renderLoginForm() {
     return (
       <div className="login-form">
-        <h1>Log in</h1>
+            <h1>Log in</h1>
+	    <h2>{this.renderErrors()}</h2>
         <Form>
           {form => {
             return (

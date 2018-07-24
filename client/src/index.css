@@ -29,15 +29,17 @@ h1 a:hover {
     color: lightskyblue;
 }
 
-.Panel h1 {
-    background-color: deepskyblue;
+.Panel .breadcrumbs {
 }
 
+.Panel h1 {
+    background-color: deepskyblue;
+    width: 100%;
+    display: block;    
+}
 .Panel h1 a {
     text-decoration: none;
     color: white;
-    width: 100%;
-    display: block;
 }
 
 .input,

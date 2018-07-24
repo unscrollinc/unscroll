@@ -51,7 +51,7 @@ const routes = [
     },
 
     {
-        path: '/user/confirm/:key',
+        path: '/user/activate/:uid/:token',
         exact: true,
         Workbook: props => <Confirm {...props.match.params} />
     },

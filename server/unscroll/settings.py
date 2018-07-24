@@ -94,8 +94,8 @@ SWAGGER_SETTINGS = {
 DJOSER = {
     'DOMAIN': '127.0.0.1',
     'SITE_NAME': 'Unscroll',
-    'PASSWORD_RESET_CONFIRM_URL':'/user/confirm/?uid={uid}&token={token}',
-    'ACTIVATION_URL':'/user/activate/?uid={uid}&token={token}',
+    'PASSWORD_RESET_CONFIRM_URL':'user/confirm/?uid={uid}&token={token}',
+    'ACTIVATION_URL':'user/activate/{uid}/{token}',
     'SEND_ACTIVATION_EMAIL': True,
     'PASSWORD_VALIDATORS': [],
     'SERIALIZERS': {},
@@ -129,15 +129,13 @@ CORS_ALLOW_METHODS = (
     'PUT',
 )
 
+
+DEFAULT_FROM_EMAIL='Unscroll'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# Host for sending e-mail.
 EMAIL_HOST = 'smtp.mailgun.org'
-
-# Port for sending e-mail.
 EMAIL_PORT = 587
-
-# Optional SMTP authentication information for EMAIL_HOST.
 EMAIL_HOST_USER = 'postmaster@mail.unscroll.com'
+EMAIL_SUBJECT_PREFIX='[Unscroll]'
 EMAIL_HOST_PASSWORD = '40059d996780c47afd20e03f9959e7cc-8889127d-9d78525e'
 EMAIL_USE_TLS = True
 

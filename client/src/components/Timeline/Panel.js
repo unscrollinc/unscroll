@@ -180,16 +180,27 @@ class Panel extends React.Component {
     }
 
     render() {
+	
         const left = this.props.center * 100 + this.props.offset + '%';
-
+/*
+	const getPosition = () => {
+	    const adj = this.props.offset/100 + this.props.center;
+	    if (adj > 0.5) {
+		return {position:'fixed', left:0, width:'10%'};
+	    }	    
+	    return {position:'relative', left:0, width:'100%'};
+	};
+*/
         return (
             <div
                 className="Panel"
                 id={this.props.center}
                 key={this.props.interval}
                 style={{ left: left }}
-            >
+		>
+		<div className="breadcrumbs">
                 <h1>{this.state.title}</h1>
+		</div>
                 {this.state.columns}
 
                 {this.state.events.map(this.renderEvent.bind(this))}
