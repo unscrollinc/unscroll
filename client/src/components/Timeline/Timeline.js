@@ -15,6 +15,7 @@ class Timeline extends React.Component {
         const interval = props.interval;
         const timeframes = new TimeFrames(interval);
         const frame = timeframes.getTimeFrameObject();
+        console.log('F R A M E', frame);
         const adjusted = frame.getAdjustedDt(interval);
         const title = frame.getTitle(adjusted);
         const width = frame.getColumnCount(interval);

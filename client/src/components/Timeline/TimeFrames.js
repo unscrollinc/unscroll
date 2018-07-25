@@ -30,18 +30,11 @@ const frames = {
             const mil = Math.abs(adjusted);
             const first = adjusted.toString().split('')[0];
             const def = mil + 'th millennium ' + label;
-            if (mil === '11') {
-                return def;
-            }
-            if (first === '1') {
-                return mil + 'st millennium ' + label;
-            }
-            if (first === '2') {
-                return mil + 'nd millennium ' + label;
-            }
-            if (first === '3') {
-                return mil + 'rd millennium ' + label;
-            }
+
+            if (mil === '11') return def;
+            if (first === '1') return mil + 'st millennium ' + label;
+            if (first === '2') return mil + 'nd millennium ' + label;
+            if (first === '3') return mil + 'rd millennium ' + label;
             return def;
         },
 
@@ -49,7 +42,7 @@ const frames = {
             const start = interval.start.plus({ years: 1000 * num });
             const end = interval.end.plus({ years: 1000 * num });
             const adjustedInterval = Interval.fromDateTimes(start, end);
-            const title = frames.century.getTitle(adjustedInterval);
+            const title = frames.millennium.getTitle(adjustedInterval);
             return {
                 title: title,
                 interval: adjustedInterval
@@ -57,7 +50,11 @@ const frames = {
         },
 
         elOffset: dt => {
-            return (dt.year - 1000 * Math.floor(dt.year / 1000, 10)) / 100;
+            const mil = Math.floor(dt.year / 1000) * 10;
+            const perc = Math.floor(dt.year / 100) * 1;
+            return perc - mil;
+
+            // return (dt.year - 1000 * Math.floor(dt.year / 1000, 10))/100;
         },
 
         getColumnCount: () => {
@@ -71,7 +68,7 @@ const frames = {
                 .endOf('year');
             const interval = Interval.fromDateTimes(start, end);
             const span = toSpan(interval);
-            const title = start.toFormat('kkkk');
+            const title = start.year;
             return { span: span, interval: interval, title: title };
         },
 
@@ -114,20 +111,20 @@ const frames = {
                 .toString()
                 .split('')
                 .pop();
-            if (last === '1') {
-                return c + 'st century';
-            }
-            if (last === '2') {
-                return c + 'nd century';
-            }
-            if (last === '3') {
-                return c + 'rd century';
-            }
+
+            if (10 < c < 21) return c + 'th century';
+            if (last === '1') return c + 'st century';
+            if (last === '2') return c + 'nd century';
+            if (last === '3') return c + 'rd century';
             return c + 'th century';
         },
 
         elOffset: dt => {
-            return (dt.year - 100 * Math.floor(dt.year / 100, 10)) / 10;
+            const mil = Math.floor(dt.year / 100) * 10;
+            const perc = Math.floor(dt.year / 10);
+            return perc - mil;
+
+            // return (dt.year - 1000 * Math.floor(dt.year / 1000, 10))/100;
         },
 
         getColumnCount: () => {
