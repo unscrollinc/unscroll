@@ -1,12 +1,6 @@
-* Views
-Timeline
-NotebookList + [Timeline/Timelist]
-Notebook + [Timeline/Timelist]
-Notebook Preview + [Timeline/Timelist]
-Timelist List + [Timeline/Timelist]
 
 * Announcement
-
+  
 I have a side project: A web-based, timeline-driven writing tool that
 helps you fact-check your work, called Unscroll. I work on it when
 @PostlightStudio is calm and the kids are in bed. I built it for
@@ -37,24 +31,30 @@ Here are some essays I've written using it:
 - Technological Joy Transition (how we went from everyone getting access to no one getting access)
 
 I look forward to your thoughts.
+* Views
+- Timeline
+- NotebookList + [Timeline/Timelist]
+- Notebook + [Timeline/Timelist]
+- Notebook Preview + [Timeline/Timelist]
+- Timelist List + [Timeline/Timelist]
 
 * TODO User [3/7]:
   - [X] Create account
-  - [ ] Register
+  - [X] Register
   - [ ] Reset password
   - [ ] Confirm
   - [ ] Edit profile
   - [X] Login
   - [X] Logout
 
-* Timelines [3/5]
+* Timelines [4/5]
   - [X] Vertical view buttons
   - [X] Refactor all "Scroll" stuff to be Timeline # WONTFIX
   - [ ] Timeline search results
   - [X] No direct editing on Timelines at launch? THAT'S RIGHT
   - [X] Use HTML->React module for sizing, then placing events
 
-* Timelist [1/6]
+* Timelist [2/6]
   - [X] Create new timeline
   - [ ] Max # of timelines per scroll?
   - [X] Add event
@@ -65,10 +65,11 @@ I look forward to your thoughts.
 * Notebooks
   - [X] Rich text in title editor
   - [X] Note sequencing error catches (all null, nome null)
+
 * Events
   - [ ] paragraph break
   - [ ] image upload
-  - [ ] Link
+  - [ ] link
 
 * Design
   - [X] Overall simple color scheme
@@ -92,11 +93,18 @@ I look forward to your thoughts.
   - [ ] Sit back and wait for them to yell at me.
   - [ ] Email people who signed up
   - [ ] Tweet out as @Unscroll
-* Other [0/17]
-- [ ] Correctly spatialize events on tl​
+
+* Load
+- [ ] Create accounts
+  - commons
+  - news
+  - research
+
+* Other [4/17]
+- [X] Correctly spatialize events on tl​
 - [ ] Scroll wheel on tl 
-- [ ] In and out on tl
-- [ ] Move events
+- [X] In and out on tl
+- [X] Move events
 - [ ] Search in scroll
 - [ ] Search filter
 - [ ] By username by scroll 
@@ -106,10 +114,9 @@ I look forward to your thoughts.
 - [ ] Login forms and reg
 - [ ] Import Wikipedia events with preview api
 - [ ] Import crisis
-- [ ] Fix met
-- [ ] Batch met
-- [ ] Fix bc
+- [ ] Fix BC import/matching, esp on Met
 - [ ] Mention API/swagger
+
 * TODO Cache [0/0]
 - [ ] Cache Timelines public
 - [ ] Cache Notebooks public

@@ -96,9 +96,13 @@ class Notebook extends React.Component {
       return n.with_event !== null;
     });
     const mapped = filtered.map((n, i) => {
-      return <div key={i}>{n.event.title}</div>;
+	return (
+	    <div key={i} className="manuscript-sidebar-event">
+	      <h3>{n.event.title}</h3>
+	      <p>{n.event.text}</p>	      
+	    </div>);
     });
-    return <div className="Sidebar">{mapped}</div>;
+    return <div className="manuscript-sidebar">{mapped}</div>;
   }
 
   render() {
@@ -141,8 +145,8 @@ class Notebook extends React.Component {
                   <div className="notebook-inner">
                     {this.renderAddNoteButton()}
                     {this.renderTitleEditor()}
-                    {Array.from(context.state.notes).map(
-                      this.renderNote.bind(this)
+		    {Array.from(context.state.notes).map(
+			this.renderNote.bind(this)
                     )}
                   </div>
                 </Scrollbars>

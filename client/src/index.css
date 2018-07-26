@@ -64,21 +64,27 @@ td {
     color: black;
     display: flex;
     justify-content: start;
+    align-items:center;
+}
+.Nav a {
+    color: deepskyblue;
+    text-decoration: none;
+    padding: 0 0.25em 0 0.25em;
 }
 
-.Nav a {
-    color: #666;
-    text-decoration: none;
-    padding-right: 0.5em;
-}
 .Nav .logo {
     font-weight: bold;
     color: black;
+    padding: 0 0.25em 0 0;    
 }
+
 .Nav a:hover {
     text-decoration: underline;
 }
-
+.Nav .current-notebook {
+    font-style: italic;
+    padding-right:0.25em;
+}
 .Timeline,
 .Editor,
 .NotebookList,
@@ -855,6 +861,24 @@ div.manuscript-inner .description {
     padding-bottom: 1em;
 }
 
+div.manuscript-sidebar {
+    padding-top:45%;
+    width:25%;
+    border-left:1px solid deepskyblue;
+    float:right;
+    height:60%;
+    margin-left:2.5%;
+}
+
+
+div.manuscript-sidebar-event {
+    margin-left:2.5%;
+    
+    font-size:80%;
+    line-height:125%;
+    font-family: 'IBM Plex Sans', sans-serif;
+}
+
 .reader h1 {
     text-align: center;
     line-height: 150%;
@@ -881,3 +905,5 @@ div.manuscript-inner .description {
 span.switcher {
     color: deepskyblue;
 }
+
+
