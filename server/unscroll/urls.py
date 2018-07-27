@@ -177,7 +177,7 @@ class EventFilter(filters.FilterSet):
     # TODO THIS THING IS FRANKLY REAL DODGY
     def filter_by_q(self, queryset, WHAT_IS_THIS_ARG_I_DO_NOT_KNOW, value):
         uq = unquote(value)
-        apos = re.sub("'", "", uq)
+        apos = re.sub("[';]", "", uq)
         filtered_val = "'{}'".format(apos,)
         return queryset.full_text_search(filtered_val)
 
@@ -214,6 +214,7 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
     with_thumbnail_image = serializers.CharField(
         read_only=True,
         source="with_thumbnail.image")    
+
     
     class Meta:
         model = Event
@@ -252,7 +253,7 @@ class BulkEventSerializer(BulkSerializerMixin,
     scroll_with_thumbnail = serializers.CharField(
         read_only=True,
         source="in_scroll.with_thumbnail.image")
-
+    
     class Meta:
         model = Event
         fields = '__all__'
@@ -280,11 +281,25 @@ class BulkEventSerializer(BulkSerializerMixin,
         except Exception as e:
             raise APIException(str(e))
 
+class EventPagination(pagination.LimitOffsetPagination):
+    def paginate_queryset(self, queryset, request, view=None):
+        self.first_event = queryset.aggregate(first_event=Min('when_happened'))['first_event']
+        self.last_event = queryset.aggregate(last_event=Max('when_happened'))['last_event']        
+        return super(EventPagination, self).paginate_queryset(queryset, request, view)
+
+    def get_paginated_response(self, data):
+        paginated_response = super(EventPagination, self).get_paginated_response(data)
+        paginated_response.data['first_event'] = self.first_event
+        paginated_response.data['last_event'] = self.last_event
+        return paginated_response
+   
+ 
 class BulkEventViewSet(BulkModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Event.objects.select_related('in_scroll',
                                             'by_user',
                                             'with_thumbnail')
+    
     filter_backends = (filters.DjangoFilterBackend,)
     filter_class = EventFilter
     serializer_class = BulkEventSerializer
@@ -298,20 +313,21 @@ class BulkEventViewSet(BulkModelViewSet):
             query = (Q(by_user=user) or Q(in_scroll__is_public=True))
 
         qs = self.queryset\
-            .filter(query)
+            .filter(query)        
 
         qsfiltered = self.filter_queryset(qs)
         return qsfiltered
-        
+
 #    @cache_response(key_func=_cache_key)
     def list(self, request):
-        pagination_class = LimitOffsetPagination
+        pagination_class = EventPagination
         paginator = pagination_class()
+
 
         page = paginator.paginate_queryset(
             self.get_queryset(),
             request)
-
+        
         serializer = BulkEventSerializer(
             page,
             many=True,
@@ -604,7 +620,6 @@ class NotebookViewSet(viewsets.ModelViewSet):
             context={'request': request})
         return paginator.get_paginated_response(serializer.data)
 
-    
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     full_scrolls = ScrollSerializer(User.full_scrolls, many=True)
@@ -619,7 +634,6 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
             'full_scrolls',
             'full_notebooks',            
             'is_staff')
-
 
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
@@ -644,7 +658,6 @@ urlpatterns = [
     url('^api/$', schema_view),
     url(r'api/', include(router.urls)),
     path('api/admin/', admin.site.urls),
-    url(r'^api/auth/', include('djoser.urls')),
     url(r'^api/auth/', include('djoser.urls')),
     url(r'^api/auth/', include('djoser.urls.authtoken')),
     
