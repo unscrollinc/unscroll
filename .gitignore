@@ -39,3 +39,4 @@ yarn-debug.log*
 yarn-error.log*
 *.db
 server/bin/download/cooper/
+scratchpad

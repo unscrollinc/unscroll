@@ -3,7 +3,7 @@ import { Route } from 'react-router-dom';
 import qs from 'qs';
 import { DateTime, Interval } from 'luxon';
 import TimeFrames from './Timeline/TimeFrames';
-
+import axios from 'axios';
 import Nav from './Nav';
 // import News from './News';
 import Profile from './Profile';
@@ -24,6 +24,12 @@ import NotebookList from './Notebook/NotebookList';
 import { AppProvider } from './AppContext';
 
 import '../index.css';
+
+const DEFAULT_INTERVAL = () => {
+    const s = DateTime.fromObject({ year: 2000, month: 1 }).startOf('month');
+    const b = DateTime.fromObject({ year: 2000, month: 1 }).endOf('month');
+    return Interval.fromDateTimes(s, b);
+};
 
 const routes = [
     {
@@ -119,38 +125,72 @@ class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            search: undefined,
-            timelineOn: false,
-            editorOn: false
+            query: null,
+            interval: null,
+            search: null
         };
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        return (
+            this.state.interval !== nextState.interval ||
+            this.state.query !== nextState.query
+        );
     }
 
     componentDidMount() {
         document.title = 'Unscroll';
     }
 
-    onPositionChanged(param) {
-        console.log(param);
+    makeInterval(query) {
+        const _this = this;
+        if (query && query.start && query.before) {
+            const s = DateTime.fromISO(query.start);
+            const b = DateTime.fromISO(query.before);
+            if (s.invalid === null && b.invalid === null) {
+                this.setState({ interval: Interval.fromDateTimes(s, b) });
+            }
+        } else if (query && query.q) {
+            axios
+                .get(`http://localhost:8000/api/events/minmax/?q=${query.q}`)
+                .then(resp => {
+                    const rd = resp.data;
+                    const s = DateTime.fromISO(rd.first_event);
+                    const b = DateTime.fromISO(rd.last_event);
+                    _this.setState({
+                        query: query.q,
+                        interval: Interval.fromDateTimes(s, b)
+                    });
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+        } else {
+            this.setState({ interval: DEFAULT_INTERVAL() });
+        }
     }
 
-    makeInterval(qSpan) {
-        const qParsed = qSpan
-            ? qs.parse(qSpan, { ignoreQueryPrefix: true })
-            : null;
+    renderTimeline(query) {
+        /* 
+           We have a couple of likely situations here:
+           - User asked for a given timespan
+           - User asked for a filtered timespan
+           - User just searched for a term, so we need to get the timespan
+           
+           Basically once we have an interval we want to get a timeframe.
 
-        if (qParsed) {
-            const s = DateTime.fromISO(qParsed.start);
-            const b = DateTime.fromISO(qParsed.before);
-            return Interval.fromDateTimes(s, b);
+        */
+        if (this.state.interval) {
+            return (
+                <Timeline
+                    query={this.state.query}
+                    interval={this.state.interval}
+                />
+            );
         } else {
-            const s = DateTime.fromObject({ year: 2000, month: 1 }).startOf(
-                'month'
-            );
-            const b = DateTime.fromObject({ year: 2000, month: 1 }).endOf(
-                'month'
-            );
-            return Interval.fromDateTimes(s, b);
+            this.makeInterval(query);
         }
+        return null;
     }
 
     render() {
@@ -163,15 +203,12 @@ class App extends React.Component {
                         path="/"
                         exact={false}
                         render={props => {
-                            console.log('received those props');
-                            return (
-                                <Timeline
-                                    key={props.location.search}
-                                    interval={this.makeInterval(
-                                        props.location.search
-                                    )}
-                                />
-                            );
+                            const qParsed = props.location.search
+                                ? qs.parse(props.location.search, {
+                                      ignoreQueryPrefix: true
+                                  })
+                                : null;
+                            return this.renderTimeline(qParsed);
                         }}
                     />
                     {routes.map((route, index) => (

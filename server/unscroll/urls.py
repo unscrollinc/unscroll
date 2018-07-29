@@ -1,4 +1,15 @@
 # HOPE YOU LIKE IMPORTS
+
+# The usual suspects
+import hashlib
+import pprint
+from baseconv import base36
+from os import makedirs
+from urllib.request import unquote
+import re
+import requests
+
+# Welcome to Djangotown
 from django.contrib import admin
 from django.urls import path
 from django.conf.urls import url, include
@@ -12,36 +23,31 @@ from django.shortcuts import get_object_or_404
 import django_filters
 from django_filters import rest_framework as filters
 from django.db.models import Max, Min, Count
+
+# Rest framework
 from rest_framework import pagination, generics, serializers, viewsets, routers, response, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.exceptions import APIException, ValidationError
 from rest_framework.pagination import LimitOffsetPagination
-
+from rest_framework_bulk.routes import BulkRouter
 from rest_framework_extensions.cache.decorators import (cache_response)
 from rest_framework_extensions.key_constructor import bits
 from rest_framework_extensions.key_constructor.constructors import (
     KeyConstructor
 )
-
-from scrolls.models import User, Scroll, Event, Notebook, Note, Media, Thumbnail
-from unscroll.thumbnail import InboundThumbnail
 from rest_framework_swagger.views import get_swagger_view
-import requests
-import hashlib
-import pprint
-from baseconv import base36
-from os import makedirs
-from urllib.request import unquote
-from rest_framework_bulk.routes import BulkRouter
-import re
 from rest_framework_bulk import (
     BulkListSerializer,
     BulkModelViewSet,
     BulkSerializerMixin,
     ListBulkCreateUpdateDestroyAPIView,
 )
+
+# Unscroll stuff
+from scrolls.models import User, Scroll, Event, Notebook, Note, Media, Thumbnail
+from unscroll.thumbnail import InboundThumbnail
 
 # ##############################
 # Thumbnails
@@ -177,13 +183,13 @@ class EventFilter(filters.FilterSet):
     # TODO THIS THING IS FRANKLY REAL DODGY
     def filter_by_q(self, queryset, WHAT_IS_THIS_ARG_I_DO_NOT_KNOW, value):
         uq = unquote(value)
-        apos = re.sub("[';]", "", uq)
+        apos = re.sub(r"[';]", "", uq)
         filtered_val = "'{}'".format(apos,)
         return queryset.full_text_search(filtered_val)
 
     class Meta:
         model = Event
-        fields = ['start', 'before', 'in_scroll', 'in_scroll_uuid']
+        fields = ['start', 'before', 'q', 'in_scroll', 'in_scroll_uuid']
 
 
 class EventSerializer(serializers.HyperlinkedModelSerializer):
@@ -304,6 +310,17 @@ class BulkEventViewSet(BulkModelViewSet):
     filter_class = EventFilter
     serializer_class = BulkEventSerializer
 
+    @action(methods=['get'], detail=False)
+    def minmax(self, request):
+        qs = self.filter_queryset(self.get_queryset())
+        aggregates = qs.aggregate(
+            event_count=Count('*'),
+            first_event=Min('when_happened'),
+            last_event=Max('when_happened'))
+        return Response(dict({'query':request.query_params.get('q')},
+                             **aggregates))
+    
+
     def get_queryset(self):
         user = self.request.user
 
@@ -384,7 +401,7 @@ class NoteViewSet(viewsets.ModelViewSet):
     serializer_class = NoteEventSerializer
     filter_class=NoteFilter
 
-    def remove_private_event(self, note):
+    def filter_private_event(self, note):
         username = self.request.user.username        
         e = note.get('event')
         # NOTE STRING COMPARISON WITH TRUE, this is happening post-serialization
@@ -407,7 +424,7 @@ class NoteViewSet(viewsets.ModelViewSet):
             page,
             many=True,
             context={'request': request})
-        notes = [self.remove_private_event(note) for note in serializer.data]
+        notes = [self.filter_private_event(note) for note in serializer.data]
         return paginator.get_paginated_response(notes)
 
     def retrieve(self, request, pk=None):
@@ -418,7 +435,7 @@ class NoteViewSet(viewsets.ModelViewSet):
             note,
             many=False,
             context={'request': request})
-        note = self.remove_private_event(serializer.data)
+        note = self.filter_private_event(serializer.data)
         return Response(note)
     
     

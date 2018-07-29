@@ -8,6 +8,7 @@ import TimeFrames from './TimeFrames';
 class Timeline extends React.Component {
     constructor(props) {
         super(props);
+        console.log('TIMELINE', props);
         this.state = this.initialize(props);
     }
 
@@ -21,6 +22,7 @@ class Timeline extends React.Component {
         return {
             title: title,
             frame: frame,
+            query: props.query,
             interval: adjusted,
             width: width,
             height: 8,
@@ -100,6 +102,7 @@ class Timeline extends React.Component {
                 key={this.state.center + i}
                 center={this.state.center + i}
                 frame={this.state.frame}
+                query={this.state.query}
                 width={this.state.width}
                 height={this.state.height}
                 offset={this.state.offset}

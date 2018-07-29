@@ -79,12 +79,14 @@ class Event extends React.Component {
             this.setState({ mightFit: false });
         }
     }
+
     renderText(e) {
         if (e.text) {
             return <p dangerouslySetInnerHTML={{ __html: e.text }} />;
         }
         return null;
     }
+
     render() {
         if (this.state.mightFit) {
             const e = this.props.event;

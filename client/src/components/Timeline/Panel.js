@@ -23,12 +23,19 @@ axios.defaults.withCredentials = true;
 
   I wanted you to know about that.
 
+  In general this is the one component that breaks a lot of rules,
+  updating state from mutable vars, doing [grid] etc. Partly because
+  it's ported over from the first version of Unscroll but partly
+  because this is the sort of thing that just loves being mutable.
+
 */
 
 class Panel extends React.Component {
     constructor(props) {
         super(props);
+        console.log('PROPS PROPS PROPS', props.query);
         this.grid = this.makeGrid();
+        this.fitCount = 0;
         this.state = this.initialize(props);
     }
 
@@ -47,10 +54,13 @@ class Panel extends React.Component {
                 width: props.width,
                 height: props.height
             },
+            fresh: true,
+            query: props.query,
+            fitCount: 0,
             frame: props.frame,
             title: breadcrumbTitle,
             interval: props.interval,
-            events: [],
+            events: props.events ? props.events : [],
             cell: {
                 width: 100 / props.width,
                 height: 90 / props.height
@@ -59,6 +69,34 @@ class Panel extends React.Component {
                 this.renderColumn.bind(this)(ct, props.interval)
             )
         };
+    }
+
+    componentDidMount() {
+        this.getSpan();
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (!prevProps.interval.equals(this.props.interval)) {
+            this.setState(this.initialize(this.props), this.getSpan);
+        }
+    }
+
+    getSpan() {
+        if (
+            this.state.fresh &&
+            this.state.events.length > 0 &&
+            this.props.center === 0
+        ) {
+        } else {
+            this.setState({ fresh: false });
+            utils.GET(this, 'events', {
+                events: 25,
+                q: this.props.query,
+                start: this.state.interval.start.toISO(),
+                before: this.state.interval.end.toISO()
+            });
+            this.grid = this.makeGrid();
+        }
     }
 
     makeGrid() {
@@ -104,6 +142,12 @@ class Panel extends React.Component {
         }
 
         if (success) {
+            this.fitCount++;
+
+            // This copies a bit of nasty global state into the
+            // immutable state of the object.
+
+            this.setState({ fitCount: this.fitCount });
             for (let _y = y; _y < y + h; _y++) {
                 for (let _x = x; _x < x + w; _x++) {
                     this.grid[_y][_x] = true;
@@ -145,34 +189,16 @@ class Panel extends React.Component {
         );
     }
 
-    getSpan() {
-        utils.GET(this, 'events', {
-            events: 25,
-            start: this.state.interval.start.toISO(),
-            before: this.state.interval.end.toISO()
-        });
-        this.grid = this.makeGrid();
-    }
-
-    componentDidMount() {
-        this.getSpan();
-    }
-
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        if (!prevProps.interval.equals(this.props.interval)) {
-            this.setState(this.initialize(this.props), this.getSpan);
-        }
-    }
-
     renderColumn(ct, interval) {
         // Avoiding destructuring to keep ESLint happy.
         const columnLink = this.props.frame.getColumnLink(interval, ct);
         const span = columnLink.span;
         const title = columnLink.title;
+        const plusQ = this.props.query ? '&q=' + this.props.query : '';
         return (
             <Column
                 width={100 / this.props.width + '%'}
-                span={span}
+                span={span + plusQ}
                 title={title}
                 key={ct}
             />
@@ -180,30 +206,27 @@ class Panel extends React.Component {
     }
 
     render() {
-	
         const left = this.props.center * 100 + this.props.offset + '%';
-/*
-	const getPosition = () => {
-	    const adj = this.props.offset/100 + this.props.center;
-	    if (adj > 0.5) {
-		return {position:'fixed', left:0, width:'10%'};
-	    }	    
-	    return {position:'relative', left:0, width:'100%'};
-	};
-*/
+
+        const events = this.state.events.map(this.renderEvent.bind(this));
+
         return (
             <div
                 className="Panel"
                 id={this.props.center}
                 key={this.props.interval}
                 style={{ left: left }}
-		>
-		<div className="breadcrumbs">
-                <h1>{this.state.title}</h1>
-		</div>
+            >
+                <div className="breadcrumbs">
+                    <h1>
+                        {this.state.title}{' '}
+                        <Link to="/timelines/">
+                            (showing {this.state.fitCount}/{this.state.count})
+                        </Link>
+                    </h1>
+                </div>
                 {this.state.columns}
-
-                {this.state.events.map(this.renderEvent.bind(this))}
+                {events}
             </div>
         );
     }
