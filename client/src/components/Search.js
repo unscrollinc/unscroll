@@ -1,40 +1,47 @@
 import React from 'react';
-import AppContext from './AppContext';
-class Search extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      q: undefined,
-      topic: undefined,
-      author: undefined,
-      from: 1968,
-      to: 2018
-    };
-  }
+import { withRouter } from 'react-router';
+import queryString from 'query-string';
 
-  render() {
-    return (
-      <AppContext.Consumer>
-        {context => {
-          return (
-            <div>
-              <form
-                className="search"
-                onSubmit={e => context.doEventSearch(e, this.state.q)}
-              >
-                Search:{' '}
-                <input
-                  type="text"
-                  defaultValue=""
-                  onChange={e => this.setState({ q: e.target.value })}
-                />
-                <input type="submit" value="Go" />
-              </form>
-            </div>
-          );
-        }}
-      </AppContext.Consumer>
-    );
-  }
+import AppContext from './AppContext';
+
+class Search extends React.Component {
+    constructor(props) {
+        super(props);
+        console.log('SEARCHPROPS', props);
+    }
+    updateUrl() {
+        this.props.history.push('/?q=' + this.state.q);
+    }
+    render() {
+        return (
+            <AppContext.Consumer>
+                {context => {
+                    return (
+                        <div>
+                            <form
+                                className="search"
+                                onSubmit={e => {
+                                    e.preventDefault();
+                                    this.updateUrl();
+                                    // context.doEventSearch(e, this.state.q)
+                                }}
+                            >
+                                Search:{' '}
+                                <input
+                                    type="text"
+                                    defaultValue=""
+                                    onChange={e =>
+                                        this.setState({ q: e.target.value })
+                                    }
+                                />
+                                <input type="submit" value="Go" />
+                            </form>
+                        </div>
+                    );
+                }}
+            </AppContext.Consumer>
+        );
+    }
 }
-export default Search;
+
+export default withRouter(Search);

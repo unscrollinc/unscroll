@@ -125,6 +125,7 @@ class Timeline extends React.Component {
         if (this.props.location.search !== prevProps.location.search) {
             this.determineState();
         }
+
         if (
             this.state.mouseDown ||
             (this.state.isTouchDetected && this.state.isActive)
