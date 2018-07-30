@@ -6,7 +6,7 @@ class NotebookManuscriptText extends React.Component {
       <React.Fragment>
         <span
           key={this.props.uuid}
-          className="manuscript-text"
+        className={'manuscript-text ' + this.props.kind}
           dangerouslySetInnerHTML={{ __html: this.props.text }}
         />
       </React.Fragment>

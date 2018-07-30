@@ -42,7 +42,7 @@ class TitleEditor extends React.Component {
               history.push('/new-location');
             }}
           >
-            Click Me!
+            Done
           </button>
         )}
       />

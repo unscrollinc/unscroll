@@ -907,3 +907,32 @@ span.switcher {
 }
 
 
+.headline1 {
+    font-size:200%;
+    line-height:150%;
+    display:block;
+    text-align:center;
+    padding-bottom:1em;
+}
+.para {
+    display:block;
+    padding-top:1em;
+    padding-bottom:1em;
+}
+.indent {
+    display:block;
+    padding-left:3em;
+    font-size:90%;
+    line-height:200%;
+    color:#444;
+    padding-bottom:1em;
+}
+.headline2 {
+    font-size:150%;
+    line-height:150%;
+    display:block;
+    text-align:center;
+    padding-bottom:1em;
+}
+.default {
+}

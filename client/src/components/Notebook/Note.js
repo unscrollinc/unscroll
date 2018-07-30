@@ -9,13 +9,15 @@ const SPINNER_STATES = ['default', 'para', 'headline1', 'headline2', 'indent', '
 class NotebookEvent extends React.Component {
     constructor(props) {
 	super(props);
-	this.state = { isMoving: false, spinner:'default'};
+	this.state = { isMoving: false, kind:this.props.kind ? this.props.kind : 'default'};
     }
 
     renderCount() {
+
 	const status = this.props.__isSaved ? ' saved' : ' unsaved';
 	const ct = this.props.index + 1;
 	const moving = this.props.context.state.moveFrom !== undefined;
+	
 	if (!moving) {
 	    return (
 		<span
@@ -124,14 +126,15 @@ class NotebookEvent extends React.Component {
     }
 
     rotateSpinner() {
-	const idx = SPINNER_STATES.indexOf(this.state.spinner);
+	const idx = SPINNER_STATES.indexOf(this.state.kind);
 	const newIdx = ((idx + 1) === SPINNER_STATES.length) ? 0 : idx + 1 ;
-	this.setState({spinner:SPINNER_STATES[newIdx]});
+	const spinnerState = SPINNER_STATES[newIdx];
+	this.setState({kind:spinnerState}, this.edit('kind', spinnerState));
     }
     
     renderSpinner() {
 	return <button onClick={this.rotateSpinner.bind(this)}>
-	    {this.state.spinner}
+	    {this.state.kind}
 	</button>;
     }
     
@@ -139,7 +142,7 @@ class NotebookEvent extends React.Component {
 	const moving = this.state.isMoving ? ' moving' : ' not-moving';
 	const status = this.props.__isSaved ? ' saved' : ' unsaved';
 	return (
-	    <div key={this.props.uuid} className="Note {this.state.spinner}">
+	    <div key={this.props.uuid} className="Note">
               <div className="note-inner">
 		<div className="note-nav">
 		  {this.renderCount()}
