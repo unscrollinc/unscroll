@@ -14,10 +14,10 @@ axios.defaults.withCredentials = true;
 /*
 
   THERE IS A BIG BAD GLOBAL VARIABLE IN HERE CALLED GRID.
-             _     _
-   __ _ _ __(_) __| |
+  _     _
+  __ _ _ __(_) __| |
   / _` | '__| |/ _` |
- | (_| | |  | | (_| |
+  | (_| | |  | | (_| |
   \__, |_|  |_|\__,_|
   |___/
 
@@ -33,7 +33,6 @@ axios.defaults.withCredentials = true;
 class Panel extends React.Component {
     constructor(props) {
         super(props);
-        console.log('PROPS PROPS PROPS', props.query);
         this.grid = this.makeGrid();
         this.fitCount = 0;
         this.state = this.initialize(props);
@@ -44,7 +43,16 @@ class Panel extends React.Component {
             const breadSpacer = i + 1 < a.length ? ' ▶ ' : '';
             return (
                 <span key={i}>
-                    <Link to={`?${o.timeSpan}`}>{o.title}</Link>
+                    <Link
+                        to={{
+                            pathname: '/',
+                            search: o.timeSpan,
+                            state: { needsUpdate: true }
+                        }}
+                        replace
+                    >
+                        {o.title}
+                    </Link>
                     {breadSpacer}
                 </span>
             );
@@ -54,7 +62,6 @@ class Panel extends React.Component {
                 width: props.width,
                 height: props.height
             },
-            fresh: true,
             query: props.query,
             fitCount: 0,
             frame: props.frame,
@@ -82,15 +89,9 @@ class Panel extends React.Component {
     }
 
     getSpan() {
-        if (
-            this.state.fresh &&
-            this.state.events.length > 0 &&
-            this.props.center === 0
-        ) {
+        if (this.state.events.length > 0 && this.props.center === 0) {
         } else {
-            this.setState({ fresh: false });
             utils.GET(this, 'events', {
-                events: 25,
                 q: this.props.query,
                 start: this.state.interval.start.toISO(),
                 before: this.state.interval.end.toISO()
@@ -220,7 +221,7 @@ class Panel extends React.Component {
                 <div className="breadcrumbs">
                     <h1>
                         {this.state.title}{' '}
-                        <Link to="/timelines/">
+                        <Link to={'/timelist/?' + this.state.interval + '?q='}>
                             (showing {this.state.fitCount}/{this.state.count})
                         </Link>
                     </h1>

@@ -61,7 +61,7 @@ const frames = {
             return 10;
         },
 
-        getColumnLink: (i, q, offset) => {
+        getColumnLink: (i, offset) => {
             const start = i.start.plus({ years: 100 * offset });
             const end = i.start
                 .plus({ years: 100 * offset + 99 })

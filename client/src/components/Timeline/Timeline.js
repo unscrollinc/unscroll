@@ -1,28 +1,82 @@
 import React from 'react';
 import ReactCursorPosition from 'react-cursor-position';
 import { DateTime, Interval } from 'luxon';
+import qs from 'qs';
 import WheelReact from '../../ext/wheel-react';
+import { withRouter } from 'react-router-dom';
+
 import Panel from './Panel';
 import TimeFrames from './TimeFrames';
+import axios from 'axios';
+
+const RCPWR = withRouter(ReactCursorPosition);
 
 class Timeline extends React.Component {
     constructor(props) {
         super(props);
-        console.log('TIMELINE', props);
-        this.state = this.initialize(props);
+        this.state = {
+            interval: null,
+            query: null
+        };
     }
 
-    initialize(props) {
-        const interval = props.interval;
+    determineState() {
+        const _this = this;
+
+        const searchParsed = this.props.location.search
+            ? qs.parse(this.props.location.search, {
+                  ignoreQueryPrefix: true
+              })
+            : null;
+
+        if (searchParsed && searchParsed.start && searchParsed.before) {
+            const s = DateTime.fromISO(searchParsed.start);
+            const b = DateTime.fromISO(searchParsed.before);
+            const interval = Interval.fromDateTimes(s, b);
+            const q = searchParsed.q;
+            if (s.invalid === null && b.invalid === null) {
+                this.initialize(interval, q);
+            }
+        } else if (searchParsed && searchParsed.q) {
+            axios
+                .get(
+                    `http://localhost:8000/api/events/minmax/?q=${
+                        searchParsed.q
+                    }`
+                )
+                .then(resp => {
+                    const rd = resp.data;
+                    const s = DateTime.fromISO(rd.first_event);
+                    const b = DateTime.fromISO(rd.last_event);
+                    const interval = Interval.fromDateTimes(s, b);
+                    const q = searchParsed.q;
+                    this.initialize(interval, q);
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+        } else {
+            const s = DateTime.fromObject({ year: 2005, month: 1 }).startOf(
+                'month'
+            );
+            const b = DateTime.fromObject({ year: 2005, month: 1 }).endOf(
+                'month'
+            );
+            const interval = Interval.fromDateTimes(s, b);
+            this.initialize(interval, null);
+        }
+    }
+
+    initialize(interval, q) {
         const timeframes = new TimeFrames(interval);
         const frame = timeframes.getTimeFrameObject();
         const adjusted = frame.getAdjustedDt(interval);
         const title = frame.getTitle(adjusted);
         const width = frame.getColumnCount(interval);
-        return {
+        const init = {
             title: title,
             frame: frame,
-            query: props.query,
+            query: q,
             interval: adjusted,
             width: width,
             height: 8,
@@ -30,6 +84,7 @@ class Timeline extends React.Component {
             center: 0,
             mouseDown: false
         };
+        this.setState(init);
     }
 
     widen() {
@@ -41,7 +96,16 @@ class Timeline extends React.Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        const newInterval = !this.props.interval.equals(nextProps.interval);
+        const searchChanged =
+            this.props.location.search !== nextProps.location.search;
+
+        const initializedInterval =
+            this.state.interval === null && nextState.interval !== null;
+
+        const newInterval =
+            this.state.interval &&
+            !this.state.interval.equals(nextState.interval);
+
         const positionChanged =
             this.state.position !== undefined &&
             this.state.position.x !== nextState.position.x;
@@ -49,10 +113,18 @@ class Timeline extends React.Component {
         const wasClickedOrTouched =
             this.state.mouseDown || this.state.isTouchDetected;
 
-        return newInterval || (positionChanged && wasClickedOrTouched);
+        return (
+            initializedInterval ||
+            newInterval ||
+            searchChanged ||
+            (positionChanged && wasClickedOrTouched)
+        );
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
+        if (this.props.location.search !== prevProps.location.search) {
+            this.determineState();
+        }
         if (
             this.state.mouseDown ||
             (this.state.isTouchDetected && this.state.isActive)
@@ -87,6 +159,10 @@ class Timeline extends React.Component {
         }
     }
 
+    componentDidMount() {
+        this.determineState();
+    }
+
     componentWillUnmount() {
         // This causes some setState issues that occasionally get flagged.
         WheelReact.clearTimeout();
@@ -113,13 +189,16 @@ class Timeline extends React.Component {
     }
 
     renderPanels() {
-        return (
-            <div key="Timeline" id="Panels">
-                {this.renderPanel(-1)}
-                {this.renderPanel(0)}
-                {this.renderPanel(1)}
-            </div>
-        );
+        if (this.state.interval) {
+            return (
+                <div key="Timeline" id="Panels">
+                    {this.renderPanel(-1)}
+                    {this.renderPanel(0)}
+                    {this.renderPanel(1)}
+                </div>
+            );
+        }
+        return <h1>Loading {'' + this.state.interval}</h1>;
     }
 
     render() {
@@ -140,7 +219,6 @@ class Timeline extends React.Component {
 
         return (
             <ReactCursorPosition
-                key="Timeline"
                 isActivatedOnTouch
                 {...{
                     onPositionChanged: props => this.setState(props),
@@ -161,4 +239,4 @@ class Timeline extends React.Component {
     }
 }
 
-export default Timeline;
+export default withRouter(Timeline);

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
-import qs from 'qs';
+
 import { DateTime, Interval } from 'luxon';
 import TimeFrames from './Timeline/TimeFrames';
 import axios from 'axios';
@@ -24,12 +24,6 @@ import NotebookList from './Notebook/NotebookList';
 import { AppProvider } from './AppContext';
 
 import '../index.css';
-
-const DEFAULT_INTERVAL = () => {
-    const s = DateTime.fromObject({ year: 2000, month: 1 }).startOf('month');
-    const b = DateTime.fromObject({ year: 2000, month: 1 }).endOf('month');
-    return Interval.fromDateTimes(s, b);
-};
 
 const routes = [
     {
@@ -131,46 +125,11 @@ class App extends React.Component {
         };
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
-        return (
-            this.state.interval !== nextState.interval ||
-            this.state.query !== nextState.query
-        );
-    }
-
     componentDidMount() {
-        document.title = 'Unscroll';
+        document.title = 'Unscroll: A notebook';
     }
 
-    makeInterval(query) {
-        const _this = this;
-        if (query && query.start && query.before) {
-            const s = DateTime.fromISO(query.start);
-            const b = DateTime.fromISO(query.before);
-            if (s.invalid === null && b.invalid === null) {
-                this.setState({ interval: Interval.fromDateTimes(s, b) });
-            }
-        } else if (query && query.q) {
-            axios
-                .get(`http://localhost:8000/api/events/minmax/?q=${query.q}`)
-                .then(resp => {
-                    const rd = resp.data;
-                    const s = DateTime.fromISO(rd.first_event);
-                    const b = DateTime.fromISO(rd.last_event);
-                    _this.setState({
-                        query: query.q,
-                        interval: Interval.fromDateTimes(s, b)
-                    });
-                })
-                .catch(err => {
-                    console.log(err);
-                });
-        } else {
-            this.setState({ interval: DEFAULT_INTERVAL() });
-        }
-    }
-
-    renderTimeline(query) {
+    renderTimeline(props) {
         /* 
            We have a couple of likely situations here:
            - User asked for a given timespan
@@ -180,7 +139,8 @@ class App extends React.Component {
            Basically once we have an interval we want to get a timeframe.
 
         */
-        if (this.state.interval) {
+        console.log('####', this.state.interval);
+        if (this.state.interval !== null) {
             return (
                 <Timeline
                     query={this.state.query}
@@ -188,7 +148,7 @@ class App extends React.Component {
                 />
             );
         } else {
-            this.makeInterval(query);
+            this.makeInterval(props);
         }
         return null;
     }
@@ -198,19 +158,7 @@ class App extends React.Component {
             <AppProvider>
                 <div className="App">
                     <Nav />
-                    <Route
-                        key="timeline"
-                        path="/"
-                        exact={false}
-                        render={props => {
-                            const qParsed = props.location.search
-                                ? qs.parse(props.location.search, {
-                                      ignoreQueryPrefix: true
-                                  })
-                                : null;
-                            return this.renderTimeline(qParsed);
-                        }}
-                    />
+                    <Route exact path="/" component={Timeline} />
                     {routes.map((route, index) => (
                         <Route
                             key={index}
