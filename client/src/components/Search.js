@@ -7,7 +7,6 @@ import AppContext from './AppContext';
 class Search extends React.Component {
     constructor(props) {
         super(props);
-        console.log('SEARCHPROPS', props);
     }
     updateUrl() {
         this.props.history.push('/?q=' + this.state.q);

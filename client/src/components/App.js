@@ -158,7 +158,7 @@ class App extends React.Component {
             <AppProvider>
                 <div className="App">
                     <Nav />
-                    <Route exact path="/" component={Timeline} />
+                <Route exact={false} path="/" component={Timeline} />
                     {routes.map((route, index) => (
                         <Route
                             key={index}

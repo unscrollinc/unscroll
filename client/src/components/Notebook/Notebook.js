@@ -106,12 +106,7 @@ class Notebook extends React.Component {
   }
 
   render() {
-    console.log('OKEY', {
-      props: this.props,
-      nb: this.props.context.state.notebook
-    });
     if (this.props.new && this.props.context.state.notebook) {
-      console.log('OKEY LAUGHINF FACTORY');
       return (
         <Redirect
           to={`/notebooks/${this.props.context.state.username}/${
