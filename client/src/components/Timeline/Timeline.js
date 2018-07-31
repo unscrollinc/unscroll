@@ -4,7 +4,7 @@ import { DateTime, Interval } from 'luxon';
 import qs from 'qs';
 import WheelReact from '../../ext/wheel-react';
 import { withRouter } from 'react-router-dom';
-
+import util from '../Util/Util';
 import Panel from './Panel';
 import TimeFrames from './TimeFrames';
 import axios from 'axios';
@@ -16,7 +16,8 @@ class Timeline extends React.Component {
         super(props);
         this.state = {
             interval: null,
-            query: null
+            query: null,
+            searchWorked: null
         };
     }
 
@@ -39,18 +40,20 @@ class Timeline extends React.Component {
             }
         } else if (searchParsed && searchParsed.q) {
             axios
-                .get(
-                    `http://localhost:8000/api/events/minmax/?q=${
-                        searchParsed.q
-                    }`
-                )
+                .get(`${util.getAPI('events')}minmax/?q=${searchParsed.q}`)
                 .then(resp => {
                     const rd = resp.data;
-                    const s = DateTime.fromISO(rd.first_event);
-                    const b = DateTime.fromISO(rd.last_event);
-                    const interval = Interval.fromDateTimes(s, b);
-                    const q = searchParsed.q;
-                    this.initialize(interval, q);
+                    if (rd.first_event === null || rd.last_event === null) {
+                        console.log('SEARCH FAILED');
+                        _this.setState({ searchWorked: false });
+                    } else {
+                        const s = DateTime.fromISO(rd.first_event);
+                        const b = DateTime.fromISO(rd.last_event);
+                        const rawInterval = Interval.fromDateTimes(s, b);
+                        const interval = rawInterval.divideEqually(5)[3];
+                        const q = searchParsed.q;
+                        _this.initialize(interval, q);
+                    }
                 })
                 .catch(err => {
                     console.log(err);
@@ -74,10 +77,10 @@ class Timeline extends React.Component {
         const title = frame.getTitle(adjusted);
         const width = frame.getColumnCount(interval);
         const init = {
+            interval: adjusted,
+            query: q,
             title: title,
             frame: frame,
-            query: q,
-            interval: adjusted,
             width: width,
             height: 8,
             offset: 0,
@@ -96,6 +99,8 @@ class Timeline extends React.Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
+        const searchWorked = this.state.searchWorked !== nextState.searchWorked;
+
         const searchChanged =
             this.props.location.search !== nextProps.location.search;
 
@@ -114,6 +119,7 @@ class Timeline extends React.Component {
             this.state.mouseDown || this.state.isTouchDetected;
 
         return (
+            searchWorked ||
             initializedInterval ||
             newInterval ||
             searchChanged ||
@@ -199,7 +205,8 @@ class Timeline extends React.Component {
                 </div>
             );
         }
-        return <h1>Loading {'' + this.state.interval}</h1>;
+        console.log('44444', this.state);
+        return <h1>Search failed: {'' + this.state.searchWorked}</h1>;
     }
 
     render() {
