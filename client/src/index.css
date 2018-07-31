@@ -35,7 +35,7 @@ h1 a:hover {
 .Panel h1 {
     background-color: deepskyblue;
     width: 100%;
-    display: block;    
+    display: block;
 }
 .Panel h1 a {
     text-decoration: none;
@@ -64,7 +64,7 @@ td {
     color: black;
     display: flex;
     justify-content: start;
-    align-items:center;
+    align-items: center;
 }
 .Nav a {
     color: deepskyblue;
@@ -75,7 +75,7 @@ td {
 .Nav .logo {
     font-weight: bold;
     color: black;
-    padding: 0 0.25em 0 0;    
+    padding: 0 0.25em 0 0;
 }
 
 .Nav a:hover {
@@ -83,7 +83,7 @@ td {
 }
 .Nav .current-notebook {
     font-style: italic;
-    padding-right:0.25em;
+    padding-right: 0.25em;
 }
 .Timeline,
 .Editor,
@@ -862,20 +862,19 @@ div.manuscript-inner .description {
 }
 
 div.manuscript-sidebar {
-    padding-top:45%;
-    width:25%;
-    border-left:1px solid deepskyblue;
-    float:right;
-    height:60%;
-    margin-left:2.5%;
+    padding-top: 45%;
+    width: 25%;
+    border-left: 1px solid deepskyblue;
+    float: right;
+    height: 60%;
+    margin-left: 2.5%;
 }
 
-
 div.manuscript-sidebar-event {
-    margin-left:2.5%;
-    
-    font-size:80%;
-    line-height:125%;
+    margin-left: 2.5%;
+
+    font-size: 80%;
+    line-height: 125%;
     font-family: 'IBM Plex Sans', sans-serif;
 }
 
@@ -906,33 +905,37 @@ span.switcher {
     color: deepskyblue;
 }
 
-
 .headline1 {
-    font-size:200%;
-    line-height:150%;
-    display:block;
-    text-align:center;
-    padding-bottom:1em;
+    font-size: 200%;
+    line-height: 150%;
+    display: block;
+    text-align: center;
+    padding-bottom: 1em;
 }
 .para {
-    display:block;
-    padding-top:1em;
-    padding-bottom:1em;
+    display: block;
+    padding-top: 1em;
+    padding-bottom: 1em;
 }
 .indent {
-    display:block;
-    padding-left:3em;
-    font-size:90%;
-    line-height:200%;
-    color:#444;
-    padding-bottom:1em;
+    display: block;
+    padding-left: 3em;
+    font-size: 90%;
+    line-height: 200%;
+    color: #444;
+    padding-bottom: 1em;
 }
 .headline2 {
-    font-size:150%;
-    line-height:150%;
-    display:block;
-    text-align:center;
-    padding-bottom:1em;
+    font-size: 150%;
+    line-height: 150%;
+    display: block;
+    text-align: center;
+    padding-bottom: 1em;
 }
 .default {
+}
+
+.pre {
+    font-family: monospace;
+    white-space: pre;
 }
