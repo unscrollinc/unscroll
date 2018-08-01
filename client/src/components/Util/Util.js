@@ -12,6 +12,13 @@ axios.defaults.withCredentials = true;
 const API = 'http://localhost/api/';
 
 const util = {
+    randomString: () => {
+        return Math.random()
+            .toString(36)
+            .replace(/[^a-z]+/g, '')
+            .substr(0, 6);
+    },
+
     getCookie: () => {
         const c = cookie.get();
         if (c) {

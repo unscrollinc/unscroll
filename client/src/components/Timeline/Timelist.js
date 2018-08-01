@@ -7,6 +7,7 @@ import TimelistEvent from './TimelistEvent';
 import TimelistTitleEditor from './TimelistTitleEditor';
 import utils from '../Util/Util';
 import { Scrollbars } from 'react-custom-scrollbars';
+import uuidv4 from 'uuid/v4';
 
 const API = 'http://localhost/api/events/';
 
@@ -31,6 +32,7 @@ class Timelist extends React.Component {
     }
 
     makeEls(data) {
+        console.log(data);
         return data.results.map((e, i) => {
             return (
                 <TimelistEvent
@@ -117,7 +119,35 @@ class Timelist extends React.Component {
             this.kickoff();
         }
     }
-
+    insertEvent(scroll) {
+        const _this = this;
+        const template = {
+            uuid: uuidv4(),
+            when_happened: '2010-01-01T23:59:59',
+            with_thumbnail: null,
+            with_resolution: 10,
+            in_scroll: scroll.url,
+            with_creator: null,
+            title: 'Event TK ' + utils.randomString(),
+            text: ''
+        };
+        utils
+            .webPromise(this, 'POST', 'events', template)
+            .then(resp => {
+                console.log('AAAAAAA', { results: [resp.data] });
+                console.log(
+                    'P A I N',
+                    _this.makeEls({ results: [resp.data] }),
+                    _this.state.events
+                );
+                _this.setState(prevState => ({
+                    events: this.makeEls({ results: [resp.data] }).concat(
+                        prevState.events
+                    )
+                }));
+            })
+            .catch(err => console.log(err));
+    }
     handleScroll(e) {
         const _this = this;
         console.log('scrolled', e);
@@ -146,6 +176,7 @@ class Timelist extends React.Component {
                 <div className="list-object">
                     <TimelistTitleEditor
                         key={`tti-${this.props.uuid}`}
+                        insertEvent={this.insertEvent.bind(this)}
                         count={this.state.count}
                         {...this.props}
                     />
