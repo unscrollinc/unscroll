@@ -1,5 +1,6 @@
 import requests
 import datefinder
+import re
 import pprint
 import random
 import unscroll
@@ -11,30 +12,45 @@ from unscroll import UnscrollClient
 
 ROW_COUNT = 50
 
+
 class IAItem():
     in_scroll = None
     slug = None
     url = None
     title = None
+    creator = None
     description = None
     date = None
     when_happened = None
-    thumbnail = None
+    thumbnail_url = None
     
     def __init__(self, slug, scroll):
         self.in_scroll = scroll
         self.slug = slug
         self.iaurl = self.url(slug)
-
         r = requests.get(self.iaurl)
         data = r.json()
+        self.thumbnail_url = self.get_thumb(data)
         meta = data.get('metadata')
-        
-        self.url = meta.get('identifier-access')
+        self.creator = meta.get('creator')
+        self.url = 'https://archive.org/details/{}'.format(meta.get('identifier'))
         self.date = meta.get('date')        
         self.title = meta.get('title')
-        self.text = meta.get('description')
-        pprint.pprint(self.to_event())
+
+    def get_thumb(self, data):
+        files = data.get('files')
+
+        filtered = [x for x in files if 'name' in x and x['name'] == '__ia_thumb.jpg']
+        if len(filtered) > 0:
+            dir = 'https://{}{}/__ia_thumb.jpg'.format(data.get('d1'), data.get('dir'),)
+            return dir
+
+        filtered = [x for x in files if 'format' in x and x['format'] == 'Animated GIF']
+        if len(filtered) > 0:
+            dir = 'https://{}{}/{}'.format(data.get('d1'), data.get('dir'),filtered[0]['name'])
+            return dir
+
+        return None
         
     def url(self, id):
         url = str('https://archive.org/metadata/{}')\
@@ -42,13 +58,15 @@ class IAItem():
         return url
 
     def to_event(self):
+        if self.creator is not None:
+            self.title = '{} (by {})'.format(self.title, self.creator)
+            
         ud = UnscrollDate(self.date)
         if ud.is_okay():
             d = {
                 'title':self.title,
-                'text':self.text,
+                'text':'',
                 'resolution':ud.resolution,
-                'with_thumbnail':self.thumbnail,
                 'ranking':0,
                 'content_url':self.url,
                 'source_name':self.in_scroll.name,
@@ -65,28 +83,52 @@ class IACollection():
     name=None
     count=None
     source_url=None
+    thumbnail_url=None
     total_pages=None
     session = None
-
+    title = None
+    description = None
+    
     def __init__(self, slug):
         self.slug=slug
-
+        self.source_url = 'https://archive.org/details/{}'.format(self.slug,)
+        # get the metadata to start
         first_url = self.url(row_count=1)
+
+        d = requests.get('https://archive.org/metadata/{}'.format(slug,))
+        dj = d.json()
+        self.thumbnail_url = self.get_thumb(dj)
+
+        meta = dj.get('metadata')
+        self.title = meta.get('title')
+        self.description = meta.get('description')
+
+
+        # Get a very brief listing of items to get count
         r = requests.get(first_url)
         j = r.json()
         data = j.get('data')
         resp = j.get('response')
         self.count = resp.get('numFound')
         self.total_pages = math.ceil(self.count/ROW_COUNT)
-        
-        for url in [self.url(page_count=x) for x in range(1, self.total_pages + 1)]:
+       
+
+    def get_items(self, page_count):
+        # step through a range of those pages, fetching and turning
+        # them into URLs, then getting them
+        for url in [self.url(page_count=page_count)]:
             items = requests.get(url)
             j = items.json()
             resp = j.get('response')
             docs = resp.get('docs')
             filtered = [x for x in docs if 'date' in x]
-            pprint.pprint(list(filtered))
             items = [IAItem(doc.get('identifier'), self) for doc in filtered]
+            return items
+        
+    def get_thumb(self, meta):
+        dir = 'https://{}{}/__ia_thumb.jpg'.format(meta.get('d1'), meta.get('dir'),)
+        return dir
+        
 
     def url(self, row_count=None, page_count=1):
         if row_count is None:
@@ -97,84 +139,51 @@ class IACollection():
                   '&fl%5B%5D=date&fl%5B%5D=identifier'
                   '&rows={}&page={}'+\
                   '&output=json').format(self.slug, row_count, page_count,)
-        return url    
+        return url
+    
     
     def to_scroll():
         pass
 
 
 def __main__():
-    c =IACollection('tednelsonjunkmail')
-    
-
-__main__()
-
-
-
-
-def make_details_url(term):
-    return "https://archive.org/details/{}&output=json".format(term,)
-
-
-def __xxxmain__(term=None, title=None):
-
     parser = argparse.ArgumentParser(
         description='Search archive.org and get things.')
-    parser.add_argument('--term',
-                        help='A search term; in quotes if necessary.')
-    parser.add_argument('--title',
-                        type=int,
-                        help='The title of the search results')
+    parser.add_argument('--collection',
+                        help='A collection name')
     args = parser.parse_args()
-    if (args.term is None):
-        print('No term!')
+    if (args.collection is None):
+        print('No collection!')
+        exit(0)
+    
+    api = unscroll.UnscrollClient()
+    ia = IACollection(args.collection)
 
-    c = unscroll.UnscrollClient(
-        api='http://127.0.0.1:8000',
-        username='admin',
-        password='password')
-    c.login()
+    api.delete_scroll_with_title(ia.title)
+    favthumb = api.cache_thumbnail(ia.thumbnail_url)
+    with_thumbnail = favthumb.get('url')
+    
+    scroll = api.create_or_retrieve_scroll(
+        ia.title,
+        description=ia.description,
+        link=ia.source_url,
+        with_thumbnail=with_thumbnail,
+        subtitle='Collection via Archive.org',)
 
-    c.create_scroll(title, subtitle='From Archive.org')
+    for x in range(1, ia.total_pages + 1):
+        items = ia.get_items(x)
+        for item in items:
+            d = item.to_event()
+            print(item.thumbnail_url)
+            if d is not None:
 
-    r = requests.request('GET', make_url(term))
-    d = r.json()
-    for doc in d['response']['docs']:
-        events = []
-        source = make_details_url(doc['identifier'])
-        print(source)
-        inner_d = requests.request('GET', source)
-        data = inner_d.json()
-        coll = data['metadata']['identifier'][0]
-        coll_title = data['metadata']['title'][0]
-        fd = data['files']
-        for f in fd:
-            if fd[f]['format'] == 'VBR MP3':
-                dates = list(datefinder.find_dates(f))
-                if len(dates) > 0:
-                    dt = dates[0]
-                    title = f
-                    myfile = fd[f]
-                    if 'title' in myfile:
-                        title = myfile['title']
-                    elif 'creator' in myfile:
-                        title = myfile['creator']
-                    elif 'artist' in myfile:
-                        title = myfile['artist']
+                favthumb = api.cache_thumbnail(item.thumbnail_url)
 
-                    url = 'https://archive.org/download/{}{}'.format(coll, f,)
-                    event = {
-                        'media_type': 'audio/mpeg',
-                        'content_type': 'radio broadcast',
-                        'title': title,
-                        'text': coll_title,
-                        'ranking': random.random(),
-                        'datetime': dt.isoformat(),
-                        'resolution': 'days',
-                        'content_url': url,
-                        'thumbnail': None
-                    }
-                    c.create_event(event)
-                    pprint.pprint(event['title'])                    
+                if favthumb is not None:
+                    d['with_thumbnail'] = favthumb.get('url')
 
+                d['in_scroll'] = scroll
+                e = api.create_event(d, scroll)
+                print(e)
 
+__main__()

@@ -155,7 +155,7 @@ class Timelist extends React.Component {
         console.log(d);
 
         if (d < 2000) {
-            if (!this.state.doGetNext) {
+            if (!this.state.doGetNext && this.state.nextUrl) {
                 _this.setState(
                     prevState => ({ doGetNext: true }),
                     _this.getEvents(this.state.nextUrl)

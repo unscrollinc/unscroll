@@ -57,6 +57,7 @@ class UnscrollClient():
 
     def create_or_retrieve_scroll(self,
                                   title,
+                                  subtitle='',                                  
                                   public=True,
                                   description='',
                                   link='',
@@ -68,6 +69,7 @@ class UnscrollClient():
                           json={'title': title,
                                 'is_public': public,
                                 'citation': citation,
+                                'subtitle':subtitle,
                                 'link': link,
                                 'description': description,
                                 'with_thumbnail': with_thumbnail})
