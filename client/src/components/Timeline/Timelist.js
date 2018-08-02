@@ -1,6 +1,6 @@
 import React from 'react';
 import 'react-virtualized/styles.css';
-// import {DateTime, Interval} from 'luxon';
+import { DateTime, Interval } from 'luxon';
 // import cachios from 'cachios';
 import axios from 'axios';
 import TimelistEvent from './TimelistEvent';
@@ -18,6 +18,8 @@ class Timelist extends React.Component {
             search: {},
             events: [],
             scroll: {},
+            firstEvent: undefined,
+            lastEvent: undefined,
             doGetNext: false,
             isSaved: true,
             fetchUrl: undefined,
@@ -32,7 +34,6 @@ class Timelist extends React.Component {
     }
 
     makeEls(data) {
-        console.log(data);
         return data.results.map((e, i) => {
             return (
                 <TimelistEvent
@@ -46,8 +47,30 @@ class Timelist extends React.Component {
         });
     }
 
+    getMaxMin(qs) {
+        const _this = this;
+        axios({
+            method: 'get',
+            url: utils.getAPI('events/minmax'),
+            headers: utils.getAuthHeaderFromCookie(),
+            params: qs
+        })
+            .then(resp => {
+                const s = DateTime.fromISO(resp.data.first_event);
+                const e = DateTime.fromISO(resp.data.last_event);
+                const i = Interval.fromDateTimes(s, e);
+                const seconds = i.length('seconds') / 1000;
+                _this.setState(
+                    { interval: i, seconds: seconds },
+                    console.log('THIS STATE IS', _this.state, resp)
+                );
+            })
+            .catch(err => {
+                console.log('Error', err);
+            });
+    }
+
     getEvents(url) {
-        console.log('URL', url);
         const _this = this;
         const order = '&order=when_happened';
         const ordering_url = url.includes(order) ? url : url + order;
@@ -60,6 +83,29 @@ class Timelist extends React.Component {
                 const _els = _this.makeEls(resp.data);
                 _this.setState(prevState => ({
                     events: prevState.events.concat(_els),
+                    nextUrl: resp.data.next,
+                    count: resp.data.count,
+                    doGetNext: false
+                }));
+            })
+            .catch(err => {
+                console.log('Error', err);
+            });
+    }
+
+    replaceEvents(url) {
+        const _this = this;
+        const order = '&order=when_happened';
+        const ordering_url = url.includes(order) ? url : url + order;
+        axios({
+            method: 'get',
+            url: ordering_url,
+            headers: utils.getAuthHeaderFromCookie()
+        })
+            .then(resp => {
+                const els = _this.makeEls(resp.data);
+                _this.setState(prevState => ({
+                    events: els,
                     nextUrl: resp.data.next,
                     count: resp.data.count,
                     doGetNext: false
@@ -101,8 +147,9 @@ class Timelist extends React.Component {
     }
 
     kickoff() {
-        const url = this.props.uuid
-            ? `${API}?in_scroll_uuid=${this.props.uuid}&`
+        this.getMaxMin({ in_scroll__slug: this.props.slug });
+        const url = this.props.slug
+            ? `${API}?in_scroll__slug=${this.props.slug}&`
             : `${API}?`;
         this.setState(
             prevState => ({ events: [] }),
@@ -115,10 +162,11 @@ class Timelist extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (this.props.uuid !== prevProps.uuid) {
+        if (this.props.slug !== prevProps.slug) {
             this.kickoff();
         }
     }
+
     insertEvent(scroll) {
         const _this = this;
         const template = {
@@ -134,12 +182,6 @@ class Timelist extends React.Component {
         utils
             .webPromise(this, 'POST', 'events', template)
             .then(resp => {
-                console.log('AAAAAAA', { results: [resp.data] });
-                console.log(
-                    'P A I N',
-                    _this.makeEls({ results: [resp.data] }),
-                    _this.state.events
-                );
                 _this.setState(prevState => ({
                     events: this.makeEls({ results: [resp.data] }).concat(
                         prevState.events
@@ -148,11 +190,11 @@ class Timelist extends React.Component {
             })
             .catch(err => console.log(err));
     }
+
     handleScroll(e) {
         const _this = this;
         const t = e.target;
         const d = t.scrollHeight - t.scrollTop;
-        console.log(d);
 
         if (d < 2000) {
             if (!this.state.doGetNext && this.state.nextUrl) {
@@ -162,6 +204,38 @@ class Timelist extends React.Component {
                 );
             }
         }
+    }
+
+    renderRange() {
+        if (this.state.interval) {
+            return (
+                <div>
+                    <span>{this.state.currentRangePosition}</span>
+                    <input
+                        style={{ width: '100%' }}
+                        type="range"
+                        min="0"
+                        max="1000"
+                        step="1"
+                        onInput={this.handleRange.bind(this)}
+                    />
+                </div>
+            );
+        }
+        return null;
+    }
+
+    handleRange(e) {
+        const v = e.target.value;
+        const loc = this.state.interval.start.plus({
+            seconds: this.state.seconds * v
+        });
+        this.setState({ currentRangePosition: loc.toFormat('MMMM kkkk') });
+        this.replaceEvents(
+            `${API}?in_scroll__slug=${
+                this.props.slug
+            }&start=${loc.toISO()}&limit=50`
+        );
     }
 
     render() {
@@ -179,6 +253,7 @@ class Timelist extends React.Component {
                         count={this.state.count}
                         {...this.props}
                     />
+                    {this.renderRange()}
                     <table
                         key={`ttit-${this.props.uuid}`}
                         className="list-object-table"

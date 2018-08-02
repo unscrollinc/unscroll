@@ -81,7 +81,7 @@ const routes = [
     },
 
     {
-        path: '/timelines/:uuid',
+        path: '/timelines/:user/:slug',
         exact: true,
         Workbook: props => <Timelist {...props.match.params} />
     },
@@ -158,7 +158,7 @@ class App extends React.Component {
             <AppProvider>
                 <div className="App">
                     <Nav />
-                <Route exact={false} path="/" component={Timeline} />
+                    <Route exact={false} path="/" component={Timeline} />
                     {routes.map((route, index) => (
                         <Route
                             key={index}

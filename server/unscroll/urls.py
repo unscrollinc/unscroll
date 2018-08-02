@@ -168,12 +168,6 @@ class EventFilter(filters.FilterSet):
         name='when_happened',
         lookup_expr='lte')
 
-    in_scroll_uuid = django_filters.UUIDFilter(
-        name="in_scroll__uuid")
-
-    in_scroll = django_filters.NumberFilter(
-        name="in_scroll__id")    
-
     order = django_filters.OrderingFilter(
         # tuple-mapping retains order
         fields = ['when_happened', 'ranking'])
@@ -189,7 +183,13 @@ class EventFilter(filters.FilterSet):
 
     class Meta:
         model = Event
-        fields = ['start', 'before', 'q', 'in_scroll', 'in_scroll_uuid']
+        fields = ['start',
+                  'before',
+                  'q',
+                  'in_scroll',
+                  'in_scroll__slug',
+                  'in_scroll__uuid',
+                  'in_scroll__by_user__username']
 
 
 class EventSerializer(serializers.HyperlinkedModelSerializer):
@@ -201,11 +201,15 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
         read_only=True,
         source="by_user.full_name")        
 
-    scroll_uuid = serializers.CharField(
+    in_scroll_uuid = serializers.CharField(
         read_only=True,
         source="in_scroll.uuid")
 
-    scroll_title = serializers.CharField(
+    in_scroll_slug = serializers.CharField(
+        read_only=True,
+        source="in_scroll.slug")
+    
+    in_scroll_title = serializers.CharField(
         read_only=True,
         source="in_scroll.title")
 
@@ -243,6 +247,14 @@ class BulkEventSerializer(BulkSerializerMixin,
     scroll_uuid = serializers.UUIDField(
         read_only=True,
         source="in_scroll.uuid")
+
+    in_scroll_slug = serializers.CharField(
+        read_only=False,
+        source="in_scroll.slug")
+
+    in_scroll_user = serializers.UUIDField(
+        read_only=True,
+        source="in_scroll.by_user.username")        
 
     username = serializers.CharField(
         read_only=True,
@@ -317,8 +329,9 @@ class BulkEventViewSet(BulkModelViewSet):
             event_count=Count('*'),
             first_event=Min('when_happened'),
             last_event=Max('when_happened'))
-        return Response(dict({'query':request.query_params.get('q')},
-                             **aggregates))
+        resp = dict({'query':request.query_params.get('q')},
+                    **aggregates)
+        return Response(resp)
     
 
     def get_queryset(self):
@@ -461,6 +474,7 @@ class ScrollFilter(filters.FilterSet):
     class Meta:
         model = Scroll
         fields = ['uuid',
+                  'slug',
                   'title',
                   'is_public',
                   'by_user__username']

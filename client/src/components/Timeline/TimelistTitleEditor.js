@@ -66,9 +66,9 @@ class TimelistTitleEditor extends React.Component {
     }
 
     getScroll() {
-        if (this.props.uuid) {
+        if (this.props.slug) {
             const _this = this;
-            const url = SCROLL_API + '?uuid=' + this.props.uuid;
+            const url = SCROLL_API + '?slug=' + this.props.slug;
             axios({
                 method: 'get',
                 url: url,

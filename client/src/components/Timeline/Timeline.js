@@ -205,7 +205,6 @@ class Timeline extends React.Component {
                 </div>
             );
         }
-        console.log('44444', this.state);
         return <h1>Search failed: {'' + this.state.searchWorked}</h1>;
     }
 

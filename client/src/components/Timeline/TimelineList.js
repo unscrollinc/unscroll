@@ -33,7 +33,12 @@ class TimelineList extends React.Component {
                 <td className="list-object-meta-td">
                     <div className="list-object-title">
                         <Link
-                            to={'/timelines/' + scroll.uuid}
+                            to={
+                                '/timelines/' +
+                                scroll.user_username +
+                                '/' +
+                                scroll.slug
+                            }
                             dangerouslySetInnerHTML={{ __html: scroll.title }}
                         />
                     </div>

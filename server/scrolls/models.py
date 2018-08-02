@@ -2,6 +2,8 @@ from django.db import models
 from django.db.models import Max, Min, Count
 from django_bleach.models import BleachField
 from django.contrib.auth.models import User
+from django.utils.crypto import get_random_string
+
 
 from uuid import uuid4
 import lxml.html
@@ -94,6 +96,9 @@ class Scroll(models.Model):
         db_index=True,                
         editable=False,
         unique=True)
+    slug = models.SlugField(
+        default = get_random_string(12,'abcdefghijklmnopqrstuvwxyz')
+    )
     title = BleachField()
     description = BleachField(
         blank=True,
@@ -125,7 +130,7 @@ class Scroll(models.Model):
 
     class Meta:
         db_table = 'scroll'
-        unique_together = (("title", "by_user"),)
+        unique_together = (("slug", "by_user"),)
         ordering = ['-when_modified']
 
     def __unicode__(self):
@@ -250,6 +255,7 @@ class Event(models.Model):
     source_url = models.URLField(
         max_length=512,
         default="",
+        db_index=True,
         blank=True)
     when_created = models.DateTimeField(
         auto_now_add=True)

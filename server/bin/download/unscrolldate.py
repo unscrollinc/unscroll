@@ -14,10 +14,19 @@ class UnscrollDate(object):
     when_happened = None
     resolution = None
     
-    def __init__(self, when_original):
-        if when_original is not None:
-            self.when_original = str(when_original).rstrip()
-            self.resolution, self.when_happened = self.init_parse()
+    def __init__(self, likelies=None):
+        print(likelies)
+        if likelies is not None:
+            # box up likelies into a list if we just got a string
+        
+            if (isinstance(likelies, str)):
+                likelies = [likelies]
+
+            for likely in likelies:
+                self.when_original = str(likely).rstrip()       
+                self.resolution, self.when_happened = self.init_parse()
+                if self.is_okay():
+                    break
 
     def is_okay(self):
         return self.when_happened is not None

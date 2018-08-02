@@ -10,8 +10,10 @@ import math
 from unscrolldate import UnscrollDate
 from unscroll import UnscrollClient
 
-ROW_COUNT = 50
+ROW_COUNT = 25
 
+# If I find a subcollection I should go ahead and do that
+# should i track work
 
 class IAItem():
     in_scroll = None
@@ -25,30 +27,40 @@ class IAItem():
     thumbnail_url = None
     
     def __init__(self, slug, scroll):
-        self.in_scroll = scroll
-        self.slug = slug
-        self.iaurl = self.url(slug)
-        r = requests.get(self.iaurl)
-        data = r.json()
-        self.thumbnail_url = self.get_thumb(data)
-        meta = data.get('metadata')
-        self.creator = meta.get('creator')
-        self.url = 'https://archive.org/details/{}'.format(meta.get('identifier'))
-        self.date = meta.get('date')        
-        self.title = meta.get('title')
+        try:
+            self.in_scroll = scroll
+            self.slug = slug
+            self.iaurl = self.url(slug)
+            r = requests.get(self.iaurl)
+            data = r.json()
+            self.thumbnail_url = self.get_thumb(data)
+            meta = data.get('metadata')
+            self.creator = meta.get('creator')
+            self.description = meta.get('description')            
+            self.url = 'https://archive.org/details/{}'.format(meta.get('identifier'))
+            self.date = meta.get('date')        
+            self.title = meta.get('title')
+        except Exception as e:
+            print(slug, e)
 
     def get_thumb(self, data):
         files = data.get('files')
 
-        filtered = [x for x in files if 'name' in x and x['name'] == '__ia_thumb.jpg']
-        if len(filtered) > 0:
-            dir = 'https://{}{}/__ia_thumb.jpg'.format(data.get('d1'), data.get('dir'),)
-            return dir
+        # there's no such thing as a "thumbnail" field at the Internet
+        # Archive, just patterns that might make sense. __ia_thumb.jpg
+        # is the good stuff; otherwise we get one of those ganky
+        # animgifs.
+        
+        if files is not None:
+            filtered = [x for x in files if 'name' in x and x['name'] == '__ia_thumb.jpg']
+            if len(filtered) > 0:
+                dir = 'https://{}{}/__ia_thumb.jpg'.format(data.get('d1'), data.get('dir'),)
+                return dir
 
-        filtered = [x for x in files if 'format' in x and x['format'] == 'Animated GIF']
-        if len(filtered) > 0:
-            dir = 'https://{}{}/{}'.format(data.get('d1'), data.get('dir'),filtered[0]['name'])
-            return dir
+            filtered = [x for x in files if 'format' in x and x['format'] == 'Animated GIF']
+            if len(filtered) > 0:
+                dir = 'https://{}{}/{}'.format(data.get('d1'), data.get('dir'),filtered[0]['name'])
+                return dir
 
         return None
         
@@ -58,14 +70,17 @@ class IAItem():
         return url
 
     def to_event(self):
+        ud = UnscrollDate([self.date, self.title])
+        print(ud.when_happened)
+        adjusted_title = self.title
         if self.creator is not None:
-            self.title = '{} (by {})'.format(self.title, self.creator)
+            adjusted_title = '{} (by {})'.format(self.title, self.creator)
             
-        ud = UnscrollDate(self.date)
+        
         if ud.is_okay():
             d = {
-                'title':self.title,
-                'text':'',
+                'title':adjusted_title,
+                'text':self.description,
                 'resolution':ud.resolution,
                 'ranking':0,
                 'content_url':self.url,
@@ -121,14 +136,12 @@ class IACollection():
             j = items.json()
             resp = j.get('response')
             docs = resp.get('docs')
-            filtered = [x for x in docs if 'date' in x]
-            items = [IAItem(doc.get('identifier'), self) for doc in filtered]
+            items = [IAItem(doc.get('identifier'), self) for doc in docs]
             return items
         
     def get_thumb(self, meta):
         dir = 'https://{}{}/__ia_thumb.jpg'.format(meta.get('d1'), meta.get('dir'),)
-        return dir
-        
+        return dir        
 
     def url(self, row_count=None, page_count=1):
         if row_count is None:
