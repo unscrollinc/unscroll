@@ -266,7 +266,7 @@ td {
 }
 
 div.Timelist {
-    width: 10%;
+    width: 50%;
     left: 50%;
     border-left: 1px solid deepskyblue;
     height: 95%;
@@ -938,4 +938,17 @@ span.switcher {
 .pre {
     font-family: monospace;
     white-space: pre;
+}
+.timelist-range {
+    position: sticky;
+    top: 0%;
+    width: 90%;
+    text-align: left;
+    font-weight: bold;
+    padding: 0em;
+    padding: 5%;
+}
+
+input[type='range']:focus {
+    outline: none; /* Removes the blue border. You should probably do some kind of focus styling for accessibility reasons though. */
 }

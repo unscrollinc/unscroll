@@ -18,9 +18,10 @@ class Timelist extends React.Component {
             search: {},
             events: [],
             scroll: {},
-            firstEvent: undefined,
-            lastEvent: undefined,
+            interval: undefined,
             doGetNext: false,
+            rangeMouseDown: false,
+            rangeLeft: '0%',
             isSaved: true,
             fetchUrl: undefined,
             nextUrl: undefined
@@ -61,7 +62,11 @@ class Timelist extends React.Component {
                 const i = Interval.fromDateTimes(s, e);
                 const seconds = i.length('seconds') / 1000;
                 _this.setState(
-                    { interval: i, seconds: seconds },
+                    {
+                        interval: i,
+                        seconds: seconds,
+                        currentRangePosition: s.toFormat('kkkk / MMM')
+                    },
                     console.log('THIS STATE IS', _this.state, resp)
                 );
             })
@@ -165,6 +170,18 @@ class Timelist extends React.Component {
         if (this.props.slug !== prevProps.slug) {
             this.kickoff();
         }
+
+        if (
+            this.state.rangeMouseDown !== prevState.rangeMouseDown &&
+            this.state.rangeMouseDown === false
+        ) {
+            console.log('RANGE MOUSE DOWN', this.state.rangeMouseDown);
+            this.replaceEvents(
+                `${API}?in_scroll__slug=${
+                    this.props.slug
+                }&start=${this.state.startDateTime.toISO()}&limit=50`
+            );
+        }
     }
 
     insertEvent(scroll) {
@@ -209,14 +226,23 @@ class Timelist extends React.Component {
     renderRange() {
         if (this.state.interval) {
             return (
-                <div>
-                    <span>{this.state.currentRangePosition}</span>
+                <div className="timelist-range">
+                    <div style={{ marginLeft: this.state.rangeLeft }}>
+                        {this.state.currentRangePosition}
+                        &nbsp;
+                    </div>
                     <input
                         style={{ width: '100%' }}
                         type="range"
                         min="0"
                         max="1000"
                         step="1"
+                        onMouseDown={() =>
+                            this.setState({ rangeMouseDown: true })
+                        }
+                        onMouseUp={() =>
+                            this.setState({ rangeMouseDown: false })
+                        }
                         onInput={this.handleRange.bind(this)}
                     />
                 </div>
@@ -230,38 +256,39 @@ class Timelist extends React.Component {
         const loc = this.state.interval.start.plus({
             seconds: this.state.seconds * v
         });
-        this.setState({ currentRangePosition: loc.toFormat('MMMM kkkk') });
-        this.replaceEvents(
-            `${API}?in_scroll__slug=${
-                this.props.slug
-            }&start=${loc.toISO()}&limit=50`
-        );
+        this.setState({
+            startDateTime: loc,
+            rangeLeft: v / 10 - 5 + '%',
+            currentRangePosition: loc.toFormat('kkkk MM dd')
+        });
+        console.log(this.state.mouseDown);
     }
 
     render() {
         return (
-            <Scrollbars
-                className="Timelist"
-                autoHide
-                style={{ width: '50%', height: '100%' }}
-                onScroll={this.handleScroll.bind(this)}
-            >
-                <div className="list-object">
-                    <TimelistTitleEditor
-                        key={`tti-${this.props.uuid}`}
-                        insertEvent={this.insertEvent.bind(this)}
-                        count={this.state.count}
-                        {...this.props}
-                    />
-                    {this.renderRange()}
-                    <table
-                        key={`ttit-${this.props.uuid}`}
-                        className="list-object-table"
-                    >
-                        <tbody>{this.state.events}</tbody>
-                    </table>
-                </div>
-            </Scrollbars>
+            <div className="Timelist">
+                {this.renderRange()}
+                <Scrollbars
+                    autoHide
+                    style={{ width: '100%', height: '100%' }}
+                    onScroll={this.handleScroll.bind(this)}
+                >
+                    <div className="list-object">
+                        <TimelistTitleEditor
+                            key={`tti-${this.props.uuid}`}
+                            insertEvent={this.insertEvent.bind(this)}
+                            count={this.state.count}
+                            {...this.props}
+                        />
+                        <table
+                            key={`ttit-${this.props.uuid}`}
+                            className="list-object-table"
+                        >
+                            <tbody>{this.state.events}</tbody>
+                        </table>
+                    </div>
+                </Scrollbars>
+            </div>
         );
     }
 }
