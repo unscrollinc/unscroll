@@ -34,17 +34,19 @@ class Timelist extends React.Component {
         });
     }
 
-    makeEls(data) {
-        return data.results.map((e, i) => {
-            return (
-                <TimelistEvent
-                    key={e.uuid}
-                    lastTime={
-                        i > 0 ? data.results[i - 1].when_happened : undefined
-                    }
-                    event={e}
-                />
-            );
+    renderEvent(event, edit) {
+        console.log('HEWREWWW GO ', event, edit);
+        return (
+            <TimelistEvent
+                key={event.uuid}
+                edit={edit ? edit : false}
+                event={event}
+            />
+        );
+    }
+    makeEvents(data, edit) {
+        return data.results.map((event, i) => {
+            return this.renderEvent(event, edit);
         });
     }
 
@@ -85,7 +87,7 @@ class Timelist extends React.Component {
             headers: utils.getAuthHeaderFromCookie()
         })
             .then(resp => {
-                const _els = _this.makeEls(resp.data);
+                const _els = _this.makeEvents(resp.data, false);
                 _this.setState(prevState => ({
                     events: prevState.events.concat(_els),
                     nextUrl: resp.data.next,
@@ -108,7 +110,7 @@ class Timelist extends React.Component {
             headers: utils.getAuthHeaderFromCookie()
         })
             .then(resp => {
-                const els = _this.makeEls(resp.data);
+                const els = _this.makeEvents(resp.data, false);
                 _this.setState(prevState => ({
                     events: els,
                     nextUrl: resp.data.next,
@@ -193,16 +195,18 @@ class Timelist extends React.Component {
             with_resolution: 10,
             in_scroll: scroll.url,
             with_creator: null,
-            title: 'Event TK ' + utils.randomString(),
+            title: '[Untitled event #' + utils.randomString() + ']',
             text: ''
         };
+        console.log(this.template);
         utils
             .webPromise(this, 'POST', 'events', template)
             .then(resp => {
                 _this.setState(prevState => ({
-                    events: this.makeEls({ results: [resp.data] }).concat(
-                        prevState.events
-                    )
+                    events: this.makeEvents(
+                        { results: [resp.data] },
+                        true
+                    ).concat(prevState.events)
                 }));
             })
             .catch(err => console.log(err));
@@ -236,6 +240,7 @@ class Timelist extends React.Component {
                         type="range"
                         min="0"
                         max="1000"
+                        defaultValue="0"
                         step="1"
                         onMouseDown={() =>
                             this.setState({ rangeMouseDown: true })

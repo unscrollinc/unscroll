@@ -1,3 +1,20 @@
+
+- Starting to make sense of collections
+- 
+
+- periodical issue
+- document
+- book
+- radio show
+- tv show
+- newspaper
+- film
+- tweet
+- article
+- poem
+
+
+
 https://static.dezeen.com/uploads/2016/02/new-metropolitan-art-museum-logo-wolff-olins_dezeen_1568_0-936x668.jpg
 
 urls = ["https://www.metmuseum.org/api/collection/collectionlisting?offset={}&perPage=100&sortBy=Date&sortOrder=asc".format(i) for i in range(0,1951)]

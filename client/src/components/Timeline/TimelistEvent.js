@@ -14,7 +14,7 @@ class TimelistEvent extends React.Component {
         // We go ahead and put props into the event because we're
         // gonna change it on edit and we want to reflect that.
         this.state = {
-            edit: false,
+            edit: this.props.edit,
             event: this.props.event,
             edits: {}
         };
