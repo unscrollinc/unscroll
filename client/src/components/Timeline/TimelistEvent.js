@@ -2,6 +2,7 @@ import React from 'react';
 import 'react-virtualized/styles.css';
 import { DateTime, Interval } from 'luxon';
 import EventNoteButton from '../Event/EventNoteButton';
+import EventInput from './EventInput';
 import update from 'immutability-helper';
 import axios from 'axios';
 import util from '../Util/Util.js';
@@ -20,6 +21,7 @@ class TimelistEvent extends React.Component {
         };
     }
 
+    // Old code, needs refactor.
     showWhenHappened(then, now) {
         if (then) {
             let thenISO = DateTime.fromISO('' + then);
@@ -118,6 +120,7 @@ class TimelistEvent extends React.Component {
 
     renderEditor() {
         const e = this.state.event;
+        console.log(e);
         return (
             <Form defaultValues={this.state.event}>
                 {form => {
@@ -148,32 +151,23 @@ class TimelistEvent extends React.Component {
 
                                     <div>
                                         <div>Datetime</div>
-                                        <Text
-                                            field="when_happened"
-                                            onChange={e =>
-                                                this.edit('when_happened', e)
-                                            }
-                                            placeholder="when"
+                                        <EventInput
+                                            when_original={e.when_original}
+                                            dt={e.when_happened}
+                                            resolution={e.resolution}
+                                            update={o => {
+                                                console.log(o);
+                                            }}
                                         />
                                     </div>
 
                                     <div>
                                         <div>URL</div>
                                         <Text
-                                            field="url"
+                                            field="source_url"
+                                            defaultValue={e.source_url}
                                             onChange={e => this.edit('url', e)}
-                                            placeholder="when"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <div>Resolution</div>
-                                        <Text
-                                            field="resolution"
-                                            onChange={e =>
-                                                this.edit('resolution', e)
-                                            }
-                                            placeholder="res"
+                                            placeholder="URL"
                                         />
                                     </div>
 
