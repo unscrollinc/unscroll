@@ -258,7 +258,14 @@ export class AppProvider extends React.Component {
                     postNotebook: this.postNotebook.bind(this),
                     addNote: event => {
                         const _this = this;
+
                         console.log('[@addNote(event)]', event);
+
+                        if (!this.state.notebook) {
+                            alert('NO NOTEBOOK!');
+                            return null;
+                        }
+
                         const following_uuid =
                             _this.state.notes.length > 0
                                 ? _this.state.notes[0].uuid

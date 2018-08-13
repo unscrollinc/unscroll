@@ -35,7 +35,6 @@ class Timelist extends React.Component {
     }
 
     renderEvent(event, edit) {
-        console.log('HEWREWWW GO ', event, edit);
         return (
             <TimelistEvent
                 key={event.uuid}

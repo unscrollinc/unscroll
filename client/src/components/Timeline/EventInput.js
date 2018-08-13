@@ -114,11 +114,11 @@ class Timelist extends React.Component {
         this.update = props.update;
 
         this.state = {
-            original: null,
-            parsed: null,
-            resolution: null,
+            when_original: props.when_original,
+            parsed: props.parsed,
+            resolution: props.resolution ? props.resolution : 8,
             okay: false,
-            dt: null
+            dt: props.dt
         };
     }
 
@@ -148,7 +148,7 @@ class Timelist extends React.Component {
             : 'No date';
         this.setState(
             {
-                original: possibleDate,
+                when_original: possibleDate,
                 okay: didIt ? true : false,
                 parsed: asString,
                 resolution: resolution,
@@ -163,7 +163,10 @@ class Timelist extends React.Component {
     render() {
         return (
             <div className={'passed-' + this.state.okay}>
-                <input onChange={this.parseDT.bind(this)} />
+                <input
+                    defaultValue={this.props.when_original}
+                    onChange={this.parseDT.bind(this)}
+                />
                 <div className="event-input-parsed">{this.state.parsed}</div>
             </div>
         );

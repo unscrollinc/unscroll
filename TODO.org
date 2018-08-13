@@ -1,6 +1,30 @@
 
 * Announcement
-  
+
+I was alluding to this ridiculous side project when we met:
+
+https://unscroll.com
+
+You're one of the few humans alive who will understand what I'm actually aiming to do here. Basically it's attempting to be a writing tool that comes with the commons built-in.
+
+Out of paranoia and stubborness I built it myself when the kids were in bed, not drawing on Postlight. Which means it's born free of billionaire interest, Knight foundation requirements, partnerships, and with no burn or employees, except if there's any heat on it I can ramp up my agency. It can be not-for-profit, for-profit, advertising-driven, a success, or a failure.
+
+I don't have an ask! I just want it on your radar. If it gets any heat I will want seasoned and thoughtful advice about finding it a place to live and making sure it's making noise.
+
+P
+
+I need people to try out my CMS. Instead of using google docs/Word you
+use MY thing (it's private). Then you tell me why my CMS sucks and I
+give you $.
+
+1) Journalists 
+2) Students with papers due
+3) A humanities grad-level academic
+
+Fill out the form here:
+
+If you DM me you're disqualified.
+
 I have a side project: A web-based, timeline-driven writing tool that
 helps you fact-check your work, called Unscroll. I work on it when
 @PostlightStudio is calm and the kids are in bed. I built it for

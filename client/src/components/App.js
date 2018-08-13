@@ -3,7 +3,10 @@ import { Route } from 'react-router-dom';
 
 import { DateTime, Interval } from 'luxon';
 import TimeFrames from './Timeline/TimeFrames';
+import EventInput from './Timeline/EventInput';
 import axios from 'axios';
+import uuidv4 from 'uuid';
+import utils from './Util/Util';
 import Nav from './Nav';
 // import News from './News';
 import Profile from './Profile';
@@ -129,7 +132,7 @@ class App extends React.Component {
         document.title = 'Unscroll: A notebook';
     }
 
-    renderTimeline(props) {
+    render(props) {
         /* 
            We have a couple of likely situations here:
            - User asked for a given timespan
@@ -139,7 +142,7 @@ class App extends React.Component {
            Basically once we have an interval we want to get a timeframe.
 
         */
-        console.log('####', this.state.interval);
+
         if (this.state.interval !== null) {
             return (
                 <Timeline
@@ -151,6 +154,16 @@ class App extends React.Component {
             this.makeInterval(props);
         }
         return null;
+    }
+
+    renderTesting() {
+        return (
+            <EventInput
+                update={o => {
+                    console.log(o);
+                }}
+            />
+        );
     }
 
     render() {
