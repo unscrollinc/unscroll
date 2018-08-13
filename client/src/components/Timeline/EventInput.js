@@ -111,7 +111,7 @@ class Timelist extends React.Component {
     constructor(props) {
         super(props);
         // update is a function that grabs the state
-        this.edit = props.edit;
+        this.editSeveral = props.editSeveral;
 
         this.state = {
             when_original: null,
@@ -146,32 +146,29 @@ class Timelist extends React.Component {
         const asString = justDate
             ? justDate.toFormat(resolutions[resolution])
             : 'No date';
-        this.setState(
-            {
-                okay: didIt ? true : false,
-                when_original: possibleDate,
-                parsed: asString,
+        this.setState({
+            okay: didIt ? true : false,
+            when_original: possibleDate,
+            parsed: asString,
+            resolution: resolution,
+            when_happened: justDate
+        });
+        if (didIt) {
+            this.editSeveral({
                 resolution: resolution,
-                when_happened: justDate
-            },
-            () => {
-                console.log(this.state);
-                if (this.state.okay) {
-                    this.edit('resolution', this.state.resolution);
-                    this.edit('when_original', this.state.when_original);
-                    this.edit(
-                        'when_happened',
-                        this.state.when_happened.toISO()
-                    );
-                }
-            }
-        );
+                when_original: possibleDate,
+                when_happened: justDate.toISO()
+            });
+        }
     }
 
     render() {
         return (
             <div className={'passed-' + this.state.okay}>
-                <input onChange={this.parseDT.bind(this)} />
+                <input
+                    defaultValue={this.props.when_original}
+                    onChange={this.parseDT.bind(this)}
+                />
                 <div className="event-input-parsed">{this.state.parsed}</div>
             </div>
         );

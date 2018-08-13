@@ -136,7 +136,6 @@ class App extends React.Component {
            Basically once we have an interval we want to get a timeframe.
 
         */
-        console.log('####', this.state.interval);
         if (this.state.interval !== null) {
             return (
                 <Timeline

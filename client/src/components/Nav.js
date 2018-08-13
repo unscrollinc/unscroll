@@ -85,10 +85,10 @@ class Nav extends React.Component {
                     UNSCROLL
                 </Link>
                 <Link to="/about">?</Link>
-                <Link to="/timelines">Timelines</Link>
+                <Link to="/timelines">Timelines</Link>[
+                <Link to="/?view=vertical">Vertical</Link>]
                 <Link to="/notebooks">Notebooks</Link>
                 <Search />
-                View: <Link to="/?view=vertical">Vertical</Link>
                 {this.renderLoginState()}
                 {this.renderCurrentNotebook()}
             </div>
