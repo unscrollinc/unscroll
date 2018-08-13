@@ -48,7 +48,8 @@ export class AppProvider extends React.Component {
         this.state = this.makeState(c);
 
         this.sweep = () => {
-            if (this.state.notebook && !this.state.notebookIsSaved) {
+            console.log('sweeping');
+            if (this.state.notebook && !this.state.notebook.__isSaved) {
                 if (!this.state.notebook.url) {
                     this.postNotebook();
                 } else {
@@ -162,10 +163,15 @@ export class AppProvider extends React.Component {
             data: this.state.notebookEdits
         })
             .then(function(resp) {
-                _this.setState({
-                    notebookIsSaved: true,
-                    notebookEdits: {}
-                });
+                _this.setState(
+                    {
+                        notebook: update(_this.state.notebook, {
+                            $merge: { __isSaved: true }
+                        }),
+                        notebookEdits: {}
+                    },
+                    () => console.log({ notebook: _this.state.notebook })
+                );
             })
             .catch(error => {
                 Log.info(error);

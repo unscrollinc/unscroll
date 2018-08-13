@@ -17,9 +17,11 @@ class TitleEditor extends React.Component {
 
     edit(key, value) {
         this.props.context.setState({
-            notebookIsSaved: false,
             notebook: update(this.props.context.state.notebook, {
-                $merge: { [key]: value }
+                $merge: {
+                    [key]: value,
+                    __isSaved: false
+                }
             }),
             notebookEdits: update(this.props.context.state.notebookEdits, {
                 $merge: { [key]: value }

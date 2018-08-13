@@ -126,38 +126,28 @@ class App extends React.Component {
         document.title = 'Unscroll: A notebook';
     }
 
-    render(props) {
-        /* 
-           We have a couple of likely situations here:
-           - User asked for a given timespan
-           - User asked for a filtered timespan
-           - User just searched for a term, so we need to get the timespan
-           
-           Basically once we have an interval we want to get a timeframe.
+    // render(props) {
+    //     /*
+    //        We have a couple of likely situations here:
+    //        - User asked for a given timespan
+    //        - User asked for a filtered timespan
+    //        - User just searched for a term, so we need to get the timespan
 
-        */
-        if (this.state.interval !== null) {
-            return (
-                <Timeline
-                    query={this.state.query}
-                    interval={this.state.interval}
-                />
-            );
-        } else {
-            this.makeInterval(props);
-        }
-        return null;
-    }
+    //        Basically once we have an interval we want to get a timeframe.
 
-    renderTesting() {
-        return (
-            <EventInput
-                update={o => {
-                    console.log(o);
-                }}
-            />
-        );
-    }
+    //     */
+    //     if (this.state.interval !== null) {
+    //         return (
+    //             <Timeline
+    //                 query={this.state.query}
+    //                 interval={this.state.interval}
+    //             />
+    //         );
+    //     } else {
+    //         this.makeInterval(props);
+    //     }
+    //     return null;
+    // }
 
     render() {
         return (

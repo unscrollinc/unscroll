@@ -180,35 +180,71 @@ const util = {
             }, {});
 
             function sortIt(notes) {
+                // Take a list of notes and return a list of UUIDs in
+                // order. Each note is expected to have a uuid key and
+                // a following_uuid key (which should probably be
+                // next_uuid since following is an ambiguous as a verb
+                // and adverb). You sort a list of notes by re-linking
+                // the chain from uuid to following ID. If a note has
+                // no following ID, it's the last note. If there are
+                // more than one notes with no following_id, that's a
+                // bad thing, but we don't want to lose notes so we
+                // just put them all at the end.
+
+                // If there are no notes, we're done. Return null.
+
                 if (notes.length === 0) {
                     return null;
                 }
+
+                // And if there's one none, return a list with just
+                // that UUID.
 
                 if (notes.length === 1) {
                     return [notes[0].uuid];
                 }
 
+                // Okay, this isn't really global but it's globalesque.
+
                 let global = [];
+
+                // Did our notes come out of the server with
+                // following_uuids? Get those.
 
                 const hasFollowing = notes.filter(n => {
                     return n.following_uuid;
                 });
 
-                // With various failure states we get no following_uuids,
-                // so for now we grab those and just shove them at the
-                // bottom.
+                // With various failure states that will eventually be
+                // beaten down (closed browser before PATCH could
+                // complete, etc.) we get no following_uuids, so we
+                // grab those and just shove them at the bottom.
 
                 const noFollowing = notes.filter(n => {
                     return !n.following_uuid;
                 });
+
+                // The "tail" is the list of all the UUIDs of the
+                // notes we just grabbed. This will always come at the
+                // end of the list.
+
                 const tail = noFollowing.map(n => {
                     return n.uuid;
                 });
+
+                // Okay now we're going to link up the notes, just
+                // make a hash of note->nextnote
 
                 const hashed = hasFollowing.reduce((hashes, n) => {
                     hashes[n.uuid] = n.following_uuid;
                     return hashes;
                 }, {});
+
+                // And now we need to invert that and drop it into a
+                // set. I can't remember why I needed this
+                // exactly. TODO figure it out. Oh wait: Because there
+                // might be a failure state where things bunch up,
+                // i.e. two notes might have the same following_id.
 
                 const inverted = Object.keys(hashed).reduce((obj, key) => {
                     obj[hashed[key]] = obj[hashed[key]]
@@ -218,35 +254,70 @@ const util = {
                 }, {});
 
                 const ks = Object.keys(hashed);
-                let blanked = { ...hashed };
+                let blanked = new Object(hashed);
+                let _blanked = { ...hashed };
+
+                console.log({
+                    hashed: hashed,
+                    blanked: blanked,
+                    _blanked: _blanked
+                });
                 global.push(ks[0]);
                 blanked[ks[0]] = null;
+
+                // This is the actual sort. We walk over the keys, and...
+
                 for (let i = 0; i < ks.length; i++) {
+                    // Let's look at our first and last elements
+
                     const kfirst = global[0];
                     const klast = global[global.length - 1];
+
+                    // If this note's NEXT note is equal to the first
+                    // note then prepend it to the array.
 
                     if (inverted[kfirst]) {
                         inverted[kfirst].forEach(k => {
                             blanked[k] = null;
                             global.unshift(k);
                         });
-                    } else if (hashed[klast]) {
+                    }
+
+                    // otherwise if the ID is equal to the next of the
+                    // LAST then append it to the array
+                    else if (hashed[klast]) {
                         blanked[hashed[klast]] = null;
                         global.push(hashed[klast]);
                     }
                 }
+
+                // Along the way we've been blanking things out. But
+                // whatever's left we want to keep at the bottom, so
+                // let's put that at the end.
+
                 const rest = Object.keys(blanked).filter(k => {
                     return blanked[k] !== null;
                 });
+
+                // And finally put the tail back on the cat.
+
                 return global.concat(rest, tail);
             }
+
             const resorted = sortIt(notes);
+
+            // Now that we made our array we can walk it and return an
+            // ordered list of notes.
+
             return resorted.map(uuid => {
                 return hashedNotes[uuid];
             });
         }
+
         const sorted = sortLinkedUUIDs(notes);
+
         const updated = util.sequenceNotes(sorted);
+
         return updated;
     },
     getNotes: (that, id) => {

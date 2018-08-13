@@ -12,6 +12,7 @@ class Notebook extends React.Component {
     constructor(props) {
         super(props);
         this.state = {};
+
         if (this.props.new) {
             this.props.context.postNotebook();
         }
@@ -19,6 +20,7 @@ class Notebook extends React.Component {
     getNotes() {
         utils.getNotes(this.props.context, this.props.id);
     }
+
     getNotebook() {
         utils.GET(
             this.props.context,
