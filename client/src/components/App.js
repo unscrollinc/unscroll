@@ -1,12 +1,6 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
 
-import { DateTime, Interval } from 'luxon';
-import TimeFrames from './Timeline/TimeFrames';
-import EventInput from './Timeline/EventInput';
-import axios from 'axios';
-import uuidv4 from 'uuid';
-import utils from './Util/Util';
 import Nav from './Nav';
 // import News from './News';
 import Profile from './Profile';
@@ -142,7 +136,6 @@ class App extends React.Component {
            Basically once we have an interval we want to get a timeframe.
 
         */
-
         if (this.state.interval !== null) {
             return (
                 <Timeline

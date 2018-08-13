@@ -9,8 +9,6 @@ import Panel from './Panel';
 import TimeFrames from './TimeFrames';
 import axios from 'axios';
 
-const RCPWR = withRouter(ReactCursorPosition);
-
 class Timeline extends React.Component {
     constructor(props) {
         super(props);

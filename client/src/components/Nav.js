@@ -2,8 +2,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Search from './Search';
 import utils from './Util/Util';
-import axios from 'axios';
-import cookie from 'js-cookie';
 import AppContext from './AppContext';
 
 class Nav extends React.Component {
@@ -65,9 +63,8 @@ class Nav extends React.Component {
                     to={`/notebooks/${tpcs.username}/${nb.id}/edit`}
                     className="current-notebook"
                 >
-                    <span dangerouslySetInnerHTML={{ __html: nb.title }} /> [{
-                        tpcs.notes.length
-                    }]
+                    <span dangerouslySetInnerHTML={{ __html: nb.title }} /> [
+                    {tpcs.notes.length}]
                 </Link>
             );
         }
@@ -75,7 +72,7 @@ class Nav extends React.Component {
     }
 
     render() {
-        const horizontal = this.state.horizontal ? 'RIGHT' : 'DOWN';
+        // const horizontal = this.state.horizontal ? 'RIGHT' : 'DOWN';
         return (
             <div
                 style={{
@@ -88,7 +85,8 @@ class Nav extends React.Component {
                     UNSCROLL
                 </Link>
                 <Link to="/about">?</Link>
-                <Link to="/timelines">Timelines</Link>
+                <Link to="/timelines">Timelines</Link>[
+                <Link to="/?view=vertical">Vertical</Link>]
                 <Link to="/notebooks">Notebooks</Link>
                 <Search />
                 {this.renderLoginState()}

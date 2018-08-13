@@ -1,5 +1,5 @@
 import React from 'react';
-import { DateTime, Interval } from 'luxon';
+import { DateTime } from 'luxon';
 import en from 'chrono-node';
 const chrono = en;
 const resolutions = {
@@ -34,13 +34,14 @@ var BCParser = new chrono.Parser();
 BCParser.pattern = function() {
     return /^(\d+)\s*(bc|b\.?\s*c\.?|before christ)$/i;
 };
+
 BCParser.extract = function(text, ref, match, opt) {
     let pr = new chrono.ParsedResult({
         ref: ref,
         text: match[1] + ' ' + match[2],
         index: match.index,
         start: {
-            year: 0 - parseInt(match[1])
+            year: 0 - parseInt(match[1], 10)
         }
     });
     return implyLateStart(pr);
@@ -56,7 +57,7 @@ NegativeParser.extract = function(text, ref, match, opt) {
         text: match[0],
         index: match.index,
         start: {
-            year: parseInt(match[1])
+            year: parseInt(match[1], 10)
         }
     });
     return implyLateStart(pr);
@@ -67,7 +68,7 @@ CenturyParser.pattern = function() {
     return /(\d\d)(th|nd|st|rd)\s*(c\.?|cent\.?|century)?\s*/i;
 };
 CenturyParser.extract = function(text, ref, match, opt) {
-    const x = (parseInt(match[1]) - 1) * 100;
+    const x = parseInt(match[1] - 1, 10) * 100;
     const bcMatch = text.match(/(bc|b\.?\s*c\.?|before christ)/);
     const isBC = bcMatch ? true : false;
     const adj = isBC ? 0 - x : x;
@@ -93,11 +94,10 @@ PositiveParser.extract = function(text, ref, match, opt) {
         text: match[0],
         index: match.index,
         start: {
-            year: parseInt(match[0])
+            year: parseInt(match[0], 10)
         }
     });
     const x = implyLateStart(pr);
-    console.log('PARSED', match, x.start.date());
     return x;
 };
 
@@ -111,14 +111,14 @@ class Timelist extends React.Component {
     constructor(props) {
         super(props);
         // update is a function that grabs the state
-        this.update = props.update;
+        this.editSeveral = props.editSeveral;
 
         this.state = {
-            when_original: props.when_original,
-            parsed: props.parsed,
-            resolution: props.resolution ? props.resolution : 8,
-            okay: false,
-            dt: props.dt
+            when_original: null,
+            when_happened: null,
+            resolution: null,
+            parsed: null,
+            okay: false
         };
     }
 
@@ -146,18 +146,20 @@ class Timelist extends React.Component {
         const asString = justDate
             ? justDate.toFormat(resolutions[resolution])
             : 'No date';
-        this.setState(
-            {
-                when_original: possibleDate,
-                okay: didIt ? true : false,
-                parsed: asString,
+        this.setState({
+            okay: didIt ? true : false,
+            when_original: possibleDate,
+            parsed: asString,
+            resolution: resolution,
+            when_happened: justDate
+        });
+        if (didIt) {
+            this.editSeveral({
                 resolution: resolution,
-                dt: justDate
-            },
-            () => {
-                this.update(this.state);
-            }
-        );
+                when_original: possibleDate,
+                when_happened: justDate.toISO()
+            });
+        }
     }
 
     render() {

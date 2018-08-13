@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import EventNoteButton from '../Event/EventNoteButton';
-import { Interval, DateTime } from 'luxon';
 import TimelinePanelEventEditButton from './TimelinePanelEventEditButton';
 
 const goodWidthDivisor = 3;
@@ -131,10 +130,11 @@ class Event extends React.Component {
                                             >
                                                 {e.source_name}
                                             </a>{' '}
-                                            (<Link to={'/users/' + e.username}>
+                                            (
+                                            <Link to={'/users/' + e.username}>
                                                 {e.username}
-                                            </Link>)
-                                            <EventNoteButton event={e} />
+                                            </Link>
+                                            )<EventNoteButton event={e} />
                                             <TimelinePanelEventEditButton
                                                 event={e}
                                             />

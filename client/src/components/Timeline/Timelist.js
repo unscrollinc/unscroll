@@ -34,11 +34,11 @@ class Timelist extends React.Component {
         });
     }
 
-    renderEvent(event, edit) {
+    renderEvent(event, isBeingEdited) {
         return (
             <TimelistEvent
                 key={event.uuid}
-                edit={edit ? edit : false}
+                isBeingEdited={isBeingEdited ? true : false}
                 event={event}
             />
         );

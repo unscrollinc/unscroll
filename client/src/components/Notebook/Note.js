@@ -153,8 +153,8 @@ class NotebookEvent extends React.Component {
     }
 
     renderNotebookEvent(context) {
-        const moving = this.state.isMoving ? ' moving' : ' not-moving';
-        const status = this.props.__isSaved ? ' saved' : ' unsaved';
+        //        const moving = this.state.isMoving ? ' moving' : ' not-moving';
+        //        const status = this.props.__isSaved ? ' saved' : ' unsaved';
         return (
             <div key={this.props.uuid} className="Note">
                 <div className="note-inner">
