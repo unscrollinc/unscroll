@@ -953,3 +953,8 @@ button.notebook-preview {
     position: fixed;
     top: 6%;
 }
+
+a.active {
+    background: red;
+    color: white;
+}

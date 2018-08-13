@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import EventNoteButton from '../Event/EventNoteButton';
-import TimelinePanelEventEditButton from './TimelinePanelEventEditButton';
+// import TimelinePanelEventEditButton from './TimelinePanelEventEditButton';
 
 const goodWidthDivisor = 3;
 class Event extends React.Component {
@@ -135,9 +135,6 @@ class Event extends React.Component {
                                                 {e.username}
                                             </Link>
                                             )<EventNoteButton event={e} />
-                                            <TimelinePanelEventEditButton
-                                                event={e}
-                                            />
                                         </td>
                                     </tr>
                                 </tbody>

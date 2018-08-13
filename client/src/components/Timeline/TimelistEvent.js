@@ -115,7 +115,6 @@ class TimelistEvent extends React.Component {
     }
 
     edit(key, value) {
-        console.log(key, value, this);
         this.setState({
             event: update(this.state.event, { $merge: { [key]: value } }),
             edits: update(this.state.edits, { $merge: { [key]: value } })
@@ -123,7 +122,6 @@ class TimelistEvent extends React.Component {
     }
 
     editSeveral(o) {
-        console.log(o, this);
         this.setState({
             event: update(this.state.event, { $merge: o }),
             edits: update(this.state.edits, { $merge: o })
@@ -131,7 +129,6 @@ class TimelistEvent extends React.Component {
     }
 
     onDrop(acceptedFiles, rejectedFiles) {
-        console.log(acceptedFiles);
         let fd = new FormData();
         acceptedFiles.forEach(file => {
             fd.append('file', file);
@@ -145,7 +142,6 @@ class TimelistEvent extends React.Component {
                 }
             })
                 .then(resp => {
-                    console.log(resp);
                     this.editSeveral({
                         with_thumbnail_image: resp.data.image,
                         with_thumbnail: resp.data.url
@@ -159,7 +155,6 @@ class TimelistEvent extends React.Component {
 
     renderEditor() {
         const e = this.state.event;
-        console.log(e);
         return (
             <Form defaultValues={this.state.event}>
                 {form => {
@@ -246,6 +241,21 @@ class TimelistEvent extends React.Component {
         return null;
     }
 
+    renderLoggedInButtons() {
+        if (utils.isAuthed()) {
+            return (
+                <div className="eventNoteButton">
+                    <EventNoteButton event={this.state.event} />
+                    <button
+                        onClick={() => this.setState({ isBeingEdited: true })}
+                    >
+                        Edit
+                    </button>
+                </div>
+            );
+        }
+        return null;
+    }
     renderEvent() {
         const e = this.state.event;
         return (
@@ -274,16 +284,7 @@ class TimelistEvent extends React.Component {
                     </td>
 
                     <td className="content">
-                        <div className="eventNoteButton">
-                            <EventNoteButton event={this.state.event} />
-                            <button
-                                onClick={() =>
-                                    this.setState({ isBeingEdited: true })
-                                }
-                            >
-                                Edit
-                            </button>
-                        </div>
+                        {this.renderLoggedInButtons()}
 
                         <div className="dt">{this.makeWhen(e)}</div>
 

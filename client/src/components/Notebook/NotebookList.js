@@ -1,135 +1,156 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { DateTime } from 'luxon';
 // import axios from 'axios';
 import utils from '../Util/Util';
 import { Scrollbars } from 'react-custom-scrollbars';
 
 class NotebookList extends React.Component {
-  constructor(props, context) {
-    super(props);
-    this.state = {
-      notebooks: [],
-      username: utils.getUsernameFromCookie()
-    };
-  }
-
-  renderEditLink(notebook) {
-    if (notebook.user_username === this.state.username) {
-      return (
-        <Link
-          className="button edit-link"
-          to={
-            '/notebooks/' + notebook.user_username + '/' + notebook.id + '/edit'
-          }
-        >
-          Edit
-        </Link>
-      );
+    constructor(props, context) {
+        super(props);
+        this.state = {
+            notebooks: [],
+            username: utils.getUsernameFromCookie()
+        };
     }
-    return null;
-  }
 
-  addNotebook() {
-    console.log('ADDING NOTEBOOK');
-  }
-
-  getNotebooks() {
-    if (this.props.my === true) {
-      document.title = 'My Notebooks (Unscroll)';
-      utils.GET(this, 'notebooks', { by_user__username: 'ford' });
-    } else {
-      document.title = 'Notebooks (Unscroll)';
-      utils.GET(this, 'notebooks', { is_public: true });
+    renderEditLink(notebook) {
+        if (notebook.user_username === this.state.username) {
+            return (
+                <Link
+                    className="button edit-link"
+                    to={
+                        '/notebooks/' +
+                        notebook.user_username +
+                        '/' +
+                        notebook.id +
+                        '/edit'
+                    }
+                >
+                    Edit
+                </Link>
+            );
+        }
+        return null;
     }
-  }
 
-  componentDidMount() {
-    this.getNotebooks();
-  }
+    addNotebook() {
+        console.log('ADDING NOTEBOOK');
+    }
 
-  renderNotebook(notebook) {
-    const formatDate = dt => {
-      const luxonDt = DateTime.fromISO(dt);
-      return luxonDt.toLocaleString(DateTime.DATE_SHORT);
-    };
+    getNotebooks() {
+        if (this.props.my === true) {
+            document.title = 'My Notebooks (Unscroll)';
+            utils.GET(this, 'notebooks', { by_user__username: 'ford' });
+        } else {
+            document.title = 'Notebooks (Unscroll)';
+            utils.GET(this, 'notebooks', { is_public: true });
+        }
+    }
 
-    const privacy = notebook.is_public ? 'Public' : 'Private';
+    componentDidMount() {
+        this.getNotebooks();
+    }
 
-    return (
-      <tr className="list-object-tr" key={notebook.uuid}>
-        <td className="list-object-date-td">
-          <div>{formatDate(notebook.when_created)}</div>
-          <div>
-            <Link to={'/users/' + notebook.user_username}>
-              {notebook.user_full_name}
-            </Link>
-          </div>
-        </td>
+    renderNotebook(notebook) {
+        const formatDate = dt => {
+            const luxonDt = DateTime.fromISO(dt);
+            return luxonDt.toLocaleString(DateTime.DATE_SHORT);
+        };
 
-        <td className="list-object-meta-td">
-          <div className="list-object-title">
-            <Link
-              to={'/notebooks/' + notebook.user_username + '/' + notebook.id}
-            >
-              {notebook.title}
-            </Link>{' '}
-            {this.renderEditLink(notebook)}
-          </div>
+        const privacy = notebook.is_public ? 'Public' : 'Private';
 
-          <div>
-            <span className="list-object-description">
-              {notebook.description}
-            </span>
-          </div>
-        </td>
+        return (
+            <tr className="list-object-tr" key={notebook.uuid}>
+                <td className="list-object-date-td">
+                    <div>{formatDate(notebook.when_created)}</div>
+                    <div>
+                        <Link to={'/users/' + notebook.user_username}>
+                            {notebook.user_full_name}
+                        </Link>
+                    </div>
+                </td>
 
-        <td className="list-object-published-td">
-          <div className={`list-object-published-${privacy}`}>{privacy}</div>
-        </td>
-      </tr>
-    );
-  }
+                <td className="list-object-meta-td">
+                    <div className="list-object-title">
+                        <Link
+                            to={
+                                '/notebooks/' +
+                                notebook.user_username +
+                                '/' +
+                                notebook.id
+                            }
+                        >
+                            {notebook.title}
+                        </Link>{' '}
+                        {this.renderEditLink(notebook)}
+                    </div>
 
-  render() {
-    return (
-      <div className="NotebookList">
-        <Scrollbars autoHide style={{ height: '100%' }}>
-          <div className="list-object">
-            <div className="notebook-header">
-              <div className="list-object-header">
-                <h1>Notebooks</h1>
+                    <div>
+                        <span className="list-object-description">
+                            {notebook.description}
+                        </span>
+                    </div>
+                </td>
 
-                <Link className="list-object-button" to="/my/notebooks">
-                  Mine
-                </Link>
-                <Link className="list-object-button" to="/notebooks">
-                  Public
-                </Link>
-                <Link className="list-object-button" to="/notebooks/new">
-                  + New
-                </Link>
-              </div>
+                <td className="list-object-published-td">
+                    <div className={`list-object-published-${privacy}`}>
+                        {privacy}
+                    </div>
+                </td>
+            </tr>
+        );
+    }
 
-              <table className="list-object-table">
-                <tbody>
-                  <tr className="list-object-tr">
-                    <th className="list-object-date-th">Date</th>
-                    <th className="list-object-meta-th">Notebook</th>
-                    <th className="list-object-published-th">Published</th>
-                  </tr>
+    authedButton(to, text) {
+        if (utils.isAuthed()) {
+            return (
+                <NavLink className="list-object-button" to="{to}">
+                    {text}
+                </NavLink>
+            );
+        }
+        return null;
+    }
 
-                  {Array.from(this.state.notebooks).map(
-                    this.renderNotebook.bind(this)
-                  )}
-                </tbody>
-              </table>
+    render() {
+        return (
+            <div className="NotebookList">
+                <Scrollbars autoHide style={{ height: '100%' }}>
+                    <div className="list-object">
+                        <div className="notebook-header">
+                            <div className="list-object-header">
+                                <h1>Notebooks</h1>
+                                {this.authedButton('/my/notebooks', 'Mine')}
+                                {this.authedButton('/notebooks', 'Public')}
+                                {this.authedButton('/notebooks/new', '+ New')}
+                            </div>
+
+                            <table className="list-object-table">
+                                <tbody>
+                                    <tr className="list-object-tr">
+                                        <th className="list-object-date-th">
+                                            Date
+                                        </th>
+                                        <th className="list-object-meta-th">
+                                            Notebook
+                                        </th>
+                                        <th className="list-object-published-th">
+                                            Published
+                                        </th>
+                                    </tr>
+
+                                    {Array.from(this.state.notebooks).map(
+                                        this.renderNotebook.bind(this)
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </Scrollbars>
             </div>
-          </div>
-        </Scrollbars>
-      </div>
-    );
-  }
+        );
+    }
 }
 
 export default NotebookList;

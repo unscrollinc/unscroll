@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import Search from './Search';
 import utils from './Util/Util';
 import AppContext from './AppContext';
@@ -84,9 +84,9 @@ class Nav extends React.Component {
                 <Link className="logo" to="/">
                     Unscroll
                 </Link>
-                <Link to="/about">?</Link>
-                <Link to="/timelines/">Timelines</Link>
-                <Link to="/notebooks/">Notebooks</Link>
+                <NavLink to="/about">?</NavLink>
+                <NavLink to="/timelines">Timelines</NavLink>
+                <NavLink to="/notebooks">Notebooks</NavLink>
                 {/*  <Search /> */}
                 <Link to="/?h=true">Wide</Link>
                 {this.renderLoginState()}

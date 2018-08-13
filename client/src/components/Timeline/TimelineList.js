@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { DateTime } from 'luxon';
 import AppContext from '../AppContext.js';
 import utils from '../Util/Util.js';
@@ -78,6 +78,17 @@ class TimelineList extends React.Component {
         this.getTimelines();
     }
 
+    authedButton(to, text) {
+        if (utils.isAuthed()) {
+            return (
+                <NavLink className="list-object-button" to="{to}">
+                    {text}
+                </NavLink>
+            );
+        }
+        return null;
+    }
+
     render() {
         return (
             <AppContext.Consumer>
@@ -88,24 +99,18 @@ class TimelineList extends React.Component {
                                 <div className="list-object">
                                     <div className="list-object-header">
                                         <h1>Timelines</h1>
-                                        <Link
-                                            className="list-object-button"
-                                            to="/my/timelines"
-                                        >
-                                            Mine
-                                        </Link>
-                                        <Link
-                                            className="list-object-button"
-                                            to="/timelines"
-                                        >
-                                            Public
-                                        </Link>
-                                        <button
-                                            className="list-object-button"
-                                            onClick={context.addScroll}
-                                        >
-                                            + New
-                                        </button>
+                                        {this.authedButton(
+                                            '/my/timelines',
+                                            'Mine'
+                                        )}
+                                        {this.authedButton(
+                                            '/timelines',
+                                            'Public'
+                                        )}
+                                        {this.authedButton(
+                                            '/timelines/new',
+                                            '+ New'
+                                        )}
 
                                         <table className="list-object-table">
                                             <tbody>
