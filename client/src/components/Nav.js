@@ -2,8 +2,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Search from './Search';
 import utils from './Util/Util';
-import axios from 'axios';
-import cookie from 'js-cookie';
 import AppContext from './AppContext';
 
 class Nav extends React.Component {
@@ -74,7 +72,7 @@ class Nav extends React.Component {
     }
 
     render() {
-        const horizontal = this.state.horizontal ? 'RIGHT' : 'DOWN';
+        // const horizontal = this.state.horizontal ? 'RIGHT' : 'DOWN';
         return (
             <div
                 style={{

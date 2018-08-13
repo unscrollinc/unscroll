@@ -1,9 +1,6 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
 
-import { DateTime, Interval } from 'luxon';
-import TimeFrames from './Timeline/TimeFrames';
-import axios from 'axios';
 import Nav from './Nav';
 // import News from './News';
 import Profile from './Profile';

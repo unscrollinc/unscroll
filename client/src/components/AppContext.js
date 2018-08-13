@@ -144,10 +144,10 @@ export class AppProvider extends React.Component {
             headers: utils.getAuthHeaderFromCookie()
         })
             .then(resp => {
-                const filtered = this.state.notes.filter(n => {
+                const filtered = _this.state.notes.filter(n => {
                     return n.uuid !== note.uuid;
                 });
-                this.setState({ notes: filtered });
+                _this.setState({ notes: filtered });
             })
             .finally(() => {});
     }

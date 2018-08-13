@@ -1,7 +1,7 @@
 import cookie from 'js-cookie';
 import axios from 'axios';
 import update from 'immutability-helper';
-import Log from './Log';
+// import Log from './Log';
 axios.defaults.xsrfHeaderName = 'X-CSRFTOKEN';
 axios.defaults.xsrfCookieName = 'csrftoken';
 axios.defaults.withCredentials = true;
@@ -218,7 +218,7 @@ const util = {
                 }, {});
 
                 const ks = Object.keys(hashed);
-                let blanked = new Object(hashed);
+                let blanked = { ...hashed };
                 global.push(ks[0]);
                 blanked[ks[0]] = null;
                 for (let i = 0; i < ks.length; i++) {
@@ -231,7 +231,6 @@ const util = {
                             global.unshift(k);
                         });
                     } else if (hashed[klast]) {
-                        const k = hashed[klast];
                         blanked[hashed[klast]] = null;
                         global.push(hashed[klast]);
                     }

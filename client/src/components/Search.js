@@ -1,13 +1,9 @@
 import React from 'react';
 import { withRouter } from 'react-router';
-import queryString from 'query-string';
 
 import AppContext from './AppContext';
 
 class Search extends React.Component {
-    constructor(props) {
-        super(props);
-    }
     updateUrl() {
         this.props.history.push('/?q=' + this.state.q);
     }

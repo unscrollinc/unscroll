@@ -1,5 +1,5 @@
 import React from 'react';
-import { DateTime, Interval } from 'luxon';
+import { DateTime } from 'luxon';
 import en from 'chrono-node';
 const chrono = en;
 const resolutions = {
@@ -41,7 +41,7 @@ BCParser.extract = function(text, ref, match, opt) {
         text: match[1] + ' ' + match[2],
         index: match.index,
         start: {
-            year: 0 - parseInt(match[1])
+            year: 0 - parseInt(match[1], 10)
         }
     });
     return implyLateStart(pr);
@@ -57,7 +57,7 @@ NegativeParser.extract = function(text, ref, match, opt) {
         text: match[0],
         index: match.index,
         start: {
-            year: parseInt(match[1])
+            year: parseInt(match[1], 10)
         }
     });
     return implyLateStart(pr);
@@ -68,7 +68,7 @@ CenturyParser.pattern = function() {
     return /(\d\d)(th|nd|st|rd)\s*(c\.?|cent\.?|century)?\s*/i;
 };
 CenturyParser.extract = function(text, ref, match, opt) {
-    const x = (parseInt(match[1]) - 1) * 100;
+    const x = parseInt(match[1] - 1, 10) * 100;
     const bcMatch = text.match(/(bc|b\.?\s*c\.?|before christ)/);
     const isBC = bcMatch ? true : false;
     const adj = isBC ? 0 - x : x;
@@ -94,7 +94,7 @@ PositiveParser.extract = function(text, ref, match, opt) {
         text: match[0],
         index: match.index,
         start: {
-            year: parseInt(match[0])
+            year: parseInt(match[0], 10)
         }
     });
     const x = implyLateStart(pr);
