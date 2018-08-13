@@ -15,7 +15,7 @@ class TimelistEvent extends React.Component {
         // We go ahead and put props into the event because we're
         // gonna change it on edit and we want to reflect that.
         this.state = {
-            edit: this.props.edit,
+            isBeingEdited: this.props.isBeingEdited,
             event: this.props.event,
             edits: {}
         };
@@ -92,7 +92,7 @@ class TimelistEvent extends React.Component {
             this.state.edits.constructor === Object
         ) {
             console.log('No changes, not saving.');
-            _this.setState({ edit: false });
+            _this.setState({ isBeingEdited: false });
             return null;
         } else {
             axios({
@@ -102,7 +102,7 @@ class TimelistEvent extends React.Component {
                 data: this.state.edits
             })
                 .then(resp => {
-                    _this.setState({ edit: false });
+                    _this.setState({ isBeingEdited: false });
                 })
                 .catch(err => {
                     console.log('ERROR', err);
@@ -153,11 +153,9 @@ class TimelistEvent extends React.Component {
                                         <div>Datetime</div>
                                         <EventInput
                                             when_original={e.when_original}
-                                            dt={e.when_happened}
+                                            when_happened={e.when_happened}
                                             resolution={e.resolution}
-                                            update={o => {
-                                                console.log(o);
-                                            }}
+                                            edit={this.edit.bind(this)}
                                         />
                                     </div>
 
@@ -166,7 +164,9 @@ class TimelistEvent extends React.Component {
                                         <Text
                                             field="source_url"
                                             defaultValue={e.source_url}
-                                            onChange={e => this.edit('url', e)}
+                                            onChange={e =>
+                                                this.edit('source_url', e)
+                                            }
                                             placeholder="URL"
                                         />
                                     </div>
@@ -231,7 +231,9 @@ class TimelistEvent extends React.Component {
                         <div className="eventNoteButton">
                             <EventNoteButton event={this.state.event} />
                             <button
-                                onClick={() => this.setState({ edit: true })}
+                                onClick={() =>
+                                    this.setState({ isBeingEdited: true })
+                                }
                             >
                                 Edit
                             </button>
@@ -252,7 +254,7 @@ class TimelistEvent extends React.Component {
         );
     }
     render() {
-        if (this.state.edit === true) {
+        if (this.state.isBeingEdited === true) {
             return this.renderEditor();
         }
         return this.renderEvent();

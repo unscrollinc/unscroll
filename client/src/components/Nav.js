@@ -65,9 +65,8 @@ class Nav extends React.Component {
                     to={`/notebooks/${tpcs.username}/${nb.id}/edit`}
                     className="current-notebook"
                 >
-                    <span dangerouslySetInnerHTML={{ __html: nb.title }} /> [{
-                        tpcs.notes.length
-                    }]
+                    <span dangerouslySetInnerHTML={{ __html: nb.title }} /> [
+                    {tpcs.notes.length}]
                 </Link>
             );
         }
@@ -91,6 +90,7 @@ class Nav extends React.Component {
                 <Link to="/timelines">Timelines</Link>
                 <Link to="/notebooks">Notebooks</Link>
                 <Search />
+                View: <Link to="/?view=vertical">Vertical</Link>
                 {this.renderLoginState()}
                 {this.renderCurrentNotebook()}
             </div>

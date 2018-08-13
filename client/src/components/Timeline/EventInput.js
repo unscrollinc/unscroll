@@ -34,6 +34,7 @@ var BCParser = new chrono.Parser();
 BCParser.pattern = function() {
     return /^(\d+)\s*(bc|b\.?\s*c\.?|before christ)$/i;
 };
+
 BCParser.extract = function(text, ref, match, opt) {
     let pr = new chrono.ParsedResult({
         ref: ref,
@@ -97,7 +98,6 @@ PositiveParser.extract = function(text, ref, match, opt) {
         }
     });
     const x = implyLateStart(pr);
-    console.log('PARSED', match, x.start.date());
     return x;
 };
 
@@ -111,14 +111,14 @@ class Timelist extends React.Component {
     constructor(props) {
         super(props);
         // update is a function that grabs the state
-        this.update = props.update;
+        this.edit = props.edit;
 
         this.state = {
-            original: null,
-            parsed: null,
+            when_original: null,
+            when_happened: null,
             resolution: null,
-            okay: false,
-            dt: null
+            parsed: null,
+            okay: false
         };
     }
 
@@ -148,14 +148,22 @@ class Timelist extends React.Component {
             : 'No date';
         this.setState(
             {
-                original: possibleDate,
                 okay: didIt ? true : false,
+                when_original: possibleDate,
                 parsed: asString,
                 resolution: resolution,
-                dt: justDate
+                when_happened: justDate
             },
             () => {
-                this.update(this.state);
+                console.log(this.state);
+                if (this.state.okay) {
+                    this.edit('resolution', this.state.resolution);
+                    this.edit('when_original', this.state.when_original);
+                    this.edit(
+                        'when_happened',
+                        this.state.when_happened.toISO()
+                    );
+                }
             }
         );
     }
