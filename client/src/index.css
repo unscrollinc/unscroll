@@ -110,7 +110,7 @@ td {
 .NotebookList,
 .TimelineList,
 .Meta {
-    width: 50%;
+    width: 100%;
     background: white;
     padding: 0% 0% 0% 0%;
 }
@@ -135,8 +135,7 @@ td {
     padding: 1em;
 }
 .Editor {
-    width: 33.33%;
-    border-right: 1px solid deepskyblue;
+    width: 100%;
 }
 
 .NotebookList {
@@ -266,9 +265,8 @@ td {
 }
 
 div.Timelist {
-    width: 50%;
-    left: 50%;
-    border-left: 1px solid deepskyblue;
+    width: 100%;
+    left: 0%;
     height: 95%;
     top: 5%;
     position: fixed;
@@ -538,7 +536,7 @@ form.search {
     hyphens: auto;
     line-height: 150%;
     padding: 5% 0% 10% 10%;
-    width: 60%;
+    width: 50%;
     margin: 0;
 }
 
@@ -833,12 +831,8 @@ div.manuscript-inner {
     background:#0084B0; */
     background: white;
     color: black;
-
-    position: absolute;
     font-family: 'IBM Plex Serif', serif;
-    width: 70%;
-    padding: 15%;
-    text-align: justify;
+    width: 100%;
     hyphens: auto;
     padding-bottom: 1000px;
     line-height: 200%;
@@ -940,7 +934,6 @@ span.switcher {
     white-space: pre;
 }
 .timelist-range {
-    position: sticky;
     top: 0%;
     width: 90%;
     text-align: left;
@@ -950,5 +943,13 @@ span.switcher {
 }
 
 input[type='range']:focus {
-    outline: none; /* Removes the blue border. You should probably do some kind of focus styling for accessibility reasons though. */
+    outline: none;
+}
+
+button.notebook-preview {
+    right: 0%;
+    color: white;
+    background: deepskyblue;
+    position: fixed;
+    top: 6%;
 }

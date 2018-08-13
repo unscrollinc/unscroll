@@ -48,7 +48,6 @@ export class AppProvider extends React.Component {
         this.state = this.makeState(c);
 
         this.sweep = () => {
-            console.log('sweeping');
             if (this.state.notebook && !this.state.notebook.__isSaved) {
                 if (!this.state.notebook.url) {
                     this.postNotebook();

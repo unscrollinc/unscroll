@@ -1,11 +1,9 @@
 
 * Announcement
 
-Hello, World!
+Hello, World! https://unscroll.com
 
-
-
-
+** Letter
 I was alluding to this ridiculous side project when we met:
 
 https://unscroll.com
@@ -18,6 +16,7 @@ I don't have an ask! I just want it on your radar. If it gets any heat I will wa
 
 P
 
+** Begging
 I need people to try out my CMS. Instead of using google docs/Word you
 use MY thing (it's private). Then you tell me why my CMS sucks and I
 give you $.
@@ -30,6 +29,7 @@ Fill out the form here:
 
 If you DM me you're disqualified.
 
+** Formal
 I have a side project: A web-based, timeline-driven writing tool that
 helps you fact-check your work, called Unscroll. I work on it when
 @PostlightStudio is calm and the kids are in bed. I built it for
@@ -60,55 +60,59 @@ Here are some essays I've written using it:
 - Technological Joy Transition (how we went from everyone getting access to no one getting access)
 
 I look forward to your thoughts.
-* Views
+* DONE Views
 - Timeline
 - NotebookList + [Timeline/Timelist]
 - Notebook + [Timeline/Timelist]
 - Notebook Preview + [Timeline/Timelist]
 - Timelist List + [Timeline/Timelist]
 
-* TODO User [3/7]:
+* TODO User [5/7]:
+  - [ ] Reset password
+  - [ ] Edit profile
   - [X] Create account
   - [X] Register
-  - [ ] Reset password
-  - [ ] Confirm
-  - [ ] Edit profile
+  - [X] Confirm
   - [X] Login
   - [X] Logout
 
 * Timelines [4/5]
   - [X] Vertical view buttons
   - [X] Refactor all "Scroll" stuff to be Timeline # WONTFIX
-  - [ ] Timeline search results
+  - [X] Timeline search results
   - [X] No direct editing on Timelines at launch? THAT'S RIGHT
   - [X] Use HTML->React module for sizing, then placing events
 
-* Timelist [2/6]
+* Timelist [4/8]
   - [X] Create new timeline
   - [ ] Max # of timelines per scroll?
   - [X] Add event
   - [ ] Delete event
-  - [ ] Edit event
+  - [X] Edit event
   - [ ] Reverse chronological
+  - [ ] Refresh chronological
+  - [X] Range slider
 
-* Notebooks
+* Notebooks [2/2]
   - [X] Rich text in title editor
   - [X] Note sequencing error catches (all null, nome null)
 
-* Events
-  - [ ] paragraph break
+* Events [1/3]
+  - [X] paragraph break
   - [ ] image upload
   - [ ] link
 
-* Design
+* DONE Design [3/3]
   - [X] Overall simple color scheme
   - [X] Overall grid
   - [X] Overall colors for backgrounds and events
+  - [ ] Works on mobile
 
 * API [3/3]
   - [X] Read through endpoints and make them either public, private, or admin with no variability.
   - [X] Refactor all "Scroll" stuff to be Timeline # WONTFIX
   - [X] "My" views differentiated from other views # IGNORE
+  - [ ] Classic image upload API
 
 * Nice to have
   - [X] Snake case JSON

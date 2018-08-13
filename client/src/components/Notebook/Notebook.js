@@ -11,7 +11,9 @@ import utils from '../Util/Util';
 class Notebook extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {
+            edit: this.props.edit
+        };
 
         if (this.props.new) {
             this.props.context.postNotebook();
@@ -131,7 +133,7 @@ class Notebook extends React.Component {
                 />
             );
         }
-        if (!this.props.edit) {
+        if (!this.state.edit) {
             return (
                 <Scrollbars
                     className="ManuscriptReader"
@@ -142,6 +144,12 @@ class Notebook extends React.Component {
                         key="manuscript-preview"
                         className="manuscript-inner reader"
                     >
+                        <button
+                            onClick={() => this.setState({ edit: true })}
+                            className="notebook-preview list-object-button button"
+                        >
+                            Edit
+                        </button>
                         {this.renderManuscriptEvents()}
                         {this.renderManuscriptTitle()}
                         {this.renderManuscriptBody()}
@@ -157,6 +165,14 @@ class Notebook extends React.Component {
                             <div className="Editor">
                                 <Scrollbars autoHide style={{ height: '100%' }}>
                                     <div className="notebook-inner">
+                                        <button
+                                            onClick={() =>
+                                                this.setState({ edit: false })
+                                            }
+                                            className="notebook-preview list-object-button button"
+                                        >
+                                            Preview
+                                        </button>
                                         {this.renderAddNoteButton()}
                                         {this.renderTitleEditor()}
                                         {Array.from(context.state.notes).map(
@@ -165,7 +181,7 @@ class Notebook extends React.Component {
                                     </div>
                                 </Scrollbars>
                             </div>
-
+                            {/*
                             <div className="Manuscript">
                                 <Scrollbars autoHide style={{ height: '100%' }}>
                                     <div className="manuscript-inner">
@@ -174,6 +190,7 @@ class Notebook extends React.Component {
                                     </div>
                                 </Scrollbars>
                             </div>
+			     */}
                         </React.Fragment>
                     );
                 }}

@@ -62,14 +62,11 @@ class Timelist extends React.Component {
                 const e = DateTime.fromISO(resp.data.last_event);
                 const i = Interval.fromDateTimes(s, e);
                 const seconds = i.length('seconds') / 1000;
-                _this.setState(
-                    {
-                        interval: i,
-                        seconds: seconds,
-                        currentRangePosition: s.toFormat('kkkk / MMM')
-                    },
-                    console.log('THIS STATE IS', _this.state, resp)
-                );
+                _this.setState({
+                    interval: i,
+                    seconds: seconds,
+                    currentRangePosition: s.toFormat('kkkk / MMM')
+                });
             })
             .catch(err => {
                 console.log('Error', err);
@@ -176,7 +173,6 @@ class Timelist extends React.Component {
             this.state.rangeMouseDown !== prevState.rangeMouseDown &&
             this.state.rangeMouseDown === false
         ) {
-            console.log('RANGE MOUSE DOWN', this.state.rangeMouseDown);
             this.replaceEvents(
                 `${API}?in_scroll__slug=${
                     this.props.slug

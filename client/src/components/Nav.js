@@ -82,15 +82,14 @@ class Nav extends React.Component {
                 ref={this.myRef}
             >
                 <Link className="logo" to="/">
-                    UNSCROLL
+                    Unscroll
                 </Link>
                 <Link to="/about">?</Link>
-                <Link to="/timelines">Timelines</Link>[
-                <Link to="/?view=vertical">Vertical</Link>]
-                <Link to="/notebooks">Notebooks</Link>
-                <Search />
+                <Link to="/timelines/">Timelines</Link>
+                <Link to="/notebooks/">Notebooks</Link>
+                {/*  <Search /> */}
+                <Link to="/?h=true">Wide</Link>
                 {this.renderLoginState()}
-                {this.renderCurrentNotebook()}
             </div>
         );
     }
