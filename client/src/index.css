@@ -524,9 +524,6 @@ div.search-ruby {
     text-align: center;
 }
 
-.eventNoteButton {
-    float: right;
-}
 form.search {
     display: inline;
 }
@@ -662,6 +659,7 @@ div.rte-title-editor .public-DraftStyleDefault-block {
     color: #aaa;
     font-size: 10pt;
     color: deepskyblue;
+    border-top: 1px dotted deepskyblue;
     margin: 0.25em 0 2em 0;
 }
 
@@ -958,4 +956,51 @@ button.notebook-preview {
 a.active {
     background: red;
     color: white;
+}
+
+.event-image-upload {
+    float: left;
+    border: 2px dashed deepskyblue;
+    width: 200px;
+    height: 200px;
+}
+.dropzone-empty {
+    width: 200px;
+    height: 200px;
+}
+
+.event-input input,
+.event-url input {
+    font-size: 100%;
+    border: none;
+    width: 100%;
+}
+
+.event-note-button {
+    float: right;
+    color: white;
+    background: deepskyblue;
+    font-size: 140%;
+}
+
+td.event-editor-td {
+    width: 75%;
+}
+
+.rte-citation-editor input,
+.rte-link-editor input,
+.event-editor-title,
+.event-editor-text {
+    padding: 0;
+    margin: 0;
+    padding: 1% 0 1% 0;
+    border: none;
+    font-size: 13pt;
+    line-height: 150%;
+    color: black;
+    font-family: 'IBM Plex Sans', monospace;
+}
+
+div.event-editor-title .public-DraftStyleDefault-block {
+    font-size: 150%;
 }

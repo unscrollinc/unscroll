@@ -183,7 +183,7 @@ USE_TZ = True
 
 STATIC_URL = '/django-static/'
 STATIC_ROOT= '/home/unscroll/unscroll/unscroll/scrolls/django-static/'
-THUMBNAIL_SIZE = 150, 150
+THUMBNAIL_SIZE = 300,300
 THUMBNAIL_DIR = '/home/unscroll/unscroll/unscroll/scrolls/img/'
 DATA_UPLOAD_MAX_MEMORY_SIZE=4621440
 

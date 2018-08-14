@@ -87,7 +87,7 @@ class Nav extends React.Component {
                 <NavLink to="/about">?</NavLink>
                 <NavLink to="/timelines">Timelines</NavLink>
                 <NavLink to="/notebooks">Notebooks</NavLink>
-                {/*  <Search /> */}
+                <Search />
                 <Link to="/?h=true">Wide</Link>
                 {this.renderLoginState()}
             </div>

@@ -153,6 +153,7 @@ class Timelist extends React.Component {
             resolution: resolution,
             when_happened: justDate
         });
+        this.props.updateWhen(asString);
         if (didIt) {
             this.editSeveral({
                 resolution: resolution,
@@ -164,12 +165,11 @@ class Timelist extends React.Component {
 
     render() {
         return (
-            <div className={'passed-' + this.state.okay}>
+            <div className={'event-input passed-' + this.state.okay}>
                 <input
                     defaultValue={this.props.when_original}
                     onChange={this.parseDT.bind(this)}
                 />
-                <div className="event-input-parsed">{this.state.parsed}</div>
             </div>
         );
     }

@@ -65,6 +65,21 @@ class TimelistEvent extends React.Component {
         }
         return null;
     }
+    makeDropzoneImage(e) {
+        if (e.with_thumbnail_image || e.scroll_with_thumbnail_image) {
+            return (
+                <a href={e.content_url} target="_blank">
+                    <img
+                        alt=""
+                        className="timelist-image"
+                        src={this.getImage(e)}
+                    />
+                </a>
+            );
+        }
+        return <div className="dropzone-empty" />;
+    }
+
     makeWhen(e) {
         if (e.when_original) {
             return (
@@ -86,7 +101,6 @@ class TimelistEvent extends React.Component {
 
     save(e) {
         e.preventDefault();
-        console.log('SAVING NOW', this.state.edits);
         const url = this.state.event.url;
         const _this = this;
 
@@ -160,67 +174,81 @@ class TimelistEvent extends React.Component {
                 {form => {
                     return (
                         <tr className="timelist">
-                            <td colSpan="3">
-                                <form>
-                                    <div>
-                                        <div>{e.scroll_title}</div>
-
-                                        <div>Title</div>
-                                        <RichTextEditor
-                                            field="title"
-                                            upEdit={this.edit.bind(this)}
-                                            content={e.title}
-                                        />
-                                    </div>
-
-                                    {this.makeImage(e)}
-
-                                    <div className="eventNoteButton">
-                                        <button onClick={this.save.bind(this)}>
-                                            Done
-                                        </button>
-                                    </div>
-
-                                    <div>
-                                        <div>When?</div>
-                                        <EventInput
-                                            when_original={e.when_original}
-                                            when_happened={e.when_happened}
-                                            resolution={e.resolution}
-                                            editSeveral={this.editSeveral.bind(
-                                                this
-                                            )}
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <div>URL</div>
-                                        <Text
-                                            field="source_url"
-                                            defaultValue={e.source_url}
-                                            onChange={e =>
-                                                this.edit('source_url', e)
-                                            }
-                                            placeholder="URL"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <div>Description</div>
-                                        <RichTextEditor
-                                            field="text"
-                                            upEdit={this.edit.bind(this)}
-                                            content={e.text}
-                                        />
-                                    </div>
-                                </form>
-
-                                <Dropzone onDrop={this.onDrop.bind(this)}>
-                                    <p>
-                                        Try dropping some files here, or click
-                                        to select files to upload.
-                                    </p>
+                            <td colSpan="1">
+                                <Dropzone
+                                    className="event-image-upload"
+                                    multiple={false}
+                                    maxSize={4000000}
+                                    onDrop={this.onDrop.bind(this)}
+                                >
+                                    {this.makeDropzoneImage(e)}
                                 </Dropzone>
+                            </td>
+                            <td colSpan="2" className="event-editor-td">
+                                <button
+                                    className="event-note-button"
+                                    onClick={this.save.bind(this)}
+                                >
+                                    Done
+                                </button>
+                                <button
+                                    className="event-delete-button"
+                                    onClick={e => {
+                                        this.props.deleteEvent(
+                                            this.state.event
+                                        );
+                                    }}
+                                >
+                                    Delete
+                                </button>
+
+                                <div>Timeline: {e.scroll_title}</div>
+
+                                <div className="event-editor-title">
+                                    <RichTextEditor
+                                        field="title"
+                                        upEdit={this.edit.bind(this)}
+                                        content={e.title}
+                                    />
+                                </div>
+                                <div className="input-title">Title</div>
+
+                                <div className="event-editor-event-input">
+                                    <EventInput
+                                        when_original={e.when_original}
+                                        when_happened={e.when_happened}
+                                        resolution={e.resolution}
+                                        editSeveral={this.editSeveral.bind(
+                                            this
+                                        )}
+                                        updateWhen={w =>
+                                            this.setState({ when: w })
+                                        }
+                                    />
+                                    <div className="input-title">
+                                        When? {this.state.when}
+                                    </div>
+                                </div>
+
+                                <div className="event-url">
+                                    <Text
+                                        field="source_url"
+                                        defaultValue={e.source_url}
+                                        onChange={e =>
+                                            this.edit('source_url', e)
+                                        }
+                                    />
+                                    <div className="input-title">URL</div>
+                                </div>
+
+                                <div className="event-editor-text">
+                                    <RichTextEditor
+                                        field="text"
+                                        upEdit={this.edit.bind(this)}
+                                        content={e.text}
+                                    />
+                                </div>
+                                <div className="input-title">Description</div>
                             </td>
                         </tr>
                     );

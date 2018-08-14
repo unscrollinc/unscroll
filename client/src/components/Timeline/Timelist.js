@@ -38,6 +38,7 @@ class Timelist extends React.Component {
         return (
             <TimelistEvent
                 key={event.uuid}
+                deleteEvent={this.deleteEvent.bind(this)}
                 isBeingEdited={isBeingEdited ? true : false}
                 event={event}
             />
@@ -46,6 +47,21 @@ class Timelist extends React.Component {
     makeEvents(data, edit) {
         return data.results.map((event, i) => {
             return this.renderEvent(event, edit);
+        });
+    }
+
+    deleteEvent(e) {
+        const _this = this;
+        const url = e.url;
+        axios({
+            method: 'delete',
+            url: url,
+            headers: utils.getAuthHeaderFromCookie()
+        }).then(resp => {
+            const events = _this.state.events.filter(
+                ev => ev.props.event.url !== url
+            );
+            this.setState({ events: events });
         });
     }
 
