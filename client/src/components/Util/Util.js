@@ -46,6 +46,10 @@ const util = {
         }
         return false;
     },
+    // This is purely front-end. We're comfortable checking against username on the frontend.
+    isLoggedIn: () => {
+        return null !== util.getUsernameFromCookie();
+    },
     getAuthHeaderFromCookie: () => {
         const c = cookie.get();
         const hasAuth = c && c.authToken && c.username;

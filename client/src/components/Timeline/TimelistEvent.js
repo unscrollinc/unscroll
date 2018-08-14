@@ -242,7 +242,7 @@ class TimelistEvent extends React.Component {
     }
 
     renderLoggedInButtons() {
-        if (utils.isAuthed()) {
+        if (utils.isLoggedIn()) {
             return (
                 <div className="eventNoteButton">
                     <EventNoteButton event={this.state.event} />

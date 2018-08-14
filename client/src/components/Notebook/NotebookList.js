@@ -103,9 +103,9 @@ class NotebookList extends React.Component {
     }
 
     authedButton(to, text) {
-        if (utils.isAuthed()) {
+        if (utils.isLoggedIn()) {
             return (
-                <NavLink className="list-object-button" to="{to}">
+                <NavLink className="list-object-button" to={to}>
                     {text}
                 </NavLink>
             );
