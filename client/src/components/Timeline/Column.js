@@ -5,7 +5,9 @@ class Column extends React.Component {
     render() {
         return (
             <div className="column" style={{ width: this.props.width }}>
-                <Link to={`?${this.props.span}`}>{this.props.title}</Link>
+                <Link to={`?${this.props.span}&view=horizontal`}>
+                    {this.props.title}
+                </Link>
             </div>
         );
     }

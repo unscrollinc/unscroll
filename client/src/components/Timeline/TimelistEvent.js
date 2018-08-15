@@ -232,10 +232,10 @@ class TimelistEvent extends React.Component {
 
                                 <div className="event-url">
                                     <Text
-                                        field="source_url"
-                                        defaultValue={e.source_url}
+                                        field="content_url"
+                                        defaultValue={e.content_url}
                                         onChange={e =>
-                                            this.edit('source_url', e)
+                                            this.edit('content_url', e)
                                         }
                                     />
                                     <div className="input-title">URL</div>

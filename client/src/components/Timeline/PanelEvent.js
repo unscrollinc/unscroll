@@ -89,8 +89,6 @@ class Event extends React.Component {
     render() {
         if (this.state.mightFit) {
             const e = this.props.event;
-            console.log(e);
-
             return (
                 <div
                     key={e.uuid}

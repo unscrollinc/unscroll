@@ -21,13 +21,13 @@ class Timeline extends React.Component {
 
     determineState() {
         const _this = this;
+        console.log('GOT IT', this.props.match.params, searchParsed);
 
         const searchParsed = this.props.location.search
             ? qs.parse(this.props.location.search, {
                   ignoreQueryPrefix: true
               })
             : null;
-
         if (searchParsed && searchParsed.start && searchParsed.before) {
             const s = DateTime.fromISO(searchParsed.start);
             const b = DateTime.fromISO(searchParsed.before);
@@ -57,6 +57,7 @@ class Timeline extends React.Component {
                         const rawInterval = Interval.fromDateTimes(s, b);
                         const interval = rawInterval.divideEqually(5)[3];
                         const q = searchParsed ? searchParsed.q : null;
+
                         _this.initialize(
                             interval,
                             q,
@@ -207,6 +208,8 @@ class Timeline extends React.Component {
             this.state.interval,
             this.state.center + i
         );
+        console.log('making panel', this.state);
+
         return (
             <Panel
                 key={this.state.center + i}
