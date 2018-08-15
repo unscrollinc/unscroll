@@ -36,6 +36,34 @@ class Timeline extends React.Component {
             if (s.invalid === null && b.invalid === null) {
                 this.initialize(interval, q);
             }
+        } else if (
+            this.props.match.params.slug &&
+            this.props.match.params.user
+        ) {
+            axios
+                .get(
+                    `${util.getAPI('events')}minmax?in_scroll__slug=${
+                        this.props.match.params.slug
+                    }`
+                )
+                .then(resp => {
+                    const rd = resp.data;
+                    if (rd.first_event === null || rd.last_event === null) {
+                        console.log('SEARCH FAILED');
+                        _this.setState({ searchWorked: false });
+                    } else {
+                        const s = DateTime.fromISO(rd.first_event);
+                        const b = DateTime.fromISO(rd.last_event);
+                        const rawInterval = Interval.fromDateTimes(s, b);
+                        const interval = rawInterval.divideEqually(5)[3];
+                        const q = searchParsed ? searchParsed.q : null;
+                        _this.initialize(
+                            interval,
+                            q,
+                            this.props.match.params.slug
+                        );
+                    }
+                });
         } else if (searchParsed && searchParsed.q) {
             axios
                 .get(`${util.getAPI('events')}minmax/?q=${searchParsed.q}`)
@@ -68,7 +96,7 @@ class Timeline extends React.Component {
         }
     }
 
-    initialize(interval, q) {
+    initialize(interval, q, slug) {
         const timeframes = new TimeFrames(interval);
         const frame = timeframes.getTimeFrameObject();
         const adjusted = frame.getAdjustedDt(interval);
@@ -77,6 +105,7 @@ class Timeline extends React.Component {
         const init = {
             interval: adjusted,
             query: q,
+            slug: slug,
             title: title,
             frame: frame,
             width: width,
@@ -184,6 +213,7 @@ class Timeline extends React.Component {
                 center={this.state.center + i}
                 frame={this.state.frame}
                 query={this.state.query}
+                slug={this.state.slug}
                 width={this.state.width}
                 height={this.state.height}
                 offset={this.state.offset}

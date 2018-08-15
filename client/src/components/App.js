@@ -1,5 +1,6 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
+import qs from 'qs';
 
 import Nav from './Nav';
 // import News from './News';
@@ -23,6 +24,11 @@ import { AppProvider } from './AppContext';
 import '../index.css';
 
 const routes = [
+    {
+        path: '/',
+        exact: true,
+        Workbook: () => <Timeline />
+    },
     {
         path: '/user/register',
         exact: true,
@@ -80,7 +86,24 @@ const routes = [
     {
         path: '/timelines/:user/:slug',
         exact: true,
-        Workbook: props => <Timelist {...props.match.params} />
+        Workbook: props => {
+            const searchParsed = props.location.search
+                ? qs.parse(props.location.search, {
+                      ignoreQueryPrefix: true
+                  })
+                : null;
+
+            console.log(props);
+
+            if (
+                searchParsed &&
+                searchParsed.view &&
+                searchParsed.view === 'horizontal'
+            ) {
+                return <Timeline {...props} />;
+            }
+            return <Timelist {...props.match.params} />;
+        }
     },
 
     {
@@ -154,7 +177,6 @@ class App extends React.Component {
             <AppProvider>
                 <div className="App">
                     <Nav />
-                    <Route exact={false} path="/" component={Timeline} />
                     {routes.map((route, index) => (
                         <Route
                             key={index}

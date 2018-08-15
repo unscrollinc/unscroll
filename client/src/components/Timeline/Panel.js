@@ -91,6 +91,7 @@ class Panel extends React.Component {
         } else {
             utils.GET(this, 'events', {
                 q: this.props.query,
+                in_scroll__slug: this.props.slug,
                 start: this.state.interval.start.toISO(),
                 before: this.state.interval.end.toISO()
             });

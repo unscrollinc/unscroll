@@ -464,8 +464,8 @@ class About extends React.Component {
                         <p>
                             That said, it wouldn't hurt you to be a little
                             positive though. You don't have to run to the thread
-                            on your microblog messageboard and shit all over it
-                            today. Give it two weeks, then shit on it. I'll hold
+                            on your microblog messageboard and poop all over it
+                            today. Give it two weeks, then poop on it. I'll hold
                             my breath.
                         </p>
 
@@ -479,7 +479,7 @@ class About extends React.Component {
                             platforms for free and for fun these days, but
                             that's how I spent my spare time and I hope you take
                             it in the spirit in which it's intended. Maybe we
-                            can make something!
+                            can make something fun together!
                         </p>
 
                         <p>Let's see what happens.</p>

@@ -89,6 +89,8 @@ class Event extends React.Component {
     render() {
         if (this.state.mightFit) {
             const e = this.props.event;
+            console.log(e);
+
             return (
                 <div
                     key={e.uuid}
@@ -125,10 +127,19 @@ class Event extends React.Component {
                                     <tr>
                                         <td colSpan="3">
                                             <a
+                                                href={`/timelines/${
+                                                    e.in_scroll_user
+                                                }/${
+                                                    e.in_scroll_slug
+                                                }?view=horizontal`}
+                                            >
+                                                {e.scroll_title}
+                                            </a>{' '}
+                                            <a
                                                 href={e.source_url}
                                                 target="_new"
                                             >
-                                                {e.source_name}
+                                                (Via)
                                             </a>{' '}
                                             (
                                             <Link to={'/users/' + e.username}>
