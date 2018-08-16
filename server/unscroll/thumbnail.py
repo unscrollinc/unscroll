@@ -64,7 +64,7 @@ class InboundThumbnail(object):
                 .convert('RGB')\
                 .save('{}/{}'
                       .format(THUMBNAIL_DIR, self.img_filename),
-                      quality=50,
+                      quality=80,
                       optimize=True,
                       progressive=True)
         except OSError as e:
