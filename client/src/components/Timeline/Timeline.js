@@ -20,71 +20,46 @@ class Timeline extends React.Component {
     }
 
     determineState() {
-        const _this = this;
-        console.log('GOT IT', this.props.match.params, searchParsed);
+        // Take a look at our state and then either do some server
+        // calls to figure out where we are in time or just go with
+        // the params. In all case we make a call to initialize() and
+        // then return null.
 
-        const searchParsed = this.props.location.search
-            ? qs.parse(this.props.location.search, {
-                  ignoreQueryPrefix: true
-              })
-            : null;
-        if (searchParsed && searchParsed.start && searchParsed.before) {
-            const s = DateTime.fromISO(searchParsed.start);
-            const b = DateTime.fromISO(searchParsed.before);
-            const interval = Interval.fromDateTimes(s, b);
-            const q = searchParsed.q;
-            if (s.invalid === null && b.invalid === null) {
-                this.initialize(interval, q);
-            }
-        } else if (
-            this.props.match.params.slug &&
-            this.props.match.params.user
-        ) {
+        const _this = this;
+        if (this.props.isSpecificScroll && !this.props.isTimeBoxed) {
             axios
                 .get(
                     `${util.getAPI('events')}minmax?in_scroll__slug=${
-                        this.props.match.params.slug
+                        this.props.slug
                     }`
                 )
                 .then(resp => {
                     const rd = resp.data;
                     if (rd.first_event === null || rd.last_event === null) {
-                        console.log('SEARCH FAILED');
                         _this.setState({ searchWorked: false });
                     } else {
                         const s = DateTime.fromISO(rd.first_event);
                         const b = DateTime.fromISO(rd.last_event);
                         const rawInterval = Interval.fromDateTimes(s, b);
                         const interval = rawInterval.divideEqually(5)[3];
-                        const q = searchParsed ? searchParsed.q : null;
-
                         _this.initialize(
                             interval,
-                            q,
-                            this.props.match.params.slug
+                            this.props.searchQuery,
+                            this.props.slug
                         );
                     }
                 });
-        } else if (searchParsed && searchParsed.q) {
-            axios
-                .get(`${util.getAPI('events')}minmax/?q=${searchParsed.q}`)
-                .then(resp => {
-                    const rd = resp.data;
-                    if (rd.first_event === null || rd.last_event === null) {
-                        console.log('SEARCH FAILED');
-                        _this.setState({ searchWorked: false });
-                    } else {
-                        const s = DateTime.fromISO(rd.first_event);
-                        const b = DateTime.fromISO(rd.last_event);
-                        const rawInterval = Interval.fromDateTimes(s, b);
-                        const interval = rawInterval.divideEqually(5)[3];
-                        const q = searchParsed.q;
-                        _this.initialize(interval, q);
-                    }
-                })
-                .catch(err => {
-                    console.log(err);
-                });
+        } else if (this.props.isTimeBoxed) {
+            const s = DateTime.fromISO(this.props.start);
+            const b = DateTime.fromISO(this.props.before);
+            const interval = Interval.fromDateTimes(s, b);
+            if (s.invalid === null && b.invalid === null) {
+                this.initialize(
+                    interval,
+                    this.props.searchQuery,
+                    this.props.slug
+                );
+            }
         } else {
             const s = DateTime.fromObject({ year: 2005, month: 1 }).startOf(
                 'month'
@@ -95,6 +70,7 @@ class Timeline extends React.Component {
             const interval = Interval.fromDateTimes(s, b);
             this.initialize(interval, null);
         }
+        return null;
     }
 
     initialize(interval, q, slug) {
@@ -107,6 +83,7 @@ class Timeline extends React.Component {
             interval: adjusted,
             query: q,
             slug: slug,
+            user: this.props.user,
             title: title,
             frame: frame,
             width: width,
@@ -208,8 +185,6 @@ class Timeline extends React.Component {
             this.state.interval,
             this.state.center + i
         );
-        console.log('making panel', this.state);
-
         return (
             <Panel
                 key={this.state.center + i}
@@ -217,6 +192,7 @@ class Timeline extends React.Component {
                 frame={this.state.frame}
                 query={this.state.query}
                 slug={this.state.slug}
+                user={this.state.user}
                 width={this.state.width}
                 height={this.state.height}
                 offset={this.state.offset}
@@ -236,7 +212,7 @@ class Timeline extends React.Component {
                 </div>
             );
         }
-        return <h1>Search failed: {'' + this.state.searchWorked}</h1>;
+        return <h1>Loading...</h1>;
     }
 
     render() {

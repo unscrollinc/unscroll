@@ -3,11 +3,7 @@ import Column from './Column';
 import Event from './PanelEvent';
 import { Link } from 'react-router-dom';
 import { Interval, DateTime } from 'luxon';
-import axios from 'axios';
 import utils from '../Util/Util';
-axios.defaults.xsrfHeaderName = 'X-CSRFTOKEN';
-axios.defaults.xsrfCookieName = 'csrftoken';
-axios.defaults.withCredentials = true;
 
 /*
 
@@ -220,7 +216,13 @@ class Panel extends React.Component {
                 <div className="breadcrumbs">
                     <h1>
                         {this.state.title}{' '}
-                        <Link to={'/timelist/?' + this.state.interval + '?q='}>
+                        <Link
+                            to={`/timelines/${this.props.user}/${
+                                this.props.slug
+                            }/?view=vertical&from=${this.state.interval.start.toISO()}&before=${this.state.interval.end.toISO()}${
+                                this.props.query ? '&q=' + this.props.query : ''
+                            }`}
+                        >
                             (showing {this.state.fitCount}/{this.state.count})
                         </Link>
                     </h1>

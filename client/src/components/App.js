@@ -23,12 +23,60 @@ import { AppProvider } from './AppContext';
 
 import '../index.css';
 
+function getParams(props) {
+    const qp = props.location.search
+        ? qs.parse(props.location.search, {
+              ignoreQueryPrefix: true
+          })
+        : null;
+
+    // A little utility existence function
+    const E = k => {
+        if (qp && qp[k]) {
+            if (
+                typeof qp[k] !== 'undefined' &&
+                typeof qp[k].valueOf() === 'string' &&
+                qp[k].length > 0
+            ) {
+                return qp[k];
+            }
+        }
+        return null;
+    };
+
+    const TF = exp => {
+        return exp ? true : false;
+    };
+
+    const slug = props.match.params.slug;
+    const user = props.match.params.user;
+    const start = E('start');
+    const before = E('before');
+    const isTimeBoxed = TF(start && before);
+    const isSpecificScroll = TF(slug && user);
+    const isHorizontal = TF(E('view') === 'horizontal');
+
+    return {
+        slug: slug,
+        user: user,
+        start: start,
+        before: before,
+        searchQuery: E('q'),
+
+        isTimeBoxed: isTimeBoxed,
+        isSpecificScroll: isSpecificScroll,
+        isHorizontal: isHorizontal
+    };
+}
+
 const routes = [
     {
         path: '/',
         exact: true,
         Workbook: () => <Timeline />
     },
+
+    // User functions
     {
         path: '/user/register',
         exact: true,
@@ -59,12 +107,14 @@ const routes = [
         Workbook: props => <Confirm {...props.match.params} />
     },
 
+    // About page
     {
         path: '/about',
         exact: true,
         Workbook: () => <About />
     },
 
+    // Profile page
     {
         path: '/my/profile',
         exact: true,
@@ -87,22 +137,12 @@ const routes = [
         path: '/timelines/:user/:slug',
         exact: true,
         Workbook: props => {
-            const searchParsed = props.location.search
-                ? qs.parse(props.location.search, {
-                      ignoreQueryPrefix: true
-                  })
-                : null;
-
-            console.log(props);
-
-            if (
-                searchParsed &&
-                searchParsed.view &&
-                searchParsed.view === 'horizontal'
-            ) {
-                return <Timeline {...props} />;
+            const params = getParams(props);
+            console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$', params);
+            if (params.isHorizontal) {
+                return <Timeline {...params} />;
             }
-            return <Timelist {...props.match.params} />;
+            return <Timelist {...params} />;
         }
     },
 
@@ -148,29 +188,6 @@ class App extends React.Component {
     componentDidMount() {
         document.title = 'Unscroll: A notebook';
     }
-
-    // render(props) {
-    //     /*
-    //        We have a couple of likely situations here:
-    //        - User asked for a given timespan
-    //        - User asked for a filtered timespan
-    //        - User just searched for a term, so we need to get the timespan
-
-    //        Basically once we have an interval we want to get a timeframe.
-
-    //     */
-    //     if (this.state.interval !== null) {
-    //         return (
-    //             <Timeline
-    //                 query={this.state.query}
-    //                 interval={this.state.interval}
-    //             />
-    //         );
-    //     } else {
-    //         this.makeInterval(props);
-    //     }
-    //     return null;
-    // }
 
     render() {
         return (
