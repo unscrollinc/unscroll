@@ -138,7 +138,6 @@ const routes = [
         exact: true,
         Workbook: props => {
             const params = getParams(props);
-            console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$', params);
             if (params.isHorizontal) {
                 return <Timeline {...params} />;
             }
