@@ -8,6 +8,7 @@ import util from '../Util/Util';
 import Panel from './Panel';
 import TimeFrames from './TimeFrames';
 import axios from 'axios';
+import AppContext from '../AppContext';
 
 class Timeline extends React.Component {
     constructor(props) {
@@ -26,7 +27,14 @@ class Timeline extends React.Component {
         // then return null.
 
         const _this = this;
-        if (this.props.isSpecificScroll && !this.props.isTimeBoxed) {
+        if (
+            !this.props.isTimeBoxed &&
+            (this.props.isSpecificScroll || this.props.isSearchQuery)
+        ) {
+            function getUrl() {
+                if (this.props.isSpecificScroll && this.props.isSearchQuery) {
+                }
+            }
             axios
                 .get(
                     `${util.getAPI('events')}minmax?in_scroll__slug=${
@@ -253,4 +261,11 @@ class Timeline extends React.Component {
     }
 }
 
-export default withRouter(Timeline);
+export default props => {
+    const TL = withRouter(Timeline);
+    return (
+        <AppContext.Consumer>
+            {context => <TL {...props} context={context} />}
+        </AppContext.Consumer>
+    );
+};

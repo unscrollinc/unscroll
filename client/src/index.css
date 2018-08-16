@@ -22,7 +22,7 @@ h7 {
 
 h1 {
     font-size: 200%;
-    color: lightskyblue;
+    color: #006485;
 }
 
 h1 a:hover {
@@ -624,8 +624,13 @@ th.list-object-published-th {
     text-align: left;
 }
 div.list-object-title {
-    font-weight: bold;
+    font-size: 150%;
+    margin-bottom: 0.5em;
 }
+div.list-object-title a {
+    color: deepskyblue;
+}
+
 div.list-object-byline {
 }
 div.list-object-description {

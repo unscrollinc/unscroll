@@ -6,6 +6,8 @@ import AppContext from './AppContext';
 
 class Nav extends React.Component {
     constructor(props) {
+        console.log('NAV PROPS', props);
+
         super(props);
         this.state = {
             height: 16,
@@ -70,7 +72,11 @@ class Nav extends React.Component {
         }
         return null;
     }
-
+    renderHorizontalOrVertical() {
+        if (true) {
+            return <Link to="?view=horizontal">[Line]</Link>;
+        }
+    }
     render() {
         // const horizontal = this.state.horizontal ? 'RIGHT' : 'DOWN';
         return (
@@ -86,9 +92,13 @@ class Nav extends React.Component {
                 </Link>
                 <NavLink to="/about">?</NavLink>
                 <NavLink to="/timelines">Timelines</NavLink>
+
+                {this.renderHorizontalOrVertical()}
+
                 <NavLink to="/notebooks">Notebooks</NavLink>
+
                 <Search />
-                <Link to="?view=horizontal">Wide</Link>
+
                 {this.renderLoginState()}
             </div>
         );
