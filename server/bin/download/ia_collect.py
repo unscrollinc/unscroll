@@ -69,8 +69,8 @@ class IAItem():
               .format(id,)
         return url
 
-    def to_event(self):
-        ud = UnscrollDate([self.date, self.title])
+    def to_event(self, begin, end):
+        ud = UnscrollDate([self.date, self.title], begin=begin, end=end)
         print(ud.when_happened)
         adjusted_title = self.title
         if self.creator is not None:
@@ -164,6 +164,10 @@ def __main__():
         description='Search archive.org and get things.')
     parser.add_argument('--collection',
                         help='A collection name')
+    parser.add_argument('--begin',
+                        help='The earliest year in the collection')
+    parser.add_argument('--end',
+                        help='The last year in the collection')        
     args = parser.parse_args()
     if (args.collection is None):
         print('No collection!')
@@ -178,7 +182,7 @@ def __main__():
     
     scroll = api.create_or_retrieve_scroll(
         ia.title,
-        description=ia.description,
+        description='<b>Via Archive.org</b>: ' + ia.description,
         link=ia.source_url,
         with_thumbnail=with_thumbnail,
         subtitle='Collection via Archive.org',)
@@ -186,7 +190,7 @@ def __main__():
     for x in range(1, ia.total_pages + 1):
         items = ia.get_items(x)
         for item in items:
-            d = item.to_event()
+            d = item.to_event(args.begin, args.end)
             print(item.thumbnail_url)
             if d is not None:
 

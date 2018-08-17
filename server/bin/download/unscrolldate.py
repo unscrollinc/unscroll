@@ -33,7 +33,7 @@ class UnscrollDate(object):
     def is_okay(self):
         if (self.when_happened is not None):
             y = int(self.when_happened[0:4])
-            # print('b:{} -- e:{} -- y:{} '.format(self.begin, self.end, y))
+            #    print('b:{} -- e:{} -- y:{} '.format(self.begin, self.end, y))
             if (self.begin is not None and self.end is not None
                 and self.begin <= y
                 and self.end >= y):
@@ -95,9 +95,12 @@ class UnscrollDate(object):
         return split
     
     def parse(self, when_original):
-        o = parser.parse(when_original, default=datetime.datetime(2000,12,31,23,59,59))
-        oi = o.isoformat()
-        return oi
+        try:
+            o = parser.parse(when_original, default=datetime.datetime(2000,12,31,23,59,59))
+            oi = o.isoformat()
+            return oi
+        except ValueError as e:
+            print('{}: {}'.format(e, when_original,))
 
     def init_parse(self):
         when_original = self.when_original
