@@ -14,8 +14,10 @@ class UnscrollDate(object):
     when_happened = None
     resolution = None
     
-    def __init__(self, likelies=None):
+    def __init__(self, likelies=None, begin=None, end=None):
         print(likelies)
+        self.begin = int(begin)
+        self.end = int(end)
         if likelies is not None:
             # box up likelies into a list if we just got a string
         
@@ -29,8 +31,16 @@ class UnscrollDate(object):
                     break
 
     def is_okay(self):
-        return self.when_happened is not None
-    
+        if (self.when_happened is not None):
+            y = int(self.when_happened[0:4])
+            # print('b:{} -- e:{} -- y:{} '.format(self.begin, self.end, y))
+            if (self.begin is not None and self.end is not None
+                and self.begin <= y
+                and self.end >= y):
+                return True
+            elif (self.begin is None and self.end is None):
+                return True
+
     def is_normal(self, when_original):
         try:
             d = self.parse(when_original)
