@@ -76,21 +76,21 @@ I look forward to your thoughts.
   - [X] Login
   - [X] Logout
 
-* Timelines [4/5]
+* Timelines [5/5]
   - [X] Vertical view buttons
   - [X] Refactor all "Scroll" stuff to be Timeline # WONTFIX
   - [X] Timeline search results
   - [X] No direct editing on Timelines at launch? THAT'S RIGHT
   - [X] Use HTML->React module for sizing, then placing events
 
-* Timelist [4/8]
+* Timelist [8/8]
   - [X] Create new timeline
-  - [ ] Max # of timelines per scroll?
+  - [X] Max # of timelines per scroll?
   - [X] Add event
-  - [ ] Delete event
+  - [X] Delete event
   - [X] Edit event
-  - [ ] Reverse chronological
-  - [ ] Refresh chronological
+  - [X] Reverse chronological
+  - [X] Refresh chronological
   - [X] Range slider
 
 * Notebooks [2/2]
@@ -138,18 +138,19 @@ I look forward to your thoughts.
 - [ ] Scroll wheel on tl 
 - [X] In and out on tl
 - [X] Move events
-- [ ] Search in scroll
-- [ ] Search filter
-- [ ] By username by scroll 
-- [ ] Drop-down
-- [ ] Search on tl
-- [ ] News
-- [ ] Login forms and reg
-- [ ] Import Wikipedia events with preview api
-- [ ] Import crisis
-- [ ] Fix BC import/matching, esp on Met
-- [ ] Mention API/swagger
+- [X] Search in scroll
+- [X] Search filter
+- [X] By username by scroll 
+- [X] Drop-down
+- [X] Search on tl
+- [X] News
+- [X] Login forms and reg
+- [X] Import Wikipedia events with preview api
+- [X] Import crisis
+- [X] Fix BC import/matching, esp on Met
+- [X] Mention API/swagger
 
 * TODO Cache [0/0]
-- [ ] Cache Timelines public
-- [ ] Cache Notebooks public
+- [ ] Turn on caching
+- [X] Cache Timelines public
+- [X] Cache Notebooks public
