@@ -1,7 +1,8 @@
 
 * Announcement
 
-Hello, World! https://unscroll.com
+Something I wrote to entertain myself: Some thoughts on "hello, world"
+https://unscroll.com/notebooks/ford/hello-world
 
 ** Letter
 I was alluding to this ridiculous side project when we met:

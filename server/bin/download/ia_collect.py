@@ -186,21 +186,24 @@ def __main__():
         link=ia.source_url,
         with_thumbnail=with_thumbnail,
         subtitle='Collection via Archive.org',)
+    if scroll is None:
+        print('could not create scroll: {}'.format(ia.title))
+        exit(0)
+    if scroll is not None:
+        for x in range(1, ia.total_pages + 1):
+            items = ia.get_items(x)
+            for item in items:
+                d = item.to_event(args.begin, args.end)
+                print(item.thumbnail_url)
+                if d is not None:
 
-    for x in range(1, ia.total_pages + 1):
-        items = ia.get_items(x)
-        for item in items:
-            d = item.to_event(args.begin, args.end)
-            print(item.thumbnail_url)
-            if d is not None:
+                    favthumb = api.cache_thumbnail(item.thumbnail_url)
 
-                favthumb = api.cache_thumbnail(item.thumbnail_url)
+                    if favthumb is not None:
+                        d['with_thumbnail'] = favthumb.get('url')
 
-                if favthumb is not None:
-                    d['with_thumbnail'] = favthumb.get('url')
-
-                d['in_scroll'] = scroll
-                e = api.create_event(d, scroll)
-                print(e)
+                    d['in_scroll'] = scroll
+                    e = api.create_event(d, scroll)
+                    print(e)
 
 __main__()

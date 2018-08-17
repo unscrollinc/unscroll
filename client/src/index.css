@@ -390,7 +390,9 @@ td.content {
 
 td.content .event-title {
     font-weight: normal;
-    color: #555;
+    font-size: 150%;
+    line-height: 125%;
+    padding: 0.5em 0 0.5em 0;
     /*
 font-family: 'IBM Plex Sans', sans-serif;
 font-family: 'IBM Plex Sans Condensed', sans-serif;

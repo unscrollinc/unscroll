@@ -2,7 +2,6 @@ from django.db import models
 from django.db.models import Max, Min, Count
 from django_bleach.models import BleachField
 from django.contrib.auth.models import User
-from django.utils.crypto import get_random_string
 
 
 from uuid import uuid4
@@ -97,7 +96,7 @@ class Scroll(models.Model):
         editable=False,
         unique=True)
     slug = models.SlugField(
-        default = get_random_string(12,'abcdefghijklmnopqrstuvwxyz')
+        unique=True
     )
     title = BleachField()
     description = BleachField(

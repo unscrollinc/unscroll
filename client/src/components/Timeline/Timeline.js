@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactCursorPosition from 'react-cursor-position';
 import { DateTime, Interval } from 'luxon';
-import qs from 'qs';
 import WheelReact from '../../ext/wheel-react';
 import { withRouter } from 'react-router-dom';
 import util from '../Util/Util';
@@ -15,7 +14,6 @@ class Timeline extends React.Component {
         super(props);
         this.state = {
             interval: null,
-            query: null,
             searchWorked: null
         };
     }
@@ -23,12 +21,13 @@ class Timeline extends React.Component {
     determineState() {
         // Take a look at our state and then either do some server
         // calls to figure out where we are in time or just go with
-        // the params. In all case we make a call to initialize() and
+        // the params. In all cases we make a call to initialize() and
         // then return null.
 
         const _this = this;
+        // If we have `start` and `before` params then we don't need to figure out our timebox.
         if (
-            !this.props.isTimeBoxed &&
+            !this.props.hasInterval &&
             (this.props.isSpecificScroll || this.props.isSearchQuery)
         ) {
             function getUrl() {
@@ -39,6 +38,8 @@ class Timeline extends React.Component {
                 .get(
                     `${util.getAPI('events')}minmax?in_scroll__slug=${
                         this.props.slug
+                    }&q=${
+                        this.props.isSearchQuery ? this.props.searchQuery : ''
                     }`
                 )
                 .then(resp => {
@@ -57,7 +58,7 @@ class Timeline extends React.Component {
                         );
                     }
                 });
-        } else if (this.props.isTimeBoxed) {
+        } else if (this.props.hasInterval) {
             const s = DateTime.fromISO(this.props.start);
             const b = DateTime.fromISO(this.props.before);
             const interval = Interval.fromDateTimes(s, b);
@@ -88,6 +89,7 @@ class Timeline extends React.Component {
         const title = frame.getTitle(adjusted);
         const width = frame.getColumnCount(interval);
         const init = {
+            hasInterval: true,
             interval: adjusted,
             query: q,
             slug: slug,

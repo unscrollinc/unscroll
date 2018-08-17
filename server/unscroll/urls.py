@@ -23,6 +23,7 @@ from django.shortcuts import get_object_or_404
 import django_filters
 from django_filters import rest_framework as filters
 from django.db.models import Max, Min, Count
+from django.utils.crypto import get_random_string
 
 # Rest framework
 from rest_framework import pagination, generics, serializers, viewsets, routers, response, status
@@ -503,6 +504,7 @@ class ScrollSerializer(serializers.HyperlinkedModelSerializer):
         depth = 0
         read_only_fields = (
             'uuid',
+            'slug',
             'by_user',
             'user_username',
             'user_fullname',
@@ -514,12 +516,13 @@ class ScrollSerializer(serializers.HyperlinkedModelSerializer):
         validated_data['by_user'] = self.context['request'].user
         s = Scroll(**validated_data)
         try:
+            s.slug = get_random_string(12,'abcdefghijklmnopqrstuvwxyz')            
             s.save()
             return s
-        except IntegrityError:
-            raise APIException('[urls.py error] A user cannot have duplicate titles.')        
+        except IntegrityError as e:
+            raise APIException('[urls.py error] {}'.format(str(e)))                                
         except Exception as e:
-            raise APIException(str(e))        
+            raise APIException('[urls.py error] {}'.format(str(e)))                    
 
 
 class ScrollViewSet(viewsets.ModelViewSet):

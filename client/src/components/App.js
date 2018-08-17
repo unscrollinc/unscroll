@@ -169,7 +169,7 @@ class App extends React.Component {
         const before = E('before');
         const searchQuery = E('q');
 
-        const isTimeBoxed = TF(start && before);
+        const hasInterval = TF(start && before);
         const isSpecificScroll = TF(slug && user);
         const isHorizontal = TF(E('view') === 'horizontal');
         const isSearchQuery = TF(searchQuery);
@@ -182,7 +182,7 @@ class App extends React.Component {
             searchQuery: searchQuery,
 
             isSearchQuery: isSearchQuery,
-            isTimeBoxed: isTimeBoxed,
+            hasInterval: hasInterval,
             isSpecificScroll: isSpecificScroll,
             isHorizontal: isHorizontal
         };

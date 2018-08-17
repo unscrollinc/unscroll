@@ -63,16 +63,17 @@ class UnscrollClient():
                                   link='',
                                   citation='',
                                   with_thumbnail=None):
-
+        ask = {'title': title,
+               'is_public': public,
+               'citation': citation,
+               'subtitle':subtitle,
+               'link': link,
+               'description': description,
+               'with_thumbnail': with_thumbnail}
+        pprint.pprint(ask)
         r = requests.post(self.api + '/scrolls/',
                           headers=self.authentication_header,
-                          json={'title': title,
-                                'is_public': public,
-                                'citation': citation,
-                                'subtitle':subtitle,
-                                'link': link,
-                                'description': description,
-                                'with_thumbnail': with_thumbnail})
+                          json=ask)
         
         if r.status_code == 200:
             scroll_d = dict(r.json())
@@ -81,10 +82,11 @@ class UnscrollClient():
         else:
             print(r.content)
             
-            r = requests.get(self.api + '/scrolls/?title=' + quote_plus(title),
+            r = requests.get(self.api + '/scrolls/?by_user=' + self.username + '&title=' + quote_plus(title),
                              headers=self.authentication_header,)
             results = r.json()['results']
-            
+            print('########################################')
+            print(results)
             if (len(results) > 0):
                 scroll_d = dict(results[0])
                 return scroll_d['url']
