@@ -52,6 +52,7 @@ class IAItem():
         # animgifs.
         
         if files is not None:
+            
             filtered = [x for x in files if 'name' in x and x['name'] == '__ia_thumb.jpg']
             if len(filtered) > 0:
                 dir = 'https://{}{}/__ia_thumb.jpg'.format(data.get('d1'), data.get('dir'),)
@@ -118,6 +119,15 @@ class IACollection():
         self.title = meta.get('title')
         self.description = meta.get('description')
 
+        files = dj.get('files')
+        filtered_orig = [x for x in files if 'name' in x and x['source'] == 'original']
+        for f in filtered_orig:
+            title = f.get('title')
+            filename = f.get('name')
+            ud = UnscrollDate([title, title], begin=1000, end=2000)
+            x = {'title':title, 'filename':filename, 'date':ud.when_happened}
+            pprint.pprint(x)
+        
 
         # Get a very brief listing of items to get count
         r = requests.get(first_url)
@@ -126,7 +136,7 @@ class IACollection():
         resp = j.get('response')
         self.count = resp.get('numFound')
         self.total_pages = math.ceil(self.count/ROW_COUNT)
-       
+        
 
     def get_items(self, page_count):
         # step through a range of those pages, fetching and turning

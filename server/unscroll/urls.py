@@ -542,10 +542,10 @@ class ScrollViewSet(viewsets.ModelViewSet):
 
         qs = self.queryset\
             .filter(query)\
-            .annotate(
-                event_count=Count('events'),
-                first_event=Min('events__when_happened'),
-                last_event=Max('events__when_happened'))
+            #.annotate(
+                #event_count=Count('events'),
+                #first_event=Min('events__when_happened'),
+                #last_event=Max('events__when_happened'))
 
         qsfiltered = self.filter_queryset(qs)
         return qsfiltered

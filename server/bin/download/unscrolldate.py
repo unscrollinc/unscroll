@@ -15,7 +15,6 @@ class UnscrollDate(object):
     resolution = None
     
     def __init__(self, likelies=None, begin=None, end=None):
-        print(likelies)
         self.begin = int(begin)
         self.end = int(end)
         if likelies is not None:
@@ -33,7 +32,6 @@ class UnscrollDate(object):
     def is_okay(self):
         if (self.when_happened is not None):
             y = int(self.when_happened[0:4])
-            #    print('b:{} -- e:{} -- y:{} '.format(self.begin, self.end, y))
             if (self.begin is not None and self.end is not None
                 and self.begin <= y
                 and self.end >= y):
@@ -55,7 +53,13 @@ class UnscrollDate(object):
         return False
 
     def has_bc(self, when_original):
-        return self.resolve(re.search(r'bc|BC|b\.c\.|B\.C\.', when_original))
+        return self.resolve(re.search(r'bc|BC|b\.c\.|B\.C\.|b c', when_original))
+
+    def is_shortdate(self, when_original):
+        return self.resolve(re.search(r'(\d{2})-(\d{2})-(\d{2})', when_original))
+
+    def is_longdate(self, when_original):
+        return self.resolve(re.search(r'(\d{2})-(\d{2})-(\d{2})', when_original))        
 
     def is_decade(self, when_original):
         return self.resolve(re.search(r'\d{4}s', when_original))
@@ -96,23 +100,32 @@ class UnscrollDate(object):
     
     def parse(self, when_original):
         try:
-            o = parser.parse(when_original, default=datetime.datetime(2000,12,31,23,59,59))
+            o = parser.parse(when_original,
+                             default=datetime.datetime(2000,12,31,23,59,59))
             oi = o.isoformat()
             return oi
         except ValueError as e:
-            print('{}: {}'.format(e, when_original,))
+            print('@unscrolldate: {}: {}'.format(e, when_original,))
 
     def init_parse(self):
         when_original = self.when_original
-        
+
+        if (self.is_shortdate(when_original)):
+            m = re.search('(\d{2})-(\d{2})-(\d{2})', when_original)        
+            return [10, self.parse('19{}-{}-{}'.format(m.group(1), m.group(2), m.group(3)))]
+
+        if (self.is_longdate(when_original)):
+            m = re.search('(\d{4})-(\d{2})-(\d{2})', when_original)        
+            return [10, self.parse('{}-{}-{}'.format(m.group(1), m.group(2), m.group(3)))]
+
         if (self.is_normal(when_original)):
             return [len(when_original),self.parse(when_original)]
-
+        
         if (self.is_year_span(when_original) and not(self.has_bc(when_original))):
             m = re.search('(\d+)[––-](\d+)', when_original)
             res, yr = self.superimpose(m.groups(1))
             return [res, self.parse(yr)]
-
+        
         if (self.is_decade(when_original)):
             m = re.search('(\d{4})s', when_original)        
             return [3, self.parse(m.group(1))]

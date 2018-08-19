@@ -3,11 +3,9 @@ from django.db.models import Max, Min, Count
 from django_bleach.models import BleachField
 from django.contrib.auth.models import User
 
-
 from uuid import uuid4
 import lxml.html
 from lxml.html.clean import Cleaner
-
 
 class User(User):
     class Meta:
@@ -126,6 +124,12 @@ class Scroll(models.Model):
         default=False)
     is_deleted = models.BooleanField(
         default=False)
+    meta_event_count = models.IntegerField(
+        default=0)
+    meta_first_event = models.DateTimeField(
+        null=True)
+    meta_last_event = models.DateTimeField(
+        null=True)        
 
     class Meta:
         db_table = 'scroll'
@@ -135,6 +139,7 @@ class Scroll(models.Model):
     def __unicode__(self):
         return '{}'.format(self.title,)
 
+    
 class Notebook(models.Model):
     """A notebook is a bag of notes."""
     by_user = models.ForeignKey(
