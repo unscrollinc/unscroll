@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import EventNoteButton from '../Event/EventNoteButton';
+import utils from '../Util/Util';
 // import TimelinePanelEventEditButton from './TimelinePanelEventEditButton';
 
 const goodWidthDivisor = 3;
@@ -21,10 +22,10 @@ class Event extends React.Component {
 
     getImage(e) {
         if (e.with_thumbnail_image) {
-            return '/' + e.with_thumbnail_image;
+            return `${utils.URL}${e.with_thumbnail_image}`;
         }
         if (e.scroll_with_thumbnail) {
-            return '/' + e.scroll_with_thumbnail;
+            return `${utils.URL}${e.scroll_with_thumbnail}`;
         }
         return null;
     }
@@ -127,9 +128,7 @@ class Event extends React.Component {
                                             <a
                                                 href={`/timelines/${
                                                     e.in_scroll_user
-                                                }/${
-                                                    e.in_scroll_slug
-                                                }?view=horizontal`}
+                                                }/${e.in_scroll_slug}`}
                                             >
                                                 {e.scroll_title}
                                             </a>{' '}

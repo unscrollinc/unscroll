@@ -3,10 +3,12 @@ import ReactCursorPosition from 'react-cursor-position';
 import { DateTime, Interval } from 'luxon';
 import WheelReact from '../../ext/wheel-react';
 import { withRouter } from 'react-router-dom';
-import util from '../Util/Util';
+
+import axios from 'axios';
+
 import Panel from './Panel';
 import TimeFrames from './TimeFrames';
-import axios from 'axios';
+import util from '../Util/Util';
 import AppContext from '../AppContext';
 
 class Timeline extends React.Component {
@@ -18,22 +20,17 @@ class Timeline extends React.Component {
         };
     }
 
-    determineState() {
+    urlParamsToState() {
         // Take a look at our state and then either do some server
         // calls to figure out where we are in time or just go with
         // the params. In all cases we make a call to initialize() and
         // then return null.
-
         const _this = this;
         // If we have `start` and `before` params then we don't need to figure out our timebox.
         if (
             !this.props.hasInterval &&
             (this.props.isSpecificScroll || this.props.isSearchQuery)
         ) {
-            function getUrl() {
-                if (this.props.isSpecificScroll && this.props.isSearchQuery) {
-                }
-            }
             axios
                 .get(
                     `${util.getAPI('events')}minmax?in_scroll__slug=${
@@ -70,6 +67,7 @@ class Timeline extends React.Component {
                 );
             }
         } else {
+            console.log('C', this.props);
             const s = DateTime.fromObject({ year: 2005, month: 1 }).startOf(
                 'month'
             );
@@ -86,8 +84,16 @@ class Timeline extends React.Component {
         const timeframes = new TimeFrames(interval);
         const frame = timeframes.getTimeFrameObject();
         const adjusted = frame.getAdjustedDt(interval);
+        console.log('@initialize', {
+            interval: interval,
+            adjusted: adjusted,
+            q: q,
+            slug: slug
+        });
+
         const title = frame.getTitle(adjusted);
         const width = frame.getColumnCount(interval);
+
         const init = {
             hasInterval: true,
             interval: adjusted,
@@ -144,7 +150,7 @@ class Timeline extends React.Component {
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (this.props.location.search !== prevProps.location.search) {
-            this.determineState();
+            this.urlParamsToState();
         }
 
         if (
@@ -182,7 +188,7 @@ class Timeline extends React.Component {
     }
 
     componentDidMount() {
-        this.determineState();
+        this.urlParamsToState();
     }
 
     componentWillUnmount() {

@@ -9,7 +9,11 @@ axios.defaults.withCredentials = true;
 // Functions that take no arguments and return either null or
 // something and that are usually bad/global/messy.
 
-const URL = 'https://unscroll.com/';
+// Yeah yeah, I know.
+const hostname = window && window.location && window.location.hostname;
+const URL =
+    hostname === 'unscroll.com' ? 'https://unscroll.com/' : 'http://localhost/';
+
 const API = URL + 'api/';
 
 const util = {
@@ -63,6 +67,8 @@ const util = {
     getAPI: noun => {
         return `${API}${noun}/`;
     },
+    API: API,
+    URL: URL,
     getURL: () => {
         return URL;
     },

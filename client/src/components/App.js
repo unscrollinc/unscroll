@@ -29,13 +29,18 @@ class App extends React.Component {
         this.state = {
             urlParams: null
         };
-        const _this = this;
         this.routes = [
             {
                 path: '/',
-                exact: true,
-                Body: () => <Timeline />,
-                Nav: () => <Nav />
+                exact: false,
+                Body: props => {
+                    const urlParams = this.getParams(props);
+                    if (urlParams.isHorizontal) {
+                        return <Timeline {...urlParams} />;
+                    }
+                    return <Timelist {...urlParams} />;
+                },
+                Nav: props => <Nav {...this.getParams(props)} />
             },
 
             // User functions
@@ -189,7 +194,8 @@ class App extends React.Component {
 
         const hasInterval = TF(start && before);
         const isSpecificScroll = TF(slug && user);
-        const isHorizontal = TF(E('view') === 'horizontal');
+        // This is kind of a cheat
+        const isHorizontal = TF(E('view') !== 'vertical');
         const isSearchQuery = TF(searchQuery);
 
         const urlParams = {
@@ -204,6 +210,7 @@ class App extends React.Component {
             isSpecificScroll: isSpecificScroll,
             isHorizontal: isHorizontal
         };
+
         return urlParams;
     }
 
@@ -216,7 +223,7 @@ class App extends React.Component {
             <AppProvider>
                 <div className="App">
                     {this.routes.map((route, index) => (
-                        <React.Fragment>
+                        <React.Fragment key={index}>
                             <Route
                                 key={'nav-' + index}
                                 path={route.path}

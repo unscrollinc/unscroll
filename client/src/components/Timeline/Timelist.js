@@ -156,7 +156,7 @@ class Timelist extends React.Component {
                     doGetNext: false,
                     search: this.state.timeline.search
                 }),
-                this.getEvents(utils.getAPI('events') + '?q=${q}&limit=50')
+                this.getEvents(utils.getAPI('events') + `?q=${q}&limit=50`)
             );
         }
 

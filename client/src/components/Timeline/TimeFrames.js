@@ -111,8 +111,7 @@ const frames = {
                 .toString()
                 .split('')
                 .pop();
-
-            if (10 < c < 21) return c + 'th century';
+            if (10 < c && c < 21) return c + 'th century';
             if (last === '1') return c + 'st century';
             if (last === '2') return c + 'nd century';
             if (last === '3') return c + 'rd century';
@@ -153,12 +152,13 @@ const frames = {
         name: 'decade',
         narrow: 'year',
         broaden: 'century',
+
         getAdjustedDt: interval => {
             const beginYear = 10 * Math.floor(interval.start.year / 10, 10);
             const endYear = beginYear + 9;
             const i = Interval.fromDateTimes(
-                DateTime.fromISO(beginYear).startOf('year'),
-                DateTime.fromISO(endYear).endOf('year')
+                DateTime.fromObject({ year: beginYear }).startOf('year'),
+                DateTime.fromObject({ year: endYear }).endOf('year')
             );
             return i;
         },

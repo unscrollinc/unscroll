@@ -19,14 +19,16 @@ class Nav extends React.Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
+        const tpcs = this.props.context.state;
+        const npcs = nextProps.context.state;
+        function ne(s) {
+            return tpcs[s] !== npcs[s];
+        }
         return (
             this.props.isHorizontal !== nextProps.isHorizontal ||
-            this.props.context.state.notebook !==
-                nextProps.context.state.notebook ||
-            this.props.context.state.notes.length !==
-                nextProps.context.state.notes.length ||
-            this.props.context.state.authToken !==
-                nextProps.context.state.authToken
+            ne('notebook') ||
+            tpcs.notes.length !== npcs.notes.length ||
+            ne('authToken')
         );
     }
 
@@ -81,7 +83,6 @@ class Nav extends React.Component {
         }
     }
     render() {
-        // const horizontal = this.state.horizontal ? 'RIGHT' : 'DOWN';
         return (
             <div
                 style={{
