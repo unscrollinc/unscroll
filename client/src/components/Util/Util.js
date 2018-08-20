@@ -9,7 +9,7 @@ axios.defaults.withCredentials = true;
 // Functions that take no arguments and return either null or
 // something and that are usually bad/global/messy.
 
-const API = '//api/';
+const API = 'https://localhost/api/';
 
 const util = {
     randomString: () => {
@@ -67,7 +67,6 @@ const util = {
     },
     webPromise: (that, method, endpoint, params, id, key) => {
         const dataKey = method === 'GET' ? 'params' : 'data';
-        const API = '//api/';
         const url = `${API}${endpoint}/${id ? id + '/' : ''}`;
         return axios({
             method: method,
