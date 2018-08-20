@@ -40,3 +40,5 @@ yarn-error.log*
 *.db
 server/bin/download/cooper/
 scratchpad
+
+unscroll/
