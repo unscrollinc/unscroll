@@ -6,7 +6,6 @@ import requests
 import hashlib
 from os import makedirs
 from os.path import exists
-import config
 import favicon
 from urllib.parse import quote_plus
 import pprint

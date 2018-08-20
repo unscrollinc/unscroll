@@ -4,7 +4,7 @@ import requests
 from os import makedirs, path
 import hashlib
 import base36
-from unscroll.settings_dev import THUMBNAIL_SIZE, THUMBNAIL_DIR
+from unscroll.settings import THUMBNAIL_SIZE, THUMBNAIL_DIR
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
 class InboundThumbnail(object):
