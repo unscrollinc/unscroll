@@ -14,7 +14,8 @@
 # available underneath a path with that package name, such as /drupal8.
 #
 # Please see /usr/share/doc/nginx-doc/examples/ for more detailed examples.
-##
+#
+#
 
 # Default server configuration
 #
@@ -46,13 +47,13 @@ server {
 	server_name unscroll.com www.unscroll.com;
         root /home/unscroll/unscroll/client/build/;	
 
-         location / {
- 	   try_files $uri $uri/ @proxy_to_app;
+        location / {
+ 	   try_files $uri $uri/ index.html @proxy_to_app;
   	}
 
-        location /img {
+         location /img {
          	 index index.html;
-         	 root /home/unscroll/unscroll/unscroll/scrolls/img/;
+         	 root /home/unscroll/unscroll/unscroll/scrolls;
          }
 
     	 location /django-static {
