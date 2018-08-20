@@ -34,106 +34,122 @@ class App extends React.Component {
             {
                 path: '/',
                 exact: true,
-                Workbook: () => <Timeline />
+                Body: () => <Timeline />,
+                Nav: () => <Nav />
             },
 
             // User functions
             {
                 path: '/user/register',
                 exact: true,
-                Workbook: () => <Register />
+                Body: () => <Register />,
+                Nav: () => <Nav />
             },
 
             {
                 path: '/user/login',
                 exact: true,
-                Workbook: () => <Login />
+                Body: () => <Login />,
+                Nav: () => <Nav />
             },
 
             {
                 path: '/user/logout',
                 exact: true,
-                Workbook: () => <Logout />
+                Body: () => <Logout />,
+                Nav: () => <Nav />
             },
 
             {
                 path: '/user/recover',
                 exact: true,
-                Workbook: () => <Recover />
+                Body: () => <Recover />,
+                Nav: () => <Nav />
             },
 
             {
                 path: '/user/activate/:uid/:token',
                 exact: true,
-                Workbook: props => <Confirm {...props.match.params} />
+                Body: props => <Confirm {...props.match.params} />,
+                Nav: () => <Nav />
             },
 
             // About page
             {
                 path: '/about',
                 exact: true,
-                Workbook: () => <About />
+                Body: () => <About />,
+                Nav: () => <Nav />
             },
 
             // Profile page
             {
                 path: '/my/profile',
                 exact: true,
-                Workbook: () => <Profile />
+                Body: () => <Profile />,
+                Nav: () => <Nav />
             },
 
             {
                 path: '/timelines',
                 exact: true,
-                Workbook: () => <TimelineList />
+                Body: () => <TimelineList />,
+                Nav: () => <Nav />
             },
 
             {
                 path: '/my/timelines',
                 exact: true,
-                Workbook: () => <TimelineList my={true} />
+                Body: () => <TimelineList my={true} />,
+                Nav: () => <Nav />
             },
 
             {
                 path: '/timelines/:user/:slug',
                 exact: true,
-                Workbook: props => {
+                Body: props => {
                     const urlParams = this.getParams(props);
                     if (urlParams.isHorizontal) {
                         return <Timeline {...urlParams} />;
                     }
                     return <Timelist {...urlParams} />;
-                }
+                },
+                Nav: props => <Nav {...this.getParams(props)} />
             },
 
             {
                 path: '/timelines/:uuid/edit',
                 exact: true,
-                Workbook: props => (
-                    <Timelist {...props.match.params} edit={true} />
-                )
+                Body: props => <Timelist {...props.match.params} edit={true} />,
+                Nav: () => <Nav />
             },
 
             {
                 path: '/notebooks',
                 exact: true,
-                Workbook: () => <NotebookList />
+                Body: () => <NotebookList />,
+                Nav: () => <Nav />
             },
 
             {
                 path: '/my/notebooks',
                 exact: true,
-                Workbook: () => <NotebookList my={true} />
+                Body: () => <NotebookList my={true} />,
+                Nav: () => <Nav />
             },
+
             {
                 path: '/notebooks/:new',
                 exact: true,
-                Workbook: props => <Notebook {...props.match.params} />
+                Body: props => <Notebook {...props.match.params} />,
+                Nav: () => <Nav />
             },
+
             {
                 path: '/notebooks/:user/:id/:edit?',
                 exact: true,
-                Workbook: props => <Notebook {...props.match.params} />
+                Body: props => <Notebook {...props.match.params} />,
+                Nav: () => <Nav />
             }
         ];
     }
@@ -159,6 +175,8 @@ class App extends React.Component {
             return null;
         };
 
+        // A true-false ternary automator so I can go TF(exp) instead
+        // of writing the ternary op over and over.
         const TF = exp => {
             return exp ? true : false;
         };
@@ -197,14 +215,19 @@ class App extends React.Component {
         return (
             <AppProvider>
                 <div className="App">
-                    <Nav />
                     {this.routes.map((route, index) => (
                         <React.Fragment>
                             <Route
-                                key={index}
+                                key={'nav-' + index}
                                 path={route.path}
                                 exact={route.exact}
-                                component={route.Workbook}
+                                component={route.Nav}
+                            />
+                            <Route
+                                key={'body-' + index}
+                                path={route.path}
+                                exact={route.exact}
+                                component={route.Body}
                             />
                         </React.Fragment>
                     ))}

@@ -283,7 +283,6 @@ class Timelist extends React.Component {
     render() {
         return (
             <div className="Timelist">
-                {this.renderRange()}
                 <Scrollbars
                     autoHide
                     style={{ width: '100%', height: '100%' }}
@@ -300,7 +299,13 @@ class Timelist extends React.Component {
                             key={`ttit-${this.props.uuid}`}
                             className="list-object-table"
                         >
-                            <tbody>{this.state.events}</tbody>
+                            <tbody>
+                                <tr>
+                                    <td colSpan="3">{this.renderRange()}</td>
+                                </tr>
+
+                                {this.state.events}
+                            </tbody>
                         </table>
                     </div>
                 </Scrollbars>

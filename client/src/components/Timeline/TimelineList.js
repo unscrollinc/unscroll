@@ -50,8 +50,8 @@ class TimelineList extends React.Component {
                 </td>
 
                 <td className="list-object-no-events-td">
-                    {scroll.event_count
-                        ? scroll.event_count.toLocaleString()
+                    {scroll.meta_event_count
+                        ? scroll.meta_event_count.toLocaleString()
                         : '-'}
                 </td>
 

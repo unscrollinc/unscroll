@@ -89,12 +89,15 @@ class Notebook extends React.Component {
     }
 
     renderManuscriptText(note, i) {
-        return (
-            <React.Fragment key={note.uuid}>
-                <Manuscript {...note} />
-                <span> </span>
-            </React.Fragment>
-        );
+        if (note) {
+            return (
+                <React.Fragment key={note.uuid}>
+                    <Manuscript {...note} />
+                    <span> </span>
+                </React.Fragment>
+            );
+        }
+        return null;
     }
 
     renderTitleEditor() {
@@ -110,7 +113,7 @@ class Notebook extends React.Component {
     renderManuscriptEvents() {
         const notes = this.props.context.state.notes;
         const filtered = notes.filter(n => {
-            return n.with_event !== null;
+            return n && n.with_event !== null;
         });
         const mapped = filtered.map((n, i) => {
             return (

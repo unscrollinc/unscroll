@@ -34,8 +34,9 @@ export class AppProvider extends React.Component {
             notebookEdits: {},
             notebookIsSaved: null,
             notes: [],
-            // Maybe that's a hash by UUID, IDK.
+            // Maybe _this's a hash by UUID, IDK.
             moveFrom: undefined,
+            urlParams: null,
             search: null,
             events: []
         };
@@ -56,7 +57,7 @@ export class AppProvider extends React.Component {
                 }
             }
             this.state.notes.forEach((v, k, m) => {
-                if (!v.__isSaved) {
+                if (v && !v.__isSaved) {
                     if (!v.url) {
                         this.postNote(v, k);
                     } else {
@@ -108,7 +109,7 @@ export class AppProvider extends React.Component {
 
     postNote(note, i) {
         console.log('[@postNote(note)]', note);
-        const that = this;
+        const _this = this;
         const noFullEventNote = update(note, {
             $unset: ['event', '__edits', '__isSaved']
         });
@@ -122,10 +123,10 @@ export class AppProvider extends React.Component {
                         ...resp.data
                     }
                 });
-                const manyNotes = update(that.state.notes, {
+                const manyNotes = update(_this.state.notes, {
                     [i]: { $set: updatedNote }
                 });
-                that.setState({ notes: manyNotes });
+                _this.setState({ notes: manyNotes });
             })
             .catch(error => {
                 console.log('[!postNote()]', {

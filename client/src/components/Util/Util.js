@@ -132,7 +132,7 @@ const util = {
             }
             // Everything else
             else {
-                if (current.following_uuid !== next_uuid) {
+                if (current && current.following_uuid !== next_uuid) {
                     const updated = update(current, {
                         $merge: {
                             following_uuid: next_uuid,

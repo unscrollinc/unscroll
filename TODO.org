@@ -1,3 +1,61 @@
+* Server Release TODO
+** API
+- [ ] Read through for security
+- [ ] Turn on basic caching
+
+** Client [0/0]
+*** Run through whole site as logged in/not logged in
+*** Create users:
+- [ ] ia
+imp1998or#t@er
+- [ ] museums
+789hwaf890ydfomwrf
+- [ ] standards
+0h289grt40h8924890
+- [ ] pr
+0aew89gjv90efr90hj
+
+*** Nav 
+- [ ] Add back current Notebook link (to current notebook)
+- [ ] Rewrite Notebook popup text
+- [ ] Figure out search spacing
+
+*** Unscroll [0/1]
+- [ ] Move to recent news, maybe last month
+
+*** ? About [0/0]
+- [ ] Final proof and add links
+
+*** Timelines [0/0]
+**** Timeline list
+- [ ] Add icons
+
+*** Timeline view 
+- [ ] Delete timeline
+- [ ] Switch to ???
+- [ ] 21th century
+
+*** Notebooks [0/0]
+- [ ] Add image upload
+- [ ] More thorough preview of events
+
+*** User
+- [ ] New user flow
+- [ ] Recover password?
+
+
+*** Search [0/0]
+- Search keeps context and shows results
+
+** Data [0/1]
+- [ ] Import NYT or not
+
+** Writing
+- [ ] Write RFC overview
+
+** Devops [0/2]
+- [ ] Release to new server
+- [ ] Run migrations
 
 * Announcement
 
@@ -61,6 +119,8 @@ Here are some essays I've written using it:
 - Technological Joy Transition (how we went from everyone getting access to no one getting access)
 
 I look forward to your thoughts.
+https://twitter.com/ntabebe/status/1030130269175603205
+
 * DONE Views
 - Timeline
 - NotebookList + [Timeline/Timelist]
@@ -155,3 +215,18 @@ I look forward to your thoughts.
 - [ ] Turn on caching
 - [X] Cache Timelines public
 - [X] Cache Notebooks public
+#+begin_src sql
+UPDATE scroll SET
+meta_event_count = x.meta_event_count,
+meta_first_event = x.meta_first_event,
+meta_last_event = x.meta_last_event
+FROM
+(SELECT
+in_scroll_id AS id,
+COUNT(*) AS meta_event_count,
+MIN(when_happened) AS meta_first_event, 
+MAX(when_happened) AS meta_last_event 
+FROM event GROUP BY in_scroll_id) 
+AS x 
+WHERE scroll.id = x.id; 
+#+end_src

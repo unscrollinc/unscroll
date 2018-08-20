@@ -117,18 +117,18 @@ class TimelistTitleEditor extends React.Component {
                             <tr>
                                 <th>No. items</th>
                                 <td>
-                                    {s.event_count
-                                        ? s.event_count.toLocaleString()
+                                    {s.meta_event_count
+                                        ? s.meta_event_count.toLocaleString()
                                         : '-'}
                                 </td>
                             </tr>
                             <tr>
                                 <th>1st event</th>
-                                <td>{this.quickDate(s.first_event)}</td>
+                                <td>{this.quickDate(s.meta_first_event)}</td>
                             </tr>
                             <tr>
                                 <th>Last</th>
-                                <td>{this.quickDate(s.last_event)}</td>
+                                <td>{this.quickDate(s.meta_last_event)}</td>
                             </tr>
                             <tr>
                                 <th>Creator</th>
