@@ -9,8 +9,6 @@ import utils from '../Util/Util';
 import { Scrollbars } from 'react-custom-scrollbars';
 import uuidv4 from 'uuid/v4';
 
-const API = 'http://localhost/api/events/';
-
 class Timelist extends React.Component {
     constructor(props) {
         super(props);
@@ -158,7 +156,7 @@ class Timelist extends React.Component {
                     doGetNext: false,
                     search: this.state.timeline.search
                 }),
-                this.getEvents(`${API}?q=${q}&limit=50`)
+                this.getEvents(utils.getAPI('events') + '?q=${q}&limit=50')
             );
         }
 
@@ -168,8 +166,8 @@ class Timelist extends React.Component {
     kickoff() {
         this.getMaxMin({ in_scroll__slug: this.props.slug });
         const url = this.props.slug
-            ? `${API}?in_scroll__slug=${this.props.slug}&`
-            : `${API}?`;
+            ? `${utils.getAPI('events')}?in_scroll__slug=${this.props.slug}&`
+            : utils.getAPI('events');
         this.setState(
             prevState => ({ events: [] }),
             this.getEvents(`${url}q=&limit=20&offset=0`)
@@ -190,7 +188,7 @@ class Timelist extends React.Component {
             this.state.rangeMouseDown === false
         ) {
             this.replaceEvents(
-                `${API}?in_scroll__slug=${
+                `${utils.getAPI('events')}?in_scroll__slug=${
                     this.props.slug
                 }&start=${this.state.startDateTime.toISO()}&limit=50`
             );

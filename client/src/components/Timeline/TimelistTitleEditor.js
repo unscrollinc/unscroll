@@ -8,7 +8,7 @@ import utils from '../Util/Util';
 import Toggle from 'react-toggle';
 import 'react-toggle/style.css';
 
-const SCROLL_API = 'http://localhost/api/scrolls/';
+const SCROLL_API = utils.getAPI('scrolls');
 
 // This is kind of an experiment in re-localizing some remote state
 // and local state management. I still need context for the user
