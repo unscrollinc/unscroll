@@ -81,7 +81,11 @@ class UnscrollClient():
         else:
             print(r.content)
             
-            r = requests.get(self.api + '/scrolls/?by_user=' + self.username + '&title=' + quote_plus(title),
+            r = requests.get(self.api
+                             + '/scrolls/?by_user='
+                             + self.username
+                             + '&title='
+                             + quote_plus(title),
                              headers=self.authentication_header,)
             results = r.json()['results']
             print('########################################')

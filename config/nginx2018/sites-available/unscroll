@@ -40,17 +40,26 @@ server {
         include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
         ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
 
-
-
 	# Add index.php to the list if you are using PHP
 	index index.html
 
 	server_name unscroll.com www.unscroll.com;
         root /home/unscroll/unscroll/client/build/;	
 
-        location / {
-	   try_files index.html $uri @proxy_to_app;
-	}
+         location / {
+ 	   try_files $uri $uri/ @proxy_to_app;
+  	}
+
+        location /img {
+         	 index index.html;
+         	 root /home/unscroll/unscroll/unscroll/scrolls/img/;
+         }
+
+    	 location /django-static {
+         	 index index.html;
+         	 root /home/unscroll/unscroll/unscroll/scrolls/;
+         }
+
 
         location @proxy_to_app {
           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -65,18 +74,4 @@ server {
           proxy_pass http://127.0.0.1:8000;
         }
 
-         location /img {
-         	 index index.html;
-         	 root /home/unscroll/unscroll/unscroll/scrolls/static/img/;
-         }
-
-    	 location /django-static {
-         	 index index.html;
-         	 root /home/unscroll/unscroll/unscroll/scrolls/;
-         }
-	 
-
 }
-
-
-

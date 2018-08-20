@@ -51,9 +51,11 @@ class WikipediaText():
         self.unscroll_client.login()
 
         favthumb = self.unscroll_client.cache_thumbnail(THUMBNAIL_URL)
-        
+        subject_title = subject
+        if subject is None:
+            subject_title = 'Review'
         self.scroll = self.unscroll_client.create_or_retrieve_scroll(
-            'Wiki Years in {}'.format(subject),
+            'Wiki Years in {}'.format(subject_title),
             description='Events spidered from the English Wikipedia pages.',
             link='https://en.wikipedia.org/wiki/List_of_years',
             with_thumbnail=favthumb.get('url'))

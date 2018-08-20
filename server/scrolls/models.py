@@ -94,8 +94,7 @@ class Scroll(models.Model):
         editable=False,
         unique=True)
     slug = models.SlugField(
-        unique=True
-    )
+        unique=True)
     title = BleachField()
     description = BleachField(
         blank=True,
@@ -133,7 +132,7 @@ class Scroll(models.Model):
 
     class Meta:
         db_table = 'scroll'
-        unique_together = (("slug", "by_user"),)
+        unique_together = (("title", "by_user"),)
         ordering = ['-when_modified']
 
     def __unicode__(self):
