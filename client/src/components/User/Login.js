@@ -7,163 +7,176 @@ import cookie from 'js-cookie';
 import AppContext from '../AppContext';
 
 class Login extends React.Component {
-  constructor(props) {
-      super(props);
-      this.state = {errors:null};
-  }
+    constructor(props) {
+        super(props);
+        this.state = { errors: null };
+    }
 
-  edit(key, value) {
-    this.setState({ [key]: value });
-  }
+    edit(key, value) {
+        this.setState({ [key]: value });
+    }
 
-  login(event) {
-    console.log(event, this.props.context.state);
-    event.preventDefault();
-    const _this = this;
-    const expires = this.state.expireOnClose ? undefined : { expires: 100 };
-    axios({
-      method: 'post',
-      url: utils.getAPI('auth/login'),
-      data: _this.state
-    })
-      .then(function(response) {
-        const token = response.data.auth_token;
-        _this.props.context.setState(
-          {
-            authToken: token,
-            username: _this.state.username
-          },
-          () => {
-            console.log('setting cookies', token, expires);
-            cookie.set('authToken', token, expires);
-            cookie.set('username', _this.state.username, expires);
-            // Keep this tidy in case someone comes along and looks
-            // inside the React state
-            _this.setState({ password: null });
-          }
-        );
-      })
-	  .catch(err => {
-	      const erd = err.response.data;
-	      console.log(erd);
-	      if (erd.non_field_errors && erd.non_field_errors.length > 0) {
-		  this.setState({errors:erd.non_field_errors});
-	      }
-
-      })
-      .finally(() => {});
-  }
-  componentDidUpdate() {
-    console.log(this.props.context.state);
-  }
+    login(event) {
+        console.log(event, this.props.context.state);
+        event.preventDefault();
+        const _this = this;
+        const expires = this.state.expireOnClose ? undefined : { expires: 100 };
+        axios({
+            method: 'post',
+            url: utils.getAPI('auth/login'),
+            data: _this.state
+        })
+            .then(function(response) {
+                const token = response.data.auth_token;
+                _this.props.context.setState(
+                    {
+                        authToken: token,
+                        username: _this.state.username
+                    },
+                    () => {
+                        console.log('setting cookies', token, expires);
+                        cookie.set('authToken', token, expires);
+                        cookie.set('username', _this.state.username, expires);
+                        // Keep this tidy in case someone comes along and looks
+                        // inside the React state
+                        _this.setState({ password: null });
+                    }
+                );
+            })
+            .catch(err => {
+                const erd = err.response.data;
+                console.log(erd);
+                if (erd.non_field_errors && erd.non_field_errors.length > 0) {
+                    this.setState({ errors: erd.non_field_errors });
+                }
+            })
+            .finally(() => {});
+    }
+    componentDidUpdate() {
+        console.log(this.props.context.state);
+    }
 
     renderErrors() {
-	if (this.state.errors) {
-	    return this.state.errors.map((e)=><div className='error'>{e}</div>);
-	}
-	return null;
+        if (this.state.errors) {
+            return this.state.errors.map(e => <div className="error">{e}</div>);
+        }
+        return null;
     }
-  renderLoginForm() {
-    return (
-      <div className="login-form">
-            <h1>Log in</h1>
-	    <h2>{this.renderErrors()}</h2>
-        <Form>
-          {form => {
-            return (
-              <form>
-                <table>
-                  <tbody>
-                    <tr>
-                      <th>Username</th>
-                      <td>
-                        <Text
-                          field="username"
-                          value={form.values.username}
-                          onChange={e => this.edit('username', e)}
-                        />
-                      </td>
-                    </tr>
-                    <tr>
-                      <th>Password</th>
-                      <td>
-                        <Text
-                          field="password"
-                          value={form.values.password}
-                          onChange={e => this.edit('password', e)}
-                          type="password"
-                        />
-                      </td>
-                    </tr>
-                    <tr>
-                      <th />
-                      <td>
-                        <Checkbox
-                          field="forget"
-                          value={form.values.expire}
-                          onChange={e => this.edit('expireOnClose', e)}
-                        />{' '}
-                        Log me out automatically when I close my browser
-                      </td>
-                    </tr>
-                    <tr>
-                      <th />
-                      <td>
-                        <button
-                          type="submit"
-                          className="btn btn-primary"
-                          onClick={this.login.bind(this)}
-                        >
-                          Submit
-                        </button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th />
-                      <td>
-                        <Link to="/user/recover">Forgot password?</Link>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </form>
-            );
-          }}
-        </Form>
-      </div>
-    );
-  }
+    renderLoginForm() {
+        return (
+            <div className="login-form">
+                <h1>Log in</h1>
+                <h2>{this.renderErrors()}</h2>
+                <Form>
+                    {form => {
+                        return (
+                            <form>
+                                <table className="user-profile-form">
+                                    <tbody>
+                                        <tr>
+                                            <th>Username</th>
+                                            <td>
+                                                <Text
+                                                    field="username"
+                                                    value={form.values.username}
+                                                    onChange={e =>
+                                                        this.edit('username', e)
+                                                    }
+                                                />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Password</th>
+                                            <td>
+                                                <Text
+                                                    field="password"
+                                                    value={form.values.password}
+                                                    onChange={e =>
+                                                        this.edit('password', e)
+                                                    }
+                                                    type="password"
+                                                />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th />
+                                            <td>
+                                                <Checkbox
+                                                    field="forget"
+                                                    value={form.values.expire}
+                                                    onChange={e =>
+                                                        this.edit(
+                                                            'expireOnClose',
+                                                            e
+                                                        )
+                                                    }
+                                                />{' '}
+                                                Log me out automatically when I
+                                                close my browser
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th />
+                                            <td>
+                                                <button
+                                                    type="submit"
+                                                    className="btn btn-primary"
+                                                    onClick={this.login.bind(
+                                                        this
+                                                    )}
+                                                >
+                                                    Submit
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th />
+                                            <td>
+                                                <Link to="/user/recover">
+                                                    Forgot password?
+                                                </Link>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </form>
+                        );
+                    }}
+                </Form>
+            </div>
+        );
+    }
 
-  renderLoggedInMessage() {
-    return (
-      <div class="login-message">
-        <h1>Welcome back, {this.props.context.state.username}</h1>
-        <p>
-          <Link to="/my/timelines">Your timelines</Link>
-        </p>
-        <p>
-          <Link to="/my/notebooks">Your notebooks</Link>
-        </p>
-        <p>
-          <Link to="/user/logout">Log out</Link>
-        </p>
-      </div>
-    );
-  }
+    renderLoggedInMessage() {
+        return (
+            <div class="login-message">
+                <h1>Welcome back, {this.props.context.state.username}</h1>
+                <p>
+                    <Link to="/my/timelines">Your timelines</Link>
+                </p>
+                <p>
+                    <Link to="/my/notebooks">Your notebooks</Link>
+                </p>
+                <p>
+                    <Link to="/user/logout">Log out</Link>
+                </p>
+            </div>
+        );
+    }
 
-  render() {
-    return (
-      <div className="Auth">
-        {this.props.context.state.authToken
-          ? this.renderLoggedInMessage()
-          : this.renderLoginForm()}
-      </div>
-    );
-  }
+    render() {
+        return (
+            <div className="Auth">
+                {this.props.context.state.authToken
+                    ? this.renderLoggedInMessage()
+                    : this.renderLoginForm()}
+            </div>
+        );
+    }
 }
 
 export default props => (
-  <AppContext.Consumer>
-    {context => <Login {...props} context={context} />}
-  </AppContext.Consumer>
+    <AppContext.Consumer>
+        {context => <Login {...props} context={context} />}
+    </AppContext.Consumer>
 );

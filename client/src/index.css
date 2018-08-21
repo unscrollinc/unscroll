@@ -475,6 +475,15 @@ input.inputButton:active {
 
     text-align: right;
 }
+.user-profile-form td {
+    padding: 0.5em;
+    font-size: 125%;
+}
+.user-profile-form td input {
+    font-size: 125%;
+    padding: 0.25em;
+    border: 1px solid black;
+}
 button.logout {
     margin-left: 1em;
 }

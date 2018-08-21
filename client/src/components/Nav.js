@@ -4,6 +4,7 @@ import Search from './Search';
 import utils from './Util/Util';
 import AppContext from './AppContext';
 import ReactToolTip from 'react-tooltip';
+import qs from 'qs';
 
 class Nav extends React.Component {
     constructor(props) {
@@ -77,14 +78,29 @@ class Nav extends React.Component {
         return null;
     }
     renderHorizontalOrVertical() {
+        const makeQString = dir => {
+            const ps =
+                '/?' +
+                qs.stringify({
+                    start: this.props.start,
+                    before: this.props.before,
+                    q: this.props.searchQuery,
+                    view: dir
+                });
+
+            return ps;
+        };
+
         if (this.props.isHorizontal !== undefined) {
             if (this.props.isHorizontal) {
-                return <Link to="?view=vertical">[Line]</Link>;
+                return <Link to={makeQString('vertical')}>[Line]</Link>;
             } else {
-                return <Link to="?view=horizontal">[List]</Link>;
+                return <Link to={makeQString('horizontal')}>[List]</Link>;
             }
         }
+        return null;
     }
+
     render() {
         return (
             <div

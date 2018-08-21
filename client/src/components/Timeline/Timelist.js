@@ -8,6 +8,7 @@ import TimelistTitleEditor from './TimelistTitleEditor';
 import utils from '../Util/Util';
 import { Scrollbars } from 'react-custom-scrollbars';
 import uuidv4 from 'uuid/v4';
+import qs from 'qs';
 
 class Timelist extends React.Component {
     constructor(props) {
@@ -89,12 +90,19 @@ class Timelist extends React.Component {
 
     getEvents(url) {
         const _this = this;
-        const order = '&order=when_happened';
-        const ordering_url = url.includes(order) ? url : url + order;
+        const params = url
+            ? {}
+            : {
+                  start: this.props.start,
+                  end: this.props.end,
+                  q: this.props.queryString,
+                  order: 'when_happened'
+              };
         axios({
-            method: 'get',
-            url: ordering_url,
-            headers: utils.getAuthHeaderFromCookie()
+            method: 'GET',
+            url: url ? url : utils.getAPI('events'),
+            headers: utils.getAuthHeaderFromCookie(),
+            params: params
         })
             .then(resp => {
                 const _els = _this.makeEvents(resp.data, false);
@@ -110,14 +118,21 @@ class Timelist extends React.Component {
             });
     }
 
-    replaceEvents(url) {
+    replaceEvents() {
         const _this = this;
-        const order = '&order=when_happened';
-        const ordering_url = url.includes(order) ? url : url + order;
+        const params = {
+            in_scroll__slug: this.props.slug,
+            start: this.state.startDateTime.toISO(),
+            limit: 50,
+            offset: 0,
+            q: this.props.queryString,
+            order: 'when_happened'
+        };
         axios({
-            method: 'get',
-            url: ordering_url,
-            headers: utils.getAuthHeaderFromCookie()
+            method: 'GET',
+            url: utils.getAPI('events'),
+            headers: utils.getAuthHeaderFromCookie(),
+            params: params
         })
             .then(resp => {
                 const els = _this.makeEvents(resp.data, false);
@@ -156,7 +171,7 @@ class Timelist extends React.Component {
                     doGetNext: false,
                     search: this.state.timeline.search
                 }),
-                this.getEvents(utils.getAPI('events') + `?q=${q}&limit=50`)
+                this.getEvents()
             );
         }
 
@@ -165,13 +180,7 @@ class Timelist extends React.Component {
 
     kickoff() {
         this.getMaxMin({ in_scroll__slug: this.props.slug });
-        const url = this.props.slug
-            ? `${utils.getAPI('events')}?in_scroll__slug=${this.props.slug}&`
-            : utils.getAPI('events');
-        this.setState(
-            prevState => ({ events: [] }),
-            this.getEvents(`${url}q=&limit=20&offset=0`)
-        );
+        this.setState(prevState => ({ events: [] }), this.getEvents());
     }
 
     componentDidMount() {
@@ -189,11 +198,7 @@ class Timelist extends React.Component {
             (this.state.rangeTouching !== prevState.rangeTouching &&
                 this.state.rangeTouching === false)
         ) {
-            this.replaceEvents(
-                `${utils.getAPI('events')}?in_scroll__slug=${
-                    this.props.slug
-                }&start=${this.state.startDateTime.toISO()}&limit=50`
-            );
+            this.replaceEvents();
         }
     }
 
