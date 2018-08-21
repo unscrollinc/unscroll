@@ -252,8 +252,8 @@ class Timeline extends React.Component {
 
         return (
             <ReactCursorPosition
-                pressMoveThreshold={50}
-                pressDuration={50}
+                pressMoveThreshold={150}
+                pressDuration={0}
                 {...{
                     onPositionChanged: props => this.setState(props),
                     onDetectedEnvironmentChanged: props => this.setState(props),
