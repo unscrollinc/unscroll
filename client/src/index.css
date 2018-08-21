@@ -626,6 +626,7 @@ th.list-object-published-th {
 }
 div.list-object-title {
     font-size: 100%;
+    text-align: justify;
     margin-bottom: 0.5em;
 }
 div.list-object-title a {
