@@ -18,7 +18,8 @@ class Timelist extends React.Component {
             scroll: {},
             interval: undefined,
             doGetNext: false,
-            rangeMouseOrTouchInteractionOccurring: false,
+            rangeMouseDown: false,
+            rangeTouching: false,
             rangeLeft: '0%',
             isSaved: true,
             fetchUrl: undefined,
@@ -184,10 +185,12 @@ class Timelist extends React.Component {
         }
 
         if (
-            this.state.rangeMouseOrTouchInteractionOccurring !==
-                prevState.rangeMouseOrTouchInteractionOccurring &&
-            this.state.rangeMouseOrTouchInteractionOccurring === false
+            (this.state.rangeMouseDown !== prevState.rangeMouseDown &&
+                this.state.rangeMouseDown === false) ||
+            (this.state.rangeTouching !== prevState.rangeTouching &&
+                this.state.rangeTouching === false)
         ) {
+            alert('OKAY!!!!');
             this.replaceEvents(
                 `${utils.getAPI('events')}?in_scroll__slug=${
                     this.props.slug
@@ -254,22 +257,22 @@ class Timelist extends React.Component {
                         step="1"
                         onMouseDown={() =>
                             this.setState({
-                                rangeMouseOrTouchInteractionOccurring: true
+                                rangeMouseDown: true
                             })
                         }
                         onMouseUp={() =>
                             this.setState({
-                                rangeMouseOrTouchInteractionOccurring: false
+                                rangeMouseDown: false
                             })
                         }
                         onTouchStart={() =>
                             this.setState({
-                                rangeMouseOrTouchInteractionOccurring: true
+                                rangeTouchin: true
                             })
                         }
                         onTouchEnd={() =>
                             this.setState({
-                                rangeMouseOrTouchInteractionOccurring: false
+                                rangeTouching: false
                             })
                         }
                         onInput={this.handleRange.bind(this)}
