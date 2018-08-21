@@ -37,7 +37,8 @@ class TimelineList extends React.Component {
                                 '/timelines/' +
                                 scroll.user_username +
                                 '/' +
-                                scroll.slug
+                                scroll.slug +
+                                '?view=vertical'
                             }
                             dangerouslySetInnerHTML={{ __html: scroll.title }}
                         />

@@ -97,61 +97,25 @@ class TimelistTitleEditor extends React.Component {
             <div key={s.uuid} className="timelist-meta">
                 <h1>
                     <Link
-                        to={'/timelines/' + s.uuid}
+                        to={'/timelines/' + s.user_username + '/' + s.slug}
                         dangerouslySetInnerHTML={{ __html: s.title }}
                     />
                 </h1>
                 {this.editButtons()}
                 <div className="timelist-meta-content">
-                    <table className="meta">
-                        <tbody>
-                            <tr>
-                                <td colSpan="2">
-                                    <div className="citation">
-                                        <a href={s.link} target="_new">
-                                            {s.citation}
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>No. items</th>
-                                <td>
-                                    {s.meta_event_count
-                                        ? s.meta_event_count.toLocaleString()
-                                        : '-'}
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>1st event</th>
-                                <td>{this.quickDate(s.meta_first_event)}</td>
-                            </tr>
-                            <tr>
-                                <th>Last</th>
-                                <td>{this.quickDate(s.meta_last_event)}</td>
-                            </tr>
-                            <tr>
-                                <th>Creator</th>
-                                <td>
-                                    <a href={'/users/' + s.user_username}>
-                                        {s.user_username}
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>Created</th>
-                                <td>{this.quickDate(s.when_created)}</td>
-                            </tr>
-                            <tr>
-                                <th>Modified</th>
-                                <td>{this.quickDate(s.when_modified)}</td>
-                            </tr>
-                        </tbody>
-                    </table>
                     <div
                         className="description"
                         dangerouslySetInnerHTML={{ __html: s.description }}
                     />
+                    {s.meta_event_count
+                        ? s.meta_event_count.toLocaleString()
+                        : '?'}{' '}
+                    events
+                    {', '}
+                    {this.quickDate(s.meta_first_event)} -{' '}
+                    {this.quickDate(s.meta_last_event)}. Created by{' '}
+                    <a href={'/users/' + s.user_username}>{s.user_username}</a>{' '}
+                    on {this.quickDate(s.when_created)}.
                 </div>
             </div>
         );

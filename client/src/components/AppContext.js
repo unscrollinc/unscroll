@@ -268,7 +268,9 @@ export class AppProvider extends React.Component {
                         console.log('[@addNote(event)]', event);
 
                         if (!this.state.notebook) {
-                            alert('NO NOTEBOOK!');
+                            alert(
+                                "Sorry. You can't save notes until you log in and load up a notebook."
+                            );
                             return null;
                         }
 

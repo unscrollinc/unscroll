@@ -67,11 +67,11 @@ class Timeline extends React.Component {
                 );
             }
         } else {
-            console.log('C', this.props);
-            const s = DateTime.fromObject({ year: 2005, month: 1 }).startOf(
+            // This is the default state
+            const s = DateTime.fromObject({ year: 2010, month: 1 }).startOf(
                 'month'
             );
-            const b = DateTime.fromObject({ year: 2005, month: 1 }).endOf(
+            const b = DateTime.fromObject({ year: 2019, month: 12 }).endOf(
                 'month'
             );
             const interval = Interval.fromDateTimes(s, b);

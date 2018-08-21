@@ -32,7 +32,7 @@ class App extends React.Component {
         this.routes = [
             {
                 path: '/',
-                exact: false,
+                exact: true,
                 Body: props => {
                     const urlParams = this.getParams(props);
                     if (urlParams.isHorizontal) {

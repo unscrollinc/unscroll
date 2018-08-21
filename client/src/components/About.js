@@ -18,8 +18,8 @@ class About extends React.Component {
                             Site news at{' '}
                             <a href="https://twitter.com/unscroll">@unscroll</a>
                             . Bug reports and existential crises to Paul Ford,{' '}
-                            <a href="mailto:ford@unscroll.com">
-                                ford@unscroll.com
+                            <a href="mailto:ford+unscroll@ftrain.com">
+                                ford@ftrain.com
                             </a>
                             . Also on twitter at{' '}
                             <a href="https://twitter.com/ftrain">@ftrain</a>; my
@@ -74,13 +74,6 @@ class About extends React.Component {
                             foolishness, professional accurists of all stripe.
                         </p>
 
-                        <p>
-                            Also: There are very few fact-checkers and editors,
-                            and writers are more culturally and economically
-                            vulnerable than ever, and one good mistake away from
-                            total career destruction.
-                        </p>
-
                         <p>But really it's for me.</p>
 
                         <h2>Who are you?</h2>
@@ -117,13 +110,13 @@ class About extends React.Component {
                         </p>
 
                         <p>
-                            A CEO is not supposed to code. However, Postlight
-                            people are way too busy to get roped into my
-                            quixotic late-night dreamquests, plus they tend to
-                            have side projects of their own. I missed making
+                            A CEO is not supposed to code. But I missed making
                             things, and I really wanted this in the world in
                             exactly the shape it was in my head. I made it at
-                            night with the kids in bed.
+                            night with the kids in bed. I made a deal with
+                            myself: I could work on it when it wouldn't
+                            interfere with the healthy growth of my company or
+                            my family.
                         </p>
 
                         <h2>
@@ -132,28 +125,34 @@ class About extends React.Component {
                         </h2>
 
                         <p>
-                            It's totally up to you! It's for a specific kind of
-                            anxious writer. Let's see what happens.
+                            It's for a specific kind of anxious writer. If
+                            you're happy and productive with other tools then
+                            blessings. Let's see what happens.
                         </p>
 
-                        <h2>It should be free software.</h2>
+                        <h2>It should be free software. Everything should.</h2>
 
                         <p>
-                            Maybe so! If people use it and care about it, that
-                            would make sense. It's built on Django and React.
-                            Let's see what happens.
+                            Maybe so! If people use Unscroll and care about it,
+                            and other people start creating timelines using
+                            commons resources, that would make sense. It's built
+                            on Django and React. Let's see what happens.
                         </p>
 
-                        <h2>The data should be open.</h2>
+                        <h2>
+                            The data should be open. All the data should be
+                            open.
+                        </h2>
 
                         <p>
-                            Info dumps into the commons are hard to do right so
-                            I'm taking some time. I want to figure out an
-                            efficient way to release changesets so that people
-                            can do stuff with the data on their home machines,
-                            not just dump a bucket of JSON into the world. I was
-                            thinking you could do a lot with incremental
-                            changesets in SQLite. Let's see what happens.
+                            Some should. Info dumps into the commons are hard to
+                            do right so I'm taking some time. I want to figure
+                            out an efficient way to release changesets so that
+                            people can do stuff with the data on their home
+                            machines, not just dump a bucket of JSON into the
+                            world. I was thinking you could do a lot with
+                            incremental changesets in SQLite. Let's see what
+                            happens.
                         </p>
 
                         <h2>If I use this, who owns my work?</h2>
@@ -190,10 +189,10 @@ class About extends React.Component {
                             <li>
                                 When you make Timelines public you're not just
                                 making them public but adding all the events in
-                                them to the commons and giving up ownership.
-                                Like Wikipedia. Even if you make them private
-                                later someone could have downloaded the whole
-                                thing in a batch.
+                                them to the commons and you can't really put
+                                that back in the box. Think Wikipedia. Even if
+                                you make them private later someone could have
+                                downloaded the whole thing in a batch.
                             </li>
 
                             <li>
@@ -202,7 +201,7 @@ class About extends React.Component {
                                 copyright over your Notebooks forever. If you
                                 make them public you're giving Unscroll the
                                 right to use them until you unpublish them.
-                                Think any blogging platform.
+                                Think any blogging platform. Then they're gone.
                             </li>
                         </ul>
 
@@ -213,13 +212,26 @@ class About extends React.Component {
                             want.
                         </p>
 
+                        <h2>
+                            This is pointless without API access, I want API
+                            access.
+                        </h2>
+
+                        <p>
+                            It's way too early and could you limit it to a few
+                            thousand events please and also it's gonna break in
+                            bad bad bad bad bad ways but...you have it. Just
+                            give me a little while for Swagger and stuff.
+                        </p>
+
                         <h2>What about copyright?</h2>
 
                         <p>
                             On the search engine side, I spider web pages, use
                             open data, and respect robots.txt (well, I try to,
                             things can be vague.) It's just descriptive text and
-                            thumbnails. It's all super-duper fair use.
+                            thumbnails. I tried to make everything as
+                            predictably obviously fair use as I could.
                         </p>
 
                         <p>On the what-people-post side, DMCA-1026160.</p>
@@ -260,45 +272,54 @@ class About extends React.Component {
                             <a href="https://en.wikipedia.org/wiki/Jason_Scott">
                                 Jason Scott
                             </a>
-                            , which is something I do, and I'll ask him to tell
-                            me exactly what to do to archive the data here
-                            without violating anyone's privacy. What I'm saying
-                            is, without overly waving my arms about it, I'm a
-                            friend to digital archives.
+                            , which is something I do, it won't be a surprise,
+                            and I'll ask him to tell me exactly what to do to
+                            archive the data here. I mean I'll probably talk
+                            about it with him before that. What I'm saying is,
+                            without overly waving my arms about it, I'm a friend
+                            to digital archives. To the point that I kept
+                            complete, somewhat obsessive control of this
+                            ridiculous side project so that I would not have to
+                            compromise on issues around privacy, archiving, and
+                            specific kinds of utility.
                         </p>
 
                         <h2>There's no business model.</h2>
 
                         <p>
+                            {' '}
                             There are tons of business models and not-business
                             models. Right now it has one user and this thing
                             would need to get many thousands of committed daily
                             users before it cost more than a couple hundred
-                            bucks to run per month. I'm a 44-year-old CEO with a
-                            hobby and god knows they spend money on
-                            foolishiness. Let's see what happens.
+                            bucks to run per month. I mean this thing could be
+                            good for lawyers, or be something that groups can
+                            use. Let's see what happens.
                         </p>
 
                         <h2>That has nothing to do with the blockchain.</h2>
 
                         <p>
-                            It would be nice, some day, to auto-publish Timeline
-                            hashes into a blockchain so that people can be
-                            relatively assured that history has not been
-                            manipulated. Or to reward successful data importers.
-                            Let's see what happens.
+                            I guess it would be nice, some day, to auto-publish
+                            Timeline hashes into a blockchain so that people can
+                            be relatively assured that history has not been
+                            manipulated. Let's see what happens.
                         </p>
 
                         <h2>This has nothing to do with machine learning.</h2>
 
                         <p>
-                            I don't know, imagine what you could do with
-                            billions of public events. Let's see what happens.
+                            I don't know, imagine what you could do with lots of
+                            public events some of which have been tagged and
+                            annotated as a side-effect of the writing process.
+                            Of course none of that is real yet. Let's see what
+                            happens.
                         </p>
 
                         <h2>
                             This is just another centralized effort designed to
-                            own other people's creative work
+                            own other people's creative work. It should be a
+                            federated, decentralized timeline writing tool.
                         </h2>
 
                         <p>
@@ -352,52 +373,65 @@ class About extends React.Component {
                         </p>
 
                         <p>
-                            Archives are totally biased in favor of history,
-                            news, fame, and money. Because that's who makes
-                            archives. Doing this project has made that
-                            ridiculously obvious. Public data in the commons is
-                            either about vast, anonymized groups of people (like
-                            people who take cabs) or it's about expensive and
-                            rare things (museum archives), or stories of great
-                            success or failure of successful mainstream people
-                            (media archives). That's what's durable and what
-                            culture preserves. It's not what interests me
-                            personally all of the time, so I'm going to do my
-                            best to add events about women, people of color,
-                            LGBTQ folks, autistic folks---all the communities
-                            that don't have much voice in history. And the web
-                            has its own tractable history now, running 25 years,
-                            with lots of voices represented. But for the most
-                            part the public archives that I'm importing don't
-                            represent regular people very much. The Cooper
-                            Hewitt Design Museum does okay because everyone
-                            needs wallpaper.
+                            If doing this has taught me anything (it's taught me
+                            like 1,000 things which is why I did it) it's that
+                            archives are totally biased in favor of consensus
+                            rich-and-powerful-people history, around who made
+                            the news, who had the fame, and who had the money.
+                            Because that's who makes archives. Doing this
+                            project has made that ridiculously obvious. Public
+                            data in the commons is either about vast, anonymized
+                            groups of people (like people who take cabs) or it's
+                            about expensive and rare things (museum archives),
+                            or stories of great success or failure of successful
+                            mainstream people (media archives). Even when it's
+                            about less-represented people it's often about their
+                            suffering (like specific records around slavery or
+                            lynching). Fame and pain: That's what's durable and
+                            what culture preserves and where we spend our money.
+                            It's not what interests me personally all of the
+                            time, so I'm going to do my best to add events about
+                            other kinds of people over time. Also, the web has
+                            its own tractable history now, running 25 years,
+                            with lots of voices represented. I think a lot of
+                            people forget that, but it's why work by digital
+                            archivists is so important, because for all that
+                            things suck, we're going on decades of records of
+                            how normal humans interact, talk, hook up, and cook
+                            chicken.
                         </p>
 
                         <p>
-                            Maybe that could change. There's only so much I
-                            personally can do here, so I'll pay a reasonable
-                            hourly rate for people who want to correct that and
-                            create timelines around marginalized people's
-                            history. If you know someone who should do that kind
-                            of work ping me and I'll reach out to them. But
-                            please be a little chill, it's just me and I have a
-                            day job, and by offering this up it means I'm going
-                            to end up saying no to lots of really good people.
-                            Things take a long time. Credentialed people, grad
-                            students, people with some experience, are what I
-                            need now (maybe not forever but now). Let's see what
-                            happens.
+                            Anyway for the most part the public archives that
+                            I'm importing don't represent regular people very
+                            much. The Cooper Hewitt Design Museum does a little
+                            better because everyone needs wallpaper.
+                        </p>
+
+                        <p>
+                            Maybe that could change and it'd be a lot of fun if
+                            this was a place where that changed. There's only so
+                            much I personally can do here, so I'll pay a
+                            reasonable hourly rate for people who want to
+                            correct that and create timelines around
+                            marginalized people's history. If you know someone
+                            who should do that kind of work ping me and I'll
+                            reach out to them. But please be a little chill,
+                            it's just me and I have a day job, and by offering
+                            this up it means I'm going to end up saying no to
+                            lots of really good people. Things take a long time.
+                            Credentialed people, grad students, people with some
+                            experience, are what I need now (maybe not forever
+                            but now). Let's see what happens.
                         </p>
 
                         <h2>How will I know if the events are accurate?</h2>
 
                         <p>
-                            Oh sheesh have I thought hard about this one. This
-                            sounds simple but it actually veers into
-                            foundational philosophical challenges about the
-                            nature of truth in about five minutes. Short answer
-                            is, you can't.
+                            I thought hard about this one. This sounds simple
+                            but it actually veers into foundational
+                            philosophical challenges about the nature of truth
+                            in about five minutes. Short answer is, you can't.
                         </p>
 
                         <p>
@@ -421,34 +455,30 @@ class About extends React.Component {
                             Here's a hedge for you: A community, should one form
                             (doubtful), will define the culture here, and the
                             software would support the community's definition of
-                            accuracy. Otherwise it'll just be me blogging. Let's
-                            see what happens.
+                            accuracy. Otherwise it'll just be me blogging. Which
+                            would be great, I'm actually an excellent blogger
+                            and I am well known on many important blogging
+                            platforms. Let's see what happens.
                         </p>
 
                         <h2>
-                            What about
-                            griefers/Nazis/racists/sexists/anti-Semites/goofballs/trolls/men?
+                            What about griefers / Nazis / racists / sexists /
+                            anti-Semites / goofballs / trolls / men?
                         </h2>
 
                         <p>
                             Right now I'm the only one here. If exhausting
                             people, bad actors, griefers, and so forth show up
-                            we'll set limits, hire people, charge money,
-                            whatever. It's not a social network.
+                            we'll set limits, hire people, charge money, shut it
+                            down shut it all down all of it. It's not a social
+                            network.
                         </p>
 
                         <p>
-                            Anyway if this thing looks like it's being used to
-                            harm people I'll boot people or pull the plug. I
-                            have to do enough ridiculous stuff in my life to
-                            keep the fires lit, so I'm not going to have my
-                            hobby project become some dehumanizing agent.
-                        </p>
-
-                        <p>
-                            The world is big and difficult and most likely no
+                            Listen, if history has shown us anything it's that
+                            the world is big and difficult and most likely no
                             one will care and this will be just another dead
-                            website.
+                            website. Except with a nice archive.
                         </p>
 
                         <p>It's interesting though.</p>
@@ -462,11 +492,13 @@ class About extends React.Component {
                         <p>Or maybe nothing will happen. It's an experiment.</p>
 
                         <p>
-                            That said, it wouldn't hurt you to be a little
-                            positive though. You don't have to run to the thread
-                            on your microblog messageboard and poop all over it
-                            today. Give it two weeks, then poop on it. I'll hold
-                            my breath.
+                            It wouldn't hurt you to be a little positive. I know
+                            that the Internet has let you down recently. Me too.
+                            I'm building this as a place that won't always let
+                            people down. But you don't have to run to the thread
+                            on your microblog messageboard and poop all over
+                            this site today. Give it two weeks, then poop on it.
+                            I'll hold my breath.
                         </p>
 
                         <p>
@@ -474,12 +506,8 @@ class About extends React.Component {
                             it. I'm doing it because I love the commons and I
                             have ideas and want to share them, and want to make
                             room for other people's ideas. I know that the web
-                            doesn't work that way any more, and very few
-                            individuals build commons-celebrating timeline/CMS
-                            platforms for free and for fun these days, but
-                            that's how I spent my spare time and I hope you take
-                            it in the spirit in which it's intended. Maybe we
-                            can make something fun together!
+                            doesn't work that way any more. I still have faith
+                            though, like a sucker.
                         </p>
 
                         <p>Let's see what happens.</p>

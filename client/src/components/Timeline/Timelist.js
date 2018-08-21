@@ -272,7 +272,7 @@ class Timelist extends React.Component {
         });
         this.setState({
             startDateTime: loc,
-            rangeLeft: v / 10 - 5 + '%',
+            rangeLeft: v / 10 - v / 130 + '%',
             currentRangePosition: loc.toFormat('kkkk MMM d')
         });
         console.log(this.state.mouseDown);
