@@ -190,7 +190,6 @@ class Timelist extends React.Component {
             (this.state.rangeTouching !== prevState.rangeTouching &&
                 this.state.rangeTouching === false)
         ) {
-            alert('OKAY!!!!');
             this.replaceEvents(
                 `${utils.getAPI('events')}?in_scroll__slug=${
                     this.props.slug
