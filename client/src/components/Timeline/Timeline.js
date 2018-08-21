@@ -94,7 +94,7 @@ class Timeline extends React.Component {
         });
 
         const title = frame.getTitle(adjusted);
-        const width = WIDTH_MULT * frame.getColumnCount(interval);
+        const width = frame.getColumnCount(interval);
 
         const init = {
             hasInterval: true,
@@ -252,7 +252,6 @@ class Timeline extends React.Component {
 
         return (
             <ReactCursorPosition
-                isActivatedOnTouch
                 {...{
                     onPositionChanged: props => this.setState(props),
                     onDetectedEnvironmentChanged: props => this.setState(props),

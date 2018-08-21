@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import EventNoteButton from '../Event/EventNoteButton';
+import ReactCursorPosition from 'react-cursor-position';
 import utils from '../Util/Util';
 // import TimelinePanelEventEditButton from './TimelinePanelEventEditButton';
 
