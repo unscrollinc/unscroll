@@ -41,7 +41,7 @@
     },
     "scripts": {
         "precommit": "lint-staged",
-        "start": "react-scripts start",
+        "start": "REACT_APP_SERVER=localhost react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test --env=jsdom",
         "eject": "react-scripts eject"

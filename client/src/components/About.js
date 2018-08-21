@@ -63,15 +63,28 @@ class About extends React.Component {
                             that superpower more every day.
                         </p>
 
-                        <h2>Who is it for?</h2>
+                        <h2>
+                            Why did you do something when it would be easier for
+                            me, as a consumer of things, if you had done
+                            nothing?
+                        </h2>
+
+                        <p>Let's see what happens.</p>
+
+                        <h2>Who is this for?</h2>
 
                         <p>
-                            People who require accuracy, people who like
-                            history, high school students, grad students,
-                            journalists who don't have enough editorial and
-                            fact-checking support, personal essay types, anyone
-                            who wants to catch themselves on their own
-                            foolishness, professional accurists of all stripe.
+                            People who require links, people who like history,
+                            high school students, grad students, journalists who
+                            don't have enough editorial and fact-checking
+                            support, personal essay types, anyone who wants to
+                            catch themselves on their own foolishness,
+                            professional accurists of all stripe.
+                        </p>
+
+                        <p>
+                            It's also edging on a tool for people to do serious
+                            work on their phones. Think millennial law students.
                         </p>
 
                         <p>But really it's for me.</p>
@@ -80,7 +93,7 @@ class About extends React.Component {
 
                         <p>
                             My name is Paul Ford. I'm a writer, programmer, and
-                            entrepreneur.
+                            more recently, an entrepreneur.
                         </p>
 
                         <p>
@@ -110,13 +123,19 @@ class About extends React.Component {
                         </p>
 
                         <p>
+                            {' '}
                             A CEO is not supposed to code. But I missed making
                             things, and I really wanted this in the world in
-                            exactly the shape it was in my head. I made it at
-                            night with the kids in bed. I made a deal with
-                            myself: I could work on it when it wouldn't
-                            interfere with the healthy growth of my company or
-                            my family.
+                            exactly the shape it was in my head. It has been in
+                            my head for many years.
+                        </p>
+
+                        <p>
+                            I made it at night with the kids in bed and in the
+                            mornings at work after I got emails done. I made a
+                            deal with myself: I could work on it when it
+                            wouldn't interfere with the healthy growth of my
+                            family or my company. I (mostly) stuck to that.
                         </p>
 
                         <h2>
@@ -127,7 +146,7 @@ class About extends React.Component {
                         <p>
                             It's for a specific kind of anxious writer. If
                             you're happy and productive with other tools then
-                            blessings. Let's see what happens.
+                            that's great. Let's see what happens.
                         </p>
 
                         <h2>It should be free software. Everything should.</h2>
@@ -151,8 +170,8 @@ class About extends React.Component {
                             people can do stuff with the data on their home
                             machines, not just dump a bucket of JSON into the
                             world. I was thinking you could do a lot with
-                            incremental changesets in SQLite. Let's see what
-                            happens.
+                            incremental changesets distributed in SQLite. Let's
+                            see what happens.
                         </p>
 
                         <h2>If I use this, who owns my work?</h2>
@@ -220,8 +239,26 @@ class About extends React.Component {
                         <p>
                             It's way too early and could you limit it to a few
                             thousand events please and also it's gonna break in
-                            bad bad bad bad bad ways but...you have it. Just
-                            give me a little while for Swagger and stuff.
+                            bad bad bad bad bad ways but...you have it already.
+                            I just need a little while for Swagger, etc.
+                        </p>
+
+                        <h2>This website is not accessible.</h2>
+
+                        <p>
+                            It isn't, and it should be, and needs to be.{' '}
+                            <i>Mea culpa</i>. It's going to take a while. The
+                            hard part isn't the content and the events or
+                            notebook reading, which could be done rapidly, but
+                            in building out forms and creating a good
+                            composition experience that allows for updates of
+                            timelines and notebooks. Translating that interface
+                            mentally to something that meets the broadest group
+                            of users is a challenge and I lack the requisite
+                            point of view. If this turns out to be more than a
+                            folly I'll ask people with actual experience (or
+                            actual needs for accessibility) what they think.
+                            Let's see what happens.
                         </p>
 
                         <h2>What about copyright?</h2>
@@ -253,9 +290,10 @@ class About extends React.Component {
                         </p>
 
                         <p>
-                            Your private events and notes are NOT encrypted on
-                            the server, at least not yet. I'd love to do that,
-                            it's not a one-person job.
+                            {' '}
+                            Your events and notes are NOT encrypted on the
+                            server, at least not yet. I'd love to do that, it's
+                            not a one-person job.
                         </p>
 
                         <h2>
@@ -264,6 +302,8 @@ class About extends React.Component {
                             you'll dump all the data down the toilet and why
                             should I ever trust you at all?
                         </h2>
+
+                        <p>I need a minute, please.</p>
 
                         <p>
                             This is ultimately a thing designed to give back to
@@ -274,20 +314,22 @@ class About extends React.Component {
                             </a>
                             , which is something I do, it won't be a surprise,
                             and I'll ask him to tell me exactly what to do to
-                            archive the data here. I mean I'll probably talk
-                            about it with him before that. What I'm saying is,
-                            without overly waving my arms about it, I'm a friend
-                            to digital archives. To the point that I kept
-                            complete, somewhat obsessive control of this
-                            ridiculous side project so that I would not have to
-                            compromise on issues around privacy, archiving, and
-                            specific kinds of utility.
+                            archive the data here.
+                        </p>
+
+                        <p>
+                            I mean I'll probably talk about it with him before
+                            that. What I'm saying is, without overly waving my
+                            arms about it, I'm a friend to digital archives. To
+                            the point that I kept complete, somewhat obsessive
+                            control of this ridiculous side project so that I
+                            would not have to compromise on issues around
+                            privacy, archiving, and specific kinds of utility.
                         </p>
 
                         <h2>There's no business model.</h2>
 
                         <p>
-                            {' '}
                             There are tons of business models and not-business
                             models. Right now it has one user and this thing
                             would need to get many thousands of committed daily
@@ -304,6 +346,16 @@ class About extends React.Component {
                             Timeline hashes into a blockchain so that people can
                             be relatively assured that history has not been
                             manipulated. Let's see what happens.
+                        </p>
+
+                        <h2>
+                            The mobile experience is wonky. No one uses desktop
+                            computers.
+                        </h2>
+
+                        <p>
+                            I spent a lot of time on mobile but mobile web,
+                            it's...well. Life. Let's see what happens.
                         </p>
 
                         <h2>This has nothing to do with machine learning.</h2>
@@ -326,13 +378,17 @@ class About extends React.Component {
                             Maybe! I don't really want to own time or culture
                             though. I want people to feel safe and protected and
                             like they have the tools they need to do good work,
-                            starting with me. It is nice to imagine a federated
-                            service, used to index HTML microformats, blog
-                            posts, and tweets at the time of their authorship.
-                            On the other hand, humans love convenience so maybe
-                            a centralized service is best. The goal is to help.
-                            This thing only has one user so it doesn't really
-                            matter. Let's see what happens.
+                            starting with me.
+                        </p>
+
+                        <p>
+                            It is nice to imagine a federated service, used to
+                            index HTML microformats, blog posts, and tweets at
+                            the time of their authorship. On the other hand,
+                            humans love convenience so maybe a centralized
+                            service is best. The goal is to help. This thing
+                            only has one user so it doesn't really matter. Let's
+                            see what happens.
                         </p>
 
                         <h2>
@@ -378,27 +434,40 @@ class About extends React.Component {
                             archives are totally biased in favor of consensus
                             rich-and-powerful-people history, around who made
                             the news, who had the fame, and who had the money.
-                            Because that's who makes archives. Doing this
-                            project has made that ridiculously obvious. Public
-                            data in the commons is either about vast, anonymized
-                            groups of people (like people who take cabs) or it's
-                            about expensive and rare things (museum archives),
-                            or stories of great success or failure of successful
-                            mainstream people (media archives). Even when it's
-                            about less-represented people it's often about their
+                            Because that's who makes archives. We archive (1)
+                            fame; and (2) pain. Doing this project has made that
+                            ridiculously obvious. Public data in the commons is
+                            either about vast, anonymized groups of people (like
+                            people who take cabs) or it's about expensive and
+                            rare things (museum archives), or stories of great
+                            success or failure of successful mainstream people
+                            (media archives). Even when it's about
+                            less-represented people it's often about their
                             suffering (like specific records around slavery or
-                            lynching). Fame and pain: That's what's durable and
-                            what culture preserves and where we spend our money.
-                            It's not what interests me personally all of the
-                            time, so I'm going to do my best to add events about
-                            other kinds of people over time. Also, the web has
-                            its own tractable history now, running 25 years,
-                            with lots of voices represented. I think a lot of
-                            people forget that, but it's why work by digital
-                            archivists is so important, because for all that
-                            things suck, we're going on decades of records of
-                            how normal humans interact, talk, hook up, and cook
-                            chicken.
+                            lynching)
+                        </p>
+
+                        <p>
+                            There are definitely exceptions but a lot of the
+                            important archives around, say, Black history,
+                            aren't digitized yet ($$$), and I don't want to
+                            create records for artifacts where there isn't an
+                            available source document. And I don't want to have
+                            an archive that just contrasts success and suffering
+                            based on skin color or gender identity and calls
+                            itself done. That doesn't really help anyone. So
+                            it's a big unsolved problem.
+                        </p>
+
+                        <p>
+                            Neither fame nor pain are what interests me
+                            personally all of the time, so I'm going to do my
+                            best to add events about other kinds of people over
+                            time. Also, the web has its own tractable history
+                            now, running 25 years, with lots of voices
+                            represented. For all that things suck, we're going
+                            on decades of records of how normal humans interact,
+                            talk, hook up, and cook things.
                         </p>
 
                         <p>
@@ -409,20 +478,20 @@ class About extends React.Component {
                         </p>
 
                         <p>
-                            Maybe that could change and it'd be a lot of fun if
-                            this was a place where that changed. There's only so
-                            much I personally can do here, so I'll pay a
-                            reasonable hourly rate for people who want to
-                            correct that and create timelines around
-                            marginalized people's history. If you know someone
-                            who should do that kind of work ping me and I'll
-                            reach out to them. But please be a little chill,
-                            it's just me and I have a day job, and by offering
-                            this up it means I'm going to end up saying no to
-                            lots of really good people. Things take a long time.
-                            Credentialed people, grad students, people with some
-                            experience, are what I need now (maybe not forever
-                            but now). Let's see what happens.
+                            Maybe that could change and it'd be a lot of fun and
+                            worth the effort if this was a place where that
+                            changed. There's only so much I personally can do
+                            here, so I'll pay a reasonable hourly rate for
+                            people who want to correct that and create timelines
+                            around marginalized people's history. If you know
+                            someone who should do that kind of work ping me and
+                            I'll reach out to them. But please be a little
+                            chill, it's just me and I have a day job, and by
+                            offering this up it means I'm going to end up saying
+                            no to lots of really good people. Things take a long
+                            time. Credentialed people, grad students, people
+                            with some experience, are what I need now (maybe not
+                            forever but now). Let's see what happens.
                         </p>
 
                         <h2>How will I know if the events are accurate?</h2>
@@ -475,10 +544,11 @@ class About extends React.Component {
                         </p>
 
                         <p>
-                            Listen, if history has shown us anything it's that
+                            Anyway if history has shown us anything it's that
                             the world is big and difficult and most likely no
                             one will care and this will be just another dead
-                            website. Except with a nice archive.
+                            website. Except there'll be a lot of JSON files on
+                            Archive.org in memoriam.
                         </p>
 
                         <p>It's interesting though.</p>
@@ -492,13 +562,19 @@ class About extends React.Component {
                         <p>Or maybe nothing will happen. It's an experiment.</p>
 
                         <p>
-                            It wouldn't hurt you to be a little positive. I know
-                            that the Internet has let you down recently. Me too.
-                            I'm building this as a place that won't always let
-                            people down. But you don't have to run to the thread
-                            on your microblog messageboard and poop all over
-                            this site today. Give it two weeks, then poop on it.
-                            I'll hold my breath.
+                            It wouldn't hurt you to be a little positive and
+                            encouraging. I know that the Internet has let you
+                            down recently. Me too. I'm building this as a place
+                            that won't always let people down, where you can sit
+                            in bed and look at the past and think about the
+                            future and write little essays.
+                        </p>
+
+                        <p>
+                            You don't have to run to the thread on your
+                            microblog messageboard and poop all over this site
+                            today. Give it two weeks, then poop on it. I'll hold
+                            my breath.
                         </p>
 
                         <p>
