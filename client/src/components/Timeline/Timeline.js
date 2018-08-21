@@ -22,6 +22,9 @@ class Timeline extends React.Component {
         };
     }
 
+    // We tend to go, urlParamsToState, which calls initialize, and
+    // then we render the <Panel>s.
+
     urlParamsToState() {
         // Take a look at our state and then either do some server
         // calls to figure out where we are in time or just go with
@@ -36,7 +39,7 @@ class Timeline extends React.Component {
             axios
                 .get(
                     `${utils.getAPI('events')}minmax?in_scroll__slug=${
-                        this.props.slug
+                        this.props.slug ? this.props.slug : ''
                     }&q=${
                         this.props.isSearchQuery ? this.props.searchQuery : ''
                     }`
@@ -44,12 +47,21 @@ class Timeline extends React.Component {
                 .then(resp => {
                     const rd = resp.data;
                     if (rd.first_event === null || rd.last_event === null) {
+                        console.log('YEP IT FAILED');
                         _this.setState({ searchWorked: false });
                     } else {
+                        const moreThanOne = rd.first_event !== rd.last_event;
                         const s = DateTime.fromISO(rd.first_event);
-                        const b = DateTime.fromISO(rd.last_event);
+                        const b = moreThanOne
+                            ? DateTime.fromISO(rd.last_event)
+                            : DateTime.fromISO(rd.last_event).plus({
+                                  months: 1
+                              });
+
                         const rawInterval = Interval.fromDateTimes(s, b);
-                        const interval = rawInterval.divideEqually(5)[3];
+                        const interval = moreThanOne
+                            ? rawInterval.divideEqually(5)[3]
+                            : rawInterval;
                         _this.initialize(
                             interval,
                             this.props.searchQuery,
@@ -231,7 +243,16 @@ class Timeline extends React.Component {
                 </div>
             );
         }
-        return <h1>Loading...</h1>;
+        return (
+            <div className="panelResults">
+                <h1>Loading...</h1>
+                {this.state.searchWorked
+                    ? ''
+                    : 'Sorry--no search results for "' +
+                      this.props.searchQuery +
+                      '."'}
+            </div>
+        );
     }
 
     render() {

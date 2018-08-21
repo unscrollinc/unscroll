@@ -82,8 +82,12 @@ td {
     text-decoration: underline;
 }
 .Nav .current-notebook {
-    font-style: italic;
     padding-right: 0.25em;
+    font-size: 150%;
+    background: deepskyblue;
+    color: white;
+    border: 1px solid skyblue;
+    padding: 0 0.5em 0 0.5em;
 }
 .Timeline,
 .Editor,
@@ -208,6 +212,11 @@ td {
     border-radius: 0.75em;
 }
 
+.event-panel-event-text {
+    max-height: 200px;
+    max-width: 100%;
+    overflow: auto;
+}
 .event button {
     float: right;
     display: inline;
@@ -1010,4 +1019,13 @@ td.event-editor-td {
 
 div.event-editor-title .public-DraftStyleDefault-block {
     font-size: 150%;
+}
+
+.panelResults {
+    margin: 5%;
+    text-align: center;
+}
+.panelResults h1 {
+    margin: 5%;
+    text-align: center;
 }

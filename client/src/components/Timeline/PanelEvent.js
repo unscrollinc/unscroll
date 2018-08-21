@@ -83,7 +83,12 @@ class Event extends React.Component {
 
     renderText(e) {
         if (e.text) {
-            return <p dangerouslySetInnerHTML={{ __html: e.text }} />;
+            return (
+                <div
+                    className="event-panel-event-text"
+                    dangerouslySetInnerHTML={{ __html: e.text }}
+                />
+            );
         }
         return null;
     }

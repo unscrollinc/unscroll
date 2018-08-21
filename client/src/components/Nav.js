@@ -3,6 +3,7 @@ import { Link, NavLink } from 'react-router-dom';
 import Search from './Search';
 import utils from './Util/Util';
 import AppContext from './AppContext';
+import ReactToolTip from 'react-tooltip';
 
 class Nav extends React.Component {
     constructor(props) {
@@ -62,13 +63,15 @@ class Nav extends React.Component {
         const nb = tpcs.notebook;
         if (nb !== null) {
             return (
-                <Link
-                    to={`/notebooks/${tpcs.username}/${nb.id}/edit`}
-                    className="current-notebook"
-                >
-                    <span dangerouslySetInnerHTML={{ __html: nb.title }} /> [
-                    {tpcs.notes.length}]
-                </Link>
+                <React.Fragment>
+                    <Link
+                        to={`/notebooks/${tpcs.username}/${nb.id}/edit`}
+                        className="current-notebook"
+                    >
+                        <span data-tip={nb.title}>{tpcs.notes.length}</span>
+                    </Link>
+                    <ReactToolTip />
+                </React.Fragment>
             );
         }
         return null;
@@ -103,6 +106,7 @@ class Nav extends React.Component {
 
                 <Search />
 
+                {this.renderCurrentNotebook()}
                 {this.renderLoginState()}
             </div>
         );
