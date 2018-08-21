@@ -24,6 +24,8 @@ import utils from '../Util/Util';
 
 */
 
+const PANEL_WIDTH_PERCENTAGE = utils.PANEL_WIDTH_PERCENTAGE;
+
 class Panel extends React.Component {
     constructor(props) {
         super(props);
@@ -63,7 +65,7 @@ class Panel extends React.Component {
             interval: props.interval,
             events: props.events ? props.events : [],
             cell: {
-                width: 100 / props.width,
+                width: PANEL_WIDTH_PERCENTAGE / props.width,
                 height: 90 / props.height
             },
             columns: [...Array(this.props.width).keys()].map(ct =>
@@ -193,7 +195,7 @@ class Panel extends React.Component {
         const plusQ = this.props.query ? '&q=' + this.props.query : '';
         return (
             <Column
-                width={100 / this.props.width + '%'}
+                width={PANEL_WIDTH_PERCENTAGE / this.props.width + '%'}
                 span={span + plusQ}
                 title={title}
                 key={ct}
@@ -202,7 +204,10 @@ class Panel extends React.Component {
     }
 
     render() {
-        const left = this.props.center * 100 + this.props.offset + '%';
+        const left =
+            this.props.center * PANEL_WIDTH_PERCENTAGE +
+            this.props.offset +
+            '%';
 
         const events = this.state.events.map(this.renderEvent.bind(this));
 
@@ -211,7 +216,7 @@ class Panel extends React.Component {
                 className="Panel"
                 id={this.props.center}
                 key={this.props.interval}
-                style={{ left: left }}
+                style={{ left: left, width: PANEL_WIDTH_PERCENTAGE + '%' }}
             >
                 <div className="breadcrumbs">
                     <h1>

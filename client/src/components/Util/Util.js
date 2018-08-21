@@ -17,6 +17,7 @@ const URL =
 const API = URL + 'api/';
 
 const util = {
+    PANEL_WIDTH_PERCENTAGE: 200,
     randomString: () => {
         return Math.random()
             .toString(36)

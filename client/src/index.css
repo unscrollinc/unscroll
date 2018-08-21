@@ -155,7 +155,6 @@ td {
     background: lightskyblue;
     float: left;
     position: absolute;
-    width: 100%;
     cursor: ew-resize;
 }
 
@@ -537,7 +536,7 @@ form.search {
     line-height: 150%;
     padding: 5% 0% 10% 10%;
     width: 70%;
-    font-size: 140%;
+    font-size: 120%;
     margin: 0;
 }
 

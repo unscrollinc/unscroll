@@ -8,9 +8,11 @@ import axios from 'axios';
 
 import Panel from './Panel';
 import TimeFrames from './TimeFrames';
-import util from '../Util/Util';
+import utils from '../Util/Util';
 import AppContext from '../AppContext';
 
+const PANEL_WIDTH_PERCENTAGE = utils.PANEL_WIDTH_PERCENTAGE;
+const WIDTH_MULT = PANEL_WIDTH_PERCENTAGE / 100;
 class Timeline extends React.Component {
     constructor(props) {
         super(props);
@@ -33,7 +35,7 @@ class Timeline extends React.Component {
         ) {
             axios
                 .get(
-                    `${util.getAPI('events')}minmax?in_scroll__slug=${
+                    `${utils.getAPI('events')}minmax?in_scroll__slug=${
                         this.props.slug
                     }&q=${
                         this.props.isSearchQuery ? this.props.searchQuery : ''
@@ -92,7 +94,7 @@ class Timeline extends React.Component {
         });
 
         const title = frame.getTitle(adjusted);
-        const width = frame.getColumnCount(interval);
+        const width = WIDTH_MULT * frame.getColumnCount(interval);
 
         const init = {
             hasInterval: true,
@@ -175,10 +177,11 @@ class Timeline extends React.Component {
 
             // Mouse dragging feels better at 2X touch speed.
 
-            const mult = this.state.mouseDown ? 200 : 100;
+            const mult = this.state.mouseDown ? 200 : PANEL_WIDTH_PERCENTAGE;
             const w = this.state.elementDimensions.width;
             const delta = this.state.position.x / w - prevState.position.x / w;
-            const center = 0 - Math.round(this.state.offset / 100);
+            const center =
+                0 - Math.round(this.state.offset / PANEL_WIDTH_PERCENTAGE);
             this.setState({
                 offset: this.state.offset + delta * mult,
                 center:
