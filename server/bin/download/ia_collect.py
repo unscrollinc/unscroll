@@ -126,7 +126,7 @@ class IACollection():
             filename = f.get('name')
             ud = UnscrollDate([title, title], begin=1000, end=2000)
             x = {'title':title, 'filename':filename, 'date':ud.when_happened}
-            pprint.pprint(x)
+            # pprint.pprint(x)
         
 
         # Get a very brief listing of items to get count
@@ -143,11 +143,14 @@ class IACollection():
         # them into URLs, then getting them
         for url in [self.url(page_count=page_count)]:
             items = requests.get(url)
-            j = items.json()
-            resp = j.get('response')
-            docs = resp.get('docs')
-            items = [IAItem(doc.get('identifier'), self) for doc in docs]
-            return items
+            try:
+                j = items.json()
+                resp = j.get('response')
+                docs = resp.get('docs')
+                items = [IAItem(doc.get('identifier'), self) for doc in docs]
+                return items
+            except:
+                print('@ia_collect exception: {}'.format(sys.exc_info()[0]))
         
     def get_thumb(self, meta):
         dir = 'https://{}{}/__ia_thumb.jpg'.format(meta.get('d1'), meta.get('dir'),)
