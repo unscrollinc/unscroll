@@ -32,6 +32,10 @@ class TimelistTitleEditor extends React.Component {
             }
         };
 
+        if (this.props.new) {
+            this.postScroll();
+        }
+
         setInterval(this.sweep, 1000 * 15);
     }
 
@@ -47,6 +51,22 @@ class TimelistTitleEditor extends React.Component {
         const _this = this;
         _this.sweep();
         _this.setState({ edit: false });
+    }
+
+    postScroll() {
+        const _this = this;
+        axios({
+            method: 'post',
+            url: utils.getAPI('scrolls'),
+            headers: utils.getAuthHeaderFromCookie(),
+            data: { title: 'Untitled timeline #' + utils.randomString() }
+        })
+            .then(resp => {
+                _this.setState({ edit: true, scroll: resp.data }, () => {});
+            })
+            .catch(err => {
+                console.log('Error', err);
+            });
     }
 
     patchScroll() {

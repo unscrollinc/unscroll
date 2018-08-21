@@ -103,6 +103,13 @@ class App extends React.Component {
             },
 
             {
+                path: '/timelines/:new',
+                exact: true,
+                Body: props => <Timelist new={true} />,
+                Nav: () => <Nav />
+            },
+
+            {
                 path: '/my/timelines',
                 exact: true,
                 Body: () => <TimelineList my={true} />,

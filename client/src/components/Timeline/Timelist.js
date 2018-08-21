@@ -26,7 +26,6 @@ class Timelist extends React.Component {
             nextUrl: undefined
         };
     }
-
     scrollChange(k, v) {
         this.setState({ [k]: v, isSaved: false }, () => {
             console.log(this.state);
@@ -210,7 +209,6 @@ class Timelist extends React.Component {
             title: '[Untitled event #' + utils.randomString() + ']',
             text: ''
         };
-        console.log(this.template);
         utils
             .webPromise(this, 'POST', 'events', template)
             .then(resp => {
