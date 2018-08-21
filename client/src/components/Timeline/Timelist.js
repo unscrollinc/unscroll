@@ -18,7 +18,7 @@ class Timelist extends React.Component {
             scroll: {},
             interval: undefined,
             doGetNext: false,
-            rangeMouseDown: false,
+            rangeMouseOrTouchInteractionOccurring: false,
             rangeLeft: '0%',
             isSaved: true,
             fetchUrl: undefined,
@@ -184,8 +184,9 @@ class Timelist extends React.Component {
         }
 
         if (
-            this.state.rangeMouseDown !== prevState.rangeMouseDown &&
-            this.state.rangeMouseDown === false
+            this.state.rangeMouseOrTouchInteractionOccurring !==
+                prevState.rangeMouseOrTouchInteractionOccurring &&
+            this.state.rangeMouseOrTouchInteractionOccurring === false
         ) {
             this.replaceEvents(
                 `${utils.getAPI('events')}?in_scroll__slug=${
@@ -252,10 +253,24 @@ class Timelist extends React.Component {
                         defaultValue="0"
                         step="1"
                         onMouseDown={() =>
-                            this.setState({ rangeMouseDown: true })
+                            this.setState({
+                                rangeMouseOrTouchInteractionOccurring: true
+                            })
                         }
                         onMouseUp={() =>
-                            this.setState({ rangeMouseDown: false })
+                            this.setState({
+                                rangeMouseOrTouchInteractionOccurring: false
+                            })
+                        }
+                        onTouchStart={() =>
+                            this.setState({
+                                rangeMouseOrTouchInteractionOccurring: true
+                            })
+                        }
+                        onTouchEnd={() =>
+                            this.setState({
+                                rangeMouseOrTouchInteractionOccurring: false
+                            })
                         }
                         onInput={this.handleRange.bind(this)}
                     />
@@ -272,10 +287,9 @@ class Timelist extends React.Component {
         });
         this.setState({
             startDateTime: loc,
-            rangeLeft: v / 10 - v / 130 + '%',
+            rangeLeft: v / 10 - v / 25 + '%',
             currentRangePosition: loc.toFormat('kkkk MMM d')
         });
-        console.log(this.state.mouseDown);
     }
 
     render() {
