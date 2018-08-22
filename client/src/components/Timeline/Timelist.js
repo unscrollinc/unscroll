@@ -64,7 +64,7 @@ class Timelist extends React.Component {
         });
     }
 
-    getMaxMin(qs) {
+    getMinMax(qs) {
         const _this = this;
         axios({
             method: 'get',
@@ -179,8 +179,10 @@ class Timelist extends React.Component {
     }
 
     kickoff() {
-        this.getMaxMin({ in_scroll__slug: this.props.slug });
-        this.setState(prevState => ({ events: [] }), this.getEvents());
+        if (!this.props.new) {
+            this.getMinMax({ in_scroll__slug: this.props.slug });
+            this.setState(prevState => ({ events: [] }));
+        }
     }
 
     componentDidMount() {
