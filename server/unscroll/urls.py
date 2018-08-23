@@ -255,11 +255,16 @@ class BulkEventSerializer(BulkSerializerMixin,
 
     in_scroll_user = serializers.UUIDField(
         read_only=True,
-        source="in_scroll.by_user.username")        
+        source="in_scroll.by_user.username")
 
     username = serializers.CharField(
         read_only=True,
         source="by_user.username")
+
+
+    user_full_name = serializers.CharField(
+        read_only=True,
+        source="by_user.full_name")    
 
     is_public = serializers.BooleanField(
         read_only=True,
