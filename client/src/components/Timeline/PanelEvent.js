@@ -5,7 +5,11 @@ import ReactCursorPosition from 'react-cursor-position';
 import utils from '../Util/Util';
 // import TimelinePanelEventEditButton from './TimelinePanelEventEditButton';
 
-const goodWidthDivisor = 3;
+const goodWidthDivisor = () => {
+    const gwd = 3 + Math.ceil(2 * Math.random());
+    return gwd;
+};
+
 class Event extends React.Component {
     constructor(props) {
         super(props);
@@ -14,7 +18,7 @@ class Event extends React.Component {
             left: props.left,
             width:
                 Math.floor(
-                    (this.props.columnCount / goodWidthDivisor) *
+                    (this.props.columnCount / goodWidthDivisor()) *
                         this.props.cell.width
                 ) + '%'
         };
@@ -63,10 +67,10 @@ class Event extends React.Component {
         const b = window.innerHeight;
         // MAGIC NUMBERS! BEWARE!!!!!!!
         const h = Math.ceil(
-            ((r.height / b) * 121) / this.props.cell.height,
+            ((r.height / b) * 151) / this.props.cell.height,
             10
         );
-        const w = Math.floor(this.props.columnCount / goodWidthDivisor, 10);
+        const w = Math.floor(this.props.columnCount / goodWidthDivisor(), 10);
         const res = this.props.doReservation(this.props.left, 0, w, h);
 
         if (res.success) {

@@ -210,6 +210,18 @@ class Panel extends React.Component {
             '%';
 
         const events = this.state.events.map(this.renderEvent.bind(this));
+        const bestLink = () => {
+            if (this.props.slug) {
+                return `/timelines/${this.props.user}/${
+                    this.props.slug
+                }/?view=vertical&from=${this.state.interval.start.toISO()}&before=${this.state.interval.end.toISO()}${
+                    this.props.query ? '&q=' + this.props.query : ''
+                }`;
+            }
+            return `/?view=vertical&from=${this.state.interval.start.toISO()}&before=${this.state.interval.end.toISO()}${
+                this.props.query ? '&q=' + this.props.query : ''
+            }`;
+        };
 
         return (
             <div
@@ -221,13 +233,7 @@ class Panel extends React.Component {
                 <div className="breadcrumbs">
                     <h1>
                         {this.state.title}{' '}
-                        <Link
-                            to={`/timelines/${this.props.user}/${
-                                this.props.slug
-                            }/?view=vertical&from=${this.state.interval.start.toISO()}&before=${this.state.interval.end.toISO()}${
-                                this.props.query ? '&q=' + this.props.query : ''
-                            }`}
-                        >
+                        <Link to={bestLink()}>
                             (showing {this.state.fitCount}/{this.state.count})
                         </Link>
                     </h1>

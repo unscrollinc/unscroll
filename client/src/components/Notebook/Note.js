@@ -1,6 +1,7 @@
 import React from 'react';
 import AppContext from '../AppContext.js';
 import RichTextEditor from '../Editor/RichTextEditor';
+import TimelistEvent from '../Timeline/TimelistEvent';
 import update from 'immutability-helper';
 import { Scrollbars } from 'react-custom-scrollbars';
 
@@ -88,37 +89,10 @@ class NotebookEvent extends React.Component {
     }
 
     renderEvent() {
-        const e = this.props.event;
-        function getText() {
-            if (e.text) {
-                return (
-                    <div
-                        className="note-event-text"
-                        dangerouslySetInnerHTML={{ __html: e.text }}
-                    />
-                );
-            }
-            return null;
+        if (this.props.event) {
+            return <TimelistEvent event={this.props.event} />;
         }
-        if (e) {
-            return (
-                <Scrollbars
-                    className="note-event-scroll"
-                    style={{ width: '100%', height: '10em' }}
-                    autoHide
-                >
-                    <div className="note-event">
-                        <div className="note-event-title">
-                            <a target="_new" href={e.content_url}>
-                                {e.title}
-                            </a>
-                        </div>
-                        {getText()}
-                    </div>
-                </Scrollbars>
-            );
-        }
-        return undefined;
+        return null;
     }
 
     renderDelete() {

@@ -13,6 +13,7 @@ import AppContext from '../AppContext';
 
 const PANEL_WIDTH_PERCENTAGE = utils.PANEL_WIDTH_PERCENTAGE;
 const WIDTH_MULT = PANEL_WIDTH_PERCENTAGE / 100;
+
 class Timeline extends React.Component {
     constructor(props) {
         super(props);

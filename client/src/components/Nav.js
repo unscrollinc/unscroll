@@ -62,7 +62,7 @@ class Nav extends React.Component {
     renderCurrentNotebook() {
         const tpcs = this.props.context.state;
         const nb = tpcs.notebook;
-        if (nb !== null) {
+        if (nb !== null && utils.isLoggedIn()) {
             return (
                 <React.Fragment>
                     <Link
@@ -78,9 +78,21 @@ class Nav extends React.Component {
         return null;
     }
     renderHorizontalOrVertical() {
+        const makeURL = () => {
+            if (this.props.slug) {
+                return (
+                    '/timelines/' +
+                    this.props.user +
+                    '/' +
+                    this.props.slug +
+                    '/'
+                );
+            }
+            return '/timelines/';
+        };
         const makeQString = dir => {
             const ps =
-                '/?' +
+                '?' +
                 qs.stringify({
                     start: this.props.start,
                     before: this.props.before,
@@ -88,7 +100,7 @@ class Nav extends React.Component {
                     view: dir
                 });
 
-            return ps;
+            return makeURL() + ps;
         };
 
         if (this.props.isHorizontal !== undefined) {

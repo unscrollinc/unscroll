@@ -5,6 +5,7 @@ import qs from 'qs';
 import Nav from './Nav';
 // import News from './News';
 import Profile from './Profile';
+import UserProfile from './User/Profile';
 import About from './About';
 
 import Login from './User/Login';
@@ -69,6 +70,13 @@ class App extends React.Component {
                 path: '/user/recover',
                 exact: true,
                 Body: () => <Recover />,
+                Nav: () => <Nav />
+            },
+
+            {
+                path: '/users/:username',
+                exact: true,
+                Body: props => <UserProfile {...props.match.params} />,
                 Nav: () => <Nav />
             },
 

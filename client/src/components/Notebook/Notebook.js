@@ -1,6 +1,7 @@
 import React from 'react';
 import { Redirect } from 'react-router';
 import { Scrollbars } from 'react-custom-scrollbars';
+import { Link, NavLink } from 'react-router-dom';
 
 import Note from './Note';
 import TitleEditor from './TitleEditor';
@@ -70,6 +71,14 @@ class Notebook extends React.Component {
                 <div className="manuscript-title">
                     <h1 dangerouslySetInnerHTML={{ __html: nb.title }} />
                     <h2 dangerouslySetInnerHTML={{ __html: nb.subtitle }} />
+                    <h2>
+                        <Link
+                            to={`/users/${nb.user_username}`}
+                            dangerouslySetInnerHTML={{
+                                __html: nb.user_full_name
+                            }}
+                        />
+                    </h2>
                     <div
                         className="description"
                         dangerouslySetInnerHTML={{ __html: nb.description }}
@@ -118,14 +127,27 @@ class Notebook extends React.Component {
         const mapped = filtered.map((n, i) => {
             return (
                 <div key={i} className="manuscript-sidebar-event">
-                    <h3>{n.event.title}</h3>
-                    <p>{n.event.text}</p>
+                    <h3 dangerouslySetInnerHTML={{ __html: n.event.title }} />
+                    <div dangerouslySetInnerHTML={{ __html: n.event.text }} />
                 </div>
             );
         });
         return <div className="manuscript-sidebar">{mapped}</div>;
     }
-
+    renderEditButton() {
+        if (utils.isLoggedIn()) {
+            return (
+                <div class="notebook-buttons">
+                    <button
+                        onClick={() => this.setState({ edit: true })}
+                        className="notebook-preview list-object-button button"
+                    >
+                        Edit
+                    </button>
+                </div>
+            );
+        }
+    }
     render() {
         if (this.props.new && this.props.context.state.notebook) {
             return (
@@ -147,12 +169,7 @@ class Notebook extends React.Component {
                         key="manuscript-preview"
                         className="manuscript-inner reader"
                     >
-                        <button
-                            onClick={() => this.setState({ edit: true })}
-                            className="notebook-preview list-object-button button"
-                        >
-                            Edit
-                        </button>
+                        {this.renderEditButton()}
                         {this.renderManuscriptEvents()}
                         {this.renderManuscriptTitle()}
                         {this.renderManuscriptBody()}
@@ -168,15 +185,27 @@ class Notebook extends React.Component {
                             <div className="Editor">
                                 <Scrollbars autoHide style={{ height: '100%' }}>
                                     <div className="notebook-inner">
-                                        <button
-                                            onClick={() =>
-                                                this.setState({ edit: false })
-                                            }
-                                            className="notebook-preview list-object-button button"
-                                        >
-                                            Preview
-                                        </button>
-                                        {this.renderAddNoteButton()}
+                                        <div className="notebook-buttons">
+                                            <button
+                                                onClick={() =>
+                                                    this.setState({
+                                                        edit: false
+                                                    })
+                                                }
+                                                className="notebook-preview list-object-button button"
+                                            >
+                                                Preview
+                                            </button>
+
+                                            <button
+                                                className="notebook-preview list-object-button button"
+                                                onClick={() =>
+                                                    this.props.context.addNote()
+                                                }
+                                            >
+                                                + Note
+                                            </button>
+                                        </div>
                                         {this.renderTitleEditor()}
                                         {Array.from(context.state.notes).map(
                                             this.renderNote.bind(this)
@@ -186,14 +215,14 @@ class Notebook extends React.Component {
                             </div>
                             {/*
                             <div className="Manuscript">
-                                <Scrollbars autoHide style={{ height: '100%' }}>
-                                    <div className="manuscript-inner">
-                                        {this.renderManuscriptTitle()}
-                                        {this.renderManuscriptBody()}
-                                    </div>
-                                </Scrollbars>
-                            </div>
-			     */}
+                                  <Scrollbars autoHide style={{ height: '100%' }}>
+                                        <div className="manuscript-inner">
+                                              {this.renderManuscriptTitle()}
+                                                  {this.renderManuscriptBody()}
+                                                  </div>
+                                                  </Scrollbars>
+                                                  </div>
+			    */}
                         </React.Fragment>
                     );
                 }}

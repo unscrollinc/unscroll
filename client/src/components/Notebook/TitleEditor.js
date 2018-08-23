@@ -29,28 +29,6 @@ class TitleEditor extends React.Component {
         });
     }
 
-    done(e) {
-        const nb = this.props.context.state.notebook;
-        return <Redirect to={`/notebooks/${nb.user_username}/${nb.id}/`} />;
-    }
-    renderDoneButton() {
-        return (
-            <Route
-                render={({ history }) => (
-                    <button
-                        type="button"
-                        onClick={() => {
-                            history.push('/new-location');
-                        }}
-                    >
-                        Done
-                    </button>
-                )}
-            />
-        );
-        /*	return(<button className='timeline-meta-done-button' onClick={(e)=>}>Done</button>)*/
-    }
-
     render() {
         const nb = this.props.context.state.notebook;
         if (nb.title !== undefined) {
@@ -59,8 +37,6 @@ class TitleEditor extends React.Component {
                     <div className="button-nav">
                         <div className="is-published-toggle-wrapper">
                             <div className="is-published-toggle">
-                                {this.renderDoneButton()}
-
                                 <label htmlFor="is-published">
                                     Published:{' '}
                                 </label>

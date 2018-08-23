@@ -1,5 +1,6 @@
 import React from 'react';
 import 'react-virtualized/styles.css';
+import { Link } from 'react-router-dom';
 import { DateTime, Interval } from 'luxon';
 import EventNoteButton from '../Event/EventNoteButton';
 import EventInput from './EventInput';
@@ -288,8 +289,6 @@ class TimelistEvent extends React.Component {
         const e = this.state.event;
         return (
             <React.Fragment>
-                {/*this.showWhenHappened(this.props.lastTime, e.when_happened)*/}
-
                 <tr className="timelist">
                     <td className="meta">
                         {this.makeImage(e)}
@@ -304,9 +303,12 @@ class TimelistEvent extends React.Component {
                             </div>
 
                             <div className="author">
-                                <a className="title" href={`/by/${e.username}`}>
-                                    @{e.username}
-                                </a>
+                                <Link
+                                    className="title"
+                                    to={`/users/${e.username}`}
+                                >
+                                    {e.user_full_name}
+                                </Link>
                             </div>
                         </div>
                     </td>

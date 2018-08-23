@@ -89,13 +89,15 @@ class Timelist extends React.Component {
     }
 
     getEvents(url) {
+        console.log('PROPS PROPS', this.props);
         const _this = this;
         const params = url
             ? {}
             : {
+                  in_scroll__slug: this.props.slug,
                   start: this.props.start,
                   end: this.props.end,
-                  q: this.props.queryString,
+                  q: this.props.searchQuery,
                   order: 'when_happened'
               };
         axios({
@@ -125,7 +127,7 @@ class Timelist extends React.Component {
             start: this.state.startDateTime.toISO(),
             limit: 50,
             offset: 0,
-            q: this.props.queryString,
+            q: this.props.searchQuery,
             order: 'when_happened'
         };
         axios({
@@ -182,6 +184,7 @@ class Timelist extends React.Component {
         if (!this.props.new) {
             this.getMinMax({ in_scroll__slug: this.props.slug });
             this.setState(prevState => ({ events: [] }));
+            this.getEvents();
         }
     }
 
@@ -191,6 +194,10 @@ class Timelist extends React.Component {
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (this.props.slug !== prevProps.slug) {
+            this.kickoff();
+        }
+
+        if (this.props.searchQuery !== prevProps.searchQuery) {
             this.kickoff();
         }
 
@@ -299,6 +306,18 @@ class Timelist extends React.Component {
         });
     }
 
+    renderTitleEditor() {
+        if (this.props.slug) {
+            <TimelistTitleEditor
+                key={`tti-${this.props.uuid}`}
+                insertEvent={this.insertEvent.bind(this)}
+                count={this.state.count}
+                {...this.props}
+            />;
+        } else {
+            return <h1>{this.props.searchQuery}</h1>;
+        }
+    }
     render() {
         return (
             <div className="Timelist">
@@ -308,12 +327,7 @@ class Timelist extends React.Component {
                     onScroll={this.handleScroll.bind(this)}
                 >
                     <div className="list-object">
-                        <TimelistTitleEditor
-                            key={`tti-${this.props.uuid}`}
-                            insertEvent={this.insertEvent.bind(this)}
-                            count={this.state.count}
-                            {...this.props}
-                        />
+                        {this.renderTitleEditor()}
                         <table
                             key={`ttit-${this.props.uuid}`}
                             className="list-object-table"

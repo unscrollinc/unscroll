@@ -5,7 +5,7 @@ import AppContext from './AppContext';
 
 class Search extends React.Component {
     updateUrl() {
-        this.props.history.push('/?q=' + this.state.q);
+        this.props.history.push('/?view=vertical&q=' + this.state.q);
     }
     render() {
         return (
