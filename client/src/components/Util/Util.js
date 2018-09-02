@@ -14,7 +14,8 @@ const hostname = window && window.location && window.location.hostname;
 const URL =
     hostname === 'unscroll.com' ? 'https://unscroll.com/' : 'http://localhost/';
 
-const API = URL + 'api/';
+const API =
+    hostname === 'unscroll.com' ? URL + 'api/' : 'http://localhost:8000/api/';
 
 const util = {
     PANEL_WIDTH_PERCENTAGE: 100,
