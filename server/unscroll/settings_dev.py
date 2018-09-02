@@ -13,7 +13,9 @@ DATABASES = {
 }
 
 STATIC_URL = '/static/'
-
+STATIC_ROOT= '/Users/ford/dev/unscroll/server/scrolls/static/'
 THUMBNAIL_DIR = '/Users/ford/dev/unscroll/server/scrolls/static/scrolls/'
+DATA_UPLOAD_MAX_MEMORY_SIZE=4621440
+
 
 DEBUG = True

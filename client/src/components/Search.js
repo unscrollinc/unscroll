@@ -18,13 +18,11 @@ class Search extends React.Component {
                                 onSubmit={e => {
                                     e.preventDefault();
                                     this.updateUrl();
-                                    // context.doEventSearch(e, this.state.q)
                                 }}
                             >
-                                Search:{' '}
                                 <input
                                     type="text"
-                                    defaultValue=""
+                                    defaultValue="Search"
                                     onChange={e =>
                                         this.setState({ q: e.target.value })
                                     }

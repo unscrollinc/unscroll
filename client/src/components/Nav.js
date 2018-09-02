@@ -126,11 +126,11 @@ class Nav extends React.Component {
                     UNSCROLL
                 </Link>
                 <NavLink to="/about">?</NavLink>
-                <NavLink to="/timelines">Timelines</NavLink>
+                <NavLink to="/timelines">TL</NavLink>
 
                 {this.renderHorizontalOrVertical()}
 
-                <NavLink to="/notebooks">Notebooks</NavLink>
+                <NavLink to="/notebooks">NB</NavLink>
 
                 <Search />
 

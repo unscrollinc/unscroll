@@ -57,6 +57,13 @@ class IAItem():
             if len(filtered) > 0:
                 dir = 'https://{}{}/__ia_thumb.jpg'.format(data.get('d1'), data.get('dir'),)
                 return dir
+            
+            filtered = [x for x in files if 'name' in x
+                        and '.jpg' in x['name']
+                        and not('thumb' in x['name'])]
+            if len(filtered) > 0:
+                dir = 'https://{}{}/{}'.format(data.get('d1'), data.get('dir'),filtered[0]['name'])
+                return dir            
 
             filtered = [x for x in files if 'format' in x and x['format'] == 'Animated GIF']
             if len(filtered) > 0:

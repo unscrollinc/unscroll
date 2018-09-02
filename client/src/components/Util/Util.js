@@ -12,10 +12,12 @@ axios.defaults.withCredentials = true;
 // Yeah yeah, I know.
 const hostname = window && window.location && window.location.hostname;
 const URL =
-    hostname === 'unscroll.com' ? 'https://unscroll.com/' : 'http://localhost/';
+    hostname === 'unscroll.com'
+        ? 'https://unscroll.com/'
+        : 'http://' + hostname + '/';
 
 const API =
-    hostname === 'unscroll.com' ? URL + 'api/' : 'http://localhost:8000/api/';
+    hostname === 'unscroll.com' ? URL + 'api/' : 'http://' + hostname + '/api/';
 
 const util = {
     PANEL_WIDTH_PERCENTAGE: 100,

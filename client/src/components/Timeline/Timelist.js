@@ -308,12 +308,14 @@ class Timelist extends React.Component {
 
     renderTitleEditor() {
         if (this.props.slug) {
-            <TimelistTitleEditor
-                key={`tti-${this.props.uuid}`}
-                insertEvent={this.insertEvent.bind(this)}
-                count={this.state.count}
-                {...this.props}
-            />;
+            return (
+                <TimelistTitleEditor
+                    key={`tti-${this.props.uuid}`}
+                    insertEvent={this.insertEvent.bind(this)}
+                    count={this.state.count}
+                    {...this.props}
+                />
+            );
         } else {
             return <h1>{this.props.searchQuery}</h1>;
         }

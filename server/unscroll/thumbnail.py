@@ -4,7 +4,7 @@ import requests
 from os import makedirs, path
 import hashlib
 import base36
-from unscroll.settings import THUMBNAIL_SIZE, THUMBNAIL_DIR
+from django.conf import settings
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
 class InboundThumbnail(object):
@@ -50,12 +50,12 @@ class InboundThumbnail(object):
             img.convert("RGBA")
             self.width, self.height = img.size
             thumb = img
-            if self.width > THUMBNAIL_SIZE[0]:
-                thumb = ImageOps.fit(img, THUMBNAIL_SIZE, centering=(0.0, 0.5))
+            if self.width > settings.THUMBNAIL_SIZE[0]:
+                thumb = ImageOps.fit(img, settings.THUMBNAIL_SIZE, centering=(0.0, 0.5))
                 self.width, self.height = thumb.size
             self.hash_image(thumb.tobytes())
 
-            d = '{}/{}'.format(THUMBNAIL_DIR, self.img_dir,)
+            d = '{}/{}'.format(settings.THUMBNAIL_DIR, self.img_dir,)
 
             if not path.isdir(d):
                 makedirs(d)
@@ -63,10 +63,11 @@ class InboundThumbnail(object):
             thumb\
                 .convert('RGB')\
                 .save('{}/{}'
-                      .format(THUMBNAIL_DIR, self.img_filename),
+                      .format(settings.THUMBNAIL_DIR, self.img_filename),
                       quality=80,
                       optimize=True,
                       progressive=True)
+            
         except OSError as e:
             print('[thumbnail.py] OSError: {}'.format(e,))
             pass

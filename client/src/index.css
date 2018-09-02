@@ -397,8 +397,8 @@ td.content {
 
 td.content .event-title {
     font-weight: normal;
-    font-size: 150%;
     line-height: 125%;
+    text-align: left;
     padding: 0.5em 0 0.5em 0;
     /*
 font-family: 'IBM Plex Sans', sans-serif;
@@ -533,9 +533,6 @@ th {
     text-align: right;
 }
 
-span.search-input {
-    padding-top: 1%;
-}
 div.search-ruby {
     font-size: 8pt;
     color: #888;
@@ -545,6 +542,9 @@ div.search-ruby {
 
 form.search {
     display: inline;
+}
+form.search input {
+    width: 25%;
 }
 
 .About {
