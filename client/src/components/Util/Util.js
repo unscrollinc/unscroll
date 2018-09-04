@@ -275,13 +275,15 @@ const util = {
 
                 const ks = Object.keys(hashed);
                 let blanked = new Object(hashed);
-                let _blanked = { ...hashed };
+                //let _blanked = { ...hashed };
 
+                /*
                 console.log({
                     hashed: hashed,
                     blanked: blanked,
                     _blanked: _blanked
                 });
+*/
                 global.push(ks[0]);
                 blanked[ks[0]] = null;
 

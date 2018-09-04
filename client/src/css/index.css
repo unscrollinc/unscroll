@@ -263,9 +263,6 @@ td {
     padding-bottom: 2em;
 }
 
-.public-DraftEditor-content:focus {
-    background: white;
-}
 .active-true {
     background: black;
     color: white;
@@ -602,7 +599,7 @@ div.loading {
 */
 
 .list-object {
-    padding: 5% 10% 0 10%;
+    padding: 5% 20% 0 0%;
     margin: 0 0 10em 0;
     background: white;
     height: 100%;
@@ -674,7 +671,8 @@ div.list-object-published-Private {
 
 .rte-citation-editor input,
 .rte-link-editor input,
-.public-DraftEditor-content {
+.quill,
+.ql-container {
     padding: 0;
     margin: 0;
     padding: 1% 0 1% 0;
@@ -684,8 +682,12 @@ div.list-object-published-Private {
     color: black;
     font-family: 'IBM Plex Sans', monospace;
 }
+.ql-container,
+.ql-editor {
+    padding: 0;
+}
 
-div.rte-title-editor .public-DraftStyleDefault-block {
+div.rte-title-editor {
     font-size: 150%;
 }
 
@@ -1057,4 +1059,31 @@ div.text {
     word-wrap: break-word;
     overflow-wrap: break-word;
     word-break: break-word;
+}
+
+.slider {
+    width: 100%;
+    border: red;
+}
+
+/* range slider */
+.rangeslider-vertical {
+    width: 5%;
+    left: 95%;
+    top: 5%;
+    height: 90%;
+    position: fixed;
+}
+.rangeslider-vertical .rangeslider__fill {
+    background-color: red;
+}
+.rangeslider-vertical .rangeslider__handle {
+    background-color: deepskyblue;
+    height: 30px;
+    border: 1px solid black;
+}
+.rangeslider .rangeslider__handle-tooltip {
+    width: 10em;
+    left: -7em;
+    background-color: red;
 }

@@ -8,7 +8,8 @@ import TimelistTitleEditor from './TimelistTitleEditor';
 import utils from '../Util/Util';
 import { Scrollbars } from 'react-custom-scrollbars';
 import uuidv4 from 'uuid/v4';
-import qs from 'qs';
+// import qs from 'qs';
+import Slider from 'react-rangeslider';
 
 class Timelist extends React.Component {
     constructor(props) {
@@ -23,6 +24,7 @@ class Timelist extends React.Component {
             rangeTouching: false,
             rangeLeft: '0%',
             isSaved: true,
+            slide: 0,
             fetchUrl: undefined,
             nextUrl: undefined
         };
@@ -64,6 +66,31 @@ class Timelist extends React.Component {
         });
     }
 
+    getSeconds(firstEvent, lastEvent) {
+        const s = DateTime.fromISO(firstEvent);
+        const e = DateTime.fromISO(lastEvent);
+        const i = Interval.fromDateTimes(s, e);
+        const seconds = i.length('seconds') / 100;
+        return {
+            interval: i,
+            seconds: seconds,
+            currentRangePosition: s.toFormat('kkkk / MMM')
+        };
+    }
+
+    setPosition(dt) {
+        const newInterval = Interval.fromDateTimes(
+            this.state.interval.start,
+            DateTime.fromISO(dt)
+        );
+        const perc = Math.floor(
+            100 *
+                (newInterval.length('seconds') /
+                    this.state.interval.length('seconds'))
+        );
+        this.setState({ slide: perc });
+    }
+
     getMinMax(qs) {
         const _this = this;
         axios({
@@ -72,17 +99,11 @@ class Timelist extends React.Component {
             headers: utils.getAuthHeaderFromCookie(),
             params: qs
         })
-            .then(resp => {
-                const s = DateTime.fromISO(resp.data.first_event);
-                const e = DateTime.fromISO(resp.data.last_event);
-                const i = Interval.fromDateTimes(s, e);
-                const seconds = i.length('seconds') / 1000;
-                _this.setState({
-                    interval: i,
-                    seconds: seconds,
-                    currentRangePosition: s.toFormat('kkkk / MMM')
-                });
-            })
+            .then(resp =>
+                _this.setState(
+                    this.getSeconds(resp.data.first_event, resp.data.last_event)
+                )
+            )
             .catch(err => {
                 console.log('Error', err);
             });
@@ -107,6 +128,8 @@ class Timelist extends React.Component {
             params: params
         })
             .then(resp => {
+                console.log('RESP', resp.data.results[0].when_happened);
+                _this.setPosition(resp.data.results[0].when_happened);
                 const _els = _this.makeEvents(resp.data, false);
                 _this.setState(prevState => ({
                     events: prevState.events.concat(_els),
@@ -250,60 +273,35 @@ class Timelist extends React.Component {
             }
         }
     }
+    handleRange(value) {
+        this.setState({ slide: value });
+        const loc = this.state.interval.start.plus({
+            seconds: this.state.seconds * value
+        });
+        this.setState({
+            startDateTime: loc,
+            currentRangePosition: loc.toFormat('kkkk MMM d')
+        });
+    }
 
     renderRange() {
         if (this.state.interval) {
             return (
                 <div className="timelist-range">
-                    <div style={{ marginLeft: this.state.rangeLeft }}>
-                        {this.state.currentRangePosition}
-                        &nbsp;
-                    </div>
-                    <input
-                        style={{ width: '100%' }}
-                        type="range"
-                        min="0"
-                        max="1000"
-                        defaultValue="0"
-                        step="1"
-                        onMouseDown={() =>
-                            this.setState({
-                                rangeMouseDown: true
-                            })
-                        }
-                        onMouseUp={() =>
-                            this.setState({
-                                rangeMouseDown: false
-                            })
-                        }
-                        onTouchStart={() =>
-                            this.setState({
-                                rangeTouchin: true
-                            })
-                        }
-                        onTouchEnd={() =>
-                            this.setState({
-                                rangeTouching: false
-                            })
-                        }
-                        onInput={this.handleRange.bind(this)}
+                    <Slider
+                        className="slider"
+                        value={this.state.slide}
+                        style={{ height: '80%' }}
+                        orientation="vertical"
+                        reverse={true}
+                        format={() => this.state.currentRangePosition}
+                        onChange={this.handleRange.bind(this)}
+                        onChangeComplete={this.replaceEvents.bind(this)}
                     />
                 </div>
             );
         }
         return null;
-    }
-
-    handleRange(e) {
-        const v = e.target.value;
-        const loc = this.state.interval.start.plus({
-            seconds: this.state.seconds * v
-        });
-        this.setState({
-            startDateTime: loc,
-            rangeLeft: v / 10 - v / 25 + '%',
-            currentRangePosition: loc.toFormat('kkkk MMM d')
-        });
     }
 
     renderTitleEditor() {
@@ -329,6 +327,7 @@ class Timelist extends React.Component {
                     onScroll={this.handleScroll.bind(this)}
                 >
                     <div className="list-object">
+                        {this.renderRange()}
                         {this.renderTitleEditor()}
                         <table
                             key={`ttit-${this.props.uuid}`}
@@ -336,7 +335,7 @@ class Timelist extends React.Component {
                         >
                             <tbody>
                                 <tr>
-                                    <td colSpan="3">{this.renderRange()}</td>
+                                    <td colSpan="3">RANGE WAS HERE</td>
                                 </tr>
 
                                 {this.state.events}

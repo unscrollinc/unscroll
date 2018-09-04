@@ -3,7 +3,7 @@ import AppContext from '../AppContext.js';
 import RichTextEditor from '../Editor/RichTextEditor';
 import TimelistEvent from '../Timeline/TimelistEvent';
 import update from 'immutability-helper';
-import { Scrollbars } from 'react-custom-scrollbars';
+//import { Scrollbars } from 'react-custom-scrollbars';
 
 const SPINNER_STATES = [
     'default',
@@ -90,7 +90,13 @@ class NotebookEvent extends React.Component {
 
     renderEvent() {
         if (this.props.event) {
-            return <TimelistEvent event={this.props.event} />;
+            return (
+                <table>
+                    <tbody>
+                        <TimelistEvent event={this.props.event} />
+                    </tbody>
+                </table>
+            );
         }
         return null;
     }

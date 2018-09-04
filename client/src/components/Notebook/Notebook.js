@@ -1,7 +1,7 @@
 import React from 'react';
 import { Redirect } from 'react-router';
 import { Scrollbars } from 'react-custom-scrollbars';
-import { Link, NavLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import Note from './Note';
 import TitleEditor from './TitleEditor';

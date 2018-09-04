@@ -1,6 +1,8 @@
 import React from 'react';
 // import update from 'immutability-helper';
-import ReactQuill from 'react-quill'; // ES6
+import { Editor, RichUtils, EditorState } from 'draft-js';
+import { stateToHTML } from 'draft-js-export-html';
+import { stateFromHTML } from 'draft-js-import-html';
 
 // This wraps a Rich Text editor component. The key thing is that it
 // does what I call "upEdit" which is that when passed a function and
@@ -12,25 +14,19 @@ class RichTextEditor extends React.Component {
         super(props);
         this.state = {
             edited: null,
-            text: this.props.content
+            editorState: EditorState.createWithContent(
+                stateFromHTML(this.props.content)
+            )
         };
     }
 
-    matchChar(delta, match) {
-        // does the delta match a regular expression?
-        if (delta.ops && delta.ops.length > 1 && delta.ops[1].insert) {
-            const m = delta.ops[1].insert.match(match);
-            const matched = m && m.length > 0 ? true : false;
-            return matched;
-        }
-    }
-    onChange(content, delta, source, editor) {
-        console.log(content, delta, source, editor, this);
-        // Ignore newlines;
-        if (!this.matchChar(delta, /\n/)) {
-            this.setState({ text: content });
-        }
-        this.edit(this.props.field, content);
+    onChange(key, event) {
+        const value = stateToHTML(event.getCurrentContent(), {
+            defaultBlockTag: null
+        });
+        console.log(key, value, event, this);
+        this.setState({ event });
+        this.edit(key, value);
     }
 
     tidy(html) {
@@ -48,7 +44,6 @@ class RichTextEditor extends React.Component {
     }
 
     handleKeyCommand(key, command) {
-        /*
         if (!this.props.plain) {
             const es = this.state.editorState;
             const newState = RichUtils.handleKeyCommand(es, command);
@@ -58,7 +53,6 @@ class RichTextEditor extends React.Component {
             }
         }
         return 'not-handled';
-        */
     }
 
     handleReturn(key, command) {
@@ -67,12 +61,21 @@ class RichTextEditor extends React.Component {
     }
 
     render() {
+        const field = this.props.field;
         return (
-            <ReactQuill
-                className={this.props.field}
-                value={this.state.text}
-                theme={null}
-                onChange={this.onChange.bind(this)}
+            <Editor
+                className={
+                    this.props.editorClass + ' ' + field + ' draft-editor'
+                }
+                key={this.props.editorClass + '-' + field}
+                handleReturn={this.handleReturn}
+                handleKeyCommand={command => {
+                    this.handleKeyCommand(field, command);
+                }}
+                editorState={this.state.editorState}
+                onChange={e => {
+                    return this.onChange(field, e);
+                }}
             />
         );
     }

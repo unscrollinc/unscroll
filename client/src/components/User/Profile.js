@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import validator from 'email-validator';
-import { Form, Text } from 'react-form';
+//import validator from 'email-validator';
+//import { Form, Text } from 'react-form';
 import axios from 'axios';
 import utils from '../Util/Util';
 import { Scrollbars } from 'react-custom-scrollbars';

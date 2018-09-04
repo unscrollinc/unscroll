@@ -1,6 +1,6 @@
 import React from 'react';
 import update from 'immutability-helper';
-import { Route, Redirect } from 'react-router';
+// import { Route, Redirect } from 'react-router';
 import RichTextEditor from '../Editor/RichTextEditor';
 // import utils from '../Util/Util';
 import 'react-toggle/style.css';

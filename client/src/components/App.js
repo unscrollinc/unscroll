@@ -19,10 +19,7 @@ import Timelist from './Timeline/Timelist';
 import TimelineList from './Timeline/TimelineList';
 import Notebook from './Notebook/Notebook';
 import NotebookList from './Notebook/NotebookList';
-
 import { AppProvider } from './AppContext';
-
-import '../index.css';
 
 class App extends React.Component {
     constructor(props) {
