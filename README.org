@@ -1,22 +1,31 @@
 #+TITLE: Unscroll Overall Notes
+#+AUTHOR: Paul Ford
 
+* Development Environment
+* Components
 * Unscroll
 
-Unscroll has a few goals, related to how I see the world and where I see things going. It is essentially a composition environment for the next 20-30 years based on my own learning and what I see of the web. It's designed to address a number of gaps in culture (notice I didn't say "market gaps"):
+Unscroll has a few goals, related to how I see the world and where I see things going in the world.
 
-** Editorial
-- Editorial organizations are dying and fact-checking and editorial support are going away. Most of the sources we trusted in the last ten years will be gone in ten years. The ones that replace them have high turnover and are traded around.
-- Humans are really bad at thinking sequentially about things. A vast number of errors in thinking are due to bad chronology. Context is very hard to maintain. There are a host of old-school fallacies related to this, like the historian's fallacy and the historical fallacy, gambler's fallacy.
-** Interface
-- Minimalism has failed writers IMO. It creates a situation in which you're NOT supposed to use all the tools of the Internet to solve things.
-- The domain of TIME has never been a first-class citizen on the web, unlike geography/mapping, social relationships and social networks, commerce, and news.
-- Documents in composition are made of fragments and objects not simply long runs of text, even if the end result is one (hopefully) smooth line of prose. That is, composition and reading are different. Unscroll is pretty orthodox about this; it's really more of a composition platform than a publishing platform and it has incredibly strong opinions about editing and workflow.
-- Linking is a pain. Full hypertext abstraction is not useful for most humans and adding links is kind of hard. Also links die. People need things to touch and link to. So we give them events, as many as they want until they feel secure in their thoughts.
-- Mobile web composition is very hard and you lose your place a lot.
-** Commons
-- Data in the commons is often trash and there's no way to improve it. WikiPedia and Archive.org are the best so far and they have a really hard time and they don't let you make new, pretty things.
-- It should be easier to get things from the web INTO the commons.
-- To encourage a more robust commons you need to help people get into the commons.
+It is essentially a composition environment for the next 20-30 years based on my own learning and what I see of the web.
+
+It's designed to address a number of gaps in culture (notice I didn't say "market gaps"):
+
+** What Gaps Are We Seeking to Fill?
+*** Editorial Gaps
+ - Editorial organizations are dying and fact-checking and editorial support are going away. Most of the sources we trusted in the last ten years will be gone in ten years. The ones that replace them have high turnover and are traded around.
+ - Humans are really bad at thinking sequentially about things. A vast number of errors in thinking are due to bad chronology. Context is very hard to maintain. There are a host of old-school fallacies related to this, like the historian's fallacy and the historical fallacy, gambler's fallacy.
+*** Interface Gaps
+ - Minimalism has failed writers IMO. It creates a situation in which you're NOT supposed to use all the tools of the Internet to solve things.
+ - The domain of TIME has never been a first-class citizen on the web, unlike geography/mapping, social relationships and social networks, commerce, and news.
+ - Documents in composition are made of fragments and objects not simply long runs of text, even if the end result is one (hopefully) smooth line of prose. That is, composition and reading are different. Unscroll is pretty orthodox about this; it's really more of a composition platform than a publishing platform and it has incredibly strong opinions about editing and workflow.
+ - Linking is a pain. Full hypertext abstraction is not useful for most humans and adding links is kind of hard. Also links die. People need things to touch and link to. So we give them events, as many as they want until they feel secure in their thoughts.
+ - Mobile web composition is very hard and you lose your place a lot.
+*** Cultural Commons Gaps
+ - Data in the commons is often trash and there's no way to improve it. Wikipedia and Archive.org are the best so far and they have a really hard time and they don't encourage you to make new, pretty things.
+ - It should be easier to get things from the web /into/ the commons.
+ - To encourage a more robust commons you need to help people get into the commons.
+
 
 ** Understanding This Thing
 
@@ -59,110 +68,118 @@ But an awful lot of failures when you break them down, people have a specific pa
 
 The key to sustainability is in spending all of your time and energy to increase optionality. That's what I've learned in the last three years, running a business. I learned it from my co-founder. Having the maximum number of options in front of you then making the best possible choices for the business. Having the most inbound leads, the bigger marketing mailing list. Knock on all the doors. Talk to the VCs, the bankers, the academics. Could you run this with one employee? Zero? If you do that, of course, the community you need for sustainability vanishes; you need people besides yourself to be in on the optionality game.
 
-* Data
+*** Data
 
-** Data Model
+**** Data Model
 
-| Parent   | Child |
-|----------+-------|
-| [Group]  | User  |
-| Notebook | Note  |
-| Scroll   | Event |
+  | Parent   | Child |
+  |----------+-------|
+  | /Group/  | User  |
+  | Notebook | Note  |
+  | Scroll   | Event |
 
-Group is not implemented (well it is in Django just not reall).
+  Group is not implemented (well it is in Django just not reall).
 
-Event must have a =when_happened= field in PostgreSQL-parseable
-datetime format.
+  Event must have a =when_happened= field in PostgreSQL-parseable
+  datetime format.
 
-** Relationships/Foreign Keys
-
-|          |          | by_  | in_  | with_  |
-|----------+----------+------+------+--------|
-| Scroll   | User     | X    |      |        |
-| Event    | User     | X    |      |        |
-| ''       | Scroll   |      | X    |        |
-| Notebook | User     | X    |      |        |
-| Note     | User     | X    |      |        |
-| ''       | Notebook |      | X    |        |
-| ''       | Event    |      |      | X      |
+**** Relationships/Foreign Keys
 
 
-* Server
+  | From     | To       | =by_= | =in_= | =with_= |
+  |----------+----------+-------+-------+---------|
+  | Scroll   | User     | X     |       |         |
+  |----------+----------+-------+-------+---------|
+  | Event    | User     | X     |       |         |
+  | ''       | Scroll   |       | X     |         |
+  |----------+----------+-------+-------+---------|
+  | Notebook | User     | X     |       |         |
+  |----------+----------+-------+-------+---------|
+  | Note     | User     | X     |       |         |
+  | ''       | Notebook |       | X     |         |
+  | ''       | Event    |       |       | X       |
 
-Server is built in Django + django-rest-framework. It's lumpy and
-annoying but then you get the hang of it. All of the real work is in
-the PostgreSQL schema, though, and ultimately this thing should be
-rewritten.
+*** Server
 
-Like I said: Lumpy.
+  Server is built in Django + django-rest-framework. It's lumpy and
+  annoying but then you get the hang of it. All of the real work is in
+  the PostgreSQL schema, though, and ultimately this thing should be
+  rewritten.
 
-I stayed with one-server-in-some-cloud model because I didn't want to
-prematurely optimize anything and I wasn't sure if I was building this
-for one person, a workgroup, or the web. Mostly because I was learning
-React and you only want to learn one new huge thing per project or
-you'll lose your mind.
+  Like I said: Lumpy.
 
-* Future Plans
-Two basic paths I see:
-- Social graph :: I follow people and organizations and see the events and notebooks they're adding.
-- Workgroup :: One individual creates a Scroll; a group of approved individuals can add and edit Events. One individual creates a Notebook; a group of approved individuals can add and edit Notes. 
+  I stayed with one-server-in-some-cloud model because I didn't want to
+  prematurely optimize anything and I wasn't sure if I was building this
+  for one person, a workgroup, or the web. Mostly because I was learning
+  React and you only want to learn one new huge thing per project or
+  you'll lose your mind.
 
-* How Could This Thing be Optimized
-Optimization path is pretty clear:
+*** Future Plans
+**** Improvements 
+- Timelines could be much better. 
+- Timelists could be much better.
+- Edit experience could do things.
+- Searches can be saved.
 
-1) Login/API to whatever service makes sense.
+**** Core functionality
+  - Social graph :: I follow people and organizations and see the events and notebooks they're adding.
+  - Workgroup :: One individual creates a Scroll; a group of approved individuals can add and edit Events. One individual creates a Notebook; a group of approved individuals can add and edit Notes. 
 
-2) Event and Note retrieval from PostgreSQL to ElasticSearch or other
-inverted-btree/id-retrieval platform. Retrieval patterns are basically
-all in the form:
- - Items X in Bag Y sorted by Z and [optionally] Paged
- (Events in Scroll 1 sorted by when\_happened and paged)
- - Items X matching Search Y sorted by Z and Paged
+*** How Could This Thing be Optimized
+  Optimization path is pretty clear:
 
-3) Image/thumbnail hosting to S3 or similar cache.
+  1) Login/API to whatever service makes sense.
 
-This thing could scale if you ever wanted. The Event objects are
-super-light, you could even cap them at 2-3Kb and thus have a couple
-billion on a server.
+  2) Event and Note retrieval from PostgreSQL to ElasticSearch or other
+  inverted-btree/id-retrieval platform. Retrieval patterns are basically
+  all in the form:
+   - Items X in Bag Y sorted by Z and [optionally] Paged
+     - (Events in Scroll 1 sorted by =when_happened= and paged)
+   - Items X matching Search Y sorted by Z and Paged
+   - Image/thumbnail hosting to S3 or similar cache.
 
-I try to let the database do a lot which django fights a little; lots
-of =select_related()= function calls off the query object.
+  This thing could scale if you ever wanted. The Event objects are
+  super-light, you could even cap them at 2-3Kb and thus have a couple
+  billion on a server.
 
-The overall API design is okay. The niceties aren't there, like snake
-case, and some of the fields need to be balanced out. There isn't a
-really clear sense of users--sometimes I give you scroll_username,
-etc. There's some bad future-proofing; for example Events are in a
-many-to-one relationship to Scrolls and should simply inherit Scroll
-authorship (same true of Note/Notebook) but I track author the whole
-way.
+  I try to let the database do a lot which django fights a little; lots
+  of =select_related()= function calls off the query object.
+
+  The overall API design is okay. The niceties aren't there, like snake
+  case, and some of the fields need to be balanced out. There isn't a
+  really clear sense of users--sometimes I give you =scroll_username,
+  etc. There's some bad future-proofing; for example Events are in a
+  many-to-one relationship to Scrolls and should simply inherit Scroll
+  authorship (same true of Note/Notebook) but I track author the whole
+  way.
 
 
-CLIENT
+*** Client
 
-Client is react using create-react-app and react context API (no
-flux). I was learning react as I went and that shows; at first I had
-the whole world in my context and then I started to factor out to
-components. It's sort of halway where it needs to be. My basic pattern
-now is:
+ Client is react using create-react-app and react context API (no
+ flux). I was learning react as I went and that shows; at first I had
+ the whole world in my context and then I started to factor out to
+ components. It's sort of halway where it needs to be. My basic pattern
+ now is:
 
-component
-   constructor()
+ component
+    constructor()
 
-   utilities()
+    utilities()
  
-   someServerLogic() # usually in componentdidmount
-   someOtherserverLogic()
+    someServerLogic() # usually in componentdidmount
+    someOtherserverLogic()
  
-   renderSomePart()
-   renderSomeOtherPart()
-   render() # put it all together
+    renderSomePart()
+    renderSomeOtherPart()
+    render() # put it all together
 
-with everything returning null at the end, but I'm not 100% there.
+ with everything returning null at the end, but I'm not 100% there.
 
-Didn't use a CSS preprocessor CUZ I'M OLD.
+ Didn't use a CSS preprocessor CUZ I'M OLD.
 
-That said my instinct is that this is like 30% oooof what the hell and
-60% sure i'd do it differently and 10% okay wow that's interesting.
+ That said my instinct is that this is like 30% oooof what the hell and
+ 60% sure i'd do it differently and 10% okay wow that's interesting.
 
 
 
@@ -287,16 +304,15 @@ as to whether I am or not, I have my on opinions, and you are totally free to ma
   - [X] Add to notebook
   - [X] Publish a notebook
 
-
 * Actual Notes
 
 ** Startup is basically:
 
 *** Local Dev
-- # nginx -c"/Users/ford/dev/unscroll/config/nginx/nginx_dev.conf" -s reload
-- $ DJANGO_SETTINGS_MODULE=unscroll.settings_dev gunicorn -p /tmp/gunicorn.sock --bind 0.0.0.0:8000 unscroll.wsgi:application
+- =# nginx -c"/Users/ford/dev/unscroll/config/nginx/nginx_dev.conf" -s reload=
+- =$ DJANGO_SETTINGS_MODULE=unscroll.settings_dev gunicorn -p /tmp/gunicorn.sock --bind 0.0.0.0:8000 unscroll.wsgi:application=
 - (or)
-- $ DJANGO_SETTINGS_MODULE=unscroll.settings_dev ./manage.py runserver
+- =$ DJANGO_SETTINGS_MODULE=unscroll.settings_dev ./manage.py runserver=
 
 
 *** Server dev
@@ -349,3 +365,81 @@ Took a minute to figure out.
 In general though getting from Mac to Ubuntu took an hour or two to
 smooth things out.
 
+* Principles for Making Unscroll
+
+** Date + Time
+
+- Date + time are hard
+  - luxon is fine
+  - Don't worry about calendar disasters of the past
+  - Don't worry about pre-4000BC
+  - Don't worry about weird datetime stuff yet
+  - Follow the principle of the latest possible date. I.e. "Circa 1972" = December 31, 1972 at midnight.
+  - Track resolution. "Circa 1972" has a resolution of 4.
+  - Preserve the original datetime
+  - Continually work on one smartish date extractor and incrementally improve it.
+  - Nothing will ever work perfectly and you will never have enough information to do it right.
+
+** Data
+
+- API imports
+  - Follow the rules and regulations.
+  - Use it as a guide for spidering.
+
+- Web Spidering
+  - Follow robots.txt and do things right.
+  - Need to build a big spider.
+  - Sadly it's usually going to be better for our use case to spider than download data dumps or use APIs.
+
+** API
+- Django Rest Framework is fine
+  - Let the models and framework do as much work as possible.
+  - Use ModelViewSet as much as possible
+  - That's your primary magic.
+  - Otherwise keep stuff pretty explicit.
+  - As few endpoints as possible,
+    - Each one vetted for permissions (esp. on nested objects)
+    - Each filterable.
+
+** Caching
+- Cache event sets, esp low-read ones.
+- Cache notebooks.
+- Don't overdo it.
+
+** Frontend 
+- Tooling:
+  - React is fine.
+  - =create-react-app= is fine.
+- State management:
+  - Local state wherever possible
+  - React Context when you'd otherwise be handing functions down the prop tree.
+  - Immutable state unless it's ridiculous to implement.
+  - Document stateful and messy stuff.
+  - Cookies are fine for auth token.
+  - Global stuff like cookie-loader goes in Util/Util.js
+
+- Refs, Props, etc.
+  - Avoid refs (use them for object sizing only)
+
+- Integration with backend
+  - Axios is fine
+  - Patch over Put
+  - Hit the server and don't get precious
+
+- Verbs
+  - =postFoo()= :: make the state of a Foo, POST it, and update state with any changes
+  - =getFoo()= :: GET one foo from the server and put it into state 
+  - =getFoos()= :: GET some foos from the server and put them into state 
+  - =patchFoo()= :: save a foo on the server with a PUT or PATCH and put any relevant updates into state
+  - =deleteFoo()= :: DELETE a foo from the server and remove it from state
+  - =searchFoos()= :: search through foos from the server and remove it from state
+  - =addFooToBar()= :: put Foo inside a map or array in Bar
+  - =removeFooFromBar()= :: remove Foo from a map or array in Bar
+  - =renderFoo()= :: drawing things in screen: overload "render"--return the JSX necessary to render a Foo
+
+** DevOps
+- One server is okay to launch.
+- Measure before optimizing.
+- Have an optimization path in mind.
+  - Postgres search -> Elasticsearch
+  - IDs -> UUIds
