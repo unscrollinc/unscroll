@@ -97,7 +97,10 @@ class Timelist extends React.Component {
             method: 'get',
             url: utils.getAPI('events/minmax'),
             headers: utils.getAuthHeaderFromCookie(),
-            params: qs
+            params: {
+                q: this.props.searchQuery,
+                in_scroll__slug: this.props.slug
+            }
         })
             .then(resp =>
                 _this.setState(
@@ -333,13 +336,7 @@ class Timelist extends React.Component {
                             key={`ttit-${this.props.uuid}`}
                             className="list-object-table"
                         >
-                            <tbody>
-                                <tr>
-                                    <td colSpan="3">RANGE WAS HERE</td>
-                                </tr>
-
-                                {this.state.events}
-                            </tbody>
+                            <tbody>{this.state.events}</tbody>
                         </table>
                     </div>
                 </Scrollbars>
