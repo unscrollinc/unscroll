@@ -2,7 +2,14 @@
 #+AUTHOR: Paul Ford
 
 * Development Environment
+#+BEGIN_SRC bash
+mkvirtualenv ~/local/env/unscroll
+git clone $UNSCROLL_GITHUB_REPO
+cd unscroll/server
+pipenv install
+#+END_SRC
 * Components
+
 * Unscroll
 
 Unscroll has a few goals, related to how I see the world and where I see things going in the world.
