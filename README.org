@@ -1,6 +1,69 @@
 #+TITLE: Unscroll Overall Notes
 #+AUTHOR: Paul Ford
 
+* A MetaCommons
+- News
+- Serials
+- Humans
+- Historical Events
+- Music
+- Films
+- TV serials
+- Radio
+- Podcasts
+
+
+https://github.com/WGBH/AAPB2#api
+https://chroniclingamerica.loc.gov/batches.json
+https://chroniclingamerica.loc.gov/batches/
+https://toolbox.google.com/datasetsearch/search?query=historical&docid=41XkXsqWDskevlQnAAAAAA%3D%3D
+https://www.blog.google/products/search/making-it-easier-discover-datasets/
+- News
+- Sports
+
+https://toolbox.google.com/datasetsearch/search?query=120%20years%20of%20Olympic%20history%3A%20athletes%20and%20results&docid=DEJvaZ%2FLlshtkBKdAAAAAA%3D%3D
+
+All things can be linked and sliced and diced digitally, but I think it is a very obvious decision to keep organizing corpora by media type, because that is how culture produces them. I cannot switch readily from writer to cartographer, without years of labor.
+
+What is tricky is: A CD-ROM of pictures, like this one of . It is meaningfu
+
+Certainly new forms arise but we arrange ourselves around them.
+
+There are cultural assumptions that come with forms. A map describes a place. A book collects words and pictures into a sequence. A history book describes things that happened. A fictional story describes the contents of a writer's emotions.
+
+So if we are arranging things by forms, we need simply ask, where are all the X, where X is a commonly understood form. There are always going to be exceptions but we seek ease. Search will bind our 
+
+Identifiers
+
+I'm just going to use UUIDs, MD5 sums, and Library of Congress Subject Headings.
+
+
+In English:
+
+- Books
+Here we have the Library of Congress as a canonical resource. Or even Amazon. Books for over a century are discrete-mass produced objects that have identifiers; before that, there were fewer books. Self-published books are really something here. God help us.
+
+
+I'm just going to use UUIDs and the Library of Congress.
+
+- Email Mailboxes
+
+- Usenet news groups
+
+- Moving Pictures
+
+- Recorded audio
+An incomplete . 
+
+- Maps
+This is going to be scattershot.
+
+- Artworks
+This one is very hard. There is art everywhere. Museums collect theirs into digital resources. But the Botero in the Time Warner center---it might as well be on the moon. 
+
+
+- 
+
 * Development Environment
 #+BEGIN_SRC bash
 mkvirtualenv ~/local/env/unscroll

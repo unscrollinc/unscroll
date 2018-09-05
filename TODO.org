@@ -1,10 +1,12 @@
 * Server Release TODO
+- YEP YEP
+
 ** API
 - [ ] Read through for security
 - [ ] Turn on basic caching
 
-** Client [0/0]
-*** Run through whole site as logged in/not logged in
+** Client [0/1]
+*** TODO Run through whole site as logged in/not logged in
 *** Create users:
 - [ ] ia
 imp1998or#t@er
