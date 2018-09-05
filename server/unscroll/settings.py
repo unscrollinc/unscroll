@@ -182,9 +182,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
-#STATIC_URL = '/django-static/'
-#STATIC_ROOT= '/home/unscroll/unscroll/unscroll/scrolls/django-static/'
-#THUMBNAIL_DIR = '/home/unscroll/unscroll/unscroll/scrolls/'
+STATIC_URL = '/django-static/'
+STATIC_ROOT= '/home/unscroll/unscroll/unscroll/scrolls/django-static/'
+THUMBNAIL_DIR = '/home/unscroll/unscroll/unscroll/scrolls/'
 
 THUMBNAIL_SIZE = 300,300
 DATA_UPLOAD_MAX_MEMORY_SIZE=4621440
