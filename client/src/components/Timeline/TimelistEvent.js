@@ -80,23 +80,28 @@ class TimelistEvent extends React.Component {
         }
         return <div className="dropzone-empty" />;
     }
+    makeOriginal(e) {
+        if (e.when_original) {
+            return ` (${e.when_original})`;
+        }
+        return '';
+    }
 
     makeWhen(e) {
-        if (e.when_original) {
-            return (
-                <div title={'Date parsed as: ' + e.when_happened}>
-                    {e.when_original}
-                </div>
-            );
-        }
+        const o = this.makeOriginal(e);
+
         if (e.resolution <= 10) {
-            return DateTime.fromISO(e.when_happened).toFormat('DDDD');
+            return DateTime.fromISO(e.when_happened).toFormat('DDDD') + o;
         }
+
         if (e.resolution <= 8) {
-            return DateTime.fromISO(e.when_happened).toFormat('MM YYYY');
+            return DateTime.fromISO(e.when_happened).toFormat('MM YYYY') + o;
         }
+
         if (e.resolution <= 4) {
-            return 'ca. ' + DateTime.fromISO(e.when_happened).toFormat('YYYY');
+            return (
+                'ca. ' + DateTime.fromISO(e.when_happened).toFormat('YYYY') + o
+            );
         }
     }
 
@@ -273,49 +278,28 @@ class TimelistEvent extends React.Component {
     renderLoggedInButtons() {
         if (utils.isLoggedIn()) {
             return (
-                <div className="eventNoteButton">
+                <span className="eventNoteButton">
                     <EventNoteButton event={this.state.event} />
                     <button
                         onClick={() => this.setState({ isBeingEdited: true })}
                     >
                         Edit
                     </button>
-                </div>
+                </span>
             );
         }
         return null;
     }
+
     renderEvent() {
         const e = this.state.event;
+        console.log(e);
         return (
             <React.Fragment>
                 <tr className="timelist">
-                    <td className="meta">
-                        {this.makeImage(e)}
-                        <div className="collection">
-                            <div className="scroll-title">
-                                <a
-                                    className="title"
-                                    href={`/timelines/${e.scroll_uuid}`}
-                                >
-                                    {e.scroll_title}
-                                </a>
-                            </div>
-
-                            <div className="author">
-                                <Link
-                                    className="title"
-                                    to={`/users/${e.username}`}
-                                >
-                                    {e.user_full_name}
-                                </Link>
-                            </div>
-                        </div>
-                    </td>
+                    <td className="meta">{this.makeImage(e)}</td>
 
                     <td className="content">
-                        {this.renderLoggedInButtons()}
-
                         <div className="dt">{this.makeWhen(e)}</div>
 
                         <a href={e.content_url} target="_blank">
@@ -325,6 +309,31 @@ class TimelistEvent extends React.Component {
                             />
                         </a>
                         {this.renderText(e.text)}
+                        <div className="timelist-event-meta">
+                            <span className="collection">
+                                <span className="scroll-title">
+                                    <Link
+                                        className="title"
+                                        to={`/timelines/${e.in_scroll_user}/${
+                                            e.in_scroll_slug
+                                        }`}
+                                    >
+                                        {e.scroll_title}
+                                    </Link>
+                                </span>
+
+                                <span className="author">
+                                    <Link
+                                        className="title"
+                                        to={`/users/${e.username}`}
+                                    >
+                                        {e.user_full_name}
+                                    </Link>
+                                </span>
+                            </span>
+
+                            {this.renderLoggedInButtons()}
+                        </div>
                     </td>
                 </tr>
             </React.Fragment>

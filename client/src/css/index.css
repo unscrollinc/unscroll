@@ -275,16 +275,19 @@ div.Timelist {
     top: 5%;
     position: fixed;
     background: white;
-    padding: 1em;
 }
 
 div.Timelist table {
+    width: 90%;
     padding-bottom: 1000px;
 }
 .timelist-image {
-    width: 100%;
-    max-width: 175px;
-    max-height: 350px;
+    width: 150px;
+    height: 100px;
+    object-fit: cover;
+}
+.timelist-image {
+    object-position: left top;
 }
 
 div.Timelist div.timelist-meta-content {
@@ -343,8 +346,12 @@ div.Timelist div.description em {
     font-style: normal;
 }
 
-div.Timelist div.meta {
-    padding-top: 1em;
+div.timelist-event-meta span {
+    padding-right: 0.5em;
+}
+
+div.timelist-event-meta a {
+    color: #888;
 }
 
 table {
@@ -352,7 +359,7 @@ table {
 }
 
 tr.timelist {
-    border-bottom: 1px solid red;
+    border-bottom: 1px solid #ccc;
 }
 tr.timelist td {
     vertical-align: top;
@@ -369,7 +376,7 @@ tr.timelist td {
 
 td.meta {
     text-align: right;
-    width: 25%;
+    width: 110px;
     font-size: 9pt;
     line-height: 125%;
     padding: 0.5em 0.5em 1.5em 1em;
@@ -384,7 +391,6 @@ div.collection div {
 }
 
 td.content {
-    width: 75%;
     text-align: justify;
     hyphens: auto;
     color: #555;
@@ -599,14 +605,14 @@ div.loading {
 */
 
 .list-object {
-    padding: 5% 20% 0 0%;
-    margin: 0 0 10em 0;
-    background: white;
+    padding: 5%;
+    margin: 0;
     height: 100%;
+    width: 90%;
 }
 
 table.list-object-table {
-    margin: 1% 0 0 0;
+    margin: 0% 0 0 0;
     width: 100%;
     border-collapse: collapse;
 }
@@ -968,14 +974,6 @@ span.switcher {
     font-family: monospace;
     white-space: pre;
 }
-.timelist-range {
-    top: 0%;
-    width: 90%;
-    text-align: left;
-    font-weight: bold;
-    padding: 0em;
-    padding: 5%;
-}
 
 input[type='range']:focus {
     outline: none;
@@ -1056,9 +1054,6 @@ div.event-editor-title .public-DraftStyleDefault-block {
     margin: 0 1em 0 1em;
 }
 div.text {
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    word-break: break-word;
 }
 
 .slider {
