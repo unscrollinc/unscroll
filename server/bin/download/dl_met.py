@@ -16,7 +16,6 @@ import sys
 
 urllib3.disable_warnings()
 
-
 def cache_collection():
     for i in range(248,3201):
         offset = i * 100
@@ -27,7 +26,7 @@ def cache_collection():
         r = requests.get(url, headers=headers)
         data = r.json()
         if 'results' in data:
-            local = "cache/met/{:08d}.json".format(offset)
+            local = "/home/unscroll/cache/met/{:08d}.json".format(offset)
             f = open(local, 'wb')
             f.write(r.content)
             print(local)
@@ -55,7 +54,7 @@ def save_met():
     scroll = c.create_or_retrieve_scroll('The Met')
     s = requests.Session()
 
-    conn = sqlite3.connect('cache/met.db')
+    conn = sqlite3.connect('/home/unscroll/cache/met.db')
     conn.row_factory = sqlite3.Row
     
     sqlc = conn.cursor()
@@ -66,7 +65,7 @@ def save_met():
     
     for row in sqlc.fetchall():
 
-        ud = UnscrollDate(row['date'])
+        ud = UnscrollDate(row['date'], begin=-2000, end=2018)
         
         if ud.is_okay():
             with_thumbnail = None
@@ -79,7 +78,7 @@ def save_met():
                 medium = ' ({})'.format(row['medium'])
             
             if img is not None and row['date'] is not None:
-                local = 'cache/met-images/{}'.format(local_img,)
+                local = '/home/unscroll/cache/met-images/{}'.format(local_img,)
                 if file_exists(local):
                     thumb = c.post_thumbnail(local)
                     if thumb is not None:

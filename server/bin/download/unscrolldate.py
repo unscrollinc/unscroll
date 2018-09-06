@@ -15,8 +15,12 @@ class UnscrollDate(object):
     resolution = None
     
     def __init__(self, likelies=None, begin=None, end=None):
-        self.begin = int(begin)
-        self.end = int(end)
+        try:
+            self.begin = int(begin)
+            self.end = int(end)
+        except Exception as e:
+            print(e)
+            
         if likelies is not None:
             # box up likelies into a list if we just got a string
         
