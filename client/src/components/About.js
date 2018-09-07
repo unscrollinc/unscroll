@@ -74,17 +74,21 @@ class About extends React.Component {
                         <h2>Who is this for?</h2>
 
                         <p>
-                            People who require links, people who like history,
-                            high school students, grad students, journalists who
-                            don't have enough editorial and fact-checking
-                            support, personal essay types, anyone who wants to
-                            catch themselves on their own foolishness,
-                            professional accurists of all stripe.
+                            Professional accurists of all stripes. People who
+                            like history, high school students, grad students,
+                            journalists who don't have enough editorial and
+                            fact-checking support, personal-essay-writer types,
+                            basically anyone who wants to catch themselves on
+                            their own foolishness, and catch the foolishness of
+                            others before it infects the water supply. Also just
+                            people who like looking at old vases and how book
+                            covers change over time. Everyone.
                         </p>
 
                         <p>
                             It's also edging on a tool for people to do serious
-                            work on their phones. Think millennial law students.
+                            work on their phones. That's how I use it mostly.
+                            Think millennial law students.
                         </p>
 
                         <p>But really it's for me.</p>
@@ -93,7 +97,7 @@ class About extends React.Component {
 
                         <p>
                             My name is Paul Ford. I'm a writer, programmer, and
-                            more recently, an entrepreneur.
+                            an entrepreneur.
                         </p>
 
                         <p>
@@ -164,14 +168,14 @@ class About extends React.Component {
                         </h2>
 
                         <p>
-                            Some should. Info dumps into the commons are hard to
-                            do right so I'm taking some time. I want to figure
-                            out an efficient way to release changesets so that
-                            people can do stuff with the data on their home
-                            machines, not just dump a bucket of JSON into the
-                            world. I was thinking you could do a lot with
-                            incremental changesets distributed in SQLite. Let's
-                            see what happens.
+                            Some should. Sharing out data in a reasonable way
+                            takes time to do right so I'm not rushing. I don't
+                            want to just release data out of guilt or mandate,
+                            or just dump an intractable blob of JSON into a
+                            bucket. I want to make sure what goes back into the
+                            commons is tractable, useful, and can be used to
+                            contribute back to Unscroll, too. Let's see what
+                            happens.
                         </p>
 
                         <h2>If I use this, who owns my work?</h2>
@@ -237,10 +241,8 @@ class About extends React.Component {
                         </h2>
 
                         <p>
-                            It's way too early and could you limit it to a few
-                            thousand events please and also it's gonna break in
-                            bad bad bad bad bad ways but...you have it already.
-                            I just need a little while for Swagger, etc.
+                            You have it actually. I just need a little while for
+                            Swagger, etc.
                         </p>
 
                         <h2>This website is not accessible.</h2>
@@ -248,17 +250,8 @@ class About extends React.Component {
                         <p>
                             It isn't, and it should be, and needs to be.{' '}
                             <i>Mea culpa</i>. It's going to take a while. The
-                            hard part isn't the content and the events or
-                            notebook reading, which could be done rapidly, but
-                            in building out forms and creating a good
-                            composition experience that allows for updates of
-                            timelines and notebooks. Translating that interface
-                            mentally to something that meets the broadest group
-                            of users is a challenge and I lack the requisite
-                            point of view. If this turns out to be more than a
-                            folly I'll ask people with actual experience (or
-                            actual needs for accessibility) what they think.
-                            Let's see what happens.
+                            thing to get right is the composition experience.
+                            Glad to hear from people about what needs to happen.
                         </p>
 
                         <h2>What about copyright?</h2>
@@ -276,7 +269,7 @@ class About extends React.Component {
                         <h2>What about my privacy and security?</h2>
 
                         <p>
-                            I won't go snooping but I might see something while
+                            I, or someone I delegate, might see something while
                             administering the database. In general please don't
                             put anything super-secret or valuable into this new,
                             untrusted, experimental web service. I don't think
@@ -286,7 +279,8 @@ class About extends React.Component {
                         <p>
                             I use the Django framework and follow its
                             guidelines. All traffic is via HTTPS via Let's
-                            Encrypt.
+                            Encrypt. So it's roughly as locked down as any
+                            reasonable web-based thing.
                         </p>
 
                         <p>
@@ -303,28 +297,15 @@ class About extends React.Component {
                             should I ever trust you at all?
                         </h2>
 
-                        <p>I need a minute, please.</p>
-
                         <p>
                             This is ultimately a thing designed to give back to
-                            the commons so if something weird happens, like
-                            anyone besides me uses it, I'll DM{' '}
-                            <a href="https://en.wikipedia.org/wiki/Jason_Scott">
-                                Jason Scott
-                            </a>
-                            , which is something I do, it won't be a surprise,
-                            and I'll ask him to tell me exactly what to do to
-                            archive the data here.
-                        </p>
-
-                        <p>
-                            I mean I'll probably talk about it with him before
-                            that. What I'm saying is, without overly waving my
-                            arms about it, I'm a friend to digital archives. To
-                            the point that I kept complete, somewhat obsessive
-                            control of this ridiculous side project so that I
-                            would not have to compromise on issues around
-                            privacy, archiving, and specific kinds of utility.
+                            the commons. Let's see how people use it. I am a
+                            friend of the archive community and large libraries
+                            everywhere. An ideal situation is one in which,
+                            should Unscroll go away entirely, nothing that was
+                            shared with the public would be lost, and
+                            individuals would still have full records of their
+                            private events, timelines, notes, and notebooks.
                         </p>
 
                         <h2>There's no business model.</h2>
@@ -371,14 +352,17 @@ class About extends React.Component {
                         <h2>
                             This is just another centralized effort designed to
                             own other people's creative work. It should be a
-                            federated, decentralized timeline writing tool.
+                            federated, decentralized timeline-writing tool.
                         </h2>
 
                         <p>
-                            Maybe! I don't really want to own time or culture
-                            though. I want people to feel safe and protected and
-                            like they have the tools they need to do good work,
-                            starting with me.
+                            {' '}
+                            Maybe! Have you ever tried to coordinate large
+                            numbers of services to create great experiences,
+                            though? Me neither. I don't really want to own time
+                            or culture. I want people to feel safe and protected
+                            and like they have the tools they need to do good
+                            work, starting with me.
                         </p>
 
                         <p>

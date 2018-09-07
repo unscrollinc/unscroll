@@ -38,7 +38,17 @@ npm install --no-optional
 
 mkdir socket # for gunicorn
 
-sudo add-apt-repository ppa:certbot/certbot
-sudo apt update
-sudo apt install python-certbot-nginx
+root> add-apt-repository ppa:certbot/certbot
+root> apt update
+root> apt install python-certbot-nginx
 
+
+** Add a file that updates scroll counts and metadata.
+
+We want to update every two minutes:
+
+unscroll> =crontab -e= [ENTER]
+
+/Add the following crontab entry to the end of the file:/
+
+=*/2 * * * * psql -f /home/unscroll/unscroll/tasks/update_counts.sql=
