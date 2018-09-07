@@ -20,7 +20,7 @@ def get_releases(api, scroll):
                 date = tds[0]
                 when_original = date.get_text()
 
-                ud = UnscrollDate(when_original)
+                ud = UnscrollDate(when_original, begin=1994, end=2018)
 
                 link = tds[1]
                 title = link.select('a')[0].get_text()
