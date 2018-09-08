@@ -17,14 +17,24 @@ class TimelineList extends React.Component {
             const luxonDt = DateTime.fromISO(dt);
             return luxonDt.toLocaleString(DateTime.DATE_SHORT);
         };
-
+        const getLink = scroll => {
+            return (
+                '/timelines/' +
+                scroll.user_username +
+                '/' +
+                scroll.slug +
+                '?view=vertical'
+            );
+        };
         const getThumbnail = scroll => {
             if (scroll.with_thumbnail_image) {
                 return (
-                    <img
-                        className="timelist-image"
-                        src={`${utils.URL}/${scroll.with_thumbnail_image}`}
-                    />
+                    <Link to={getLink(scroll)}>
+                        <img
+                            className="timelist-image"
+                            src={`${utils.URL}/${scroll.with_thumbnail_image}`}
+                        />
+                    </Link>
                 );
             }
             return null;
@@ -47,13 +57,7 @@ class TimelineList extends React.Component {
                 <td className="list-object-meta-td">
                     <div className="list-object-title">
                         <Link
-                            to={
-                                '/timelines/' +
-                                scroll.user_username +
-                                '/' +
-                                scroll.slug +
-                                '?view=vertical'
-                            }
+                            to={getLink(scroll)}
                             dangerouslySetInnerHTML={{ __html: scroll.title }}
                         />
                     </div>
