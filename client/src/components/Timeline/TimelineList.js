@@ -9,6 +9,7 @@ class TimelineList extends React.Component {
     constructor(props, context) {
         super(props);
         this.state = { scrolls: [] };
+        this.getThumbnail = this.getThumbnail;
     }
 
     makeScroll(scroll) {
@@ -17,11 +18,24 @@ class TimelineList extends React.Component {
             return luxonDt.toLocaleString(DateTime.DATE_SHORT);
         };
 
+        const getThumbnail = scroll => {
+            if (scroll.with_thumbnail_image) {
+                return (
+                    <img
+                        className="timelist-image"
+                        src={`${utils.URL}/${scroll.with_thumbnail_image}`}
+                    />
+                );
+            }
+            return null;
+        };
+
         const privacy = scroll.is_public ? 'Public' : 'Private';
 
         return (
             <tr className="list-object-tr" key={scroll.uuid}>
                 <td className="list-object-date-td">
+                    <div>{getThumbnail(scroll)}</div>
                     <div>{formatDate(scroll.when_created)}</div>
                     <div>
                         <Link to={'/users/' + scroll.user_username}>

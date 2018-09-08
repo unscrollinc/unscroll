@@ -293,7 +293,6 @@ class TimelistEvent extends React.Component {
 
     renderEvent() {
         const e = this.state.event;
-        console.log(e);
         return (
             <React.Fragment>
                 <tr className="timelist">

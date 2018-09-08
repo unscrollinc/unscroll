@@ -284,15 +284,13 @@ div.Timelist table {
 .timelist-image {
     width: 150px;
     height: 100px;
-    object-fit: cover;
+    object-fit: contain;
 }
 .timelist-image {
-    object-position: left top;
+    object-position: right top;
 }
 
 div.Timelist div.timelist-meta-content {
-    margin-top: 4em;
-    margin-bottom: 4em;
 }
 
 div.Timelist div.timelist-meta h1 a {
@@ -309,17 +307,16 @@ div.Timelist div.timespan {
     font-style: italic;
     padding: 1em 0 1em 0;
 }
+
 div.Timelist div.description {
     color: #666;
     font-size: 100%;
     line-height: 1.5em;
     font-style: Italic;
-    text-align: justify;
-    hyphens: auto;
 }
 
 div.Timelist table.meta {
-    border-left: 1px solid red;
+    border-left: 1px solid #ccc;
     width: 50%;
     margin-left: 2.5%;
     float: right;
@@ -618,7 +615,7 @@ table.list-object-table {
 }
 
 tr.list-object-tr {
-    border-bottom: 1px solid red;
+    border-bottom: 1px solid #ccc;
 }
 
 table.list-object-table th {
@@ -637,7 +634,7 @@ table.list-object-table th {
 td.list-object-date-td,
 th.list-object-date-th {
     width: 10%;
-    text-align: left;
+    text-align: right;
 }
 td.list-object-creator-td,
 th.list-object-creator-th {

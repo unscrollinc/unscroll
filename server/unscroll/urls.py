@@ -503,6 +503,10 @@ class ScrollSerializer(serializers.HyperlinkedModelSerializer):
     event_count = serializers.IntegerField(
         read_only=True)
 
+    with_thumbnail_image = serializers.CharField(
+        read_only=True,
+        source="with_thumbnail.image")    
+
     class Meta:
         model = Scroll
         fields = '__all__'

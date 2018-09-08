@@ -114,7 +114,7 @@ class TimelistTitleEditor extends React.Component {
     renderMeta() {
         const s = this.state.scroll;
         return (
-            <div key={s.uuid} className="timelist-meta">
+            <div key={s.uuid} className="timelist-meta-inner">
                 <h1>
                     <Link
                         to={'/timelines/' + s.user_username + '/' + s.slug}
@@ -123,20 +123,20 @@ class TimelistTitleEditor extends React.Component {
                 </h1>
                 {this.editButtons()}
                 <div className="timelist-meta-content">
-                    <div
-                        className="description"
-                        dangerouslySetInnerHTML={{ __html: s.description }}
-                    />
                     {s.meta_event_count
                         ? s.meta_event_count.toLocaleString()
                         : '?'}{' '}
-                    events
+                    items
                     {', '}
                     {this.quickDate(s.meta_first_event)} -{' '}
                     {this.quickDate(s.meta_last_event)}. Created by{' '}
                     <a href={'/users/' + s.user_username}>{s.user_username}</a>{' '}
                     on {this.quickDate(s.when_created)}.
                 </div>
+                <div
+                    className="description"
+                    dangerouslySetInnerHTML={{ __html: s.description }}
+                />
             </div>
         );
     }
