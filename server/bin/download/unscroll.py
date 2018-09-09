@@ -28,14 +28,24 @@ class UnscrollClient():
         self.login()
 
     def __batch__(self,
-                  thumbnail=None,                  
                   scroll_title=None,
+                  subtitle='',                                  
+                  public=True,
+                  description='',
+                  link='',
+                  citation='',
+                  with_thumbnail=None,            
                   events=[]):
 
         if (scroll_title is not None):
             self.login()
             scroll = self.create_or_retrieve_scroll(scroll_title,
-                                                    with_thumbnail=thumbnail)
+                                                    subtitle=subtitle,
+                                                    public=public,
+                                                    description=description,
+                                                    link=link,
+                                                    citation=citation,
+                                                    with_thumbnail=with_thumbnail)
             for event in events:
                 event['in_scroll'] = scroll
             chunks = [events[x:x+500] for x in range(0, len(events), 500)]

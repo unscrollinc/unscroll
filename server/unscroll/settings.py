@@ -189,7 +189,7 @@ THUMBNAIL_DIR = '/home/unscroll/unscroll/unscroll/scrolls/'
 THUMBNAIL_SIZE = 300,300
 DATA_UPLOAD_MAX_MEMORY_SIZE=4621440
 
-BLEACH_ALLOWED_TAGS = ['p', 'b', 'i', 'u', 'em', 'strong']
+BLEACH_ALLOWED_TAGS = ['p', 'b', 'i', 'u', 'em', 'strong', 'pre']
 BLEACH_ALLOWED_ATTRIBUTES = []
 BLEACH_STRIP_TAGS = True
 BLEACH_STRIP_COMMENTS = True

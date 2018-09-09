@@ -90,18 +90,22 @@ class TimelistEvent extends React.Component {
     makeWhen(e) {
         const o = this.makeOriginal(e);
 
-        if (e.resolution <= 10) {
-            return DateTime.fromISO(e.when_happened).toFormat('DDDD') + o;
+        if (e.resolution <= 4) {
+            return (
+                'ca. ' + DateTime.fromISO(e.when_happened).toFormat('YYYY') + o
+            );
         }
 
         if (e.resolution <= 8) {
             return DateTime.fromISO(e.when_happened).toFormat('MM YYYY') + o;
         }
 
-        if (e.resolution <= 4) {
-            return (
-                'ca. ' + DateTime.fromISO(e.when_happened).toFormat('YYYY') + o
-            );
+        if (e.resolution <= 10) {
+            return DateTime.fromISO(e.when_happened).toFormat('DDDD') + o;
+        }
+
+        if (e.resolution <= 14) {
+            return DateTime.fromISO(e.when_happened).toFormat('DDDD hh:mm') + o;
         }
     }
 
