@@ -102,6 +102,7 @@ pytzdata = "*"
 drf-extensions = "*"
 python-memcached = "*"
 docutils = "*"
+"markdown2" = "*"
 
 [dev-packages]
 

@@ -98,8 +98,6 @@ class UnscrollClient():
                              + quote_plus(title),
                              headers=self.authentication_header,)
             results = r.json()['results']
-            print('########################################')
-            print(results)
             if (len(results) > 0):
                 scroll_d = dict(results[0])
                 return scroll_d['url']
@@ -125,19 +123,14 @@ class UnscrollClient():
         r_events = []
         for event in events:
             event['in_scroll'] = scroll
-            r_events.append(event)
-        r = requests.post(self.api + '/events/',
-                          headers=self.authentication_header,
-                          json=r_events)
-        return r.json()
+            self.create_event(self, event, scroll)
+
 
     def create_event(self, event, scroll):
         event['in_scroll'] = scroll
-        print(event)
         r = requests.post(self.api + '/events/',
                           headers=self.authentication_header,
                           data=event)
-        print(r.content)
         return r
 
     def fetch_favicon_url(self, url):

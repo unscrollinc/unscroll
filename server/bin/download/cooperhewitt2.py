@@ -12,15 +12,21 @@ from unscrolldate import UnscrollDate
 from unscroll import UnscrollClient
 import pathlib
 
+THUMBNAIL_IMAGE='https://uh8yh30l48rpize52xh0q1o6i-wpengine.netdna-ssl.com/wp-content/uploads/2018/03/CooperGarden102-1.jpg'
+
 def __main__():
 
-    c = UnscrollClient(api='https://unscroll.com/api/',
-                       username='ford',
-                       password='***REMOVED***')
+    c = UnscrollClient()
     c.login()
-    scroll = c.create_or_retrieve_scroll('Cooper-Hewitt Museum Collection')
-
-    conn = sqlite3.connect('cooper/objects.db')
+    favthumb = c.cache_thumbnail(THUMBNAIL_IMAGE)    
+    scroll = c.create_or_retrieve_scroll('Cooper-Hewitt',
+                                         description='Items from the Cooper Hewitt',
+                                         link='https://github.com/cooperhewitt/collection',
+                                         citation='Cooper-Hewitt Museum Collection',
+                                         with_thumbnail=favthumb.get('url'))
+                                         
+    
+    conn = sqlite3.connect('/home/unscroll/cache/cooper/objects.db')
     conn.row_factory = sqlite3.Row
     
     sqlc = conn.cursor()
@@ -33,7 +39,7 @@ def __main__():
             # switch to the 300x300 thumbnail
             sq = re.sub('z\.jpg', 'sq.jpg', row['primary_image'])
             local_sq = re.sub(r'https?://','',sq)
-            local = 'cooper/{}'.format(local_sq,)
+            local = '/home/unscroll/cache/cooper/{}'.format(local_sq,)
             
             i = i + 1
             found = False
@@ -55,7 +61,7 @@ def __main__():
 
             print('{}: {}/{}'.format(i, local, found))
             
-            ud = UnscrollDate(row['date'])
+            ud = UnscrollDate(row['date'], begin=-4000, end=2018)
             if ud.is_okay():
 
                 with_thumbnail = None
@@ -78,8 +84,6 @@ def __main__():
                 }
                 e = c.create_event(d, scroll)
                 # print(e.json())
-    
 
-    
 __main__()
     
