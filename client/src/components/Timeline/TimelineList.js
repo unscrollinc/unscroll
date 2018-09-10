@@ -129,14 +129,6 @@ class TimelineList extends React.Component {
 
                                         <table className="list-object-table">
                                             <tbody>
-                                                <tr className="list-object-tr">
-                                                    <th className="list-object-date-th">
-                                                        Date
-                                                    </th>
-                                                    <th className="list-object-meta-th">
-                                                        Timeline
-                                                    </th>
-                                                </tr>
                                                 {this.state.scrolls.map(
                                                     this.makeScroll
                                                 )}

@@ -209,8 +209,17 @@ class TimelistTitleEditor extends React.Component {
         );
     }
 
-    newEvent() {
-        console.log('I am making a new event');
+    deleteScroll() {
+        console.log('DELETING SCROLL', this);
+        const _this = this;
+        const url = this.state.scroll.url;
+        axios({
+            method: 'delete',
+            url: url,
+            headers: utils.getAuthHeaderFromCookie()
+        }).then(resp => {
+            console.log('deleted');
+        });
     }
 
     editButtons() {
@@ -224,6 +233,14 @@ class TimelistTitleEditor extends React.Component {
                         }}
                     >
                         Edit Timeline
+                    </button>
+                    <button
+                        key="delete"
+                        onClick={() => {
+                            this.deleteScroll();
+                        }}
+                    >
+                        EVIL ACTUAL UNFINISHED Delete Timeline
                     </button>
                     <button
                         key="new"

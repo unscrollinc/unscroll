@@ -393,8 +393,8 @@ td.content {
 
 td.content pre {
     background: #eee;
-    width: 50%;
-    font-size: 8pt;
+    width: 90%;
+    font-size: 10pt;
     overflow-x: auto;
     font-family: 'IBM Plex Mono', monospace;
 }

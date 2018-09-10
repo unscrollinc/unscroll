@@ -14,12 +14,11 @@ def cleanup_message_id(s):
 
 def cleanup_payload(s):
     payload = None
-    _s1 = re.sub('<','&lt;', s)
-    _s2 = re.sub('>','&gt;', _s1)    
-    if len(s) > 2000:
-        payload = '{}...'.format(_s2[:2000],)
+    _s1 = re.sub(r'<([^>]+)>', r'&lt;\1&gt;', s)    
+    if len(s) > 500:
+        payload = '{}...'.format(_s1[:500],)
     else:
-        payload ='{}'.format(_s2,)
+        payload ='{}'.format(_s1,)
     return markdown2.markdown(payload)
 
 def message_to_event(message, newsgroup, scroll, api):
