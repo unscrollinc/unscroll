@@ -642,26 +642,20 @@ table.list-object-table th {
 }
 td.list-object-date-td,
 th.list-object-date-th {
-    width: 10%;
+    width: 20%;
     text-align: right;
 }
 td.list-object-creator-td,
 th.list-object-creator-th {
-    width: 10%;
+    width: 20%;
     text-align: left;
 }
 td.list-object-meta-td,
 th.list-object-meta-th {
-    width: 70%;
-    text-align: left;
-}
-td.list-object-published-td,
-th.list-object-published-th {
-    width: 15%;
+    width: 80%;
     text-align: left;
 }
 div.list-object-title {
-    margin-bottom: 10em;
 }
 
 div.list-object-title a {

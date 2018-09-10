@@ -51,6 +51,14 @@ class TimelineList extends React.Component {
                         <Link to={'/users/' + scroll.user_username}>
                             {scroll.user_full_name}
                         </Link>
+
+                        <div>
+                            {scroll.meta_event_count
+                                ? scroll.meta_event_count.toLocaleString()
+                                : '-'}
+                        </div>
+
+                        <div>{privacy}</div>
                     </div>
                 </td>
 
@@ -66,18 +74,6 @@ class TimelineList extends React.Component {
                         className="list-object-description"
                         dangerouslySetInnerHTML={{ __html: scroll.description }}
                     />
-                </td>
-
-                <td className="list-object-no-events-td">
-                    {scroll.meta_event_count
-                        ? scroll.meta_event_count.toLocaleString()
-                        : '-'}
-                </td>
-
-                <td className={`list-object-published-td`}>
-                    <div className={`list-object-published-${privacy}`}>
-                        {privacy}
-                    </div>
                 </td>
             </tr>
         );
@@ -139,12 +135,6 @@ class TimelineList extends React.Component {
                                                     </th>
                                                     <th className="list-object-meta-th">
                                                         Timeline
-                                                    </th>
-                                                    <th className="list-object-no-events-th">
-                                                        No.
-                                                    </th>
-                                                    <th className="list-object-published-th">
-                                                        Published
                                                     </th>
                                                 </tr>
                                                 {this.state.scrolls.map(
