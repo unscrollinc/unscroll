@@ -103,6 +103,7 @@ drf-extensions = "*"
 python-memcached = "*"
 docutils = "*"
 "markdown2" = "*"
+argparse = "*"
 
 [dev-packages]
 

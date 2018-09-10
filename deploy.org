@@ -52,3 +52,8 @@ unscroll> =crontab -e= [ENTER]
 /Add the following crontab entry to the end of the file:/
 
 =*/2 * * * * psql -f /home/unscroll/unscroll/tasks/update_counts.sql=
+
+** migration to different
+
+HAD TO RUN THIS
+delete from event where id in (select distinct x.id from (select min(id) as id, by_user_id, in_scroll_id, title, content_url, count(*) from event group by by_user_id, in_scroll_id, title, content_url having count(*) > 1) as x);

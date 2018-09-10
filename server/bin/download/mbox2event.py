@@ -4,6 +4,7 @@ import re
 import datetime
 from dateutil import parser
 from unscroll import UnscrollClient
+import argparse
 import markdown2
 
 THUMBNAIL_URL = 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Usenet_servers_and_clients.svg/1000px-Usenet_servers_and_clients.svg.png'
@@ -13,10 +14,12 @@ def cleanup_message_id(s):
 
 def cleanup_payload(s):
     payload = None
+    _s1 = re.sub('<','&lt;', s)
+    _s2 = re.sub('>','&gt;', _s1)    
     if len(s) > 2000:
-        payload = '{}...'.format(s[:2000],)
+        payload = '{}...'.format(_s2[:2000],)
     else:
-        payload ='{}'.format(s,)
+        payload ='{}'.format(_s2,)
     return markdown2.markdown(payload)
 
 def message_to_event(message, newsgroup, scroll, api):
@@ -53,13 +56,14 @@ def mbox_reader(stream):
     text = data.decode(encoding="utf-8", errors="replace")
     return mailbox.mboxMessage(text)
 
-def newsgroup_to_events(newsgroup, scroll, api):
-    mbox = mailbox.mbox('/home/unscroll/cache/usenet/{}.mbox'.format(newsgroup), factory=mbox_reader)
+def newsgroup_to_events(newsgroup, scroll, api, dir):
+    mbox = mailbox.mbox('{}/{}.mbox'.format(dir, newsgroup),
+                        factory=mbox_reader)
     for message in mbox:
         message_to_event(message, newsgroup, scroll, api)
 
-def create(newsgroup):
-    _title = '{} (Usenet Newsgroup)'.format(newsgroup)
+def create(newsgroup, dir):
+    _title = '{}'.format(newsgroup)
     api = UnscrollClient()
     api.delete_scroll_with_title(_title)
     favthumb = api.cache_thumbnail(THUMBNAIL_URL)
@@ -71,23 +75,25 @@ def create(newsgroup):
         with_thumbnail=favthumb['url'], 
         subtitle='Collection via Usenet Historical Collection',        
     )
-    newsgroup_to_events(newsgroup, scroll, api)
-    
-    
+    newsgroup_to_events(newsgroup, scroll, api, dir)
 
 def __main__():
-    groups = [
-        'comp.infosystems.www.announce',
-        'alt.hypertext',
-        'comp.internet.net-happenings',
-        'comp.society.futures',
-        'comp.text.sgml',
-        'comp.text.xml',
-        'alt.folklore.computers',
-    ]
+    parser = argparse.ArgumentParser(
+        description='Turn an mbox into events.')
+    parser.add_argument('--dir',
+                        help='A directory.')
+    parser.add_argument('--mbox',
+                        help='An mbox file.')
+    args = parser.parse_args()
+    
+    if (args.dir is None):
+        print('No directory!')
+        exit(0)
+    elif (args.mbox is None):
+        print('No mbox!')
+        exit(0)        
 
-    for group in groups:
-        create(group)
+    create(args.mbox, args.dir)
     
 __main__()
         

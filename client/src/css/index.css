@@ -317,8 +317,6 @@ div.Timelist div.description {
 
 div.Timelist table.meta {
     border-left: 1px solid #ccc;
-    width: 50%;
-    margin-left: 2.5%;
     float: right;
 }
 
@@ -373,10 +371,8 @@ tr.timelist td {
 
 td.meta {
     text-align: right;
-    width: 110px;
     font-size: 9pt;
     line-height: 125%;
-    padding: 0.5em 0.5em 1.5em 1em;
 }
 
 div.collection {
@@ -388,11 +384,24 @@ div.collection div {
 }
 
 td.content {
-    text-align: justify;
-    hyphens: auto;
+    width: 85%;
+    overflow: hide;
     color: #555;
     font-size: 11pt;
-    padding: 0.5em 0.5em 1.5em 1em;
+    padding: 0;
+}
+
+td.content pre {
+    background: #eee;
+    width: 50%;
+    font-size: 8pt;
+    overflow-x: auto;
+    font-family: 'IBM Plex Mono', monospace;
+}
+
+td.content div.text {
+    width: 100%;
+    overflow-x: auto;
 }
 
 td.content .event-title {
@@ -602,15 +611,15 @@ div.loading {
 */
 
 .list-object {
-    padding: 5%;
+    padding: 2.5%;
     margin: 0;
     height: 100%;
-    width: 90%;
+    width: 100%;
 }
 
 table.list-object-table {
-    margin: 0% 0 0 0;
     width: 100%;
+    table-layout: fixed;
     border-collapse: collapse;
 }
 
@@ -652,10 +661,9 @@ th.list-object-published-th {
     text-align: left;
 }
 div.list-object-title {
-    font-size: 100%;
-    text-align: justify;
-    margin-bottom: 0.5em;
+    margin-bottom: 10em;
 }
+
 div.list-object-title a {
     color: deepskyblue;
 }
