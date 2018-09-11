@@ -117,9 +117,10 @@ class IACollection():
         self.source_url = 'https://archive.org/details/{}'.format(self.slug,)
         # get the metadata to start
         first_url = self.url(row_count=1)
-
+        
         d = requests.get('https://archive.org/metadata/{}'.format(slug,))
         dj = d.json()
+
         self.thumbnail_url = self.get_thumb(dj)
 
         meta = dj.get('metadata')
@@ -206,9 +207,11 @@ def __main__():
         link=ia.source_url,
         with_thumbnail=with_thumbnail,
         subtitle='Collection via Archive.org',)
+    
     if scroll is None:
         print('could not create scroll: {}'.format(ia.title))
         exit(0)
+        
     if scroll is not None:
         for x in range(1, ia.total_pages + 1):
             items = ia.get_items(x)

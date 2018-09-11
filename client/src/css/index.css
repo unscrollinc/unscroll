@@ -282,17 +282,24 @@ div.Timelist table {
     padding-bottom: 1000px;
 }
 .timelist-image {
-    width: 150px;
-    height: 100px;
+    width: 90%;
+    max-width: 200px;
+    border: 1px solid #ccc;
     object-fit: contain;
 }
 .timelist-image {
     object-position: right top;
 }
 
-div.Timelist div.timelist-meta-content {
+div.Timelist div.timelist-meta-inner {
+    width: 85%;
 }
 
+div.Timelist div.timelist-meta-content {
+    font-weight: bold;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+}
 div.Timelist div.timelist-meta h1 a {
     text-decoration: none;
     color: deepskyblue;
@@ -373,6 +380,7 @@ td.meta {
     text-align: right;
     font-size: 9pt;
     line-height: 125%;
+    width: 25%;
 }
 
 div.collection {
@@ -384,7 +392,7 @@ div.collection div {
 }
 
 td.content {
-    width: 85%;
+    width: 75%;
     overflow: hide;
     color: #555;
     font-size: 11pt;
@@ -557,8 +565,6 @@ form.search input {
 }
 
 .About {
-    text-align: justify;
-    hyphens: auto;
     line-height: 150%;
     padding: 5% 0% 10% 10%;
     width: 70%;
@@ -618,9 +624,8 @@ div.loading {
 }
 
 table.list-object-table {
-    width: 100%;
     table-layout: fixed;
-    border-collapse: collapse;
+    width: 90%;
 }
 
 tr.list-object-tr {
