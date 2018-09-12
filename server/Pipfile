@@ -101,6 +101,7 @@ pytzdata = "*"
 "psycopg2-binary" = "*"
 drf-extensions = "*"
 python-memcached = "*"
+requests-cache = "*"
 
 [dev-packages]
 
