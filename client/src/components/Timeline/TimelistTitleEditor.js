@@ -21,6 +21,8 @@ class TimelistTitleEditor extends React.Component {
         this.state = {
             edit: false,
             edits: {},
+            readyToDelete: false,
+            isDeleted: false,
             isSaved: true,
             isSaving: false
         };
@@ -110,11 +112,63 @@ class TimelistTitleEditor extends React.Component {
     quickDate(iso) {
         return DateTime.fromISO(iso).toFormat('d MMM kkkk');
     }
-
+    renderDeleteModal() {
+        if (this.state.isDeleted) {
+            return (
+                <div
+                    className="delete-modal"
+                    style={{
+                        background: 'red',
+                        fontSize: '200%',
+                        width: '75%',
+                        color: 'white',
+                        textAlign: 'center'
+                    }}
+                >
+                    <p>I DELETED THAT TIMELINE.</p>
+                    <p>
+                        Back to: <Link to="/timelines">Timelines</Link>
+                    </p>
+                </div>
+            );
+        }
+        if (this.state.readyToDelete) {
+            return (
+                <div
+                    className="delete-modal"
+                    style={{
+                        background: 'red',
+                        fontSize: '200%',
+                        width: '95%',
+                        color: 'white',
+                        textAlign: 'center'
+                    }}
+                >
+                    <p>
+                        REALLY DELETE? BECAUSE ONCE YOU'VE DONE IT, IT'S OVER.
+                    </p>
+                    <button
+                        style={{ fontSize: '125%' }}
+                        onClick={() => {
+                            this.setState({ readyToDelete: false });
+                        }}
+                    >
+                        No, forget it
+                    </button>
+                    <div style={{ marginTop: '5em' }}>
+                        <button onClick={this.deleteScroll.bind(this)}>
+                            Yes, delete forever
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+        return null;
+    }
     renderMeta() {
         const s = this.state.scroll;
         return (
-            <div key={s.uuid} className="timelist-meta">
+            <div key={s.uuid} className="timelist-meta-inner">
                 <h1>
                     <Link
                         to={'/timelines/' + s.user_username + '/' + s.slug}
@@ -123,20 +177,20 @@ class TimelistTitleEditor extends React.Component {
                 </h1>
                 {this.editButtons()}
                 <div className="timelist-meta-content">
-                    <div
-                        className="description"
-                        dangerouslySetInnerHTML={{ __html: s.description }}
-                    />
                     {s.meta_event_count
                         ? s.meta_event_count.toLocaleString()
                         : '?'}{' '}
-                    events
+                    items
                     {', '}
                     {this.quickDate(s.meta_first_event)} -{' '}
                     {this.quickDate(s.meta_last_event)}. Created by{' '}
                     <a href={'/users/' + s.user_username}>{s.user_username}</a>{' '}
                     on {this.quickDate(s.when_created)}.
                 </div>
+                <div
+                    className="description"
+                    dangerouslySetInnerHTML={{ __html: s.description }}
+                />
             </div>
         );
     }
@@ -209,8 +263,18 @@ class TimelistTitleEditor extends React.Component {
         );
     }
 
-    newEvent() {
-        console.log('I am making a new event');
+    deleteScroll() {
+        const _this = this;
+        const url = this.state.scroll.url;
+        axios({
+            method: 'delete',
+            url: url,
+            headers: utils.getAuthHeaderFromCookie()
+        }).then(resp => {
+            _this.setState({
+                isDeleted: true
+            });
+        });
     }
 
     editButtons() {
@@ -224,6 +288,14 @@ class TimelistTitleEditor extends React.Component {
                         }}
                     >
                         Edit Timeline
+                    </button>
+                    <button
+                        key="delete"
+                        onClick={() => {
+                            this.setState({ readyToDelete: true });
+                        }}
+                    >
+                        Delete Timeline
                     </button>
                     <button
                         key="new"
@@ -240,6 +312,9 @@ class TimelistTitleEditor extends React.Component {
     }
 
     render() {
+        if (this.state.readyToDelete) {
+            return <div>{this.renderDeleteModal()}</div>;
+        }
         if (this.state.scroll) {
             if (this.state.edit || this.props.edit) {
                 return <div className="timelist-meta">{this.renderForm()}</div>;

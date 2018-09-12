@@ -28,14 +28,24 @@ class UnscrollClient():
         self.login()
 
     def __batch__(self,
-                  thumbnail=None,                  
                   scroll_title=None,
+                  subtitle='',                                  
+                  public=True,
+                  description='',
+                  link='',
+                  citation='',
+                  with_thumbnail=None,            
                   events=[]):
 
         if (scroll_title is not None):
             self.login()
             scroll = self.create_or_retrieve_scroll(scroll_title,
-                                                    with_thumbnail=thumbnail)
+                                                    subtitle=subtitle,
+                                                    public=public,
+                                                    description=description,
+                                                    link=link,
+                                                    citation=citation,
+                                                    with_thumbnail=with_thumbnail)
             for event in events:
                 event['in_scroll'] = scroll
             chunks = [events[x:x+500] for x in range(0, len(events), 500)]
@@ -88,8 +98,6 @@ class UnscrollClient():
                              + quote_plus(title),
                              headers=self.authentication_header,)
             results = r.json()['results']
-            print('########################################')
-            print(results)
             if (len(results) > 0):
                 scroll_d = dict(results[0])
                 return scroll_d['url']
@@ -115,19 +123,14 @@ class UnscrollClient():
         r_events = []
         for event in events:
             event['in_scroll'] = scroll
-            r_events.append(event)
-        r = requests.post(self.api + '/events/',
-                          headers=self.authentication_header,
-                          json=r_events)
-        return r.json()
+            self.create_event(self, event, scroll)
+
 
     def create_event(self, event, scroll):
         event['in_scroll'] = scroll
-        print(event)
         r = requests.post(self.api + '/events/',
                           headers=self.authentication_header,
                           data=event)
-        print(r.content)
         return r
 
     def fetch_favicon_url(self, url):

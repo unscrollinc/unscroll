@@ -9,6 +9,7 @@ class TimelineList extends React.Component {
     constructor(props, context) {
         super(props);
         this.state = { scrolls: [] };
+        this.getThumbnail = this.getThumbnail;
     }
 
     makeScroll(scroll) {
@@ -16,30 +17,55 @@ class TimelineList extends React.Component {
             const luxonDt = DateTime.fromISO(dt);
             return luxonDt.toLocaleString(DateTime.DATE_SHORT);
         };
+        const getLink = scroll => {
+            return (
+                '/timelines/' +
+                scroll.user_username +
+                '/' +
+                scroll.slug +
+                '?view=vertical'
+            );
+        };
+        const getThumbnail = scroll => {
+            if (scroll.with_thumbnail_image) {
+                return (
+                    <Link to={getLink(scroll)}>
+                        <img
+                            className="timelist-image"
+                            src={`${utils.URL}/${scroll.with_thumbnail_image}`}
+                        />
+                    </Link>
+                );
+            }
+            return null;
+        };
 
         const privacy = scroll.is_public ? 'Public' : 'Private';
 
         return (
             <tr className="list-object-tr" key={scroll.uuid}>
                 <td className="list-object-date-td">
+                    <div>{getThumbnail(scroll)}</div>
                     <div>{formatDate(scroll.when_created)}</div>
                     <div>
                         <Link to={'/users/' + scroll.user_username}>
                             {scroll.user_full_name}
                         </Link>
+
+                        <div>
+                            {scroll.meta_event_count
+                                ? scroll.meta_event_count.toLocaleString()
+                                : '-'}
+                        </div>
+
+                        <div>{privacy}</div>
                     </div>
                 </td>
 
                 <td className="list-object-meta-td">
                     <div className="list-object-title">
                         <Link
-                            to={
-                                '/timelines/' +
-                                scroll.user_username +
-                                '/' +
-                                scroll.slug +
-                                '?view=vertical'
-                            }
+                            to={getLink(scroll)}
                             dangerouslySetInnerHTML={{ __html: scroll.title }}
                         />
                     </div>
@@ -48,18 +74,6 @@ class TimelineList extends React.Component {
                         className="list-object-description"
                         dangerouslySetInnerHTML={{ __html: scroll.description }}
                     />
-                </td>
-
-                <td className="list-object-no-events-td">
-                    {scroll.meta_event_count
-                        ? scroll.meta_event_count.toLocaleString()
-                        : '-'}
-                </td>
-
-                <td className={`list-object-published-td`}>
-                    <div className={`list-object-published-${privacy}`}>
-                        {privacy}
-                    </div>
                 </td>
             </tr>
         );
@@ -115,20 +129,6 @@ class TimelineList extends React.Component {
 
                                         <table className="list-object-table">
                                             <tbody>
-                                                <tr className="list-object-tr">
-                                                    <th className="list-object-date-th">
-                                                        Date
-                                                    </th>
-                                                    <th className="list-object-meta-th">
-                                                        Timeline
-                                                    </th>
-                                                    <th className="list-object-no-events-th">
-                                                        No.
-                                                    </th>
-                                                    <th className="list-object-published-th">
-                                                        Published
-                                                    </th>
-                                                </tr>
                                                 {this.state.scrolls.map(
                                                     this.makeScroll
                                                 )}

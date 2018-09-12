@@ -87,6 +87,21 @@ class UnscrollDate(object):
         # Friends it's an en-dash and a hyphen below, "-–"
         return self.resolve(re.search(r'(\d+)[-–](\d+)', when_original))
 
+    def is_four_digit_year_in_filename(self, when_original):
+        return self.resolve(re.search(r'(\d{4})-xx-xx', when_original))
+
+    def is_two_digit_year_in_filename(self, when_original):
+        return self.resolve(re.search(r'(\d{2})-xx-xx', when_original))
+
+    def is_four_digit_year_month_in_filename(self, when_original):
+        return self.resolve(re.search(r'(\d{4})-(\d+)-xx', when_original))
+
+    def is_two_digit_year_month_in_filename(self, when_original):
+        return self.resolve(re.search(r'(\d{2})-(\d+)-xx', when_original))
+
+    def is_six_digit_date_in_filename(self, when_original):
+        return self.resolve(re.search(r'(\d{2})(\d{2}|xx)(\d{2}|xx)', when_original))            
+
     def superimpose(self, tpl):
         a,b = tpl
         diff = len(a) - len(b)
@@ -114,6 +129,42 @@ class UnscrollDate(object):
     def init_parse(self):
         when_original = self.when_original
 
+        if (self.is_six_digit_date_in_filename(when_original)):
+            m = re.search(r'(\d{2})(\d{2}|xx)(\d{2}|xx)', when_original)
+            yr = m.group(1)
+            mo = m.group(2)
+            day = m.group(3)
+            try:
+                if (int(yr) and int(mo) and int(day)):
+                    return [8, self.parse('19{}-{}-{}'.format(yr, mo, day))]
+            except ValueError:
+                if (int(yr) and int(mo)):
+                    return [6, self.parse('19{}-{}'.format(yr, mo))]
+            except ValueError:
+                return [6, self.parse('19{}'.format(yr))]
+
+        if (self.is_four_digit_year_in_filename(when_original)):
+            m = re.search('(\d{4})-xx-xx', when_original)
+            yr = m.group(1)
+            return [4, self.parse(yr)]
+
+        if (self.is_two_digit_year_in_filename(when_original)):
+            m = re.search('(\d{2})-xx-xx', when_original)
+            yr = '19{}'.format(m.group(1))
+            return [4, self.parse(yr)]
+
+        if (self.is_four_digit_year_month_in_filename(when_original)):
+            m = re.search('(\d{4})-(\d+)-xx', when_original)
+            yr = m.group(1)
+            mo = m.group(2)
+            return [6, self.parse('{}-{}'.format(yr, mo))]
+
+        if (self.is_two_digit_year_month_in_filename(when_original)):
+            m = re.search('(\d{2})-(\d+)-xx', when_original)
+            yr = '19{}'.format(m.group(1))
+            mo = m.group(2)
+            return [6, self.parse('{}-{}'.format(yr, mo))]
+        
         if (self.is_shortdate(when_original)):
             m = re.search('(\d{2})-(\d{2})-(\d{2})', when_original)        
             return [10, self.parse('19{}-{}-{}'.format(m.group(1), m.group(2), m.group(3)))]

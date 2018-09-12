@@ -282,19 +282,24 @@ div.Timelist table {
     padding-bottom: 1000px;
 }
 .timelist-image {
-    width: 150px;
-    height: 100px;
-    object-fit: cover;
+    width: 90%;
+    max-width: 200px;
+    border: 1px solid #ccc;
+    object-fit: contain;
 }
 .timelist-image {
-    object-position: left top;
+    object-position: right top;
+}
+
+div.Timelist div.timelist-meta-inner {
+    width: 85%;
 }
 
 div.Timelist div.timelist-meta-content {
-    margin-top: 4em;
-    margin-bottom: 4em;
+    font-weight: bold;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
 }
-
 div.Timelist div.timelist-meta h1 a {
     text-decoration: none;
     color: deepskyblue;
@@ -309,19 +314,16 @@ div.Timelist div.timespan {
     font-style: italic;
     padding: 1em 0 1em 0;
 }
+
 div.Timelist div.description {
     color: #666;
     font-size: 100%;
     line-height: 1.5em;
     font-style: Italic;
-    text-align: justify;
-    hyphens: auto;
 }
 
 div.Timelist table.meta {
-    border-left: 1px solid red;
-    width: 50%;
-    margin-left: 2.5%;
+    border-left: 1px solid #ccc;
     float: right;
 }
 
@@ -376,10 +378,9 @@ tr.timelist td {
 
 td.meta {
     text-align: right;
-    width: 110px;
     font-size: 9pt;
     line-height: 125%;
-    padding: 0.5em 0.5em 1.5em 1em;
+    width: 25%;
 }
 
 div.collection {
@@ -391,11 +392,24 @@ div.collection div {
 }
 
 td.content {
-    text-align: justify;
-    hyphens: auto;
+    width: 75%;
+    overflow: hide;
     color: #555;
     font-size: 11pt;
-    padding: 0.5em 0.5em 1.5em 1em;
+    padding: 0;
+}
+
+td.content pre {
+    background: #eee;
+    width: 90%;
+    font-size: 10pt;
+    overflow-x: auto;
+    font-family: 'IBM Plex Mono', monospace;
+}
+
+td.content div.text {
+    width: 100%;
+    overflow-x: auto;
 }
 
 td.content .event-title {
@@ -551,8 +565,6 @@ form.search input {
 }
 
 .About {
-    text-align: justify;
-    hyphens: auto;
     line-height: 150%;
     padding: 5% 0% 10% 10%;
     width: 70%;
@@ -605,20 +617,19 @@ div.loading {
 */
 
 .list-object {
-    padding: 5%;
+    padding: 2.5%;
     margin: 0;
     height: 100%;
-    width: 90%;
+    width: 100%;
 }
 
 table.list-object-table {
-    margin: 0% 0 0 0;
-    width: 100%;
-    border-collapse: collapse;
+    table-layout: fixed;
+    width: 90%;
 }
 
 tr.list-object-tr {
-    border-bottom: 1px solid red;
+    border-bottom: 1px solid #ccc;
 }
 
 table.list-object-table th {
@@ -636,29 +647,22 @@ table.list-object-table th {
 }
 td.list-object-date-td,
 th.list-object-date-th {
-    width: 10%;
-    text-align: left;
+    width: 20%;
+    text-align: right;
 }
 td.list-object-creator-td,
 th.list-object-creator-th {
-    width: 10%;
+    width: 20%;
     text-align: left;
 }
 td.list-object-meta-td,
 th.list-object-meta-th {
-    width: 70%;
-    text-align: left;
-}
-td.list-object-published-td,
-th.list-object-published-th {
-    width: 15%;
+    width: 80%;
     text-align: left;
 }
 div.list-object-title {
-    font-size: 100%;
-    text-align: justify;
-    margin-bottom: 0.5em;
 }
+
 div.list-object-title a {
     color: deepskyblue;
 }

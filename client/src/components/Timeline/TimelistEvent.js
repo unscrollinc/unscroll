@@ -53,7 +53,9 @@ class TimelistEvent extends React.Component {
     }
 
     makeImage(e) {
-        if (e.with_thumbnail_image || e.scroll_with_thumbnail_image) {
+        console.log('XXXX', e);
+
+        if (e.with_thumbnail_image || e.scroll_with_thumbnail) {
             return (
                 <a href={e.content_url} target="_blank">
                     <img
@@ -82,7 +84,8 @@ class TimelistEvent extends React.Component {
     }
     makeOriginal(e) {
         if (e.when_original) {
-            return ` (${e.when_original})`;
+            // return ` (${e.when_original})`;
+            return '';
         }
         return '';
     }
@@ -90,18 +93,22 @@ class TimelistEvent extends React.Component {
     makeWhen(e) {
         const o = this.makeOriginal(e);
 
-        if (e.resolution <= 10) {
-            return DateTime.fromISO(e.when_happened).toFormat('DDDD') + o;
+        if (e.resolution <= 4) {
+            return (
+                'ca. ' + DateTime.fromISO(e.when_happened).toFormat('YYYY') + o
+            );
         }
 
         if (e.resolution <= 8) {
             return DateTime.fromISO(e.when_happened).toFormat('MM YYYY') + o;
         }
 
-        if (e.resolution <= 4) {
-            return (
-                'ca. ' + DateTime.fromISO(e.when_happened).toFormat('YYYY') + o
-            );
+        if (e.resolution <= 10) {
+            return DateTime.fromISO(e.when_happened).toFormat('DDDD') + o;
+        }
+
+        if (e.resolution <= 14) {
+            return DateTime.fromISO(e.when_happened).toFormat('DDDD hh:mm') + o;
         }
     }
 
@@ -293,7 +300,6 @@ class TimelistEvent extends React.Component {
 
     renderEvent() {
         const e = this.state.event;
-        console.log(e);
         return (
             <React.Fragment>
                 <tr className="timelist">

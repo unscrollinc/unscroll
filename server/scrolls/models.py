@@ -274,7 +274,7 @@ class Event(models.Model):
     objects = EventQueryset.as_manager()
 
     class Meta:
-        unique_together = (("by_user", "in_scroll", "title", "source_url"),)
+        unique_together = (("by_user", "in_scroll", "title", "content_url"),)
         db_table = 'event'
         ordering = ['-ranking', '?']
 

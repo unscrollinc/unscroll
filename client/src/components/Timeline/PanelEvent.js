@@ -51,14 +51,11 @@ class Event extends React.Component {
     }
 
     makeWhen(e) {
-        if (e.when_original) {
-            return (
-                <div title={'Date parsed as: ' + e.when_happened}>
-                    {e.when_original}
-                </div>
-            );
-        }
-        return this.props.whenTitle;
+        return (
+            <div title={'Date parsed from: ' + e.when_original}>
+                {this.props.whenTitle}
+            </div>
+        );
     }
 
     componentDidMount() {
