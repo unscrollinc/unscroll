@@ -9,12 +9,32 @@ import requests
 import hashlib
 import time
 
+MONTHS_LONG_RE='January|February|March|April|May|June|July|August|September|October|November|December'
+MONTHS_SHORT_RE='Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec'
+MONTHS_D = {'January':1,
+            'February':2,
+            'March':3,
+            'April':4,
+            'May':5,
+            'June':6,
+            'July':7,
+            'August':8,
+            'September':9,
+            'October':10,
+            'November':11,
+            'December':12,}
+
 class UnscrollDate(object):
     when_original = None
     when_happened = None
     resolution = None
+
+    def __repr__(self):
+        return 'Parsed {} giving {} [{}]'.format(self.when_original, self.when_happened, self.resolution)
     
     def __init__(self, likelies=None, begin=None, end=None):
+        self.begin = None
+        self.end = None
         try:
             self.begin = int(begin)
             self.end = int(end)
@@ -28,7 +48,7 @@ class UnscrollDate(object):
                 likelies = [likelies]
 
             for likely in likelies:
-                self.when_original = str(likely).rstrip()       
+                self.when_original = str(likely).rstrip().lstrip()
                 self.resolution, self.when_happened = self.init_parse()
                 if self.is_okay():
                     break
@@ -57,7 +77,7 @@ class UnscrollDate(object):
         return False
 
     def has_bc(self, when_original):
-        return self.resolve(re.search(r'bc|BC|b\.c\.|B\.C\.|b c', when_original))
+        return self.resolve(re.search(r'bc|BC|b\.c\.|B\.C\.|b c|bce|BCE|b.c.e|B.C.E.|b c e|before christ|before common era', when_original))
 
     def is_shortdate(self, when_original):
         return self.resolve(re.search(r'(\d{2})-(\d{2})-(\d{2})', when_original))
@@ -86,6 +106,14 @@ class UnscrollDate(object):
     def is_year_span(self, when_original):
         # Friends it's an en-dash and a hyphen below, "-–"
         return self.resolve(re.search(r'(\d+)[-–](\d+)', when_original))
+
+    def has_month(self, when_original):
+        # Friends it's an en-dash and a hyphen below, "-–"
+        return self.resolve(re.search(r'(MONTHS_LONG_RE)', when_original))
+
+    def is_month_span(self, when_original):
+        # Friends it's an en-dash and a hyphen below, "-–"
+        return self.resolve(re.search(r'(MONTHS_LONG_RE)[-–](MONTHS_LONG_RE)', when_original))
 
     def is_four_digit_year_in_filename(self, when_original):
         return self.resolve(re.search(r'(\d{4})-xx-xx', when_original))
@@ -118,13 +146,14 @@ class UnscrollDate(object):
         return split
     
     def parse(self, when_original):
+        print('parsing {}'.format(when_original))
         try:
             o = parser.parse(when_original,
-                             default=datetime.datetime(2000,12,31,23,59,59))
+                             default=datetime.datetime(1999,12,31,23,59,59))
             oi = o.isoformat()
             return oi
         except ValueError as e:
-            print('@unscrolldate: {}: {}'.format(e, when_original,))
+            print(e, '@unscrolldate: {}: {}'.format(e, when_original,))
 
     def init_parse(self):
         when_original = self.when_original
@@ -143,6 +172,28 @@ class UnscrollDate(object):
             except ValueError:
                 return [6, self.parse('19{}'.format(yr))]
 
+        if (self.has_bc(when_original)):
+            m = re.search(r'(\d+)', when_original)
+            year = m.group(1)
+            return [4, self.parse('-{}-12-31'.format(year))]
+            
+            
+        if (self.is_month_span(when_original)):
+            print('IS MONTH SPAN: {}'.format(when_original))
+            
+            m = re.search(r'(MONTHS_LONG_RE)[-–](MONTHS_LONG_RE) (\d+)', when_original)
+            if m.groups() is not None:
+                month = m.group(1)
+                year = m.group(2)
+                s = '{}-{%02d}'.format(yr, MONTHS_D[month])
+                return [6, self.parse()]
+            
+        if (self.has_month(when_original)):
+            m = re.search(r'(MONTHS_LONG_RE) (\d+)', when_original)
+            month = m.group(1)
+            year = m.group(2)
+            return [6, self.parse('{} {}'.format(month, yr))]
+        
         if (self.is_four_digit_year_in_filename(when_original)):
             m = re.search('(\d{4})-xx-xx', when_original)
             yr = m.group(1)
@@ -215,6 +266,3 @@ class UnscrollDate(object):
                 return [2, self.parse(m.group(0))]
 
         return [None, None]
-
-
-

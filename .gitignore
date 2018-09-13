@@ -42,3 +42,4 @@ server/bin/download/cooper/
 scratchpad
 
 unscroll/
+*.sqlite
