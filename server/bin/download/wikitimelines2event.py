@@ -5,14 +5,24 @@ import requests_cache
 from pprint import pprint
 from tableextractor import Extractor
 from unscrolldate import UnscrollDate
-from flexidate import parse
-print(parse('Jan 1890'))
+from edtf import parse_edtf, text_to_edtf
+import time
 
 requests_cache.install_cache('wiki_cache')
 
 def is_datelike(s):
     return 1 if 'century' in s else 0
 
+def score(t):
+    def ft(v):
+        if v is not None:
+            return 1
+        else:
+            return 0
+        
+    num = [score [t.year, t.moth, t.day, t.hour, t.minute, t.second]]
+
+    
 def add_first_link(w):
     if w is not None:
         if 'event' in w:
@@ -32,8 +42,23 @@ def add_first_link(w):
                 href = links[0].get('href')
                 w['content_url']='https://en.wikipedia.org{}'.format(href,)
                 w['item'] = re.sub(r'/wiki/|/w/index.php\?title\=', '', href)
-        w['flexidate'] = parse('{}'.format(w['year']))
-#        w['when_happened'] = ud.when_happened
+
+            date_text = '{} {}'.format(w['date'], w['year'])
+
+            print('ETC', date_text)
+
+            date_text = re.sub('–', '-', date_text)
+
+            edtf_date_txt = text_to_edtf(date_text)
+            
+            print('TEXT', edtf_date_txt)
+
+            edtf_date = parse_edtf(edtf_date_txt)
+            
+            print('DATE', edtf_date)            
+            iso_date = time.strftime('%Y-%m-%dT%H:%M:%SZ',
+                                     edtf_date.upper_fuzzy())
+        w['when_happened'] = iso_date
 #        w['when_original'] = ud.when_original
 #        w['resolution'] = ud.resolution
         del w['event']

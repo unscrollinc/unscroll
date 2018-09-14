@@ -105,6 +105,8 @@ docutils = "*"
 "markdown2" = "*"
 argparse = "*"
 requests-cache = "*"
+edtf = "*"
+spacy = "*"
 
 [dev-packages]
 
