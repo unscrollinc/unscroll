@@ -28,8 +28,8 @@ def extract_thumbnail(data):
         _url = 'https://{}{}/{}'.format(_server, _dir, _filtered[0].get('name'))
         return _url
 
-    
-def extract_events(data, filter, begin, end):
+
+def extract_events(data, filter, link, begin, end):
     _server = data.get('d1')
     _dir = data.get('dir')    
     _files = data.get('files')
@@ -50,7 +50,7 @@ def extract_events(data, filter, begin, end):
         
         _event = {
             'title':_title,
-            'content_url':'https://{}{}/{}'.format(_server, _dir, f.get('name')),
+            'content_url':'{}/{}'.format(link, f.get('name')),
             'when_happened':_ud.when_happened,
             'when_original':_ud.when_original,
             'resolution':_ud.resolution,
@@ -79,7 +79,7 @@ def load_data(begin=None, end=None, title=None,
     
     _description = _md.get('description')
     
-    _events = extract_events(_data, 'MP3', begin, end)
+    _events = extract_events(_data, 'MP3', _link, begin, end)
 
     _thumbnail_url = thumbnail_url
     if (thumbnail_url is None):

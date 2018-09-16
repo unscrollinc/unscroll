@@ -21,7 +21,7 @@ def cleanup_payload(s):
         payload ='{}'.format(_s1,)
     return markdown2.markdown(payload)
 
-def message_to_event(message, newsgroup, scroll, api):
+def message_to_event(message, newsgroup, scroll, api, maxyear):
     try:
         _from = message.get('From')
         _subject = message.get('Subject')
@@ -32,7 +32,7 @@ def message_to_event(message, newsgroup, scroll, api):
         _payload = cleanup_payload(message.get_payload())
         _link = 'https://groups.google.com/forum/#!searchin/{}/messageid:"{}"'.format(newsgroup, _id)
 
-        if _year < 2005:
+        if _year < maxyear:
             _event = {'title':'{} &lt;{}&gt;'.format(_subject, _from),
                       'text':_payload,
                       'resolution':14,
@@ -55,13 +55,13 @@ def mbox_reader(stream):
     text = data.decode(encoding="utf-8", errors="replace")
     return mailbox.mboxMessage(text)
 
-def newsgroup_to_events(newsgroup, scroll, api, dir):
+def newsgroup_to_events(newsgroup, scroll, api, dir, maxyear):
     mbox = mailbox.mbox('{}/{}.mbox'.format(dir, newsgroup),
                         factory=mbox_reader)
     for message in mbox:
-        message_to_event(message, newsgroup, scroll, api)
+        message_to_event(message, newsgroup, scroll, api, maxyear)
 
-def create(newsgroup, dir):
+def create(newsgroup, dir, maxyear):
     _title = '{}'.format(newsgroup)
     api = UnscrollClient()
     api.delete_scroll_with_title(_title)
@@ -74,7 +74,7 @@ def create(newsgroup, dir):
         with_thumbnail=favthumb['url'], 
         subtitle='Collection via Usenet Historical Collection',        
     )
-    newsgroup_to_events(newsgroup, scroll, api, dir)
+    newsgroup_to_events(newsgroup, scroll, api, dir, maxyear)
 
 def __main__():
     parser = argparse.ArgumentParser(
@@ -83,6 +83,9 @@ def __main__():
                         help='A directory.')
     parser.add_argument('--mbox',
                         help='An mbox file.')
+    parser.add_argument('--maxyear',
+                        type=int,
+                        help='the maximum year.')    
     args = parser.parse_args()
     
     if (args.dir is None):
@@ -92,7 +95,7 @@ def __main__():
         print('No mbox!')
         exit(0)        
 
-    create(args.mbox, args.dir)
+    create(args.mbox, args.dir, args.maxyear)
     
 __main__()
         

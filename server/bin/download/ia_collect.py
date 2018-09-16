@@ -112,7 +112,7 @@ class IACollection():
     title = None
     description = None
     
-    def __init__(self, slug):
+    def __init__(self, slug, title):
         self.slug=slug
         self.source_url = 'https://archive.org/details/{}'.format(self.slug,)
         # get the metadata to start
@@ -124,11 +124,15 @@ class IACollection():
         self.thumbnail_url = self.get_thumb(dj)
 
         meta = dj.get('metadata')
-        self.title = meta.get('title')
+        if title is not None:
+            self.title = title
+        else:
+            self.title = meta.get('title')
         self.description = meta.get('description')
 
         files = dj.get('files')
         filtered_orig = [x for x in files if 'name' in x and x['source'] == 'original']
+        
         for f in filtered_orig:
             title = f.get('title')
             filename = f.get('name')
@@ -181,23 +185,34 @@ class IACollection():
 
 
 def __main__():
+
     parser = argparse.ArgumentParser(
         description='Search archive.org and get things.')
+    
     parser.add_argument('--collection',
                         help='A collection name')
+    parser.add_argument('--delete',
+                        type=bool,
+                        help='Delete? true or false')
     parser.add_argument('--begin',
                         help='The earliest year in the collection')
+    parser.add_argument('--title',
+                        help='Set a title')
     parser.add_argument('--end',
                         help='The last year in the collection')        
     args = parser.parse_args()
+    
     if (args.collection is None):
         print('No collection!')
         exit(0)
-    
-    api = unscroll.UnscrollClient()
-    ia = IACollection(args.collection)
 
-    api.delete_scroll_with_title(ia.title)
+     
+    api = unscroll.UnscrollClient()
+    ia = IACollection(args.collection, args.title)
+
+    if args.delete is True:
+        api.delete_scroll_with_title(ia.title)
+        
     favthumb = api.cache_thumbnail(ia.thumbnail_url)
     with_thumbnail = favthumb.get('url')
     
