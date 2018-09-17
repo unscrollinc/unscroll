@@ -112,7 +112,25 @@ class Nav extends React.Component {
         }
         return null;
     }
+    renderNavLinks() {
+        if (utils.isLoggedIn()) {
+            return (
+                <React.Fragment>
+                    <NavLink to="/my/timelines">TL</NavLink>
+                    {this.renderHorizontalOrVertical()}
+                    <NavLink to="/my/notebooks">NB</NavLink>
+                </React.Fragment>
+            );
+        }
 
+        return (
+            <React.Fragment>
+                <NavLink to="/timelines">TL</NavLink>
+                {this.renderHorizontalOrVertical()}
+                <NavLink to="/notebooks">NB</NavLink>
+            </React.Fragment>
+        );
+    }
     render() {
         return (
             <div
@@ -126,11 +144,7 @@ class Nav extends React.Component {
                     UNSCROLL
                 </Link>
                 <NavLink to="/about">?</NavLink>
-                <NavLink to="/timelines">TL</NavLink>
-
-                {this.renderHorizontalOrVertical()}
-
-                <NavLink to="/notebooks">NB</NavLink>
+                {this.renderNavLinks()}
 
                 <Search />
 
