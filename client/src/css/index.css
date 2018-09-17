@@ -410,6 +410,9 @@ td.content pre {
 td.content div.text {
     width: 100%;
     overflow-x: auto;
+    line-height: 125%;
+    max-height: 15em;
+    padding-bottom: 1em;
 }
 
 td.content .event-title {

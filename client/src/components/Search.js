@@ -16,9 +16,9 @@ class Search extends React.Component {
         this.props.history.push('/?view=vertical&q=' + this.state.q);
     }
     onFocus(e) {
+        this.setState({ engaged: true });
         if (!this.state.q) {
             e.target.value = '';
-            this.setState({ engaged: true });
         }
     }
     onBlur(e) {
