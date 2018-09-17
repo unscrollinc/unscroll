@@ -291,17 +291,6 @@ class BulkEventSerializer(BulkSerializerMixin,
             s.save()
             es = Event.objects.get(id=s.id)
             return es            
-        # except IntegrityError as e:
-        #     print('[urls.py IntegrityError] {}'.format(e,))
-        #     es = Event.objects.get(
-        #         by_user=validated_data['by_user'],
-        #         in_scroll=validated_data['in_scroll'],
-        #         title=validated_data['title'],
-        #         source_url=validated_data['source_url'],)
-        #     return es
-        #     raise ValidationError(str(e))                        
-        # except DoesNotExist as e:
-        #     raise ValidationError(str(e))            
         except Exception as e:
             raise APIException(str(e))
 
