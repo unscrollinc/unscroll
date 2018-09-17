@@ -61,9 +61,12 @@ def extract_events(data, filter, link, begin, end):
 
     return _processed            
 
-def load_data(begin=None, end=None, title=None,
-             slug=None, thumbnail_url=None,
-             delete=False):
+def load_data(begin=None,
+              end=None,
+              title=None,
+              slug=None,
+              thumbnail_url=None,
+              delete=False):
 
     # Get the file listing
     _link = 'https://archive.org/details/{}'.format(slug)
@@ -91,7 +94,8 @@ def load_data(begin=None, end=None, title=None,
 
     if delete is True:
         api.delete_scroll_with_title(_title)
-    
+
+    print('XXXXXXX{}'.format(_title))
     scroll = api.create_or_retrieve_scroll(
         _title,
         subtitle='via Archive.org',                          
@@ -108,17 +112,39 @@ def load_data(begin=None, end=None, title=None,
         pprint.pprint(j.json())
 
 def __main__():
-    begin=1932
-    end=1946
-    title = 'WWII audio'
-    for i in range(1932, 1946):
-        slug = 'WWII_News_{}'.format(i)
-        print(slug)        
-        load_data(begin=begin, end=end,
-                  title=title,
-                  slug=slug,
-                  thumbnail_url='https://www.archives.gov/files/research/military/ww2/photos/images/ww2-13.jpg',
-                  delete=False)
+
+    parser = argparse.ArgumentParser(
+        description='Search archive.org and get things.')
+    
+    parser.add_argument('--collection',
+                        help='A collection name')
+    parser.add_argument('--delete',
+                        type=bool,
+                        help='Delete? true or false')
+    parser.add_argument('--thumbnail',
+                        help='URL for the thumbnail')    
+    parser.add_argument('--begin',
+                        type=int,
+                        help='The earliest year in the collection')
+    parser.add_argument('--slug',
+                        help='A slug from the IA')    
+    parser.add_argument('--title',
+                        help='Set a title')
+    parser.add_argument('--end',
+                        type=int,
+                        help='The last year in the collection')        
+    args = parser.parse_args()
+    
+    begin = args.begin
+    end = args.end  
+    title = args.title
+
+    load_data(begin=args.begin,
+              end=args.end,
+              title=args.title,
+              slug=args.slug,
+              thumbnail_url=args.thumbnail,
+              delete=False)
 
 
 __main__()

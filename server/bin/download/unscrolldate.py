@@ -166,7 +166,6 @@ class UnscrollDate(object):
             try:
                 if (int(yr) and int(mo) and int(day)):
                     return [8, self.parse('19{}-{}-{}'.format(yr, mo, day))]
-            except ValueError:
                 if (int(yr) and int(mo)):
                     return [6, self.parse('19{}-{}'.format(yr, mo))]
             except ValueError:

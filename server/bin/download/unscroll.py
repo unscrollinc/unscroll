@@ -79,28 +79,27 @@ class UnscrollClient():
                'link': link,
                'description': description,
                'with_thumbnail': with_thumbnail}
+        
         pprint.pprint(ask)
         r = requests.post(self.api + '/scrolls/',
                           headers=self.authentication_header,
                           json=ask)
-        
+
         if r.status_code == 200:
             scroll_d = dict(r.json())
             return scroll_d['url']
 
         else:
-            print(r.content)
-            
-            r = requests.get(self.api
+            r2 = requests.get(self.api
                              + '/scrolls/?by_user='
                              + self.username
                              + '&title='
                              + quote_plus(title),
                              headers=self.authentication_header,)
-            results = r.json()['results']
+            results = r2.json()['results']
             if (len(results) > 0):
                 scroll_d = dict(results[0])
-                return scroll_d['url']
+                return scroll_d.get('url')
 
     def delete_scroll_with_title(self, title):
         r = requests.get(self.api + '/scrolls/?title=' + quote_plus(title),
