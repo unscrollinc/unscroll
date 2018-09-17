@@ -104,7 +104,7 @@ td {
 }
 
 .Timeline {
-    width: 200%;
+    width: 250%;
     height: 95%;
     position: fixed;
     z-index: 0;
@@ -559,9 +559,38 @@ div.search-ruby {
 
 form.search {
     display: inline;
+    width: 25%;
 }
+
+form.search.engaged {
+    display: block;
+    width: 100%;
+    position: fixed;
+    left: 0;
+    top: 0;
+}
+
 form.search input {
     width: 25%;
+}
+
+form.search input.engaged {
+    width: 100%;
+    font-size: 200%;
+    height: 20%;
+    color: #000;
+    padding: 0.25em 2em 0.25em 1em;
+    border: none;
+    margin: none;
+    background: lightskyblue;
+
+    font-family: IBM Plex Mono;
+    text-transform: uppercase;
+}
+
+form.search.engaged {
+}
+input.engaged {
 }
 
 .About {

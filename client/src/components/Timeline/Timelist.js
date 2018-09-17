@@ -2,14 +2,12 @@ import React from 'react';
 import { Redirect } from 'react-router';
 import 'react-virtualized/styles.css';
 import { DateTime, Interval } from 'luxon';
-// import cachios from 'cachios';
 import axios from 'axios';
 import TimelistEvent from './TimelistEvent';
 import TimelistTitleEditor from './TimelistTitleEditor';
 import utils from '../Util/Util';
 import { Scrollbars } from 'react-custom-scrollbars';
 import uuidv4 from 'uuid/v4';
-// import qs from 'qs';
 import Slider from 'react-rangeslider';
 
 class Timelist extends React.Component {

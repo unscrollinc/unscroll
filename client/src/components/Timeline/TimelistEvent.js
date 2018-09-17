@@ -94,21 +94,21 @@ class TimelistEvent extends React.Component {
         const o = this.makeOriginal(e);
 
         if (e.resolution <= 4) {
-            return (
-                'ca. ' + DateTime.fromISO(e.when_happened).toFormat('YYYY') + o
-            );
+            return DateTime.fromISO(e.when_happened).toFormat('y G') + o;
         }
 
         if (e.resolution <= 8) {
-            return DateTime.fromISO(e.when_happened).toFormat('MM YYYY') + o;
+            return DateTime.fromISO(e.when_happened).toFormat('MMM y G') + o;
         }
 
         if (e.resolution <= 10) {
-            return DateTime.fromISO(e.when_happened).toFormat('DDDD') + o;
+            return DateTime.fromISO(e.when_happened).toFormat('DDDD G') + o;
         }
 
         if (e.resolution <= 14) {
-            return DateTime.fromISO(e.when_happened).toFormat('DDDD hh:mm') + o;
+            return (
+                DateTime.fromISO(e.when_happened).toFormat('DDDD G hh:mm') + o
+            );
         }
     }
 

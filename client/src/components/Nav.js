@@ -116,9 +116,9 @@ class Nav extends React.Component {
         if (utils.isLoggedIn()) {
             return (
                 <React.Fragment>
-                    <NavLink to="/my/timelines">TL</NavLink>
+                    <NavLink to="/my/timelines">Timelines</NavLink>
                     {this.renderHorizontalOrVertical()}
-                    <NavLink to="/my/notebooks">NB</NavLink>
+                    <NavLink to="/my/notebooks">Notebooks</NavLink>
                 </React.Fragment>
             );
         }
