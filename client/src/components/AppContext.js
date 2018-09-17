@@ -194,7 +194,6 @@ export class AppProvider extends React.Component {
             data: nb
         })
             .then(resp => {
-                console.log('RESPONSEEEEEEEE', resp);
                 _this.setState({
                     notebookIsSaved: true,
                     notebook: resp.data
@@ -233,6 +232,33 @@ export class AppProvider extends React.Component {
             });
     }
 
+    postScroll() {
+        const s = {
+            title: 'Untitled-' + randomString(),
+            uuid: uuidv4(),
+            description: '',
+            isSaved: false
+        };
+        const _this = this;
+        axios({
+            method: 'post',
+            url: utils.getAPI('scrolls'),
+            headers: utils.getAuthHeaderFromCookie(),
+            data: s
+        })
+            .then(resp => {
+                _this.setState({
+                    IsSaved: true,
+                    scroll: resp.data
+                });
+            })
+            .catch(error => {
+                console.log({ error: error });
+            });
+    }
+
+    deleteScroll() {}
+
     render() {
         return (
             <AppContext.Provider
@@ -262,6 +288,7 @@ export class AppProvider extends React.Component {
                         this.deleteNote(note);
                     },
                     postNotebook: this.postNotebook.bind(this),
+                    postScroll: this.postScroll.bind(this),
                     addNote: event => {
                         const _this = this;
 

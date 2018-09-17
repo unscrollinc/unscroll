@@ -1,11 +1,13 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Redirect } from 'react-router';
+import { Link, withRouter } from 'react-router-dom';
 import axios from 'axios';
 import { DateTime } from 'luxon';
 import update from 'immutability-helper';
 import RichTextEditor from '../Editor/RichTextEditor';
 import utils from '../Util/Util';
 import Toggle from 'react-toggle';
+
 import 'react-toggle/style.css';
 
 const SCROLL_API = utils.getAPI('scrolls');
@@ -26,7 +28,7 @@ class TimelistTitleEditor extends React.Component {
             isSaved: true,
             isSaving: false
         };
-
+        console.log('WHAAAAAAT', this.props);
         this.sweep = () => {
             const _this = this;
             if (!this.state.isSaved) {
@@ -312,8 +314,19 @@ class TimelistTitleEditor extends React.Component {
     }
 
     render() {
+        console.log('GONNA REDIRECT NOW', this.state.edit, this.props.new);
+
         if (this.state.readyToDelete) {
             return <div>{this.renderDeleteModal()}</div>;
+        }
+        if (this.state.edit && this.props.new) {
+            return (
+                <Redirect
+                    to={`/timelines/${this.state.scroll.user_username}/${
+                        this.state.scroll.slug
+                    }?view=vertical`}
+                />
+            );
         }
         if (this.state.scroll) {
             if (this.state.edit || this.props.edit) {
@@ -329,4 +342,4 @@ class TimelistTitleEditor extends React.Component {
     }
 }
 
-export default TimelistTitleEditor;
+export default withRouter(TimelistTitleEditor);

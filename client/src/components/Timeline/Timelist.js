@@ -1,4 +1,5 @@
 import React from 'react';
+import { Redirect } from 'react-router';
 import 'react-virtualized/styles.css';
 import { DateTime, Interval } from 'luxon';
 // import cachios from 'cachios';
@@ -28,6 +29,9 @@ class Timelist extends React.Component {
             fetchUrl: undefined,
             nextUrl: undefined
         };
+        if (this.props.new) {
+            console.log(this.props);
+        }
     }
     scrollChange(k, v) {
         this.setState({ [k]: v, isSaved: false }, () => {
@@ -308,7 +312,7 @@ class Timelist extends React.Component {
     }
 
     renderTitleEditor() {
-        if (this.props.slug) {
+        if (this.props.slug || this.props.new) {
             return (
                 <TimelistTitleEditor
                     key={`tti-${this.props.uuid}`}
@@ -321,6 +325,7 @@ class Timelist extends React.Component {
             return <h1>{this.props.searchQuery}</h1>;
         }
     }
+
     render() {
         return (
             <div className="Timelist">
