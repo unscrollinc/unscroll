@@ -294,6 +294,18 @@ class BulkEventSerializer(BulkSerializerMixin,
         except Exception as e:
             raise APIException(str(e))
 
+    # TODO: We need some update logic so that if a user has two
+    # browsers open they can't override each other, or more simply all
+    # other sessions would be "kicked out" from a given field if it's
+    # been updated by another session.  So maybe each field gets its
+    # own session UUID created client-side. But when I get a PATCH
+    # with another UUID I store that as the last-modified-UUID. Now
+    # when the first tries to patch it gets a "someone else is editing
+    # this now" error and logs out but just from that field. Attempt
+    # to patch: Client says: SOMEONE ELSE IS EDITING, pause all
+    # patches from there on out, and turn off edit mode? I don't want
+    # to mess with OST right now.
+
 class EventPagination(pagination.LimitOffsetPagination):
     def paginate_queryset(self, queryset, request, view=None):
         self.first_event = queryset.aggregate(first_event=Min('when_happened'))['first_event']
