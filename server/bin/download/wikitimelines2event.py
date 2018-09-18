@@ -4,17 +4,19 @@ import requests
 import requests_cache
 from pprint import pprint
 from tableextractor import Extractor
+from unscroll import UnscrollClient
 from unscrolldate import UnscrollDate
 from edtf import parse_edtf, text_to_edtf
 import time
 
 requests_cache.install_cache('wiki_cache')
 
+MONTHS_LONG_RE='January|February|March|April|May|June|July|August|September|October|November|December'
 def is_datelike(s):
     is_century = 1 if 'century' in s else 0
     is_year = 1 if re.search(r'\d{4}', s) else 0
-    total = is_century + is_year
-    
+    multiple_months = -1000 if len(re.findall(MONTHS_LONG_RE, s)) > 1 else 0
+    total = is_century + is_year + multiple_months
     return total > 0
 
 def score(t):
@@ -36,9 +38,11 @@ def add_first_link(w):
 
         text = e.text.rstrip()
         text = re.sub('^\s*\d+:\s*', '', text)
+        text = re.sub('^:\s*', '', text)        
         if w['context'] is not None and w['context'] != '':
             text = '{}: {}'.format(w['context'], e.text.rstrip())
-        m = re.match('([^\.]+\.)\s?(.*)', text)
+
+        m = re.match('^(.+[a-z]{2,}\.\s+)(.*)', text)
         if m is not None:
             title = m.group(1)
             text = m.group(2)
@@ -54,31 +58,23 @@ def add_first_link(w):
             w['item'] = re.sub(r'/wiki/|/w/index.php\?title\=', '', href)
 
         date_text = '{} {}'.format(w['date'], w['year'])
-
-        # print('ETC', date_text)
-
         date_text = re.sub('–', '-', date_text)
-
-        edtf_date_txt = text_to_edtf(date_text)
-
-        # print('TEXT', edtf_date_txt)
-
-        edtf_date = parse_edtf(edtf_date_txt)
-
-        # print('DATE', edtf_date)            
-        iso_date = time.strftime('%Y-%m-%dT%H:%M:%SZ',
-                                 edtf_date.upper_fuzzy())
-        w['when_happened'] = iso_date
-        w['when_original'] = date_text
-        w['resolution'] = 10
-        del w['event']
-        del w['date']
-        del w['context']
-        if 'header' in w:
-            del w['header']
-
-        pprint(w)
-        return w
+        try:
+            edtf_date_txt = text_to_edtf(date_text)
+            edtf_date = parse_edtf(edtf_date_txt)
+            iso_date = time.strftime('%Y-%m-%dT%H:%M:%SZ',
+                                     edtf_date.upper_fuzzy())
+            w['when_happened'] = iso_date
+            w['when_original'] = date_text
+            w['resolution'] = 10
+            del w['event']
+            del w['date']
+            del w['context']
+            if 'header' in w:
+                del w['header']
+            return w
+        except Exception:
+            pass
         
 def headline_extract(h):
     t = h.text
@@ -117,7 +113,7 @@ def extract_tables(context, url):
     tidied = [tidy(x) for x in scrubbed]
     # We have all we can get so now we progressively transform
     linked = [add_first_link(x) for x in tidied]
-    pprint(linked)
+    return linked
     
 def extract_list(context, url):
     r = requests.get(url)
@@ -138,17 +134,28 @@ def extract_list(context, url):
                     kids = el.find_all('dd')
                     for kid in kids:
                         m = re.match('(\d+)', kid.text)
-                        day = m.group(1)
+                        day = ''
+                        if m is not None:
+                            day = m.group(1)
                         items.append(
                             {'year':'',
                              'context':context,
                              'date':'{} {}'.format(day, year_month),
                              'event':kid})
+                if el.name == 'ul':
+                    kids = el.find_all('li')
+                    for kid in kids:
+                        m = re.match('(\d+)', kid.text)
+                        day = ''
+                        if m is not None:
+                            day = m.group(1)
+                        items.append(
+                            {'year':'',
+                             'context':context,
+                             'date':'{} {}'.format(day, year_month),
+                             'event':kid})                        
                 if el.name == 'h2':
                     break
-            linked = [add_first_link(x) for x in items]
-        return linked
-
     # OR JUST YEAR
     elif sample_resolution == 4:
         for year, h in just_heds:
@@ -165,16 +172,61 @@ def extract_list(context, url):
                                  'event':dl})
                         if dl.name == 'p':
                             break
+                if el.name == 'ul':
+                    kids = el.find_all('li')
+                    for kid in kids:
+                        m = re.match('(.+):\s*', kid.text)
+                        day = ''
+                        if m is not None:
+                            day = m.group(1)
+                        items.append(
+                            {'year':year,
+                             'context':context,
+                             'date':day,
+                             'event':kid})                        
                 if el.name == 'h2':
                     break
-                linked = [add_first_link(x) for x in items]
-        return linked
+                
+    linked = [add_first_link(x) for x in items]
+    return linked
+
+pages = ['https://en.wikipedia.org/wiki/Timeline_of_events_preceding_World_War_II',
+         'https://en.wikipedia.org/wiki/Timeline_of_World_War_II_(1939)',
+         'https://en.wikipedia.org/wiki/Timeline_of_World_War_II_(1940)',
+         'https://en.wikipedia.org/wiki/Timeline_of_World_War_II_(1941)',    
+         'https://en.wikipedia.org/wiki/Timeline_of_World_War_II_(1942)',
+         'https://en.wikipedia.org/wiki/Timeline_of_World_War_II_(1943)',
+         'https://en.wikipedia.org/wiki/Timeline_of_World_War_II_(1944)',
+         'https://en.wikipedia.org/wiki/Timeline_of_World_War_II_(1945)',
+         'https://en.wikipedia.org/wiki/Timeline_of_World_War_II_(1945%E2%80%931991)',
+         'https://en.wikipedia.org/wiki/Timeline_of_the_Manhattan_Project']
+
+
+api = UnscrollClient()
+scroll = api.create_or_retrieve_scroll('WWII audio')
+for page in pages:
+    items = extract_list('', page)
     
-#items = extract_list('',
-#         'https://en.wikipedia.org/wiki/Timeline_of_events_preceding_World_War_II')
-
-items = extract_list('',
-         'https://en.wikipedia.org/wiki/Timeline_of_World_War_II_(1940)')
-
-# https://en.wikipedia.org/wiki/Timeline_of_events_preceding_World_War_II
-# https://en.wikipedia.org/wiki/Timeline_of_World_War_II_(1939)
+    for item in items:
+        thumb_url = None
+        wiki_thumb = api.fetch_wiki_thumbnail_data(item.get('item'))
+        if wiki_thumb is not None:
+            thumb = api.cache_thumbnail(wiki_thumb.get('url'))
+            if thumb is not None:
+                thumb_url = thumb.get('url')
+                
+        print(thumb)
+        event = {
+            'title':item.get('title'),
+            'text':item.get('text'),
+            'content_url':item.get('content_url'),
+            'source_url':page,
+            'with_thumbnail':thumb_url,
+            'when_happened':item.get('when_happened'),
+            'when_original':item.get('when_original'),
+            'resolution':item.get('resolution'),
+        }
+        res = api.create_event(event, scroll)
+        if res.status_code != 200:
+            print(res.json())
+    
