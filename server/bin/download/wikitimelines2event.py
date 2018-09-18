@@ -56,7 +56,6 @@ def add_first_link(w):
             href = links[0].get('href')
             w['content_url']='https://en.wikipedia.org{}'.format(href,)
             w['item'] = re.sub(r'/wiki/|/w/index.php\?title\=', '', href)
-
         date_text = '{} {}'.format(w['date'], w['year'])
         date_text = re.sub('–', '-', date_text)
         try:
@@ -208,25 +207,29 @@ for page in pages:
     items = extract_list('', page)
     
     for item in items:
-        thumb_url = None
-        wiki_thumb = api.fetch_wiki_thumbnail_data(item.get('item'))
-        if wiki_thumb is not None:
-            thumb = api.cache_thumbnail(wiki_thumb.get('url'))
-            if thumb is not None:
-                thumb_url = thumb.get('url')
-                
-        print(thumb)
-        event = {
-            'title':item.get('title'),
-            'text':item.get('text'),
-            'content_url':item.get('content_url'),
-            'source_url':page,
-            'with_thumbnail':thumb_url,
-            'when_happened':item.get('when_happened'),
-            'when_original':item.get('when_original'),
-            'resolution':item.get('resolution'),
-        }
-        res = api.create_event(event, scroll)
-        if res.status_code != 200:
-            print(res.json())
+        if item is not None:
+            thumb_url = None
+            wiki_thumb = api.fetch_wiki_thumbnail_data(item.get('item'))
+            if wiki_thumb is not None:
+                thumb = api.cache_thumbnail(wiki_thumb.get('url'))
+                if thumb is not None:
+                    thumb_url = thumb.get('url')
+
+            content_url = item.get('content_url')
+            if content_url is None:
+                content_url = page
+
+            event = {
+                'title':item.get('title'),
+                'text':item.get('text'),
+                'content_url':content_url,
+                'source_url':page,
+                'with_thumbnail':thumb_url,
+                'when_happened':item.get('when_happened'),
+                'when_original':item.get('when_original'),
+                'resolution':item.get('resolution'),
+            }
+            res = api.create_event(event, scroll)
+            if res.status_code != 200:
+                print(res.json())
     
