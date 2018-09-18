@@ -749,9 +749,9 @@ button.timeline-meta-done-button {
     padding: 0.15em 0.5em 0.15em 0.5em;
     margin: 0 1em 0 0;
     font-weight: bold;
-    background: red;
+    background: lightskyblue;
     border: none;
-    color: white;
+    color: black;
     float: left;
 }
 
@@ -1017,8 +1017,8 @@ button.notebook-preview {
 }
 
 a.active {
-    background: red;
-    color: white;
+    background: lightskyblue;
+    color: black;
 }
 
 .event-image-upload {
@@ -1093,7 +1093,7 @@ div.text {
     position: fixed;
 }
 .rangeslider-vertical .rangeslider__fill {
-    background-color: red;
+    background-color: deepskyblue;
 }
 .rangeslider-vertical .rangeslider__handle {
     background-color: deepskyblue;
@@ -1103,5 +1103,5 @@ div.text {
 .rangeslider .rangeslider__handle-tooltip {
     width: 10em;
     left: -7em;
-    background-color: red;
+    background-color: lightskyblue;
 }

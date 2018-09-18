@@ -24,8 +24,9 @@ class RichTextEditor extends React.Component {
             return matched;
         }
     }
+
     onChange(content, delta, source, editor) {
-        console.log(content, delta, source, editor, this);
+        // console.log(content, delta, source, editor, this);
         // Ignore newlines;
         if (!this.matchChar(delta, /\n/)) {
             this.setState({ text: content });

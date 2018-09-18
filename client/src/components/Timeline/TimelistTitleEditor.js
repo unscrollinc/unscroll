@@ -314,8 +314,6 @@ class TimelistTitleEditor extends React.Component {
     }
 
     render() {
-        console.log('GONNA REDIRECT NOW', this.state.edit, this.props.new);
-
         if (this.state.readyToDelete) {
             return <div>{this.renderDeleteModal()}</div>;
         }

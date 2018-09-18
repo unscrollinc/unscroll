@@ -53,8 +53,6 @@ class TimelistEvent extends React.Component {
     }
 
     makeImage(e) {
-        console.log('XXXX', e);
-
         if (e.with_thumbnail_image || e.scroll_with_thumbnail) {
             return (
                 <a href={e.content_url} target="_blank">
