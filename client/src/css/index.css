@@ -59,7 +59,7 @@ td {
 .Nav {
     padding-left: 1em;
     width: 100%;
-    min-height: 5%;
+    min-height: 10%;
     position: fixed;
     color: black;
     display: flex;
@@ -97,15 +97,14 @@ td {
 .Timelist,
 .Meta {
     border-top: 1px solid deepskyblue;
-    top: 5%;
-    height: 95%;
+    top: 10%;
+    height: 90%;
     position: fixed;
     background-color: white;
 }
 
 .Timeline {
     width: 250%;
-    height: 95%;
     position: fixed;
     z-index: 0;
 }
@@ -271,8 +270,6 @@ td {
 div.Timelist {
     width: 100%;
     left: 0%;
-    height: 95%;
-    top: 5%;
     position: fixed;
     background: white;
 }
@@ -553,13 +550,6 @@ th {
     text-align: right;
 }
 
-div.search-ruby {
-    font-size: 8pt;
-    color: #888;
-    width: 100%;
-    text-align: center;
-}
-
 form.search {
     display: inline;
     width: 25%;
@@ -567,10 +557,11 @@ form.search {
 
 form.search.engaged {
     display: block;
-    width: 100%;
+    width: 75%;
     position: fixed;
-    left: 0;
-    top: 0;
+    display: flex;
+    justify-content: start;
+    align-items: center;
 }
 
 form.search input {
@@ -814,8 +805,8 @@ table.timeline-event p {
     border-top: 1px solid deepskyblue;
     padding: 5%;
     width: 100%;
-    height: 95%;
-    top: 5%;
+    height: 90%;
+    top: 10%;
 }
 
 .color-primary-0 {
@@ -888,7 +879,7 @@ table.timeline-event p {
 
 .Manuscript {
     position: absolute;
-    top: 5%;
+    top: 10%;
     left: 66.6666%;
     width: 33.3333%;
     border-left: 1px solid deepskyblue;
@@ -896,13 +887,13 @@ table.timeline-event p {
 
 .ManuscriptReader {
     position: absolute;
-    top: 5%;
+    top: 10%;
     width: 100%;
     border-top: 1px solid deepskyblue;
 }
 
 div.manuscript-inner {
-    height: 95%;
+    height: 90%;
     /*    background:#31C9FC;
     background:#08C1FF;
     background:#0084B0; */
@@ -1092,17 +1083,13 @@ div.event-editor-title .public-DraftStyleDefault-block {
 div.text {
 }
 
-.slider {
-    width: 100%;
-    border: red;
-}
-
 /* range slider */
 .rangeslider-vertical {
     width: 5%;
     left: 95%;
-    top: 5%;
-    height: 90%;
+    top: 10%;
+    height: 85%;
+    background: skyblue;
     position: fixed;
 }
 .rangeslider-vertical .rangeslider__fill {
