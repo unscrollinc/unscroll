@@ -169,7 +169,6 @@
  Let's see what happens.
 
 ** Some Further Context
-
 *** What Gaps Are We Seeking to Fill?
 **** Editorial Gaps
   - Editorial organizations are dying and fact-checking and editorial support are going away. Most of the sources we trusted in the last ten years will be gone in ten years. The ones that replace them have high turnover and are traded around.
@@ -184,7 +183,6 @@
   - Data in the commons is often trash and there's no way to improve it. Wikipedia and Archive.org are the best so far and they have a really hard time and they don't encourage you to make new, pretty things.
   - It should be easier to get things from the web /into/ the commons.
   - To encourage a more robust commons you need to help people get into the commons.
-
 
 *** Understanding This Thing
 
@@ -215,133 +213,130 @@
  - It could exist entirely in the commons as a public platform.
  - It could remain Paul's Folly.
 
- But the important thing is to think of all of those things as /paths to sustainability/ not as ends in themselves. The current path to sustainability is just launching.
+But the important thing is to think of all of those things as /paths to sustainability/ not as ends in themselves. The current path to sustainability is just launching.
 
- Every single one of the bulleted things above comes with ingroup/outgroup advocacy. There are people who will argue that Python is better than JavaScript and vice-versa. That VC is great because of the network it brings you. That open-source is neccessary for anything that really matters. It sounds odd to say but the fallacy of tech is its belief in technological solutions.
+Every single one of the bulleted things above comes with ingroup/outgroup advocacy. There are people who will argue that Python is better than JavaScript and vice-versa. That VC is great because of the network it brings you. That open-source is neccessary for anything that really matters. It sounds odd to say but the fallacy of tech is its belief in technological solutions.
 
- Before doing anything, you probably want want to test each assumption by adding, to the end of each line, "because if we do so that will ensure people will stay connected over many years, because...." And then: "Even though..." and list all the reasons you've seen that thriving social communities don't come into being just because someone did something that seemed promising. This whole industry is filled with tactics branded as strategy. Open source being the best example: Usually too little, usually, too late, and your fault. Being bought is another: Big promises are made but ultimately things always return to the mean.
+Before doing anything, you probably want want to test each assumption by adding, to the end of each line, "because if we do so that will ensure people will stay connected over many years, because...." And then: "Even though..." and list all the reasons you've seen that thriving social communities don't come into being just because someone did something that seemed promising. This whole industry is filled with tactics branded as strategy. Open source being the best example: Usually too little, usually, too late, and your fault. Being bought is another: Big promises are made but ultimately things always return to the mean.
 
- You need to throw down the gauntlet; you need to make it worth their while; you need to make it clear that they should get on the bus now, before the bus leaves them at the bus stop. And that's fine. But ultimately the risk is simply that people won't connect, endorse, use, and pay for a thing. The only way to cut risk is humility. Shut up, listen, and protect your flank. Everyone is on a journey and wants better tools, for the journey is long and the tools make their hands bleed.
+But an awful lot of failures when you break them down, people have a specific path in mind that leads to a specific outcome in which they look good, become wealthy, or achieve some goal. Very few things on the Internet seem to be designed with sustainability in mind.
 
- But an awful lot of failures when you break them down, people have a specific path in mind that leads to a specific outcome in which they look good, become wealthy, or achieve some goal. Very few things on the Internet seem to be designed with sustainability in mind.
-
- The key to sustainability is in spending all of your time and energy to increase optionality. That's what I've learned in the last three years, running a business. I learned it from my co-founder. Having the maximum number of options in front of you then making the best possible choices for the business. Having the most inbound leads, the bigger marketing mailing list. Knock on all the doors. Talk to the VCs, the bankers, the academics. Could you run this with one employee? Zero? If you do that, of course, the community you need for sustainability vanishes; you need people besides yourself to be in on the optionality game.
-
-**** Data
-
-***** Data Model
-
-   | Parent   | Child |
-   |----------+-------|
-   | /Group/  | User  |
-   | Notebook | Note  |
-   | Scroll   | Event |
-
-   Group is not implemented (well it is in Django just not reall).
-
-   Event must have a =when_happened= field in PostgreSQL-parseable
-   datetime format.
-
-***** Relationships/Foreign Keys
-
-
-   | From     | To       | =by_= | =in_= | =with_= |
-   |----------+----------+-------+-------+---------|
-   | Scroll   | User     | X     |       |         |
-   |----------+----------+-------+-------+---------|
-   | Event    | User     | X     |       |         |
-   | ''       | Scroll   |       | X     |         |
-   |----------+----------+-------+-------+---------|
-   | Notebook | User     | X     |       |         |
-   |----------+----------+-------+-------+---------|
-   | Note     | User     | X     |       |         |
-   | ''       | Notebook |       | X     |         |
-   | ''       | Event    |       |       | X       |
-
-**** Server
-
-   Server is built in Django + django-rest-framework. It's lumpy and
-   annoying but then you get the hang of it. All of the real work is in
-   the PostgreSQL schema, though, and ultimately this thing should be
-   rewritten.
-
-   Like I said: Lumpy.
-
-   I stayed with one-server-in-some-cloud model because I didn't want to
-   prematurely optimize anything and I wasn't sure if I was building this
-   for one person, a workgroup, or the web. Mostly because I was learning
-   React and you only want to learn one new huge thing per project or
-   you'll lose your mind.
-
-**** Future Plans
-***** Improvements 
- - Timelines could be much better. 
- - Timelists could be much better.
- - Edit experience could do things.
- - Searches can be saved.
-
-***** Core functionality
-   - Social graph :: I follow people and organizations and see the events and notebooks they're adding.
-   - Workgroup :: One individual creates a Scroll; a group of approved individuals can add and edit Events. One individual creates a Notebook; a group of approved individuals can add and edit Notes. 
-
-**** How Could This Thing be Optimized
-   Optimization path is pretty clear:
-
-   1) Login/API to whatever service makes sense.
-
-   2) Event and Note retrieval from PostgreSQL to ElasticSearch or other
-   inverted-btree/id-retrieval platform. Retrieval patterns are basically
-   all in the form:
-    - Items X in Bag Y sorted by Z and [optionally] Paged
-      - (Events in Scroll 1 sorted by =when_happened= and paged)
-    - Items X matching Search Y sorted by Z and Paged
-    - Image/thumbnail hosting to S3 or similar cache.
-
-   This thing could scale if you ever wanted. The Event objects are
-   super-light, you could even cap them at 2-3Kb and thus have a couple
-   billion on a server.
-
-   I try to let the database do a lot which django fights a little; lots
-   of =select_related()= function calls off the query object.
-
-   The overall API design is okay. The niceties aren't there, like snake
-   case, and some of the fields need to be balanced out. There isn't a
-   really clear sense of users--sometimes I give you =scroll_username,
-   etc. There's some bad future-proofing; for example Events are in a
-   many-to-one relationship to Scrolls and should simply inherit Scroll
-   authorship (same true of Note/Notebook) but I track author the whole
-   way.
-
-
-**** Client
-
-  Client is react using create-react-app and react context API (no
-  flux). I was learning react as I went and that shows; at first I had
-  the whole world in my context and then I started to factor out to
-  components. It's sort of halway where it needs to be. My basic pattern
-  now is:
-
-  component
-     constructor()
-
-     utilities()
- 
-     someServerLogic() # usually in componentdidmount
-     someOtherserverLogic()
- 
-     renderSomePart()
-     renderSomeOtherPart()
-     render() # put it all together
-
-  with everything returning null at the end, but I'm not 100% there.
-
-  Didn't use a CSS preprocessor CUZ I'M OLD.
-
-  That said my instinct is that this is like 30% oooof what the hell and
-  60% sure i'd do it differently and 10% okay wow that's interesting.
+The key to sustainability is in spending all of your time and energy to increase optionality. Having the maximum number of options in front of you then making the best possible choices for the business. Having the most inbound leads, the bigger marketing mailing list. Knock on all the doors. Talk to the VCs, the bankers, the academics. Could you run this with one employee? Zero? (If you do that, of course, the community you need for sustainability vanishes; you need people besides yourself to be in on the optionality game. You need a community to invest in the sustainability because it's good for them!)
 
 * DevOps
 - All on one server except Mailgun for confirmation emails.
+*** Data
+
+**** Data Model
+
+  | Parent   | Child |
+  |----------+-------|
+  | /Group/  | User  |
+  | Notebook | Note  |
+  | Scroll   | Event |
+
+  Group is not implemented (well it is in Django just not reall).
+
+  Event must have a =when_happened= field in PostgreSQL-parseable
+  datetime format.
+
+**** Relationships/Foreign Keys
+
+
+  | From     | To       | =by_= | =in_= | =with_= |
+  |----------+----------+-------+-------+---------|
+  | Scroll   | User     | X     |       |         |
+  |----------+----------+-------+-------+---------|
+  | Event    | User     | X     |       |         |
+  | ''       | Scroll   |       | X     |         |
+  |----------+----------+-------+-------+---------|
+  | Notebook | User     | X     |       |         |
+  |----------+----------+-------+-------+---------|
+  | Note     | User     | X     |       |         |
+  | ''       | Notebook |       | X     |         |
+  | ''       | Event    |       |       | X       |
+
+*** Server
+
+  Server is built in Django + django-rest-framework. It's lumpy and
+  annoying but then you get the hang of it. All of the real work is in
+  the PostgreSQL schema, though, and ultimately this thing should be
+  rewritten.
+
+  Like I said: Lumpy.
+
+  I stayed with one-server-in-some-cloud model because I didn't want to
+  prematurely optimize anything and I wasn't sure if I was building this
+  for one person, a workgroup, or the web. Mostly because I was learning
+  React and you only want to learn one new huge thing per project or
+  you'll lose your mind.
+
+*** Future Plans
+**** Improvements 
+- Timelines could be much better. 
+- Timelists could be much better.
+- Edit experience could do things.
+- Searches can be saved.
+
+**** Core functionality
+  - Social graph :: I follow people and organizations and see the events and notebooks they're adding.
+  - Workgroup :: One individual creates a Scroll; a group of approved individuals can add and edit Events. One individual creates a Notebook; a group of approved individuals can add and edit Notes. 
+
+*** How Could This Thing be Optimized
+  Optimization path is pretty clear:
+
+  1) Login/API to whatever service makes sense.
+
+  2) Event and Note retrieval from PostgreSQL to ElasticSearch or other
+  inverted-btree/id-retrieval platform. Retrieval patterns are basically
+  all in the form:
+   - Items X in Bag Y sorted by Z and [optionally] Paged
+     - (Events in Scroll 1 sorted by =when_happened= and paged)
+   - Items X matching Search Y sorted by Z and Paged
+   - Image/thumbnail hosting to S3 or similar cache.
+
+  This thing could scale if you ever wanted. The Event objects are
+  super-light, you could even cap them at 2-3Kb and thus have a couple
+  billion on a server.
+
+  I try to let the database do a lot which django fights a little; lots
+  of =select_related()= function calls off the query object.
+
+  The overall API design is okay. The niceties aren't there, like snake
+  case, and some of the fields need to be balanced out. There isn't a
+  really clear sense of users--sometimes I give you =scroll_username,
+  etc. There's some bad future-proofing; for example Events are in a
+  many-to-one relationship to Scrolls and should simply inherit Scroll
+  authorship (same true of Note/Notebook) but I track author the whole
+  way.
+
+*** Client
+
+ Client is react using create-react-app and react context API (no
+ flux). I was learning react as I went and that shows; at first I had
+ the whole world in my context and then I started to factor out to
+ components. It's sort of halway where it needs to be. My basic pattern
+ now is:
+
+ component
+    constructor()
+
+    utilities()
+ 
+    someServerLogic() # usually in componentdidmount
+    someOtherserverLogic()
+ 
+    renderSomePart()
+    renderSomeOtherPart()
+    render() # put it all together
+
+ with everything returning null at the end, but I'm not 100% there.
+
+ Didn't use a CSS preprocessor CUZ I'M OLD.
+
+ That said my instinct is that this is like 30% oooof what the hell and
+ 60% sure i'd do it differently and 10% okay wow that's interesting.
+
 
 ** TODO Components
 - =/server/=
