@@ -1,5 +1,27 @@
 #+TITLE: Unscroll Overall Notes
-#+AUTHOR: Paul Ford
+#+AUTHOR: Paul Ford <ford@ftrain.com>
+
+* Table of Contents                                                     :TOC:
+- [[#why-does-this-exist][Why does this exist?]]
+  - [[#frequently-anticipated-objections][Frequently Anticipated Objections]]
+  - [[#some-further-context][Some Further Context]]
+- [[#devops][DevOps]]
+  - [[#components][Components]]
+  - [[#starting-up-a-server][Starting Up a Server]]
+  - [[#installing-on-ubuntu][Installing on Ubuntu]]
+  - [[#development-environment][Development Environment]]
+- [[#principles-for-making-unscroll][Principles for Making Unscroll]]
+  - [[#date--time][Date + Time]]
+  - [[#data][Data]]
+  - [[#api][API]]
+  - [[#caching][Caching]]
+  - [[#frontend][Frontend]]
+  - [[#devops][DevOps]]
+- [[#data-sources-potential-and-otherwise][Data sources, potential and otherwise]]
+  - [[#the-internet-archive][The Internet Archive]]
+  - [[#jstor-and-similar][JSTOR and similar]]
+  - [[#nyc-cultural-orgs][NYC Cultural Orgs]]
+  - [[#other][Other]]
 
 * Why does this exist?
 ** Frequently Anticipated Objections
@@ -319,7 +341,9 @@
   60% sure i'd do it differently and 10% okay wow that's interesting.
 
 * DevOps
-** Components
+- All on one server except Mailgun for confirmation emails.
+
+** TODO Components
 - =/server/=
   - =./unscroll/= :: Django REST API code
   - =./scrolls/= :: The Django model.
@@ -391,7 +415,7 @@
 - Nginx hosting
 - Postgresql backend
 
-** Starting Up a Server [Need to repeat and rehearse this]
+** TODO Starting Up a Server
 *** Local Dev
 - =# nginx -c"/Users/ford/dev/unscroll/config/nginx/nginx_dev.conf" -s reload=
 - =$ DJANGO_SETTINGS_MODULE=unscroll.settings_dev gunicorn -p /tmp/gunicorn.sock --bind 0.0.0.0:8000 unscroll.wsgi:application=
@@ -410,7 +434,7 @@ Nothing is daemonized or in upstart or anything.
 https://unscroll.com
 A writing tool for people who need to get it right.
 
-** Installing on Ubuntu
+** TODO Installing on Ubuntu
 
 Cake to get a working postgresql. Hardly any work.
 
@@ -446,7 +470,7 @@ Took a minute to figure out.
 In general though getting from Mac to Ubuntu took an hour or two to
 smooth things out.
 
-** Development Environment
+** TODO Development Environment
  #+BEGIN_SRC bash
  mkvirtualenv ~/local/env/unscroll
  git clone $UNSCROLL_GITHUB_REPO
