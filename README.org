@@ -1,389 +1,402 @@
 #+TITLE: Unscroll Overall Notes
 #+AUTHOR: Paul Ford
 
-* A MetaCommons
-- News
-- Serials
-- Humans
-- Historical Events
-- Music
-- Films
-- TV serials
-- Radio
-- Podcasts
+* Why does this exist?
+** Frequently Anticipated Objections
 
+*** Who can I interrogate, scold, or praise?
+ Site news at @unscroll. Bug reports and existential crises to Paul Ford, ford@ftrain.com. Also on twitter at @ftrain; my DMs are open.
 
-https://github.com/WGBH/AAPB2#api
-https://chroniclingamerica.loc.gov/batches.json
-https://chroniclingamerica.loc.gov/batches/
-https://toolbox.google.com/datasetsearch/search?query=historical&docid=41XkXsqWDskevlQnAAAAAA%3D%3D
-https://www.blog.google/products/search/making-it-easier-discover-datasets/
-- News
-- Sports
+ This is very alpha. I'm releasing it in the spirit of just releasing it. I'd love to know about bugs, or about how it could really help you.
 
-https://toolbox.google.com/datasetsearch/search?query=120%20years%20of%20Olympic%20history%3A%20athletes%20and%20results&docid=DEJvaZ%2FLlshtkBKdAAAAAA%3D%3D
+*** What is this?
+ Unscroll is an experimental tool for writing that helps a person fact-check their own writing.
 
-All things can be linked and sliced and diced digitally, but I think it is a very obvious decision to keep organizing corpora by media type, because that is how culture produces them. I cannot switch readily from writer to cartographer, without years of labor.
+ It sees the worlds in terms of Events and Notes.
 
-What is tricky is: A CD-ROM of pictures, like this one of . It is meaningfu
+ You put Events into a Timeline.
 
-Certainly new forms arise but we arrange ourselves around them.
+ You arrange Notes in Notebooks. Get enough notes together and they start to look like essays, or book chapters, or blog posts.
 
-There are cultural assumptions that come with forms. A map describes a place. A book collects words and pictures into a sequence. A history book describes things that happened. A fictional story describes the contents of a writer's emotions.
+ In theory (and personal practice) this gives you a superpower: The power to remember what you are writing about as you are writing it, so that you don't run your fool mouth. If you don't need that superpower, more power to you. But I personally need that superpower more every day.
 
-So if we are arranging things by forms, we need simply ask, where are all the X, where X is a commonly understood form. There are always going to be exceptions but we seek ease. Search will bind our 
+*** Why did you do something when it would be easier for me, as a consumer of things, if you had done nothing?
+ Let's see what happens.
 
-Identifiers
+*** Who is this for?
+ Professional accurists of all stripes. People who like history, high school students, grad students, journalists who don't have enough editorial and fact-checking support, personal-essay-writer types, basically anyone who wants to catch themselves on their own foolishness, and catch the foolishness of others before it infects the water supply. Also just people who like looking at old vases and how book covers change over time. Everyone.
 
-I'm just going to use UUIDs, MD5 sums, and Library of Congress Subject Headings.
+ It's also edging on a tool for people to do serious work on their phones. That's how I use it mostly. Think millennial law students.
 
+ But really it's for me.
 
-In English:
+*** Who are you?
+ [TBD!]
 
-- Books
-Here we have the Library of Congress as a canonical resource. Or even Amazon. Books for over a century are discrete-mass produced objects that have identifiers; before that, there were fewer books. Self-published books are really something here. God help us.
+*** It should be free software. Everything should.
+ Maybe so! If people use Unscroll and care about it, and other people start creating timelines using commons resources, that would make sense. It's built on Django and React. Let's see what happens.
 
+*** The data should be open. All the data should be open.
+ Some should. Sharing out data in a reasonable way takes time to do right so I'm not rushing. I don't want to just release data out of guilt or mandate, or just dump an intractable blob of JSON into a bucket. I want to make sure what goes back into the commons is tractable, useful, and can be used to contribute back to Unscroll, too. Let's see what happens.
 
-I'm just going to use UUIDs and the Library of Congress.
+*** If I use this, who owns my work?
+ Right now this thing has one user. But let's say you were the second. Who owns what?
 
-- Email Mailboxes
+ Mostly YOU, sometimes EVERYONE, never just ME.
 
-- Usenet news groups
+ I'm still working this out, but here's where I'm at:
 
-- Moving Pictures
+ Private stuff can only be seen by you.
 
-- Recorded audio
-An incomplete . 
+ Everything (Timelines, Events, Notes, and Events) starts out PRIVATE.
 
-- Maps
-This is going to be scattershot.
+ Timelines and their Events can be private or public.
 
-- Artworks
-This one is very hard. There is art everywhere. Museums collect theirs into digital resources. But the Botero in the Time Warner center---it might as well be on the moon. 
+ Notebooks and their Notes can be private or public.
 
+ When you make Timelines public you're not just making them public but adding all the events in them to the commons and you can't really put that back in the box. Think Wikipedia. Even if you make them private later someone could have downloaded the whole thing in a batch.
 
-- 
+ When you make Notebooks public you're just...publishing them on Unscroll. You own the copyright over your Notebooks forever. If you make them public you're giving Unscroll the right to use them until you unpublish them. Think any blogging platform. Then they're gone.
 
-* Development Environment
-#+BEGIN_SRC bash
-mkvirtualenv ~/local/env/unscroll
-git clone $UNSCROLL_GITHUB_REPO
-cd unscroll/server
-pipenv install
-#+END_SRC
-* Components
+ Will that work? Let's see what happens. I realize this is kind of a lot. It needs a picture. Maybe after launch I will draw one. Or you can if you want.
 
-* Unscroll
+*** This is pointless without API access, I want API access.
+ You have it actually. I just need a little while for Swagger, etc.
 
-Unscroll has a few goals, related to how I see the world and where I see things going in the world.
+*** This website is not accessible.
+ It isn't, and it should be, and needs to be. Mea culpa. It's going to take a while. The thing to get right is the composition experience. Glad to hear from people about what needs to happen.
 
-It is essentially a composition environment for the next 20-30 years based on my own learning and what I see of the web.
+*** What about copyright?
+ On the search engine side, I spider web pages, use open data, and respect robots.txt (well, I try to, things can be vague.) It's just descriptive text and thumbnails. I tried to make everything as predictably obviously fair use as I could.
 
-It's designed to address a number of gaps in culture (notice I didn't say "market gaps"):
+ On the what-people-post side, DMCA-1026160.
 
-** What Gaps Are We Seeking to Fill?
-*** Editorial Gaps
- - Editorial organizations are dying and fact-checking and editorial support are going away. Most of the sources we trusted in the last ten years will be gone in ten years. The ones that replace them have high turnover and are traded around.
- - Humans are really bad at thinking sequentially about things. A vast number of errors in thinking are due to bad chronology. Context is very hard to maintain. There are a host of old-school fallacies related to this, like the historian's fallacy and the historical fallacy, gambler's fallacy.
-*** Interface Gaps
- - Minimalism has failed writers IMO. It creates a situation in which you're NOT supposed to use all the tools of the Internet to solve things.
- - The domain of TIME has never been a first-class citizen on the web, unlike geography/mapping, social relationships and social networks, commerce, and news.
- - Documents in composition are made of fragments and objects not simply long runs of text, even if the end result is one (hopefully) smooth line of prose. That is, composition and reading are different. Unscroll is pretty orthodox about this; it's really more of a composition platform than a publishing platform and it has incredibly strong opinions about editing and workflow.
- - Linking is a pain. Full hypertext abstraction is not useful for most humans and adding links is kind of hard. Also links die. People need things to touch and link to. So we give them events, as many as they want until they feel secure in their thoughts.
- - Mobile web composition is very hard and you lose your place a lot.
-*** Cultural Commons Gaps
- - Data in the commons is often trash and there's no way to improve it. Wikipedia and Archive.org are the best so far and they have a really hard time and they don't encourage you to make new, pretty things.
- - It should be easier to get things from the web /into/ the commons.
- - To encourage a more robust commons you need to help people get into the commons.
+*** What about my privacy and security?
+ Someone might see something while administering the database. In general please don't put anything super-secret or valuable into this new, untrusted, experimental web service. I don't think you would, but it makes me feel better to say that.
 
+ It uses the Django framework and follow its guidelines. All traffic is via HTTPS via Let's Encrypt. So it's roughly as locked down as any reasonable web-based thing.
 
-** Understanding This Thing
+ Your events and notes are NOT encrypted on the server, at least not yet. I'd love to do that, it's not a one-person job.
 
-But these are all tactics and responses. The reason for Unscroll to exist is so that people have tools to tell true stories well, because humans need to tell stories and humans need to read them, and to create a positive feedback loop between improving the commons and the fundamental act of storytelling.
+*** If I use this and you go out of business or get acquired it'll be another stupid nightmare and you'll dump all the data down the toilet and why should I ever trust you at all?
+ This is ultimately a thing designed to give back to the commons. Let's see how people use it. I am a friend of the archive community and large libraries everywhere. An ideal situation is one in which, should Unscroll go away entirely, nothing that was shared with the public would be lost, and individuals would still have full records of their private events, timelines, notes, and notebooks.
 
-Think of project as a marathon, not a sprint. The goal is for it to last for 10, 20, 30 years. What organizational, technological, and culture patterns will ensure survival? So:
-
-- It could be placed on cloud infrastructure.
-- It could be simplified and features removed.
-- It could emphasize writing over reading.
-- It could fork and release an enterprise product.
-- It could become a desktop app.
-- It could release all its data into the commons.
-- It could insist that everything be CC-licensed.
-- It could be open-sourced.
-- It could be federated.
-- It could be built by an agency.
-- It could be built by a small team.
-- It could be centralized.
-- It could be academic.
-- It could live on its own as a centralized service.
-- It could be purchased by a company.
-- It could be not-for-profit.
-- It could seek to raise venture capital.
-- It could seek not-for-profit grant-based funding.
-- It could have advertising.
-- It could have subscriptions.
-- It could exist entirely in the commons as a public platform.
-- It could remain Paul's Folly.
-
-But the important thing is to think of all of those things as /paths to sustainability/ not as ends in themselves. The current path to sustainability is just launching.
-
-Every single one of the bulleted things above comes with ingroup/outgroup advocacy. There are people who will argue that Python is better than JavaScript and vice-versa. That VC is great because of the network it brings you. That open-source is neccessary for anything that really matters. It sounds odd to say but the fallacy of tech is its belief in technological solutions.
-
-Before doing anything, you probably want want to test each assumption by adding, to the end of each line, "because if we do so that will ensure people will stay connected over many years, because...." And then: "Even though..." and list all the reasons you've seen that thriving social communities don't come into being just because someone did something that seemed promising. This whole industry is filled with tactics branded as strategy. Open source being the best example: Usually too little, usually, too late, and your fault. Being bought is another: Big promises are made but ultimately things always return to the mean.
-
-You need to throw down the gauntlet; you need to make it worth their while; you need to make it clear that they should get on the bus now, before the bus leaves them at the bus stop. And that's fine. But ultimately the risk is simply that people won't connect, endorse, use, and pay for a thing. The only way to cut risk is humility. Shut up, listen, and protect your flank. Everyone is on a journey and wants better tools, for the journey is long and the tools make their hands bleed.
-
-But an awful lot of failures when you break them down, people have a specific path in mind that leads to a specific outcome in which they look good, become wealthy, or achieve some goal. Very few things on the Internet seem to be designed with sustainability in mind.
-
-The key to sustainability is in spending all of your time and energy to increase optionality. That's what I've learned in the last three years, running a business. I learned it from my co-founder. Having the maximum number of options in front of you then making the best possible choices for the business. Having the most inbound leads, the bigger marketing mailing list. Knock on all the doors. Talk to the VCs, the bankers, the academics. Could you run this with one employee? Zero? If you do that, of course, the community you need for sustainability vanishes; you need people besides yourself to be in on the optionality game.
-
-*** Data
-
-**** Data Model
-
-  | Parent   | Child |
-  |----------+-------|
-  | /Group/  | User  |
-  | Notebook | Note  |
-  | Scroll   | Event |
-
-  Group is not implemented (well it is in Django just not reall).
-
-  Event must have a =when_happened= field in PostgreSQL-parseable
-  datetime format.
-
-**** Relationships/Foreign Keys
-
-
-  | From     | To       | =by_= | =in_= | =with_= |
-  |----------+----------+-------+-------+---------|
-  | Scroll   | User     | X     |       |         |
-  |----------+----------+-------+-------+---------|
-  | Event    | User     | X     |       |         |
-  | ''       | Scroll   |       | X     |         |
-  |----------+----------+-------+-------+---------|
-  | Notebook | User     | X     |       |         |
-  |----------+----------+-------+-------+---------|
-  | Note     | User     | X     |       |         |
-  | ''       | Notebook |       | X     |         |
-  | ''       | Event    |       |       | X       |
-
-*** Server
-
-  Server is built in Django + django-rest-framework. It's lumpy and
-  annoying but then you get the hang of it. All of the real work is in
-  the PostgreSQL schema, though, and ultimately this thing should be
-  rewritten.
-
-  Like I said: Lumpy.
-
-  I stayed with one-server-in-some-cloud model because I didn't want to
-  prematurely optimize anything and I wasn't sure if I was building this
-  for one person, a workgroup, or the web. Mostly because I was learning
-  React and you only want to learn one new huge thing per project or
-  you'll lose your mind.
-
-*** Future Plans
-**** Improvements 
-- Timelines could be much better. 
-- Timelists could be much better.
-- Edit experience could do things.
-- Searches can be saved.
-
-**** Core functionality
-  - Social graph :: I follow people and organizations and see the events and notebooks they're adding.
-  - Workgroup :: One individual creates a Scroll; a group of approved individuals can add and edit Events. One individual creates a Notebook; a group of approved individuals can add and edit Notes. 
-
-*** How Could This Thing be Optimized
-  Optimization path is pretty clear:
-
-  1) Login/API to whatever service makes sense.
-
-  2) Event and Note retrieval from PostgreSQL to ElasticSearch or other
-  inverted-btree/id-retrieval platform. Retrieval patterns are basically
-  all in the form:
-   - Items X in Bag Y sorted by Z and [optionally] Paged
-     - (Events in Scroll 1 sorted by =when_happened= and paged)
-   - Items X matching Search Y sorted by Z and Paged
-   - Image/thumbnail hosting to S3 or similar cache.
-
-  This thing could scale if you ever wanted. The Event objects are
-  super-light, you could even cap them at 2-3Kb and thus have a couple
-  billion on a server.
-
-  I try to let the database do a lot which django fights a little; lots
-  of =select_related()= function calls off the query object.
-
-  The overall API design is okay. The niceties aren't there, like snake
-  case, and some of the fields need to be balanced out. There isn't a
-  really clear sense of users--sometimes I give you =scroll_username,
-  etc. There's some bad future-proofing; for example Events are in a
-  many-to-one relationship to Scrolls and should simply inherit Scroll
-  authorship (same true of Note/Notebook) but I track author the whole
-  way.
-
-
-*** Client
-
- Client is react using create-react-app and react context API (no
- flux). I was learning react as I went and that shows; at first I had
- the whole world in my context and then I started to factor out to
- components. It's sort of halway where it needs to be. My basic pattern
- now is:
-
- component
-    constructor()
-
-    utilities()
+*** There's no business model.
+ There are tons of business models and not-business models. Right now it has one user and this thing would need to get many thousands of committed daily users before it cost more than a couple hundred bucks to run per month. I mean this thing could be good for lawyers, or be something that groups can use. Let's see what happens.
+
+*** That has nothing to do with the blockchain.
+ I guess it would be nice, some day, to auto-publish Timeline hashes into a blockchain so that people can be relatively assured that history has not been manipulated. Let's see what happens.
+
+*** The mobile experience is wonky. No one uses desktop computers.
+ I spent a lot of time on mobile but mobile web, it's...well. Life. Let's see what happens.
+
+*** This has nothing to do with machine learning.
+ I don't know, imagine what you could do with lots of public events some of which have been tagged and annotated as a side-effect of the writing process. Of course none of that is real yet. Let's see what happens.
+
+*** This is just another centralized effort designed to own other people's creative work. It should be a federated, decentralized timeline-writing tool.
+ Maybe! Have you ever tried to coordinate large numbers of services to create great experiences, though? Me neither. I don't really want to own time or culture. I want people to feel safe and protected and like they have the tools they need to do good work, starting with me.
+
+ It is nice to imagine a federated service, used to index HTML microformats, blog posts, and tweets at the time of their authorship. On the other hand, humans love convenience so maybe a centralized service is best. The goal is to help. This thing only has one user so it doesn't really matter. Let's see what happens.
+
+*** The approach to date-time parsing and processing is utterly half-assed.
+ Yes, it's terrible. Extracting a date from, say, where it's embedded in a filename on an MP3 on archive.org and turning it into a realistic calendar moment is pretty hard. There's a lot to learn here. Frankly you could be looking at a clay pot from Sicily that's circa 1500 and not know whether it's circa 1500 Greenwich Mean Time or circa 1500 Eastern Standard Daylight. Anwyway right now I'm winging it and just pretending timezones aren't real. I'm sure it will bite me. Let's see what happens.
+
+*** This is not how history is done/there's more to history than chronology.
+ Yes, agreed. It's a writing tool that keeps the vaguest chronology in view. Let's see what happens.
+
+*** The events show all kinds of bias.
+ They sure do. The resources in the commons that I'm importing are definitely biased towards the conventionally-funded western-dominated metric of what's important.
+
+ If doing this has taught me anything (it's taught me like 1,000 things which is why I did it) it's that archives are totally biased in favor of consensus rich-and-powerful-people history, around who made the news, who had the fame, and who had the money. Because that's who makes archives. We archive (1) fame; and (2) pain. Doing this project has made that ridiculously obvious. Public data in the commons is either about vast, anonymized groups of people (like people who take cabs) or it's about expensive and rare things (museum archives), or stories of great success or failure of successful mainstream people (media archives). Even when it's about less-represented people it's often about their suffering (like specific records around slavery or lynching)
+
+ There are definitely exceptions but a lot of the important archives around, say, Black history, aren't digitized yet ($$$), and I don't want to create records for artifacts where there isn't an available source document. And I don't want to have an archive that just contrasts success and suffering based on skin color or gender identity and calls itself done. That doesn't really help anyone. So it's a big unsolved problem.
+
+ Neither fame nor pain are what interests me personally all of the time, so I'm going to do my best to add events about other kinds of people over time. Also, the web has its own tractable history now, running 25 years, with lots of voices represented. For all that things suck, we're going on decades of records of how normal humans interact, talk, hook up, and cook things.
+
+ Anyway for the most part the public archives that I'm importing don't represent regular people very much. The Cooper Hewitt Design Museum does a little better because everyone needs wallpaper.
+
+ Maybe that could change and it'd be a lot of fun and worth the effort if this was a place where that changed. There's only so much I personally can do here, so I'll pay a reasonable hourly rate for people who want to correct that and create timelines around marginalized people's history. If you know someone who should do that kind of work ping me and I'll reach out to them. But please be a little chill, it's just me and I have a day job, and by offering this up it means I'm going to end up saying no to lots of really good people. Things take a long time. Credentialed people, grad students, people with some experience, are what I need now (maybe not forever but now). Let's see what happens.
+
+*** How will I know if the events are accurate?
+ I thought hard about this one. This sounds simple but it actually veers into foundational philosophical challenges about the nature of truth in about five minutes. Short answer is, you can't.
+
+ Even when you import really well-regarded sources--museum collections, for example--it's hard to know when something happened, and often utterly ambiguous. Dealing with that ambiguity led me to come up with a "guideline of the last possible moment." For example if something is identified as being "circa 1880-1889" the datestamp I assign to it is December 31st 1889 one second before midnight. Let's see what happens. This is because the problem I've found when writing about things that happened is almost always that you put them too soon, not too late. So I err on the side of the last possible moment and keep the original text of the date/time around.
+
+ Here's a hedge for you: A community, should one form (doubtful), will define the culture here, and the software would support the community's definition of accuracy. Otherwise it'll just be me blogging. Which would be great, I'm actually an excellent blogger and I am well known on many important blogging platforms. Let's see what happens.
+
+*** What about griefers / Nazis / racists / sexists / anti-Semites / goofballs / trolls / men?
+ Right now I'm the only one here. If exhausting people, bad actors, griefers, and so forth show up we'll set limits, hire people, charge money, shut it down shut it all down all of it. It's not a social network.
+
+ Anyway if history has shown us anything it's that the world is big and difficult and most likely no one will care and this will be just another dead website. Except there'll be a lot of JSON files on Archive.org in memoriam.
+
+ It's interesting though.
+
+ Let's see what happens.
+
+*** You've already failed in so many ways!
+ And there's more to come!
+
+ Or maybe nothing will happen. It's an experiment.
+
+ It wouldn't hurt you to be a little positive and encouraging. I know that the Internet has let you down recently. Me too. I'm building this as a place that won't always let people down, where you can sit in bed and look at the past and think about the future and write little essays.
+
+ You don't have to run to the thread on your microblog messageboard and poop all over this site today. Give it two weeks, then poop on it. I'll hold my breath.
+
+ I know this thing is a big mess but I worked hard on it. I'm doing it because I love the commons and I have ideas and want to share them, and want to make room for other people's ideas. I know that the web doesn't work that way any more. I still have faith though, like a sucker.
+
+ Let's see what happens.
+
+** Some Further Context
+
+*** What Gaps Are We Seeking to Fill?
+**** Editorial Gaps
+  - Editorial organizations are dying and fact-checking and editorial support are going away. Most of the sources we trusted in the last ten years will be gone in ten years. The ones that replace them have high turnover and are traded around.
+  - Humans are really bad at thinking sequentially about things. A vast number of errors in thinking are due to bad chronology. Context is very hard to maintain. There are a host of old-school fallacies related to this, like the historian's fallacy and the historical fallacy, gambler's fallacy.
+**** Interface Gaps
+  - Minimalism has failed writers IMO. It creates a situation in which you're NOT supposed to use all the tools of the Internet to solve things.
+  - The domain of TIME has never been a first-class citizen on the web, unlike geography/mapping, social relationships and social networks, commerce, and news.
+  - Documents in composition are made of fragments and objects not simply long runs of text, even if the end result is one (hopefully) smooth line of prose. That is, composition and reading are different. Unscroll is pretty orthodox about this; it's really more of a composition platform than a publishing platform and it has incredibly strong opinions about editing and workflow.
+  - Linking is a pain. Full hypertext abstraction is not useful for most humans and adding links is kind of hard. Also links die. People need things to touch and link to. So we give them events, as many as they want until they feel secure in their thoughts.
+  - Mobile web composition is very hard and you lose your place a lot.
+**** Cultural Commons Gaps
+  - Data in the commons is often trash and there's no way to improve it. Wikipedia and Archive.org are the best so far and they have a really hard time and they don't encourage you to make new, pretty things.
+  - It should be easier to get things from the web /into/ the commons.
+  - To encourage a more robust commons you need to help people get into the commons.
+
+
+*** Understanding This Thing
+
+ But these are all tactics and responses. The reason for Unscroll to exist is so that people have tools to tell true stories well, because humans need to tell stories and humans need to read them, and to create a positive feedback loop between improving the commons and the fundamental act of storytelling.
+
+ Think of project as a marathon, not a sprint. The goal is for it to last for 10, 20, 30 years. What organizational, technological, and culture patterns will ensure survival? So:
+
+ - It could be placed on cloud infrastructure.
+ - It could be simplified and features removed.
+ - It could emphasize writing over reading.
+ - It could fork and release an enterprise product.
+ - It could become a desktop app.
+ - It could release all its data into the commons.
+ - It could insist that everything be CC-licensed.
+ - It could be open-sourced.
+ - It could be federated.
+ - It could be built by an agency.
+ - It could be built by a small team.
+ - It could be centralized.
+ - It could be academic.
+ - It could live on its own as a centralized service.
+ - It could be purchased by a company.
+ - It could be not-for-profit.
+ - It could seek to raise venture capital.
+ - It could seek not-for-profit grant-based funding.
+ - It could have advertising.
+ - It could have subscriptions.
+ - It could exist entirely in the commons as a public platform.
+ - It could remain Paul's Folly.
+
+ But the important thing is to think of all of those things as /paths to sustainability/ not as ends in themselves. The current path to sustainability is just launching.
+
+ Every single one of the bulleted things above comes with ingroup/outgroup advocacy. There are people who will argue that Python is better than JavaScript and vice-versa. That VC is great because of the network it brings you. That open-source is neccessary for anything that really matters. It sounds odd to say but the fallacy of tech is its belief in technological solutions.
+
+ Before doing anything, you probably want want to test each assumption by adding, to the end of each line, "because if we do so that will ensure people will stay connected over many years, because...." And then: "Even though..." and list all the reasons you've seen that thriving social communities don't come into being just because someone did something that seemed promising. This whole industry is filled with tactics branded as strategy. Open source being the best example: Usually too little, usually, too late, and your fault. Being bought is another: Big promises are made but ultimately things always return to the mean.
+
+ You need to throw down the gauntlet; you need to make it worth their while; you need to make it clear that they should get on the bus now, before the bus leaves them at the bus stop. And that's fine. But ultimately the risk is simply that people won't connect, endorse, use, and pay for a thing. The only way to cut risk is humility. Shut up, listen, and protect your flank. Everyone is on a journey and wants better tools, for the journey is long and the tools make their hands bleed.
+
+ But an awful lot of failures when you break them down, people have a specific path in mind that leads to a specific outcome in which they look good, become wealthy, or achieve some goal. Very few things on the Internet seem to be designed with sustainability in mind.
+
+ The key to sustainability is in spending all of your time and energy to increase optionality. That's what I've learned in the last three years, running a business. I learned it from my co-founder. Having the maximum number of options in front of you then making the best possible choices for the business. Having the most inbound leads, the bigger marketing mailing list. Knock on all the doors. Talk to the VCs, the bankers, the academics. Could you run this with one employee? Zero? If you do that, of course, the community you need for sustainability vanishes; you need people besides yourself to be in on the optionality game.
+
+**** Data
+
+***** Data Model
+
+   | Parent   | Child |
+   |----------+-------|
+   | /Group/  | User  |
+   | Notebook | Note  |
+   | Scroll   | Event |
+
+   Group is not implemented (well it is in Django just not reall).
+
+   Event must have a =when_happened= field in PostgreSQL-parseable
+   datetime format.
+
+***** Relationships/Foreign Keys
+
+
+   | From     | To       | =by_= | =in_= | =with_= |
+   |----------+----------+-------+-------+---------|
+   | Scroll   | User     | X     |       |         |
+   |----------+----------+-------+-------+---------|
+   | Event    | User     | X     |       |         |
+   | ''       | Scroll   |       | X     |         |
+   |----------+----------+-------+-------+---------|
+   | Notebook | User     | X     |       |         |
+   |----------+----------+-------+-------+---------|
+   | Note     | User     | X     |       |         |
+   | ''       | Notebook |       | X     |         |
+   | ''       | Event    |       |       | X       |
+
+**** Server
+
+   Server is built in Django + django-rest-framework. It's lumpy and
+   annoying but then you get the hang of it. All of the real work is in
+   the PostgreSQL schema, though, and ultimately this thing should be
+   rewritten.
+
+   Like I said: Lumpy.
+
+   I stayed with one-server-in-some-cloud model because I didn't want to
+   prematurely optimize anything and I wasn't sure if I was building this
+   for one person, a workgroup, or the web. Mostly because I was learning
+   React and you only want to learn one new huge thing per project or
+   you'll lose your mind.
+
+**** Future Plans
+***** Improvements 
+ - Timelines could be much better. 
+ - Timelists could be much better.
+ - Edit experience could do things.
+ - Searches can be saved.
+
+***** Core functionality
+   - Social graph :: I follow people and organizations and see the events and notebooks they're adding.
+   - Workgroup :: One individual creates a Scroll; a group of approved individuals can add and edit Events. One individual creates a Notebook; a group of approved individuals can add and edit Notes. 
+
+**** How Could This Thing be Optimized
+   Optimization path is pretty clear:
+
+   1) Login/API to whatever service makes sense.
+
+   2) Event and Note retrieval from PostgreSQL to ElasticSearch or other
+   inverted-btree/id-retrieval platform. Retrieval patterns are basically
+   all in the form:
+    - Items X in Bag Y sorted by Z and [optionally] Paged
+      - (Events in Scroll 1 sorted by =when_happened= and paged)
+    - Items X matching Search Y sorted by Z and Paged
+    - Image/thumbnail hosting to S3 or similar cache.
+
+   This thing could scale if you ever wanted. The Event objects are
+   super-light, you could even cap them at 2-3Kb and thus have a couple
+   billion on a server.
+
+   I try to let the database do a lot which django fights a little; lots
+   of =select_related()= function calls off the query object.
+
+   The overall API design is okay. The niceties aren't there, like snake
+   case, and some of the fields need to be balanced out. There isn't a
+   really clear sense of users--sometimes I give you =scroll_username,
+   etc. There's some bad future-proofing; for example Events are in a
+   many-to-one relationship to Scrolls and should simply inherit Scroll
+   authorship (same true of Note/Notebook) but I track author the whole
+   way.
+
+
+**** Client
+
+  Client is react using create-react-app and react context API (no
+  flux). I was learning react as I went and that shows; at first I had
+  the whole world in my context and then I started to factor out to
+  components. It's sort of halway where it needs to be. My basic pattern
+  now is:
+
+  component
+     constructor()
+
+     utilities()
  
-    someServerLogic() # usually in componentdidmount
-    someOtherserverLogic()
+     someServerLogic() # usually in componentdidmount
+     someOtherserverLogic()
  
-    renderSomePart()
-    renderSomeOtherPart()
-    render() # put it all together
+     renderSomePart()
+     renderSomeOtherPart()
+     render() # put it all together
 
- with everything returning null at the end, but I'm not 100% there.
+  with everything returning null at the end, but I'm not 100% there.
 
- Didn't use a CSS preprocessor CUZ I'M OLD.
+  Didn't use a CSS preprocessor CUZ I'M OLD.
 
- That said my instinct is that this is like 30% oooof what the hell and
- 60% sure i'd do it differently and 10% okay wow that's interesting.
+  That said my instinct is that this is like 30% oooof what the hell and
+  60% sure i'd do it differently and 10% okay wow that's interesting.
 
+* DevOps
+** Components
+- =/server/=
+  - =./unscroll/= :: Django REST API code
+  - =./scrolls/= :: The Django model.
+  - =./unscroll/bin/download/= :: Where the importers live plus some convenience code for data parsing.
 
+- =/client/= :: REACT client frontend
+  - =./components= ::
+    - =About.js= :: An FAQ for the site. Shouldn't be part of the App.
+    - =App.js= :: Core app.
+    - =App.test.js= :: Testing, unimplemented.
+    - =AppContext.js= :: Big React context module.
+    - =Nav.js= :: Nav bar for top of site.
+    - =News.js= :: Unimplemented "recent news" listing.
+    - =Profile.js= :: Your profile. Messy.
+    - =Search.js= :: Search box/functionality.
 
+  - =./components/Editor= ::
+    - =RichTextEditor.js= :: Rich text editor.
+    - =RichTextEditorLegacy.js= :: Old Rich text editor that didn't work in Android.
 
-* Presentation: When a Side Project Wants to Kill You
-Or; Building an Inspiration Machine
+  - =./components/Event= ::
+    - =EventEditButton.js= :: Edit an event.
+    - =EventNoteButton.js= ::  Add a note to an event.
 
-Joy Carol Oates tweet
+  - =./components/Notebook= ::
+    - =Manuscript.js= :: Read an article.
+    - =Note.js= :: An individual note component.
+    - =Notebook.js= :: The whole shebang.
+    - =NotebookList.js= :: A list of notebooks.
+    - =NotebookNoteEditor.js= :: An edit view of a Note.
+    - =TitleEditor.js= :: Edit the title and metadata of a Notebook.
 
-* Where I came from
-* I was overtaken by a fear
+  - =./components/Timeline= ::
+    - =Column.js= :: A single column of a timeline.
+    - =EventInput.js= :: TBD
+    - =NewEventButton.js= :: Create a new event.
+    - =Panel.js= :: A single span inside a horizontal notebook.
+    - =PanelEvent.js= :: A horzontal event.
+    - =TimeFrames.js= :: The core of the time logic--centuries, decades, days, etc.
+    - =Timeline.js= :: A horizontal timeline.
+    - =TimelineEventEditor.js= :: An event editor.
+    - =TimelineList.js= :: A list of timelines. 
+    - =TimelinePanelEventEditButton.js= :: An edit button that appears in horizontal timelines.
+    - =Timelist.js= :: A list of envents.
+    - =TimelistEvent.js= :: An event in that view.
+    - =TimelistTitleEditor.js= :: An editor for metadata about a timelist.
 
-- anecdote about email
-- what the hell did i actually learn
-well i learned a lot of stuff, facts
-and i learned how to get along in the world
+  - =./components/User= :: Generic forms for users
+    - =Confirm.js= ::
+    - =Login.js= ::
+    - =Logout.js= ::
+    - =Profile.js= ::
+    - =Recover.js= ::
+    - =Register.js= ::
 
-inspiration is not about motivation as much as reducing that sense of fraudulence
-when new tools come along we actually fight them pretty hard
-these are images I keep around
-there are so many people out there ready to tell you
-and there are always a great number of peopl
-but let's position it differently
+  - =./components/Util= :: 
+    - =Log.js= :: Unimplemented better logging.
+    - =Util.js= :: Way too much logic for the entire shebang is in here.
 
-that is inspiration is not about getting inspired
-there's no magic inspirational liquid
-just about reducing friction
-getting rid of the sense that one is a fraud
-and I think there's a general inspirational industry
-that makes those little rectangles
-but that if you find yourself at need for inspiration
-you might want to be suspicious of them
-and look at your own fraudulence not as some grave affliction
-but ask yourself what tools will work 
-it's about decreasing the risk that you'll be frozen in place by your own fraudulence
+  - =./css= ::
+    - =index.css= ::
+    - =rangeslider.css= ::
+    - =rangeslider.less= ::
 
-and I am appreciative of that
-the irony is that they come to me and say, hey do you want to talk to a big room of strangers
+  - =./ext= ::
+    - =wheel-react.js= :: To grab wheel events
 
-i wanted to prove to you all that I am not a fraud
-as to whether I am or not, I have my on opinions, and you are totally free to make up your own mind. thank you.
+- Front-end create-react-app 
+- Nginx hosting
+- Postgresql backend
 
-- Write four or five essays
-  - Looking at books
-  - Explain why I'm doing readings
-  - Press releases
-  - Raccoon
-  - My life in software
-  - Something personal about a human being
-  - Something about creative energy getting unleashed
-  - Lincoln center and a place in which energy is unleashed
-  - Most things are a social network with activity hanging off of them
-
-- The five motivations
-  - Curiosity
-  - The Failure of Historical timelines
-    - Book on timelines
-    - You can fall in love with an interface but it's not what you thought it would be.
-    - So now I'd built some timelines.
-    - And I put them aside for a while.
-    - Then about four years ago, I signed a book contract.
-  - Jealousy
-  - Being awesome
-  - Procrastination/Fraudulence
-    - Started a company
-      - I can't bring them into my mess until I truly knew what my mess even was.
-      - You are what you do when you procrastinate. You think you're the thing you're putting off. But you're the thing.
-      - So around Christmas I just started over.
-  - Personal transformation
-
-  - A deadline
-    - And they came to me . St
-    - The second time I tried to launch it
-    - Discovery and Curiousity
-
-- Make the five videos
-  - Timeline in use with no events
-  - Timeline responding to search and playing a song
-  - Timeline playing a song
-  - Adding things to the timeline
-  - Writing in the timeline
-  - Essay
-  
-* For June 9 Demo
-
-- Final checklisty stuff
-  - [ ] Delete a scroll
-  - [ ] Fix reordering bugs
-  - [ ] Reflow events when event is added.
-  - [ ] List all my events?
-
-- Account 
-  + [X] Register
-  + [X] Confirm
-  + [X] Log in to the site
-  + [X] Log out
-
-- API
-  - [X] Endpoints for notebook
-  - [X] Search endpoint and database modification
-  - [X] Search only a scroll
-  - [ ] Delete a scroll
-  - [ ] List scrolls owned by person
-  - [ ] List scrolls by search title
-  - [ ] List scrolls by mediatype
-  - [ ] List scroplls by contenttype
-
-- Timeline
-  - [X] Zoom in and out of time
-  - [X] Show prioritization of time
-  - [X] Listen to something
-  - [X] Switch to "list view"
-  - [X] Add an event
-    - [X] Pop up event input
-  - [X] Edit an event
-
-- Notebook 
-  - [X] Make a new notebook.
-  - [X] Title notebook
-  - [X] Add event to notebook
-  - [X] Show notebook as "essay"
-  - [X] Add to notebook
-  - [X] Publish a notebook
-
-* Actual Notes
-
-** Startup is basically:
-
+** Starting Up a Server [Need to repeat and rehearse this]
 *** Local Dev
 - =# nginx -c"/Users/ford/dev/unscroll/config/nginx/nginx_dev.conf" -s reload=
 - =$ DJANGO_SETTINGS_MODULE=unscroll.settings_dev gunicorn -p /tmp/gunicorn.sock --bind 0.0.0.0:8000 unscroll.wsgi:application=
 - (or)
 - =$ DJANGO_SETTINGS_MODULE=unscroll.settings_dev ./manage.py runserver=
-
 
 *** Server dev
 - # nginx -c"/home/unscroll/unscroll/config/nginx/nginx.conf" -s reload
@@ -396,8 +409,6 @@ Nothing is daemonized or in upstart or anything.
 
 https://unscroll.com
 A writing tool for people who need to get it right.
-
-
 
 ** Installing on Ubuntu
 
@@ -435,8 +446,15 @@ Took a minute to figure out.
 In general though getting from Mac to Ubuntu took an hour or two to
 smooth things out.
 
-* Principles for Making Unscroll
+** Development Environment
+ #+BEGIN_SRC bash
+ mkvirtualenv ~/local/env/unscroll
+ git clone $UNSCROLL_GITHUB_REPO
+ cd unscroll/server
+ pipenv install
+ #+END_SRC
 
+* Principles for Making Unscroll
 ** Date + Time
 
 - Date + time are hard
@@ -513,3 +531,129 @@ smooth things out.
 - Have an optimization path in mind.
   - Postgres search -> Elasticsearch
   - IDs -> UUIds
+
+Created unscroll username and unscrollinc organization keyed to ford+unscroll@ftrain.com
+https://github.com/unscrollinc
+
+* Data sources, potential and otherwise
+** The Internet Archive
+- IA sources
+  - https://archive.org/details/tednelsonjunkmail&format=json
+  - https://archive.org/download/$identifier/$filename
+  - https://archive.org/metadata/$identifier
+  - https://mobile.twitter.com/tressiemcphd/status/1028391226905690112
+- SI
+  - http://collections.si.edu/search/results.htm?q=&view=list&fq=object_type%3A%22Postage+stamps%22&fq=online_visual_material%3Atrue&page=100
+- Historic inventions
+  - https://en.wikipedia.org/wiki/Timeline_of_historic_inventions
+- China timeline
+  - https://en.wikipedia.org/wiki/Timeline_of_Chinese_history
+- This guy right here
+  - http://americanarchive.org/catalog?f%5Baccess_types%5D%5B%5D=online&per_page=100&sort=year+asc
+
+** JSTOR and similar
+- https://about.jstor.org/whats-in-jstor/books/open-access-books-jstor/?utm_term=3%2C200%20scholarly%20ebooks&utm_campaign=eml_j_faculty_08_2018&utm_content=humanities&utm_source=Act-On_internal&utm_medium=email&=&=&cid=eml_j_faculty_08_2018
+- periodical issue
+- document
+- book
+- radio show
+- tv show
+- newspaper
+- film
+- tweet
+- article
+- poem
+
+** NYC Cultural Orgs
+*** The Met
+urls = ["https://www.metmuseum.org/api/collection/collectionlisting?offset={}&perPage=100&sortBy=Date&sortOrder=asc".format(i) for i in range(0,1951)]
+
+- title
+- Description
+ + medium
+ + accessionNumber
+ + (galleryInformation)
+- url
+- image
+- date
+
+*** audio/podcast
+  - http://feeds.gimletmedia.com/hearreplyall?format=xml
+  - https://www.wnyc.org/series/archives-preservation
+  - https://usafacts.org/reports/immigration-history
+
+** Other
+- Europeana
+- MoMA.org
+- Black History
+  - http://www.blackpast.org/digital-archives
+  - The Crisis
+- Women's History
+  - https://www.loc.gov/collections/?fa=subject%3Awomen%27s+history
+- Trans history 
+  - https://www.digitaltransgenderarchive.net/
+  - https://www.digitaltransgenderarchive.net/catalog?utf8=%E2%9C%93&sort=date_uploaded_dtsi+desc&search_field=all_fields&q=
+- Gay History
+  - https://digitalcollections.nypl.org/collections/lane/gay-lesbian-history
+  - https://digitalcollections.nypl.org/collections/lgbt-materials-in-the-new-york-public-library#/?tab=navigation
+  - http://digitallibrary.usc.edu/cdm/landingpage/collection/p15799coll4
+- Misc 
+  - https://chroniclingamerica.loc.gov/
+  - http://ota.ox.ac.uk/catalogue/index.html
+  - https://digitalcollections.nypl.org/
+- Poetry
+  - https://www.poetryfoundation.org/poets
+  - UbuWeb
+- Commercial:
+  - https://oedb.org/ilibrarian/250-plus-killer-digital-libraries-and-archives/
+  - https://microform.digital/boa/collections?page=5
+  - DPLA s3://dpla-provider-export
+    - http://dpla-provider-export.s3.amazonaws.com/
+      - .dataProvider
+      - .sourceResource.title
+      - .date
+      - .identifier[0]
+      - .@id
+      - .object
+      - .isShownAt
+- Cultural history
+  - Lomax: http://www.culturalequity.org/ace/ce_ace_onlinearchive.php
+  - Studs terkel
+  - http://research.culturalequity.org/rc-b2/get-audio-detailed-recording.do?recordingId=27984
+- Legal history
+  - https://www.oyez.org/cases/1789-1850/19us20
+- Advertising:
+  - https://repository.duke.edu/dc/adaccess/BH1353
+- General
+  - Schema.org
+
+- Otherwise: Use gentle spiders and follow search engine ethos. APIs
+  have a lot of terms of use that aren't really spider-friendly and
+  are contrary to the purpose of the index.
+
+Media 
+- Films: themoviedb, omdb
+- TV shows: tvdb
+- Music: MusicBrainz (JSON AVAILABLE)
+- schema.org
+
+Cultural History
+- Europeana
+- Met
+- Cooper Hewitt
+- DPLA
+
+Printed media
+- LoC
+- Archive.org
+
+https://github.com/WGBH/AAPB2#api
+https://chroniclingamerica.loc.gov/batches.json
+https://chroniclingamerica.loc.gov/batches/
+https://toolbox.google.com/datasetsearch/search?query=historical&docid=41XkXsqWDskevlQnAAAAAA%3D%3D
+https://www.blog.google/products/search/making-it-easier-discover-datasets/
+- News
+- Sports
+
+https://toolbox.google.com/datasetsearch/search?query=120%20years%20of%20Olympic%20history%3A%20athletes%20and%20results&docid=DEJvaZ%2FLlshtkBKdAAAAAA%3D%3D
+
