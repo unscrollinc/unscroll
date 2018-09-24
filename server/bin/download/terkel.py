@@ -6,7 +6,7 @@ from pprint import pprint
 from tableextractor import Extractor
 from unscroll import UnscrollClient
 from unscrolldate import UnscrollDate
-from edtf import parse_edtf, text_to_edtf, struct_time_to_date
+from edtf import parse_edtf, text_to_edtf, struct_time_to_datetime
 from datetime import date
 from datetime import datetime
 
@@ -29,9 +29,11 @@ def __main__():
 
     scroll_thumb = "https://upload.wikimedia.org/wikipedia/commons/0/0b/Studs_Terkel_-_1979-1.jpg"    
     api = UnscrollClient()
-
+    title = "Studs Terkel Interviews"
     favthumb = api.cache_thumbnail(scroll_thumb)
     with_thumbnail = favthumb.get('url')
+
+    api.delete_scroll_with_title(title)
     
     scroll = api.create_or_retrieve_scroll(
         "Studs Terkel Interviews",
@@ -39,7 +41,7 @@ def __main__():
         link='https://studsterkel.wfmt.com/',
         with_thumbnail=with_thumbnail,
         subtitle='Collection via WFMT',)
-
+    print('SCROLL: {}'.format(scroll))
     shows = []
     url = 'https://studsterkel.wfmt.com/explore#t=date'
     soup = get_url_as_soup(url)
@@ -52,10 +54,10 @@ def __main__():
             date = a.find('span')
             if date is not None:
                 _edtf = parse_edtf(text_to_edtf(date.text))
-                _as_date = struct_time_to_date(_edtf.upper_strict())
-                _as_datetime = datetime.combine(_as_date, datetime.min.time())
+                res = len(str(_edtf))
+                _as_datetime = struct_time_to_datetime(_edtf.upper_strict())
                 show['when_happened'] = _as_datetime
-                show['resolution'] = 8
+                show['resolution'] = res
                 show['when_original'] = date.text
                 show['content_url'] = 'https://studsterkel.wfmt.com{}'.format(a.get('href'))
                 [s.extract() for s in a('span')]
@@ -63,9 +65,11 @@ def __main__():
                 show['text'] = ''
                 show['source_url'] = 'https://studsterkel.wfmt.com/'
                 show['with_thumbnail'] = None
-            pprint(show)
-            resp = api.create_event(show, scroll)
-            print(resp.json())
+                
+                pprint(show['title'])
+                print(scroll)
+                resp = api.create_event(show, scroll)
+                pprint(resp.json())
 
 
 
