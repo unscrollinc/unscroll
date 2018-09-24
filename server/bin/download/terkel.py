@@ -1,7 +1,7 @@
 import re
 import bs4
+# import requests_cache
 import requests
-import requests_cache
 from pprint import pprint
 from tableextractor import Extractor
 from unscroll import UnscrollClient
@@ -12,10 +12,11 @@ from datetime import datetime
 
 import time
 
-requests_cache.install_cache('wiki_cache')
+# requests_cache.install_cache('wiki_cache')
 
 def get_url_as_soup(url):
-    r = requests.get(url)
+    s = requests.Session()
+    r = s.get(url)
     bs = bs4.BeautifulSoup(r.content, "lxml")
     return bs
 
@@ -25,6 +26,42 @@ def filter_key(k):
     c = re.sub('[^a-z_]', '', b)
     return c
 
+def get_shows():
+    shows = []
+
+    url = 'https://studsterkel.wfmt.com/explore#t=date'
+    soup = get_url_as_soup(url)
+    ps = soup.find_all('p')
+
+    for p in ps:
+        show = {}
+        a = p.find('a')
+        if a is not None:
+            date = a.find('span')
+            if date is not None:
+
+                # Evil python mutates `a` object
+                [s.extract() for s in a('span')]
+                
+                _edtf = parse_edtf(text_to_edtf(date.text))
+                res = len(str(_edtf))
+                _as_datetime = struct_time_to_datetime(_edtf.upper_strict())
+                
+                show = {
+                    'when_happened': _as_datetime,
+                    'resolution': res,
+                    'when_original': date.text,
+                    'content_url': 'https://studsterkel.wfmt.com{}'.format(a.get('href')),
+                    'title': a.text.strip(),
+                    'text': '',
+                    'source_url': 'https://studsterkel.wfmt.com/',
+                    'with_thumbnail': None
+                }
+                
+                shows.append(show)
+    return shows
+
+                
 def __main__():
 
     scroll_thumb = "https://upload.wikimedia.org/wikipedia/commons/0/0b/Studs_Terkel_-_1979-1.jpg"    
@@ -42,36 +79,10 @@ def __main__():
         with_thumbnail=with_thumbnail,
         subtitle='Collection via WFMT',)
     print('SCROLL: {}'.format(scroll))
-    shows = []
-    url = 'https://studsterkel.wfmt.com/explore#t=date'
-    soup = get_url_as_soup(url)
-    ps = soup.find_all('p')
-
-    for p in ps:
-        show = {}
-        a = p.find('a')
-        if a is not None:
-            date = a.find('span')
-            if date is not None:
-                _edtf = parse_edtf(text_to_edtf(date.text))
-                res = len(str(_edtf))
-                _as_datetime = struct_time_to_datetime(_edtf.upper_strict())
-                show['when_happened'] = _as_datetime
-                show['resolution'] = res
-                show['when_original'] = date.text
-                show['content_url'] = 'https://studsterkel.wfmt.com{}'.format(a.get('href'))
-                [s.extract() for s in a('span')]
-                show['title'] = a.text.strip()
-                show['text'] = ''
-                show['source_url'] = 'https://studsterkel.wfmt.com/'
-                show['with_thumbnail'] = None
-                
-                pprint(show['title'])
-                print(scroll)
-                resp = api.create_event(show, scroll)
-                pprint(resp.json())
-
-
+    shows = get_shows()
+    for show in shows:
+        resp = api.create_event(show, scroll)
+        pprint(resp.json())    
 
 
 __main__()
