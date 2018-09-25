@@ -9,15 +9,23 @@ from unscrolldate import UnscrollDate
 from edtf import parse_edtf, text_to_edtf, struct_time_to_datetime
 from datetime import date
 from datetime import datetime
-
 import time
 
-# requests_cache.install_cache('wiki_cache')
+import shelve
+shelf = shelve.open('shelf')
+
+import spacy
+nlp = spacy.load('en')
+
 
 def get_url_as_soup(url):
-    s = requests.Session()
-    r = s.get(url)
-    bs = bs4.BeautifulSoup(r.content, "lxml")
+    if url not in shelf:
+        s = requests.Session()
+        r = s.get(url)
+        shelf[url] = r.content
+
+    bs = bs4.BeautifulSoup(shelf[url], "lxml")
+    shelf.close()
     return bs
 
 def filter_key(k):
@@ -26,7 +34,15 @@ def filter_key(k):
     c = re.sub('[^a-z_]', '', b)
     return c
 
-def get_shows():
+def get_person(title):
+    doc = nlp(title)
+    for ent in doc.ents:
+        if (ent.label_ == 'PERSON'
+            and len(ent.text.split()) > 1
+            and 'Studs Terkel' not in ent.text):
+            return ent.text
+    
+def post_shows(api, scroll):
     shows = []
 
     url = 'https://studsterkel.wfmt.com/explore#t=date'
@@ -44,24 +60,26 @@ def get_shows():
                 [s.extract() for s in a('span')]
                 
                 _edtf = parse_edtf(text_to_edtf(date.text))
-                res = len(str(_edtf))
-                _as_datetime = struct_time_to_datetime(_edtf.upper_strict())
-                
+                title = a.text.strip()
+                person = get_person(title)
+                thumb = None
+
                 show = {
-                    'when_happened': _as_datetime,
-                    'resolution': res,
+                    'when_happened': struct_time_to_datetime(_edtf.upper_strict()),
+                    'resolution': len(str(_edtf)),
                     'when_original': date.text,
                     'content_url': 'https://studsterkel.wfmt.com{}'.format(a.get('href')),
                     'title': a.text.strip(),
                     'text': '',
+                    'with_thumbnail':thumb,
+                    'media_type':'audio/mpeg',
+                    'content_type':'Oral histories',
                     'source_url': 'https://studsterkel.wfmt.com/',
-                    'with_thumbnail': None
+                    'with_thumbnail': api.cache_wiki_thumbnail(person)
                 }
-                
-                shows.append(show)
-    return shows
+                resp = api.create_event(show, scroll)
+                pprint(resp.json())                    
 
-                
 def __main__():
 
     scroll_thumb = "https://upload.wikimedia.org/wikipedia/commons/0/0b/Studs_Terkel_-_1979-1.jpg"    
@@ -73,16 +91,15 @@ def __main__():
     api.delete_scroll_with_title(title)
     
     scroll = api.create_or_retrieve_scroll(
-        "Studs Terkel Interviews",
-        description='<b>Via the Studs Terkel Radio Archive at WFMT</b>: In his 45 years on WFMT radio, Studs Terkel talked to the 20th century’s most interesting people.',
-        link='https://studsterkel.wfmt.com/',
-        with_thumbnail=with_thumbnail,
-        subtitle='Collection via WFMT',)
-    print('SCROLL: {}'.format(scroll))
-    shows = get_shows()
-    for show in shows:
-        resp = api.create_event(show, scroll)
-        pprint(resp.json())    
+         title,
+         description='<b>Via the Studs Terkel Radio Archive at WFMT</b>: '
+         'In his 45 years on WFMT radio, Studs Terkel talked to the 20th '
+         'century’s most interesting people.',
+         link='https://studsterkel.wfmt.com/',
+         with_thumbnail=with_thumbnail,
+         subtitle='Collection via WFMT',)
+
+    post_shows(api, scroll)
 
 
 __main__()

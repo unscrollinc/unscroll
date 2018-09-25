@@ -215,3 +215,14 @@ class UnscrollClient():
             return r.content
 
         return r.json()
+
+    def cache_wiki_thumbnail(self, thing):
+        wiki_thumb = self.fetch_wiki_thumbnail_data(title=thing)
+        if wiki_thumb is not None and 'url' in wiki_thumb:
+            local_thumb = self.cache_thumbnail(wiki_thumb['url'])
+            if local_thumb is not None and 'url' in local_thumb:
+                return local_thumb['url']
+
+
+
+        
