@@ -1,0 +1,15 @@
+[Unit]
+Description=Gunicorn instance to serve unscroll
+After=network.target
+
+[Service]
+User=unscroll
+Group=unscroll
+WorkingDirectory=/home/unscroll/unscroll/server
+Environment="PATH=/home/unscroll/env/unscroll/bin"
+ExecStart=/home/unscroll/env/unscroll/bin/gunicorn --workers 6 --bind 127.0.0.1:8000 unscroll.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
+
+
