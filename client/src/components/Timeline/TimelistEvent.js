@@ -283,13 +283,18 @@ class TimelistEvent extends React.Component {
     renderLoggedInButtons() {
         if (utils.isLoggedIn()) {
             return (
-                <span className="eventNoteButton">
-                    <EventNoteButton event={this.state.event} />
+                <span className="event-buttons">
+                    <button
+                        onClick={() => this.setState({ isBeingEdited: true })}
+                    >
+                        X
+                    </button>
                     <button
                         onClick={() => this.setState({ isBeingEdited: true })}
                     >
                         Edit
                     </button>
+                    <EventNoteButton event={this.state.event} />
                 </span>
             );
         }
@@ -304,6 +309,8 @@ class TimelistEvent extends React.Component {
                     <td className="meta">{this.makeImage(e)}</td>
 
                     <td className="content">
+                        {this.renderLoggedInButtons()}
+
                         <div className="dt">{this.makeWhen(e)}</div>
 
                         <a href={e.content_url} target="_blank">
@@ -335,8 +342,6 @@ class TimelistEvent extends React.Component {
                                     </Link>
                                 </span>
                             </span>
-
-                            {this.renderLoggedInButtons()}
                         </div>
                     </td>
                 </tr>

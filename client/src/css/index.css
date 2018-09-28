@@ -201,6 +201,23 @@ td {
     position: absolute;
     font-size: 9pt;
 }
+.event-buttons {
+    display: block;
+    float: right;
+    padding-left: 0.5em;
+    border: 1px solid grey;
+    text-align: right;
+}
+
+.event-buttons button {
+    background: deepskyblue;
+    color: white;
+    font-size: 100%;
+    padding: 0.15em 0.5em 0.15em 0.5em;
+    margin-right: 0;
+    font-weight: bold;
+    margin-left: 0.25em;
+}
 
 .event-inner {
     background: white;

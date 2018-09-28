@@ -115,7 +115,6 @@ class Timelist extends React.Component {
     }
 
     getEvents(url) {
-        console.log('PROPS PROPS', this.props);
         const _this = this;
         const params = url
             ? {}
@@ -133,7 +132,6 @@ class Timelist extends React.Component {
             params: params
         })
             .then(resp => {
-                console.log('RESP', resp.data.results[0].when_happened);
                 _this.setPosition(resp.data.results[0].when_happened);
                 const _els = _this.makeEvents(resp.data, false);
                 _this.setState(prevState => ({

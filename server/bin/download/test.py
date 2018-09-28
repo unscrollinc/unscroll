@@ -5,7 +5,7 @@ scroll = Scroll(scroll={'slug':'woornjeesdgm'}, api=api)
 
 e = {'when_happened':'2001-01-01T00:00',
      'resolution':0,
-     'content_url':None,
+     'content_url':'',
      'title':'Studs Terkel petted a dog'}
 
 event = Event(event=e)
