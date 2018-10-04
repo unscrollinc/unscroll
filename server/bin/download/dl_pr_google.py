@@ -43,7 +43,7 @@ def __main__():
 
     c = UnscrollClient(api='http://127.0.0.1:8000',
                        username='ford',
-                       password='***REMOVED***')
+                       password='4tune500')
     c.login()
     c.create_or_retrieve_scroll('Google PR')
     get_blogspot_releases(c)

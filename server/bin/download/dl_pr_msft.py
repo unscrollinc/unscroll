@@ -10,7 +10,7 @@ URL = 'https://news.microsoft.com/category/press-releases/page/{}/'
 
 c = UnscrollClient(api='http://127.0.0.1',
                    username='ford',
-                   password='***REMOVED***')
+                   password='4tune500')
 
 c.login()
 favicon_url = c.fetch_favicon_url('https://www.microsoft.com')

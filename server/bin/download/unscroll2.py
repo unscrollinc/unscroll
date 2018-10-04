@@ -24,7 +24,7 @@ class UnscrollAPI():
     def __init__(self,
                  api='http://127.0.0.1:8000/api',
                  username='ford',
-                 password='***REMOVED***'):
+                 password='4tune500'):
         
         self.api = api
 

@@ -9,7 +9,7 @@ ADOBE_URL = "http://news.adobe.com/views/ajax?js=1&page={}&view_name=bw_press_re
 
 c = UnscrollClient(api='http://127.0.0.1',
                    username='ford',
-                   password='***REMOVED***')
+                   password='4tune500')
 c.login()
 
 favicon_url = c.fetch_favicon_url('https://www.adobe.com')
