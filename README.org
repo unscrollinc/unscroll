@@ -3,8 +3,8 @@
 
 * Table of Contents                                                     :TOC:
 - [[#why-does-this-exist][Why does this exist?]]
+  - [[#some--context][Some  Context]]
   - [[#frequently-anticipated-objections][Frequently Anticipated Objections]]
-  - [[#some-further-context][Some Further Context]]
 - [[#devops][DevOps]]
   - [[#components][Components]]
   - [[#starting-up-a-server][Starting Up a Server]]
@@ -16,7 +16,7 @@
   - [[#api][API]]
   - [[#caching][Caching]]
   - [[#frontend][Frontend]]
-  - [[#devops][DevOps]]
+  - [[#devops-1][DevOps]]
 - [[#data-sources-potential-and-otherwise][Data sources, potential and otherwise]]
   - [[#the-internet-archive][The Internet Archive]]
   - [[#jstor-and-similar][JSTOR and similar]]
@@ -24,151 +24,16 @@
   - [[#other][Other]]
 
 * Why does this exist?
-** Frequently Anticipated Objections
 
-*** Who can I interrogate, scold, or praise?
- Site news at @unscroll. Bug reports and existential crises to Paul Ford, ford@ftrain.com. Also on twitter at @ftrain; my DMs are open.
+Because everyone talks about MINIMAL, PURE environments for writing and thinking but I want the whole universe of facts and events right there at my literal fingertips!!!
 
- This is very alpha. I'm releasing it in the spirit of just releasing it. I'd love to know about bugs, or about how it could really help you.
+- Unscroll is an experimental tool for writing that helps a person fact-check their own writing.
+- It sees the worlds in terms of =Events= and =Notes=.
+- You put =Events= into a =Timeline=.
+- You arrange =Notes= in =Notebooks=. Get enough =Notes= together and they start to look like essays, or book chapters, or blog posts.
+- In theory (and personal practice) this gives you a superpower: The power to remember what you are writing about as you are writing it, so that you don't run your fool mouth. If you don't need that superpower, more power to you. But I personally need that superpower more every day.
 
-*** What is this?
- Unscroll is an experimental tool for writing that helps a person fact-check their own writing.
-
- It sees the worlds in terms of Events and Notes.
-
- You put Events into a Timeline.
-
- You arrange Notes in Notebooks. Get enough notes together and they start to look like essays, or book chapters, or blog posts.
-
- In theory (and personal practice) this gives you a superpower: The power to remember what you are writing about as you are writing it, so that you don't run your fool mouth. If you don't need that superpower, more power to you. But I personally need that superpower more every day.
-
-*** Why did you do something when it would be easier for me, as a consumer of things, if you had done nothing?
- Let's see what happens.
-
-*** Who is this for?
- Professional accurists of all stripes. People who like history, high school students, grad students, journalists who don't have enough editorial and fact-checking support, personal-essay-writer types, basically anyone who wants to catch themselves on their own foolishness, and catch the foolishness of others before it infects the water supply. Also just people who like looking at old vases and how book covers change over time. Everyone.
-
- It's also edging on a tool for people to do serious work on their phones. That's how I use it mostly. Think millennial law students.
-
- But really it's for me.
-
-*** Who are you?
- [TBD!]
-
-*** It should be free software. Everything should.
- Maybe so! If people use Unscroll and care about it, and other people start creating timelines using commons resources, that would make sense. It's built on Django and React. Let's see what happens.
-
-*** The data should be open. All the data should be open.
- Some should. Sharing out data in a reasonable way takes time to do right so I'm not rushing. I don't want to just release data out of guilt or mandate, or just dump an intractable blob of JSON into a bucket. I want to make sure what goes back into the commons is tractable, useful, and can be used to contribute back to Unscroll, too. Let's see what happens.
-
-*** If I use this, who owns my work?
- Right now this thing has one user. But let's say you were the second. Who owns what?
-
- Mostly YOU, sometimes EVERYONE, never just ME.
-
- I'm still working this out, but here's where I'm at:
-
- Private stuff can only be seen by you.
-
- Everything (Timelines, Events, Notes, and Events) starts out PRIVATE.
-
- Timelines and their Events can be private or public.
-
- Notebooks and their Notes can be private or public.
-
- When you make Timelines public you're not just making them public but adding all the events in them to the commons and you can't really put that back in the box. Think Wikipedia. Even if you make them private later someone could have downloaded the whole thing in a batch.
-
- When you make Notebooks public you're just...publishing them on Unscroll. You own the copyright over your Notebooks forever. If you make them public you're giving Unscroll the right to use them until you unpublish them. Think any blogging platform. Then they're gone.
-
- Will that work? Let's see what happens. I realize this is kind of a lot. It needs a picture. Maybe after launch I will draw one. Or you can if you want.
-
-*** This is pointless without API access, I want API access.
- You have it actually. I just need a little while for Swagger, etc.
-
-*** This website is not accessible.
- It isn't, and it should be, and needs to be. Mea culpa. It's going to take a while. The thing to get right is the composition experience. Glad to hear from people about what needs to happen.
-
-*** What about copyright?
- On the search engine side, I spider web pages, use open data, and respect robots.txt (well, I try to, things can be vague.) It's just descriptive text and thumbnails. I tried to make everything as predictably obviously fair use as I could.
-
- On the what-people-post side, DMCA-1026160.
-
-*** What about my privacy and security?
- Someone might see something while administering the database. In general please don't put anything super-secret or valuable into this new, untrusted, experimental web service. I don't think you would, but it makes me feel better to say that.
-
- It uses the Django framework and follow its guidelines. All traffic is via HTTPS via Let's Encrypt. So it's roughly as locked down as any reasonable web-based thing.
-
- Your events and notes are NOT encrypted on the server, at least not yet. I'd love to do that, it's not a one-person job.
-
-*** If I use this and you go out of business or get acquired it'll be another stupid nightmare and you'll dump all the data down the toilet and why should I ever trust you at all?
- This is ultimately a thing designed to give back to the commons. Let's see how people use it. I am a friend of the archive community and large libraries everywhere. An ideal situation is one in which, should Unscroll go away entirely, nothing that was shared with the public would be lost, and individuals would still have full records of their private events, timelines, notes, and notebooks.
-
-*** There's no business model.
- There are tons of business models and not-business models. Right now it has one user and this thing would need to get many thousands of committed daily users before it cost more than a couple hundred bucks to run per month. I mean this thing could be good for lawyers, or be something that groups can use. Let's see what happens.
-
-*** That has nothing to do with the blockchain.
- I guess it would be nice, some day, to auto-publish Timeline hashes into a blockchain so that people can be relatively assured that history has not been manipulated. Let's see what happens.
-
-*** The mobile experience is wonky. No one uses desktop computers.
- I spent a lot of time on mobile but mobile web, it's...well. Life. Let's see what happens.
-
-*** This has nothing to do with machine learning.
- I don't know, imagine what you could do with lots of public events some of which have been tagged and annotated as a side-effect of the writing process. Of course none of that is real yet. Let's see what happens.
-
-*** This is just another centralized effort designed to own other people's creative work. It should be a federated, decentralized timeline-writing tool.
- Maybe! Have you ever tried to coordinate large numbers of services to create great experiences, though? Me neither. I don't really want to own time or culture. I want people to feel safe and protected and like they have the tools they need to do good work, starting with me.
-
- It is nice to imagine a federated service, used to index HTML microformats, blog posts, and tweets at the time of their authorship. On the other hand, humans love convenience so maybe a centralized service is best. The goal is to help. This thing only has one user so it doesn't really matter. Let's see what happens.
-
-*** The approach to date-time parsing and processing is utterly half-assed.
- Yes, it's terrible. Extracting a date from, say, where it's embedded in a filename on an MP3 on archive.org and turning it into a realistic calendar moment is pretty hard. There's a lot to learn here. Frankly you could be looking at a clay pot from Sicily that's circa 1500 and not know whether it's circa 1500 Greenwich Mean Time or circa 1500 Eastern Standard Daylight. Anwyway right now I'm winging it and just pretending timezones aren't real. I'm sure it will bite me. Let's see what happens.
-
-*** This is not how history is done/there's more to history than chronology.
- Yes, agreed. It's a writing tool that keeps the vaguest chronology in view. Let's see what happens.
-
-*** The events show all kinds of bias.
- They sure do. The resources in the commons that I'm importing are definitely biased towards the conventionally-funded western-dominated metric of what's important.
-
- If doing this has taught me anything (it's taught me like 1,000 things which is why I did it) it's that archives are totally biased in favor of consensus rich-and-powerful-people history, around who made the news, who had the fame, and who had the money. Because that's who makes archives. We archive (1) fame; and (2) pain. Doing this project has made that ridiculously obvious. Public data in the commons is either about vast, anonymized groups of people (like people who take cabs) or it's about expensive and rare things (museum archives), or stories of great success or failure of successful mainstream people (media archives). Even when it's about less-represented people it's often about their suffering (like specific records around slavery or lynching)
-
- There are definitely exceptions but a lot of the important archives around, say, Black history, aren't digitized yet ($$$), and I don't want to create records for artifacts where there isn't an available source document. And I don't want to have an archive that just contrasts success and suffering based on skin color or gender identity and calls itself done. That doesn't really help anyone. So it's a big unsolved problem.
-
- Neither fame nor pain are what interests me personally all of the time, so I'm going to do my best to add events about other kinds of people over time. Also, the web has its own tractable history now, running 25 years, with lots of voices represented. For all that things suck, we're going on decades of records of how normal humans interact, talk, hook up, and cook things.
-
- Anyway for the most part the public archives that I'm importing don't represent regular people very much. The Cooper Hewitt Design Museum does a little better because everyone needs wallpaper.
-
- Maybe that could change and it'd be a lot of fun and worth the effort if this was a place where that changed. There's only so much I personally can do here, so I'll pay a reasonable hourly rate for people who want to correct that and create timelines around marginalized people's history. If you know someone who should do that kind of work ping me and I'll reach out to them. But please be a little chill, it's just me and I have a day job, and by offering this up it means I'm going to end up saying no to lots of really good people. Things take a long time. Credentialed people, grad students, people with some experience, are what I need now (maybe not forever but now). Let's see what happens.
-
-*** How will I know if the events are accurate?
- I thought hard about this one. This sounds simple but it actually veers into foundational philosophical challenges about the nature of truth in about five minutes. Short answer is, you can't.
-
- Even when you import really well-regarded sources--museum collections, for example--it's hard to know when something happened, and often utterly ambiguous. Dealing with that ambiguity led me to come up with a "guideline of the last possible moment." For example if something is identified as being "circa 1880-1889" the datestamp I assign to it is December 31st 1889 one second before midnight. Let's see what happens. This is because the problem I've found when writing about things that happened is almost always that you put them too soon, not too late. So I err on the side of the last possible moment and keep the original text of the date/time around.
-
- Here's a hedge for you: A community, should one form (doubtful), will define the culture here, and the software would support the community's definition of accuracy. Otherwise it'll just be me blogging. Which would be great, I'm actually an excellent blogger and I am well known on many important blogging platforms. Let's see what happens.
-
-*** What about griefers / Nazis / racists / sexists / anti-Semites / goofballs / trolls / men?
- Right now I'm the only one here. If exhausting people, bad actors, griefers, and so forth show up we'll set limits, hire people, charge money, shut it down shut it all down all of it. It's not a social network.
-
- Anyway if history has shown us anything it's that the world is big and difficult and most likely no one will care and this will be just another dead website. Except there'll be a lot of JSON files on Archive.org in memoriam.
-
- It's interesting though.
-
- Let's see what happens.
-
-*** You've already failed in so many ways!
- And there's more to come!
-
- Or maybe nothing will happen. It's an experiment.
-
- It wouldn't hurt you to be a little positive and encouraging. I know that the Internet has let you down recently. Me too. I'm building this as a place that won't always let people down, where you can sit in bed and look at the past and think about the future and write little essays.
-
- You don't have to run to the thread on your microblog messageboard and poop all over this site today. Give it two weeks, then poop on it. I'll hold my breath.
-
- I know this thing is a big mess but I worked hard on it. I'm doing it because I love the commons and I have ideas and want to share them, and want to make room for other people's ideas. I know that the web doesn't work that way any more. I still have faith though, like a sucker.
-
- Let's see what happens.
-
-** Some Further Context
+** Some  Context
 *** What Gaps Are We Seeking to Fill?
 **** Editorial Gaps
   - Editorial organizations are dying and fact-checking and editorial support are going away. Most of the sources we trusted in the last ten years will be gone in ten years. The ones that replace them have high turnover and are traded around.
@@ -222,6 +87,137 @@ Before doing anything, you probably want want to test each assumption by adding,
 But an awful lot of failures when you break them down, people have a specific path in mind that leads to a specific outcome in which they look good, become wealthy, or achieve some goal. Very few things on the Internet seem to be designed with sustainability in mind.
 
 The key to sustainability is in spending all of your time and energy to increase optionality. Having the maximum number of options in front of you then making the best possible choices for the business. Having the most inbound leads, the bigger marketing mailing list. Knock on all the doors. Talk to the VCs, the bankers, the academics. Could you run this with one employee? Zero? (If you do that, of course, the community you need for sustainability vanishes; you need people besides yourself to be in on the optionality game. You need a community to invest in the sustainability because it's good for them!)
+
+
+** Frequently Anticipated Objections
+
+(When I wrote this FAQ, it was a one-person project and I was just going to release it solo as a side-project and see what happened. Then we realized it would look bananacakes and distracting if I released a project by myself as CEO of Postlight.
+
+*** Who can I interrogate, scold, or praise?
+TBD
+
+*** Why did you do something when it would be easier for me, as a consumer of things, if you had done nothing?
+- Let's see what happens.
+
+*** Who is this for?
+- Professional accurists of all stripes. People who like history, high school students, grad students, journalists who don't have enough editorial and fact-checking support, personal-essay-writer types, basically anyone who wants to catch themselves on their own foolishness, and catch the foolishness of others before it infects the water supply. Also just people who like looking at old vases and how book covers change over time. Everyone.
+- It's also edging on a tool for people to do serious work on their phones. That's how I use it mostly. Think millennial law students.
+- But really it's for me.
+
+*** Who are you?
+ [TBD!]
+
+*** It should be free software. Everything should.
+ Maybe so! If people use Unscroll and care about it, and other people start creating timelines using commons resources, that would make sense. It's built on Django and React. Let's see what happens.
+
+*** The data should be open. All the data should be open.
+ Some should. Sharing out data in a reasonable way takes time to do right so I'm not rushing. I don't want to just release data out of guilt or mandate, or just dump an intractable blob of JSON into a bucket. I want to make sure what goes back into the commons is tractable, useful, and can be used to contribute back to Unscroll, too. Let's see what happens.
+
+*** If I use this, who owns my work?
+ Right now this thing has one user. But let's say you were the second. Who owns what?
+
+ Mostly YOU, sometimes EVERYONE, never just ME.
+
+ I'm still working this out, but here's where I'm at:
+
+ Private stuff can only be seen by you.
+
+ Everything (Timelines, Events, Notes, and Events) starts out PRIVATE.
+
+ Timelines and their Events can be private or public.
+
+ Notebooks and their Notes can be private or public.
+
+ When you make Timelines public you're not just making them public but adding all the events in them to the commons and you can't really put that back in the box. Think Wikipedia. Even if you make them private later someone could have downloaded the whole thing in a batch.
+
+ When you make Notebooks public you're just...publishing them on Unscroll. You own the copyright over your Notebooks forever. If you make them public you're giving Unscroll the right to use them until you unpublish them. Think any blogging platform. Then they're gone.
+
+ Will that work? Let's see what happens. I realize this is kind of a lot. It needs a picture. Maybe after launch I will draw one. Or you can if you want.
+
+*** This is pointless without API access, I want API access.
+ You have it actually. I just need a little while for Swagger, etc.
+
+*** This website is not accessible.
+ It isn't, and it should be, and needs to be. Mea culpa. It's going to take a while. The thing to get right is the composition experience. Glad to hear from people about what needs to happen.
+
+*** What about copyright?
+ On the search engine side, I spider web pages, use open data, and respect robots.txt (well, I try to, things can be vague.) It's just descriptive text and thumbnails. I tried to make everything as predictably obviously fair use as I could.
+
+ On the what-people-post side, DMCA-1026160.
+
+*** What about my privacy and security?
+ Someone might see something while administering the database. In general please don't put anything super-secret or valuable into this new, untrusted, experimental web service. I don't think you would, but it makes me feel better to say that.
+
+ It uses the Django framework and follow its guidelines. All traffic is via HTTPS via Let's Encrypt. So it's roughly as locked down as any reasonable web-based thing.
+
+ Your events and notes are NOT encrypted on the server, at least not yet. I'd love to do that, it's not a one-person job.
+
+*** If I use this and you go out of business or get acquired it'll be another stupid nightmare and you'll dump all the data down the toilet and why should I ever trust you at all?
+- This is ultimately a thing designed to give back to the commons. Let's see how people use it. I am a friend of the archive community and large libraries everywhere. An ideal situation is one in which, should Unscroll go away entirely, nothing that was shared with the public would be lost, and individuals would still have full records of their private events, timelines, notes, and notebooks.
+
+*** There's no business model.
+- There are tons of business models and not-business models. 
+- Right now it has one user and this thing would need to get many thousands of committed daily users before it cost more than a couple hundred bucks to run per month.
+- I mean this thing could be good for lawyers, or be something that groups can use.
+- Let's see what happens.
+
+*** That has nothing to do with the blockchain.
+- I guess it would be nice, some day, to auto-publish Timeline hashes into a blockchain so that people can be relatively assured that history has not been manipulated.
+- Let's see what happens.
+
+*** The mobile experience is wonky. No one uses desktop computers.
+- Let's see what happens.
+
+*** This has nothing to do with machine learning.
+- I don't know, imagine what you could do with lots of public events some of which have been tagged and annotated as a side-effect of the writing process.
+- Of course none of that is real yet.
+- Let's see what happens.
+
+*** This is just another centralized effort designed to own other people's creative work. It should be a federated, decentralized timeline-writing tool.
+- Maybe! Have you ever tried to coordinate large numbers of services to create great experiences, though? Me neither. 
+- I don't really want to own time or culture. I want people to feel safe and protected and like they have the tools they need to do good work, starting with me.
+- It is nice to imagine a federated service, used to index HTML microformats, blog posts, and tweets at the time of their authorship. On the other hand, humans love convenience so maybe a centralized service is best. The goal is to help. This thing only has one user so it doesn't really matter. Let's see what happens.
+
+*** The approach to date-time parsing and processing is utterly half-assed.
+- Yes, it's terrible. Extracting a date from, say, where it's embedded in a filename on an MP3 on archive.org and turning it into a realistic calendar moment is pretty hard.
+- There's a lot to learn here. Frankly you could be looking at a clay pot from Sicily that's circa 1500 and not know whether it's circa 1500 Greenwich Mean Time or circa 1500 Eastern Standard Daylight.
+- Anwyway right now I'm winging it and just pretending timezones aren't real. I'm sure it will bite me.
+- Let's see what happens.
+
+*** This is not how history is done/there's more to history than chronology.
+- Yes, agreed. It's a writing tool that keeps the vaguest chronology in view. Let's see what happens.
+
+*** The events show all kinds of bias.
+- They sure do. The resources in the commons that I'm importing are definitely biased towards the conventionally-funded western-dominated metric of what's important.
+
+- If doing this has taught me anything (it's taught me like 1,000 things which is why I did it) it's that archives are totally biased in favor of consensus rich-and-powerful-people history, around who made the news, who had the fame, and who had the money. Because that's who makes archives. We archive (1) fame; and (2) pain. Doing this project has made that ridiculously obvious. Public data in the commons is either about vast, anonymized groups of people (like people who take cabs) or it's about expensive and rare things (museum archives), or stories of great success or failure of successful mainstream people (media archives). Even when it's about less-represented people it's often about their suffering (like specific records around slavery or lynching)
+
+- There are definitely exceptions but a lot of the important archives around, say, Black history, aren't digitized yet ($$$), and I don't want to create records for artifacts where there isn't an available source document. And I don't want to have an archive that just contrasts success and suffering based on skin color or gender identity and calls itself done. That doesn't really help anyone. So it's a big unsolved problem.
+
+- Neither fame nor pain are what interests me personally all of the time, so I'm going to do my best to add events about other kinds of people over time. Also, the web has its own tractable history now, running 25 years, with lots of voices represented. For all that things suck, we're going on decades of records of how normal humans interact, talk, hook up, and cook things.
+
+- Anyway for the most part the public archives that I'm importing don't represent regular people very much. The Cooper Hewitt Design Museum does a little better because everyone needs wallpaper.
+
+- Maybe that could change and it'd be a lot of fun and worth the effort if this was a place where that changed. There's only so much I personally can do here, so I'll pay a reasonable hourly rate for people who want to correct that and create timelines around marginalized people's history. If you know someone who should do that kind of work ping me and I'll reach out to them. But please be a little chill, it's just me and I have a day job, and by offering this up it means I'm going to end up saying no to lots of really good people. Things take a long time. Credentialed people, grad students, people with some experience, are what I need now (maybe not forever but now). Let's see what happens.
+
+*** How will I know if the events are accurate?
+- I thought hard about this one. This sounds simple but it actually veers into foundational philosophical challenges about the nature of truth in about five minutes. Short answer is, you can't.
+- Even when you import really well-regarded sources--museum collections, for example--it's hard to know when something happened, and often utterly ambiguous. Dealing with that ambiguity led me to come up with a "guideline of the last possible moment." For example if something is identified as being "circa 1880-1889" the datestamp I assign to it is December 31st 1889 one second before midnight. Let's see what happens. This is because the problem I've found when writing about things that happened is almost always that you put them too soon, not too late. So I err on the side of the last possible moment and keep the original text of the date/time around.
+- Here's a hedge for you: A community, should one form (doubtful), will define the culture here, and the software would support the community's definition of accuracy. Otherwise it'll just be me blogging. Which would be great, I'm actually an excellent blogger and I am well known on many important blogging platforms. Let's see what happens.
+
+*** What about griefers / Nazis / racists / sexists / anti-Semites / goofballs / trolls / men?
+- Right now I'm the only one here. If exhausting people, bad actors, griefers, and so forth show up we'll set limits, hire people, charge money, shut it down shut it all down all of it. It's not a social network.
+- Anyway if history has shown us anything it's that the world is big and difficult and most likely no one will care and this will be just another dead website. Except there'll be a lot of JSON files on Archive.org in memoriam.
+- It's interesting though.
+- Let's see what happens.
+
+*** You've already failed in so many ways!
+- And there's more to come!
+- Or maybe nothing will happen. It's an experiment.
+- It wouldn't hurt you to be a little positive and encouraging. I know that the Internet has let you down recently. Me too. I'm building this as a place that won't always let people down, where you can sit in bed and look at the past and think about the future and write little essays.
+- You don't have to run to the thread on your microblog messageboard and poop all over this site today. Give it two weeks, then poop on it. I'll hold my breath.
+- I know this thing is a big mess but I worked hard on it. I'm doing it because I love the commons and I have ideas and want to share them, and want to make room for other people's ideas. I know that the web doesn't work that way any more. I still have faith though, like a sucker.
+- Let's see what happens.
 
 * DevOps
 - All on one server except Mailgun for confirmation emails.
@@ -277,6 +273,9 @@ The key to sustainability is in spending all of your time and energy to increase
 - Timelists could be much better.
 - Edit experience could do things.
 - Searches can be saved.
+- Login could work
+- Everything could work
+- Things could be not bad
 
 **** Core functionality
   - Social graph :: I follow people and organizations and see the events and notebooks they're adding.
