@@ -2,6 +2,6 @@
 
 ## How it works
 
-![](./one-server-architecture.pngone-server-architecture.png)
+![](./img/one-server-architecture.png)
 
 ## Etc
