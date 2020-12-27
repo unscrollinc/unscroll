@@ -7,8 +7,9 @@ WORKDIR /unscroll
 ADD assets client config doc server tasks unscroll/
 
 RUN apk update
-RUN apk add python3 python3-dev py3-pip py3-psycopg2 py3-gunicorn py3-django py3-pillow py3-cryptography
+RUN apk add build-base python3 python3-dev py3-pip py3-psycopg2 py3-gunicorn py3-django py3-pillow py3-cryptography libressl-dev musl-dev libffi-dev
 RUN pip3 install --upgrade pip
+RUN pip install wheel
 RUN pip install \
 	django-allauth \
 	django-bleach \
