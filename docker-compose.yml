@@ -1,0 +1,12 @@
+version: '2'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+  #    - "5000:5000"
+    volumes:
+      - ./:/unscroll/
+  #db:
+  #  image: postgres:9.5.2
