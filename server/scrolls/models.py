@@ -355,7 +355,7 @@ class Media(models.Model):
 
     class Meta:
         db_table = 'media'
-        ordering = ['note__order']
+        #ordering = ['note__order']
 
     def __unicode__(self):
         return '{}'.format(self.media_file,)

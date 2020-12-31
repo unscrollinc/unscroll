@@ -50,7 +50,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'media',
-                'ordering': ['note__order'],
+                #'ordering': ['note__order'],
             },
         ),
         migrations.CreateModel(

@@ -1,6 +1,11 @@
 version: '2'
 
 services:
+  #db:
+  #  image: postgres:latest
+  #  ports:
+  #    - "5432:5432"
+
   web:
     build: .
     ports:
@@ -8,5 +13,3 @@ services:
   #    - "5000:5000"
     volumes:
       - ./:/unscroll/
-  #db:
-  #  image: postgres:9.5.2

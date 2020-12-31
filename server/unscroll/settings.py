@@ -114,12 +114,6 @@ CACHES = {
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
-CORS_ORIGIN_WHITELIST = (
-    'localhost:3000',
-)
-CORS_ORIGIN_REGEX_WHITELIST = (
-    'localhost:3000',
-)
 
 CORS_ALLOW_METHODS = (
     'DELETE',
@@ -165,8 +159,10 @@ WSGI_APPLICATION = 'unscroll.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'unscroll',
-        'USER': 'unscroll',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'testing',
+        'HOST': '172.17.0.1'
     }
 }
 

@@ -7,7 +7,7 @@ WORKDIR /unscroll
 ADD assets client config doc server tasks unscroll/
 
 RUN apk update
-RUN apk add build-base python3 python3-dev py3-pip py3-psycopg2 py3-gunicorn py3-django py3-pillow py3-cryptography libressl-dev musl-dev libffi-dev py3-lxml
+RUN apk add build-base python3 python3-dev py3-pip py3-psycopg2 py3-gunicorn py3-django py3-pillow py3-cryptography libressl-dev musl-dev libffi-dev py3-lxml postgresql-client
 RUN pip3 install --upgrade pip
 RUN pip install wheel
 RUN pip install \
@@ -34,4 +34,8 @@ RUN pip install \
 # needed for https://github.com/chibisov/drf-extensions/issues/294
 RUN sed -i -e 's/django.db.models.sql.datastructures/django.core.exceptions/g' /usr/lib/python3.8/site-packages/rest_framework_extensions/key_constructor/bits.py
 
-# RUN cd /unscroll/server && gunicorn -w 6 --log-level DEBUG --bind 127.0.0.1:8000 unscroll.wsgi:application
+# can't make this happy with container paths for now, should run on startup
+# WORKDIR /unscroll/server
+# RUN ./manage.py migrate
+# RUN (crontab -l 2>/dev/null; echo "*/2 * * * * psql -f /unscroll/tasks/update_counts.sql")| crontab -
+# RUN gunicorn -w 6 --log-level DEBUG --bind 127.0.0.1:8000 unscroll.wsgi:application
