@@ -22,7 +22,7 @@
     "luxon": "^1.4.3",
     "npm": "^6.4.1",
     "prettier": "^1.14.3",
-    "qs": "^6.5.2",
+    "qs": "^6.7.3",
     "react": "^16.5.2",
     "react-cursor-position": "^2.5.3",
     "react-custom-scrollbars": "^4.2.1",
